@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.SaleOutSheetDetailLotMapper">
+    <resultMap id="SaleOutSheetDetailLotDto" type="com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailLotDto">
+        <id column="id" property="id"/>
+        <result column="detail_id" property="detailId"/>
+        <result column="lot_id" property="lotId"/>
+        <result column="order_num" property="orderNum"/>
+        <result column="return_num" property="returnNum"/>
+        <result column="cost_tax_amount" property="costTaxAmount"/>
+        <result column="cost_un_tax_amount" property="costUnTaxAmount"/>
+        <result column="settle_status" property="settleStatus"/>
+        <result column="order_no" property="orderNo"/>
+    </resultMap>
+
+    <sql id="SaleOutSheetDetailLotDto_sql">
+        SELECT
+            d.id,
+            d.detail_id,
+            d.lot_id,
+            d.order_num,
+            d.return_num,
+            d.cost_tax_amount,
+            d.cost_un_tax_amount,
+            d.settle_status,
+            d.order_no
+        FROM tbl_sale_out_sheet_detail_lot AS d
+    </sql>
+    <update id="addReturnNum">
+        UPDATE tbl_sale_out_sheet_detail_lot
+        SET return_num = return_num + #{num}
+        WHERE id = #{id}
+          AND (order_num - return_num) >= #{num}
+    </update>
+    <update id="subReturnNum">
+        UPDATE tbl_sale_out_sheet_detail_lot
+        SET return_num = return_num - #{num}
+        WHERE id = #{id}
+          AND return_num >= #{num}
+    </update>
+    <select id="getById" resultMap="SaleOutSheetDetailLotDto">
+        <include refid="SaleOutSheetDetailLotDto_sql"/>
+        WHERE d.id = #{id}
+    </select>
+</mapper>

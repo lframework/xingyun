@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.ProductPolyPropertyMapper">
+
+    <resultMap id="ProductPolyPropertyDto" type="com.lframework.xingyun.basedata.dto.product.poly.ProductPolyPropertyDto">
+        <id column="id" property="id"/>
+        <result column="poly_id" property="polyId"/>
+        <result column="property_id" property="propertyId"/>
+        <result column="property_item_id" property="propertyItemId"/>
+        <result column="property_name" property="propertyName"/>
+    </resultMap>
+
+    <sql id="ProductPolyPropertyDto_sql">
+        SELECT
+            pp.id,
+            pp.poly_id,
+            p.id AS property_id,
+            t.id AS property_item_id,
+            IF(p.column_type = 3, pp.property_text, t.name) AS property_name
+        FROM base_data_product_poly_property AS pp
+        INNER JOIN base_data_product_property AS p ON p.id = pp.property_id
+        LEFT JOIN base_data_product_property_item AS t ON t.id = pp.property_item_id
+    </sql>
+    <delete id="setCommonToAppoint">
+        DELETE FROM base_data_product_poly_property WHERE property_id = #{propertyId} AND poly_id NOT IN (SELECT id from base_data_product_poly WHERE category_id = #{categoryId})
+    </delete>
+    <select id="getByPolyId" resultMap="ProductPolyPropertyDto">
+        <include refid="ProductPolyPropertyDto_sql"/>
+        WHERE pp.poly_id = #{poly_id}
+        ORDER BY p.code, t.code
+    </select>
+    <select id="getByPropertyId" resultMap="ProductPolyPropertyDto">
+        <include refid="ProductPolyPropertyDto_sql"/>
+        WHERE pp.property_id = #{propertyId}
+        ORDER BY p.code, t.code
+    </select>
+</mapper>

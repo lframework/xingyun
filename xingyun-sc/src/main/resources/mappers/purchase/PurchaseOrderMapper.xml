@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.PurchaseOrderMapper">
+
+    <resultMap id="PurchaseOrderDto" type="com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="purchaser_id" property="purchaserId"/>
+        <result column="expect_arrive_date" property="expectArriveDate"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="total_gift_num" property="totalGiftNum"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="status" property="status"/>
+        <result column="refuse_reason" property="refuseReason"/>
+    </resultMap>
+
+    <resultMap id="PurchaseOrderFullDto" type="com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="purchaser_id" property="purchaserId"/>
+        <result column="expect_arrive_date" property="expectArriveDate"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="total_gift_num" property="totalGiftNum"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="status" property="status"/>
+        <result column="refuse_reason" property="refuseReason"/>
+        <collection property="details" javaType="java.util.ArrayList" ofType="com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto$OrderDetailDto">
+            <id column="detail_id" property="id"/>
+            <result column="detail_product_id" property="productId"/>
+            <result column="detail_order_num" property="orderNum"/>
+            <result column="detail_tax_price" property="taxPrice"/>
+            <result column="detail_is_gift" property="isGift"/>
+            <result column="detail_tax_rate" property="taxRate"/>
+            <result column="detail_description" property="description"/>
+            <result column="detail_order_no" property="orderNo"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="PurchaseOrderWithReceiveDto" type="com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto">
+        <id column="id" property="id"/>
+        <result column="sc_id" property="scId"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="purchaser_id" property="purchaserId"/>
+        <collection property="details" ofType="com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto$DetailDto" javaType="java.util.ArrayList">
+            <id column="detail_id" property="id"/>
+            <result column="detail_product_id" property="productId"/>
+            <result column="detail_order_num" property="orderNum"/>
+            <result column="detail_tax_price" property="taxPrice"/>
+            <result column="detail_is_gift" property="isGift"/>
+            <result column="detail_tax_rate" property="taxRate"/>
+            <result column="detail_description" property="description"/>
+            <result column="detail_order_no" property="orderNo"/>
+            <result column="detail_receive_num" property="receiveNum"/>
+        </collection>
+    </resultMap>
+
+    <sql id="PurchaseOrderDto_sql">
+        SELECT
+            o.id,
+            o.code,
+            o.sc_id,
+            o.supplier_id,
+            o.purchaser_id,
+            o.expect_arrive_date,
+            o.total_num,
+            o.total_gift_num,
+            o.total_amount,
+            o.description,
+            o.create_by,
+            o.create_time,
+            o.update_by,
+            o.update_time,
+            o.approve_by,
+            o.approve_time,
+            o.status,
+            o.refuse_reason
+        FROM tbl_purchase_order AS o
+    </sql>
+
+    <sql id="PurchaseOrderFullDto_sql">
+        SELECT
+            o.id,
+            o.code,
+            o.sc_id,
+            o.supplier_id,
+            o.purchaser_id,
+            o.expect_arrive_date,
+            o.total_num,
+            o.total_gift_num,
+            o.total_amount,
+            o.description,
+            o.create_by,
+            o.create_time,
+            o.update_by,
+            o.update_time,
+            o.approve_by,
+            o.approve_time,
+            o.status,
+            o.refuse_reason,
+            d.id AS detail_id,
+            d.product_id AS detail_product_id,
+            d.order_num AS detail_order_num,
+            d.tax_price AS detail_tax_price,
+            d.is_gift AS detail_is_gift,
+            d.tax_rate AS detail_tax_rate,
+            d.description AS detail_description,
+            d.order_no AS detail_order_no
+        FROM tbl_purchase_order AS o
+        LEFT JOIN tbl_purchase_order_detail AS d ON d.order_id = o.id
+    </sql>
+
+    <select id="query" resultMap="PurchaseOrderDto">
+        <include refid="PurchaseOrderDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND o.code = #{vo.code}
+                </if>
+                <if test="vo.supplierId != null and vo.supplierId != ''">
+                    AND o.supplier_id = #{vo.supplierId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND o.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.purchaserId != null and vo.purchaserId != ''">
+                    AND o.purchaser_id = #{vo.purchaserId}
+                </if>
+                <if test="vo.status != null">
+                    AND o.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND o.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.approveBy != null and vo.approveBy != ''">
+                    AND o.approve_by = #{vo.approveBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND o.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND o.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.approveStartTime != null">
+                    AND o.approve_time >= #{vo.approveStartTime}
+                </if>
+                <if test="vo.approveEndTime != null">
+                    <![CDATA[
+                    AND o.approve_time <= #{vo.approveEndTime}
+                    ]]>
+                </if>
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+    <select id="getDetail" resultMap="PurchaseOrderFullDto">
+        <include refid="PurchaseOrderFullDto_sql"/>
+        WHERE o.id = #{id}
+        ORDER BY d.order_no
+    </select>
+    <select id="queryFulls" resultMap="PurchaseOrderFullDto">
+        <include refid="PurchaseOrderFullDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND o.code = #{vo.code}
+                </if>
+                <if test="vo.supplierId != null and vo.supplierId != ''">
+                    AND o.supplier_id = #{vo.supplierId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND o.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.purchaserId != null and vo.purchaserId != ''">
+                    AND o.purchaser_id = #{vo.purchaserId}
+                </if>
+                <if test="vo.status != null">
+                    AND o.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND o.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.approveBy != null and vo.approveBy != ''">
+                    AND o.approve_by = #{vo.approveBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND o.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND o.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.approveStartTime != null">
+                    AND o.approve_time >= #{vo.approveStartTime}
+                </if>
+                <if test="vo.approveEndTime != null">
+                    <![CDATA[
+                    AND o.approve_time <= #{vo.approveEndTime}
+                    ]]>
+                </if>
+            </if>
+        </where>
+        ORDER BY o.create_time DESC, d.order_no
+    </select>
+    <select id="getById" resultMap="PurchaseOrderDto">
+        <include refid="PurchaseOrderDto_sql"/>
+        WHERE o.id = #{id}
+    </select>
+    <select id="selector" resultMap="PurchaseOrderDto">
+        <include refid="PurchaseOrderDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND o.code = #{vo.code}
+                </if>
+                <if test="vo.supplierId != null and vo.supplierId != ''">
+                    AND o.supplier_id = #{vo.supplierId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND o.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.status != null">
+                    AND o.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND o.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND o.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND o.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+
+    <select id="getWithReceive" resultMap="PurchaseOrderWithReceiveDto">
+        SELECT
+        o.id, o.sc_id, o.supplier_id, o.purchaser_id, d.id AS detail_id, d.product_id AS detail_product_id,
+        d.order_num AS detail_order_num, d.tax_price AS detail_tax_price, d.is_gift AS detail_is_gift,
+        d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
+        d.receive_num AS detail_receive_num
+        FROM tbl_purchase_order AS o
+        LEFT JOIN tbl_purchase_order_detail AS d ON d.order_id = o.id
+        <if test="requirePurchase">AND d.order_num > d.receive_num</if>
+        WHERE o.id = #{id}
+    </select>
+    <select id="queryWithReceive" resultMap="PurchaseOrderDto">
+        <include refid="PurchaseOrderDto_sql"/>
+        <if test="!multipleRelate">LEFT JOIN tbl_receive_sheet AS s ON s.purchase_order_id = o.id</if>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND o.code = #{vo.code}
+                </if>
+                <if test="vo.supplierId != null and vo.supplierId != ''">
+                    AND o.supplier_id = #{vo.supplierId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND o.sc_id = #{vo.scId}
+                </if>
+                AND o.status = 3
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND o.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND o.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND o.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+            </if>
+            <if test="!multipleRelate">AND s.id IS NULL</if>
+        </where>
+        <if test="!multipleRelate">GROUP BY o.id</if>
+        ORDER BY o.create_time DESC
+    </select>
+</mapper>

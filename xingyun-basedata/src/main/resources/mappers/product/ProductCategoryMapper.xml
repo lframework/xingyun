@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.ProductCategoryMapper">
+
+    <resultMap id="ProductCategoryDto" type="com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="available" property="available"/>
+        <result column="description" property="description"/>
+    </resultMap>
+
+    <sql id="ProductCategoryDto_sql">
+        SELECT
+            id,
+            code,
+            name,
+            parent_id,
+            available,
+            description
+        FROM base_data_product_category
+    </sql>
+
+    <select id="getAllProductCategories" resultMap="ProductCategoryDto">
+        <include refid="ProductCategoryDto_sql"/>
+        ORDER BY code
+    </select>
+
+    <select id="getById" resultMap="ProductCategoryDto">
+        <include refid="ProductCategoryDto_sql"/>
+        WHERE id = #{id}
+    </select>
+    <select id="selector" resultMap="ProductCategoryDto">
+        <include refid="ProductCategoryDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.available != null">
+                    AND available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY code
+    </select>
+</mapper>

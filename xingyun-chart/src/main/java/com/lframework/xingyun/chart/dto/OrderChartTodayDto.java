@@ -1,0 +1,28 @@
+package com.lframework.xingyun.chart.dto;
+
+import com.lframework.starter.web.dto.BaseDto;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+@Data
+public class OrderChartTodayDto implements BaseDto, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 单据总金额
+     */
+    private BigDecimal totalAmount;
+
+    /**
+     * 单据总数量
+     */
+    private Integer totalNum;
+
+    /**
+     * 创建时间
+     */
+    private String createHour;
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.ProductPurchaseMapper">
+
+    <resultMap id="ProductPurchaseDto" type="com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto">
+        <id column="id" property="id"/>
+        <result column="price" property="price"/>
+        <result column="min_price" property="minPrice"/>
+        <result column="max_price" property="maxPrice"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="ProductPurchaseDto_sql">
+        SELECT
+            id,
+            price,
+            min_price,
+            max_price,
+            create_by,
+            create_time,
+            update_by,
+            update_time
+        FROM base_data_product_purchase
+    </sql>
+
+    <select id="getById" resultMap="ProductPurchaseDto">
+        <include refid="ProductPurchaseDto_sql"/>
+        WHERE id = #{id}
+    </select>
+</mapper>

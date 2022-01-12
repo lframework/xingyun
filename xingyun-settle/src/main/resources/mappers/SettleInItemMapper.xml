@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.settle.mappers.SettleInItemMapper">
+    <resultMap id="SettleInItemDto" type="com.lframework.xingyun.settle.dto.item.in.SettleInItemDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="available" property="available"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="SettleInItemDto_sql">
+        SELECT
+            id,
+            code,
+            name,
+            available,
+            description,
+            create_by,
+            create_time,
+            update_by,
+            update_time
+        FROM settle_in_item
+    </sql>
+    <select id="query" resultMap="SettleInItemDto">
+        <include refid="SettleInItemDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY code
+    </select>
+    <select id="getById" resultMap="SettleInItemDto">
+        <include refid="SettleInItemDto_sql"/>
+        WHERE id = #{id}
+    </select>
+    <select id="selector" resultMap="SettleInItemDto">
+        <include refid="SettleInItemDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY code
+    </select>
+</mapper>

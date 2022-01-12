@@ -1,0 +1,49 @@
+package com.lframework.xingyun.sc.mappers;
+
+import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnDto;
+import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
+import com.lframework.xingyun.sc.entity.RetailReturn;
+import com.lframework.xingyun.sc.vo.retail.returned.QueryRetailReturnVo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * <p>
+ *  Mapper 接口
+ * </p>
+ *
+ * @author zmj
+ * @since 2021-11-04
+ */
+public interface RetailReturnMapper extends BaseMapper<RetailReturn> {
+
+    /**
+     * 查询列表
+     * @param vo
+     * @return
+     */
+    List<RetailReturnDto> query(@Param("vo") QueryRetailReturnVo vo);
+
+    /**
+     * 根据ID查询
+     * @param id
+     * @return
+     */
+    RetailReturnDto getById(String id);
+
+    /**
+     * 根据ID查询
+     * @param id
+     * @return
+     */
+    RetailReturnFullDto getDetail(String id);
+
+    /**
+     * 查询列表
+     * @param vo
+     * @return
+     */
+    List<RetailReturnFullDto> queryFulls(@Param("vo") QueryRetailReturnVo vo);
+}

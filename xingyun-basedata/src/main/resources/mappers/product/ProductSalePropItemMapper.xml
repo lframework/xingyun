@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.ProductSalePropItemMapper">
+
+    <resultMap id="ProductSalePropItemDto"
+               type="com.lframework.xingyun.basedata.dto.product.saleprop.item.ProductSalePropItemDto">
+        <id column="id" property="id"/>
+        <result column="group_id" property="groupId"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="available" property="available"/>
+        <result column="description" property="description"/>
+    </resultMap>
+
+    <resultMap id="SalePropItemByProductDto"
+               type="com.lframework.xingyun.basedata.dto.product.saleprop.item.SalePropItemByProductDto">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="group_id" property="groupId"/>
+        <result column="group_name" property="groupName"/>
+        <result column="product_id" property="productId"/>
+        <result column="order_no" property="orderNo"/>
+    </resultMap>
+
+    <sql id="ProductSalePropItemDto_sql">
+        SELECT
+            id,
+            group_id,
+            code,
+            name,
+            available,
+            description
+        FROM base_data_product_saleprop_item
+    </sql>
+
+    <sql id="SalePropItemByProductDto_sql">
+        SELECT
+            item.id,
+            item.name,
+            gp.id,
+            gp.name,
+            g.id AS product_id,
+            r.order_no
+        FROM base_data_product_saleprop_item_relation AS r
+        INNER JOIN base_data_product AS g ON g.id = r.product_id
+        INNER JOIN base_data_product_saleprop_item AS item ON item.id = r.sale_prop_item_id
+        INNER JOIN base_data_product_saleprop_group AS gp ON gp.id = item.group_id
+    </sql>
+
+    <select id="query" resultMap="ProductSalePropItemDto">
+        <include refid="ProductSalePropItemDto_sql"/>
+        <where>
+            AND group_id = #{vo.groupId}
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY code
+    </select>
+
+    <select id="getById" resultMap="ProductSalePropItemDto">
+        <include refid="ProductSalePropItemDto_sql"/>
+        WHERE id = #{id}
+    </select>
+
+    <select id="getByGroupId" resultMap="ProductSalePropItemDto">
+        <include refid="ProductSalePropItemDto_sql"/>
+        WHERE group_id = #{groupId}
+        ORDER BY code
+    </select>
+    <select id="getEnablesByGroupId" resultMap="ProductSalePropItemDto">
+        <include refid="ProductSalePropItemDto_sql"/>
+        WHERE group_id = #{groupId}
+        AND available = TRUE
+        ORDER BY code
+    </select>
+    <select id="getByProductId" resultMap="SalePropItemByProductDto">
+        <include refid="SalePropItemByProductDto_sql"/>
+        WHERE r.product_id = #{productId}
+        ORDER BY r.order_no
+    </select>
+    <select id="getProductIdById" resultType="java.lang.String">
+        SELECT
+            r.product_id
+        FROM base_data_product_saleprop_item_relation AS r
+        WHERE r.sale_prop_item_id = #{id}
+    </select>
+</mapper>

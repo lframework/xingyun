@@ -1,0 +1,87 @@
+package com.lframework.xingyun.sc.impl.sale;
+
+import com.lframework.common.exceptions.impl.DefaultClientException;
+import com.lframework.common.utils.Assert;
+import com.lframework.common.utils.NumberUtil;
+import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.service.product.IProductService;
+import com.lframework.xingyun.sc.dto.sale.SaleOrderDetailDto;
+import com.lframework.xingyun.sc.entity.SaleOrderDetail;
+import com.lframework.xingyun.sc.mappers.SaleOrderDetailMapper;
+import com.lframework.xingyun.sc.service.sale.ISaleOrderDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class SaleOrderDetailServiceImpl implements ISaleOrderDetailService {
+
+    @Autowired
+    private SaleOrderDetailMapper saleOrderDetailMapper;
+
+    @Autowired
+    private IProductService productService;
+
+    @Override
+    public SaleOrderDetailDto getById(String id) {
+
+        return saleOrderDetailMapper.getById(id);
+    }
+
+    @Override
+    public List<SaleOrderDetailDto> getByOrderId(String orderId) {
+
+        return saleOrderDetailMapper.getByOrderId(orderId);
+    }
+
+    @Transactional
+    @Override
+    public void addOutNum(String id, Integer num) {
+
+        Assert.notBlank(id);
+        Assert.greaterThanZero(num);
+
+        SaleOrderDetail orderDetail = saleOrderDetailMapper.selectById(id);
+
+        Integer remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getOutNum()).intValue();
+        if (NumberUtil.lt(remainNum, num)) {
+            ProductDto product = productService.getById(orderDetail.getProductId());
+
+            throw new DefaultClientException(
+                    "（" + product.getCode() + "）" + product.getName() + "剩余出库数量为" + remainNum + "个，本次出库数量不允许大于"
+                            + remainNum + "个！");
+        }
+
+        if (saleOrderDetailMapper.addOutNum(orderDetail.getId(), num) != 1) {
+            ProductDto product = productService.getById(orderDetail.getProductId());
+
+            throw new DefaultClientException("（" + product.getCode() + "）" + product.getName() + "剩余出库数量不足，不允许继续出库！");
+        }
+    }
+
+    @Transactional
+    @Override
+    public void subOutNum(String id, Integer num) {
+
+        Assert.notBlank(id);
+        Assert.greaterThanZero(num);
+
+        SaleOrderDetail orderDetail = saleOrderDetailMapper.selectById(id);
+
+        if (NumberUtil.lt(orderDetail.getOutNum(), num)) {
+            ProductDto product = productService.getById(orderDetail.getProductId());
+
+            throw new DefaultClientException(
+                    "（" + product.getCode() + "）" + product.getName() + "已出库数量为" + orderDetail.getOutNum()
+                            + "个，本次取消出库数量不允许大于" + orderDetail.getOutNum() + "个！");
+        }
+
+        if (saleOrderDetailMapper.subOutNum(orderDetail.getId(), num) != 1) {
+            ProductDto product = productService.getById(orderDetail.getProductId());
+
+            throw new DefaultClientException("（" + product.getCode() + "）" + product.getName() + "已出库数量不足，不允许取消出库！");
+        }
+    }
+}

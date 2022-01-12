@@ -1,0 +1,113 @@
+server:
+  #端口
+  port: 8080
+  servlet:
+    session:
+      #SESSION过期时间
+      timeout: 120m
+
+spring:
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      #是否开启文件上传
+      enabled: true
+      #单个文件最大值
+      max-file-size: 10MB
+      #请求中所有文件的最大值
+      max-request-size: 100MB
+      #将文件写入磁盘的阈值
+      #file-size-threshold: 0
+      #是否要延迟解析文件
+      #resolve-lazily: false
+  #时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+  #使用redis存储SESSION
+  session:
+    store-type: redis
+  flyway:
+    #为防止万一，默认为禁用
+    enabled: false
+    cleanDisabled: true
+    locations:
+      - classpath:db/migration
+    check-location: false
+#session配置
+session:
+  #同一个用户最多同时在线数量
+  maximum-sessions: 3
+  #达到最多用户数后是否保持在线
+  max-sessions-prevents-login: false
+
+#默认配置
+default-setting:
+  #是否加载默认Security配置
+  security:
+    enabled: true
+  #是否加载默认controller
+  controller:
+    enabled: true
+  #是否加载默认系统功能
+  sys-function:
+    enabled: true
+
+#不需要认证的Url
+#filter-url:
+
+#PageHelper分页器
+pagehelper:
+  offset-as-page-num: true
+  row-bounds-with-count: true
+  page-size-zero: true
+  reasonable: false
+  params: pageNum=pageIndex;pageSize=pageSize;
+  support-methods-arguments: false
+mybatis-plus:
+  mapper-locations: classpath*:/mappers/**/*.xml
+  typeEnumsPackage: com.lframework.**.enums
+
+#验证码配置
+kaptcha:
+  #过期时间（单位：分钟）
+  expire-time: 5
+  session-config-key: KAPTCHA_SESSION_KEY
+  session-config-date: KAPTCHA_SESSION_DATE
+  border: true
+  border-color: black
+  border-thickness: 1
+  noise-color: black
+  noise-impl: com.google.code.kaptcha.impl.DefaultNoise
+  obscurificator-impl: com.google.code.kaptcha.impl.WaterRipple
+  producer-impl: com.google.code.kaptcha.impl.DefaultKaptcha
+  text-producer-impl: com.google.code.kaptcha.text.impl.DefaultTextCreator
+  text-producer-char-string: abcde2345678gfynmnpwx
+  text-producer-char-length: 4
+  text-producer-font-names: Arial,Courier
+  text-producer-font-color: black
+  text-producer-font-size: 28
+  text-producer-char-space: 2
+  word-render-impl: com.google.code.kaptcha.text.impl.DefaultWordRenderer
+  back-ground-impl: com.google.code.kaptcha.impl.DefaultBackground
+  back-ground-clr-from: lightGray
+  back-ground-clr-to: white
+  image-width: 150
+  image-height: 40
+
+#终端ID
+worker-id: 1
+#数据中心ID
+center-id: 1
+
+op-logs:
+  #是否开启
+  enabled: true
+  #操作日志保留天数
+  retain-days: 7
+
+#重复提交拦截暂时不实现
+#repeat-request:
+  #重复提交拦截间隔（单位：秒）
+  #filter-interval: 1

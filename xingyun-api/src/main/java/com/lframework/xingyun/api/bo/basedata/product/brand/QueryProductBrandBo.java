@@ -1,0 +1,45 @@
+package com.lframework.xingyun.api.bo.basedata.product.brand;
+
+import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.xingyun.basedata.dto.product.brand.ProductBrandDto;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class QueryProductBrandBo extends BaseBo<ProductBrandDto> {
+
+    /**
+     * ID
+     */
+    private String id;
+
+    /**
+     * 编号
+     */
+    private String code;
+
+    /**
+     * 名称
+     */
+    private String name;
+
+    /**
+     * 状态
+     */
+    private Boolean available;
+
+    /**
+     * 备注
+     */
+    private String description;
+
+    public QueryProductBrandBo() {
+
+    }
+
+    public QueryProductBrandBo(ProductBrandDto dto) {
+
+        super(dto);
+    }
+}

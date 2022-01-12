@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.chart.mappers.OrderChartMapper">
+
+    <resultMap id="OrderChartSameMonthDto" type="com.lframework.xingyun.chart.dto.OrderChartSameMonthDto">
+        <result column="total_amount" property="totalAmount"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <resultMap id="OrderChartTodayDto" type="com.lframework.xingyun.chart.dto.OrderChartTodayDto">
+        <result column="total_amount" property="totalAmount"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="create_hour" property="createHour"/>
+    </resultMap>
+
+    <sql id="OrderChartSumDto_sql">
+        SELECT
+            c.id,
+            c.total_amount,
+            c.create_time,
+            c.biz_type
+        FROM tbl_order_chart AS c
+    </sql>
+
+    <select id="querySameMonth" resultMap="OrderChartSameMonthDto">
+        SELECT
+            SUM(c.total_amount) AS total_amount,
+            COUNT(1) AS total_num,
+            c.create_date
+        FROM tbl_order_chart AS c
+        <where>
+            <if test="startTime != null">
+                AND c.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                <![CDATA[
+                AND c.create_time <= #{endTime}
+                ]]>
+            </if>
+            <if test="bizType != null">
+                AND c.biz_type = #{bizType}
+            </if>
+        </where>
+        GROUP BY c.create_date
+    </select>
+    <select id="queryToday" resultMap="OrderChartTodayDto">
+        SELECT
+            SUM(c.total_amount) AS total_amount,
+            COUNT(1) AS total_num,
+            c.create_hour
+        FROM tbl_order_chart AS c
+        <where>
+            <if test="startTime != null">
+                AND c.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                <![CDATA[
+                AND c.create_time <= #{endTime}
+                ]]>
+            </if>
+            <if test="bizType != null">
+                AND c.biz_type = #{bizType}
+            </if>
+        </where>
+        GROUP BY c.create_hour
+    </select>
+</mapper>

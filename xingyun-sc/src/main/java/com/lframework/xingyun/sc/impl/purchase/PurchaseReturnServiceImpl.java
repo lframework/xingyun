@@ -464,7 +464,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
 
         Wrapper<PurchaseReturn> updateWrapper = Wrappers.lambdaUpdate(PurchaseReturn.class)
                 .set(PurchaseReturn::getSettleStatus, SettleStatus.PART_SETTLE).eq(PurchaseReturn::getId, id)
-                .eq(PurchaseReturn::getSettleStatus, SettleStatus.UN_SETTLE);
+                .in(PurchaseReturn::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
         int count = purchaseReturnMapper.update(updateWrapper);
 
         IPurchaseReturnService thisService = getThis(this.getClass());

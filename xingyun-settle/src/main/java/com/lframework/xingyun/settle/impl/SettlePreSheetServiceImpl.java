@@ -368,7 +368,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
 
         Wrapper<SettlePreSheet> updateWrapper = Wrappers.lambdaUpdate(SettlePreSheet.class)
                 .set(SettlePreSheet::getSettleStatus, SettleStatus.PART_SETTLE).eq(SettlePreSheet::getId, id)
-                .eq(SettlePreSheet::getSettleStatus, SettleStatus.UN_SETTLE);
+                .in(SettlePreSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
         int count = settlePreSheetMapper.update(updateWrapper);
 
         ISettlePreSheetService thisService = getThis(this.getClass());

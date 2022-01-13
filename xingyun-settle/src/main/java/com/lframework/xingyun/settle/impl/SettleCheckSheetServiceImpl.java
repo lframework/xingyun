@@ -33,7 +33,9 @@ import com.lframework.xingyun.settle.dto.pre.SettlePreSheetDto;
 import com.lframework.xingyun.settle.entity.SettleCheckSheet;
 import com.lframework.xingyun.settle.entity.SettleCheckSheetDetail;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
+import com.lframework.xingyun.settle.enums.SettleCheckSheetCalcType;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetStatus;
+import com.lframework.xingyun.settle.enums.SettleFeeSheetType;
 import com.lframework.xingyun.settle.mappers.SettleCheckSheetDetailMapper;
 import com.lframework.xingyun.settle.mappers.SettleCheckSheetMapper;
 import com.lframework.xingyun.settle.service.ISettleCheckSheetService;
@@ -218,6 +220,14 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
             throw new DefaultClientException("供应商对账单信息已过期，请刷新重试！");
         }
 
+        //将所有的单据的结算状态更新
+        Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(SettleCheckSheetDetail.class)
+                .eq(SettleCheckSheetDetail::getSheetId, sheet.getId()).orderByAsc(SettleCheckSheetDetail::getOrderNo);
+        List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailMapper.selectList(queryDetailWrapper);
+        for (SettleCheckSheetDetail sheetDetail : sheetDetails) {
+            this.setBizItemSettled(sheetDetail.getBizId(), sheetDetail.getBizType());
+        }
+
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
 
@@ -395,6 +405,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 result.setCode(receiveSheet.getCode());
                 result.setTotalAmount(receiveSheet.getTotalAmount());
                 result.setApproveTime(receiveSheet.getApproveTime());
+                result.setCalcType(SettleCheckSheetCalcType.ADD);
                 break;
             }
             case PURCHASE_RETURN: {
@@ -402,8 +413,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
                 result.setId(purchaseReturn.getId());
                 result.setCode(purchaseReturn.getCode());
-                result.setTotalAmount(purchaseReturn.getTotalAmount().negate());
+                result.setTotalAmount(purchaseReturn.getTotalAmount());
                 result.setApproveTime(purchaseReturn.getApproveTime());
+                result.setCalcType(SettleCheckSheetCalcType.SUB);
                 break;
             }
             case SETTLE_FEE_SHEET: {
@@ -413,6 +425,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 result.setCode(feeSheet.getCode());
                 result.setTotalAmount(feeSheet.getTotalAmount());
                 result.setApproveTime(feeSheet.getApproveTime());
+                result.setCalcType(feeSheet.getSheetType() == SettleFeeSheetType.PAY ?
+                        SettleCheckSheetCalcType.ADD :
+                        SettleCheckSheetCalcType.SUB);
                 break;
             }
             case SETTLE_PRE_SHEET: {
@@ -420,8 +435,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
                 result.setId(preSheet.getId());
                 result.setCode(preSheet.getCode());
-                result.setTotalAmount(preSheet.getTotalAmount().negate());
+                result.setTotalAmount(preSheet.getTotalAmount());
                 result.setApproveTime(preSheet.getApproveTime());
+                result.setCalcType(SettleCheckSheetCalcType.SUB);
                 break;
             }
             default: {
@@ -430,6 +446,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         }
 
         result.setBizType(bizType);
+        if (result.getCalcType() == SettleCheckSheetCalcType.SUB) {
+            result.setTotalAmount(result.getTotalAmount().negate());
+        }
 
         return result;
     }
@@ -582,6 +601,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 result.setTotalAmount(item.getTotalAmount());
                 result.setApproveTime(item.getApproveTime());
                 result.setBizType(SettleCheckSheetBizType.RECEIVE_SHEET);
+                result.setCalcType(SettleCheckSheetCalcType.ADD);
 
                 results.add(result);
             }
@@ -595,6 +615,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 result.setTotalAmount(item.getTotalAmount());
                 result.setApproveTime(item.getApproveTime());
                 result.setBizType(SettleCheckSheetBizType.PURCHASE_RETURN);
+                result.setCalcType(SettleCheckSheetCalcType.SUB);
 
                 results.add(result);
             }
@@ -608,6 +629,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 result.setTotalAmount(item.getTotalAmount());
                 result.setApproveTime(item.getApproveTime());
                 result.setBizType(SettleCheckSheetBizType.SETTLE_FEE_SHEET);
+                result.setCalcType(item.getSheetType() == SettleFeeSheetType.PAY ?
+                        SettleCheckSheetCalcType.ADD :
+                        SettleCheckSheetCalcType.SUB);
 
                 results.add(result);
             }
@@ -621,10 +645,14 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 result.setTotalAmount(item.getTotalAmount());
                 result.setApproveTime(item.getApproveTime());
                 result.setBizType(SettleCheckSheetBizType.SETTLE_PRE_SHEET);
+                result.setCalcType(SettleCheckSheetCalcType.SUB);
 
                 results.add(result);
             }
         }
+
+        results.stream().filter(t -> t.getCalcType() == SettleCheckSheetCalcType.SUB)
+                .forEach(t -> t.setTotalAmount(t.getTotalAmount().negate()));
 
         return results;
     }
@@ -636,7 +664,12 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         Wrapper<SettleCheckSheet> updateWrapper = Wrappers.lambdaUpdate(SettleCheckSheet.class)
                 .set(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE).eq(SettleCheckSheet::getId, id)
                 .eq(SettleCheckSheet::getSettleStatus, SettleStatus.PART_SETTLE);
-        return settleCheckSheetMapper.update(updateWrapper);
+        int count = settleCheckSheetMapper.update(updateWrapper);
+
+        ISettleCheckSheetService thisService = getThis(this.getClass());
+        thisService.cleanCacheByKey(id);
+
+        return count;
     }
 
     @Transactional
@@ -645,8 +678,13 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
         Wrapper<SettleCheckSheet> updateWrapper = Wrappers.lambdaUpdate(SettleCheckSheet.class)
                 .set(SettleCheckSheet::getSettleStatus, SettleStatus.PART_SETTLE).eq(SettleCheckSheet::getId, id)
-                .eq(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE);
-        return settleCheckSheetMapper.update(updateWrapper);
+                .in(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
+        int count = settleCheckSheetMapper.update(updateWrapper);
+
+        ISettleCheckSheetService thisService = getThis(this.getClass());
+        thisService.cleanCacheByKey(id);
+
+        return count;
     }
 
     @Transactional
@@ -656,7 +694,12 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         Wrapper<SettleCheckSheet> updateWrapper = Wrappers.lambdaUpdate(SettleCheckSheet.class)
                 .set(SettleCheckSheet::getSettleStatus, SettleStatus.SETTLED).eq(SettleCheckSheet::getId, id)
                 .in(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-        return settleCheckSheetMapper.update(updateWrapper);
+        int count = settleCheckSheetMapper.update(updateWrapper);
+
+        ISettleCheckSheetService thisService = getThis(this.getClass());
+        thisService.cleanCacheByKey(id);
+
+        return count;
     }
 
     @Override
@@ -705,6 +748,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         if (NumberUtil.equal(remainTotalPayAmount, 0)) {
             this.setSettled(id);
         }
+
+        ISettleCheckSheetService thisService = getThis(this.getClass());
+        thisService.cleanCacheByKey(id);
     }
 
     @CacheEvict(value = SettleCheckSheetDto.CACHE_NAME, key = "#key")
@@ -718,8 +764,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         BigDecimal totalAmount = BigDecimal.ZERO;
         BigDecimal totalPayAmount = BigDecimal.ZERO;
 
-        int orderNo = 1;
+        int orderNo = 0;
         for (SettleCheckSheetItemVo itemVo : vo.getItems()) {
+            orderNo++;
             SettleCheckBizItemDto item = this
                     .getBizItem(itemVo.getId(), EnumUtil.getByCode(SettleCheckSheetBizType.class, itemVo.getBizType()));
             if (item == null) {
@@ -731,6 +778,16 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
             detail.setSheetId(sheet.getId());
             detail.setBizId(itemVo.getId());
             detail.setBizType(EnumUtil.getByCode(SettleCheckSheetBizType.class, itemVo.getBizType()));
+            detail.setCalcType(item.getCalcType());
+            if (item.getCalcType() == SettleCheckSheetCalcType.ADD) {
+                if (NumberUtil.lt(itemVo.getPayAmount(), BigDecimal.ZERO)) {
+                    throw new DefaultClientException("第" + orderNo + "行业务单据应付金额不允许小于0！");
+                }
+            } else {
+                if (NumberUtil.gt(itemVo.getPayAmount(), BigDecimal.ZERO)) {
+                    throw new DefaultClientException("第" + orderNo + "行业务单据应付金额不允许大于0！");
+                }
+            }
             detail.setPayAmount(itemVo.getPayAmount());
             detail.setDescription(itemVo.getDescription());
             detail.setOrderNo(orderNo);
@@ -742,8 +799,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
             //将所有的单据的结算状态更新
             this.setBizItemPartSettle(detail.getBizId(), detail.getBizType());
-
-            orderNo++;
         }
 
         AbstractUserDetails currentUser = SecurityUtil.getCurrentUser();

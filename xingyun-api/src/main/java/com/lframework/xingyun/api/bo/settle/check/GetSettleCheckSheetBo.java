@@ -197,6 +197,11 @@ public class GetSettleCheckSheetBo extends BaseBo<SettleCheckSheetFullDto> {
         private Integer bizType;
 
         /**
+         * 计算类型
+         */
+        private Integer calcType;
+
+        /**
          * 审核时间
          */
         @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
@@ -229,7 +234,8 @@ public class GetSettleCheckSheetBo extends BaseBo<SettleCheckSheetFullDto> {
         @Override
         public <A> BaseBo<SettleCheckSheetFullDto.SheetDetailDto> convert(SettleCheckSheetFullDto.SheetDetailDto dto) {
 
-            return super.convert(dto, SettleCheckSheetFullDto.SheetDetailDto::getBizType);
+            return super.convert(dto, SettleCheckSheetFullDto.SheetDetailDto::getBizType,
+                    SettleCheckSheetFullDto.SheetDetailDto::getCalcType);
         }
 
         @Override
@@ -241,6 +247,7 @@ public class GetSettleCheckSheetBo extends BaseBo<SettleCheckSheetFullDto> {
             this.approveTime = item.getApproveTime();
             this.bizType = dto.getBizType().getCode();
             this.totalAmount = item.getTotalAmount();
+            this.calcType = dto.getCalcType().getCode();
         }
     }
 }

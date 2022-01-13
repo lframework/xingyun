@@ -370,7 +370,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
 
         Wrapper<SettleFeeSheet> updateWrapper = Wrappers.lambdaUpdate(SettleFeeSheet.class)
                 .set(SettleFeeSheet::getSettleStatus, SettleStatus.PART_SETTLE).eq(SettleFeeSheet::getId, id)
-                .eq(SettleFeeSheet::getSettleStatus, SettleStatus.UN_SETTLE);
+                .in(SettleFeeSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
         int count = settleFeeSheetMapper.update(updateWrapper);
 
         ISettleFeeSheetService thisService = getThis(this.getClass());

@@ -523,7 +523,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
 
         Wrapper<ReceiveSheet> updateWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
                 .set(ReceiveSheet::getSettleStatus, SettleStatus.PART_SETTLE).eq(ReceiveSheet::getId, id)
-                .eq(ReceiveSheet::getSettleStatus, SettleStatus.UN_SETTLE);
+                .in(ReceiveSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
         int count = receiveSheetMapper.update(updateWrapper);
 
         IReceiveSheetService thisService = getThis(this.getClass());

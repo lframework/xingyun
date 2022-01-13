@@ -3,6 +3,7 @@ package com.lframework.xingyun.settle.dto.check;
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
+import com.lframework.xingyun.settle.enums.SettleCheckSheetCalcType;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetStatus;
 import lombok.Data;
 
@@ -136,6 +137,11 @@ public class SettleCheckSheetFullDto implements BaseDto, Serializable {
          * 业务类型
          */
         private SettleCheckSheetBizType bizType;
+
+        /**
+         * 计算类型
+         */
+        private SettleCheckSheetCalcType calcType;
 
         /**
          * 应付金额

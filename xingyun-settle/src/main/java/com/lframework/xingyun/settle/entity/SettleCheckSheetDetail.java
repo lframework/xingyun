@@ -3,6 +3,7 @@ package com.lframework.xingyun.settle.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
+import com.lframework.xingyun.settle.enums.SettleCheckSheetCalcType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -42,6 +43,11 @@ public class SettleCheckSheetDetail extends BaseEntity {
      * 业务类型
      */
     private SettleCheckSheetBizType bizType;
+
+    /**
+     * 计算方式
+     */
+    private SettleCheckSheetCalcType calcType;
 
     /**
      * 应付金额

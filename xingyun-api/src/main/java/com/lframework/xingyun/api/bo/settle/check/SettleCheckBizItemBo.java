@@ -30,6 +30,11 @@ public class SettleCheckBizItemBo extends BaseBo<SettleCheckBizItemDto> {
     private Integer bizType;
 
     /**
+     * 计算类型
+     */
+    private Integer calcType;
+
+    /**
      * 对账金额
      */
     private BigDecimal totalAmount;
@@ -52,12 +57,13 @@ public class SettleCheckBizItemBo extends BaseBo<SettleCheckBizItemDto> {
     @Override
     public <A> BaseBo<SettleCheckBizItemDto> convert(SettleCheckBizItemDto dto) {
 
-        return super.convert(dto, SettleCheckBizItemBo::getBizType);
+        return super.convert(dto, SettleCheckBizItemBo::getBizType, SettleCheckBizItemBo::getCalcType);
     }
 
     @Override
     protected void afterInit(SettleCheckBizItemDto dto) {
 
         this.bizType = dto.getBizType().getCode();
+        this.calcType = dto.getCalcType().getCode();
     }
 }

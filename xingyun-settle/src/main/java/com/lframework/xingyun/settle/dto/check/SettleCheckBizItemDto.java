@@ -2,6 +2,7 @@ package com.lframework.xingyun.settle.dto.check;
 
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
+import com.lframework.xingyun.settle.enums.SettleCheckSheetCalcType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -27,6 +28,11 @@ public class SettleCheckBizItemDto implements BaseDto, Serializable {
      * 业务类型
      */
     private SettleCheckSheetBizType bizType;
+
+    /**
+     * 计算类型
+     */
+    private SettleCheckSheetCalcType calcType;
 
     /**
      * 对账金额

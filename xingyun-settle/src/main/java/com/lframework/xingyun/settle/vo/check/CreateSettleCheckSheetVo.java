@@ -65,18 +65,6 @@ public class CreateSettleCheckSheetVo implements BaseVo, Serializable {
                 throw new InputErrorException("第" + orderNo + "行应付金额不能为空！");
             }
 
-            SettleCheckSheetBizType bizType = EnumUtil.getByCode(SettleCheckSheetBizType.class, item.getBizType());
-            if (bizType == SettleCheckSheetBizType.RECEIVE_SHEET
-                    || bizType == SettleCheckSheetBizType.SETTLE_FEE_SHEET) {
-                if (NumberUtil.lt(item.getPayAmount(), 0)) {
-                    throw new InputErrorException("第" + orderNo + "行应付金额不允许小于0！");
-                }
-            } else {
-                if (NumberUtil.gt(item.getPayAmount(), 0)) {
-                    throw new InputErrorException("第" + orderNo + "行应付金额不允许大于0！");
-                }
-            }
-
             orderNo++;
         }
     }

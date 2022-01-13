@@ -49,6 +49,7 @@
             <id column="detail_id" property="id"/>
             <result column="detail_biz_id" property="bizId"/>
             <result column="detail_biz_type" property="bizType"/>
+            <result column="detail_calc_type" property="calcType"/>
             <result column="detail_pay_amount" property="payAmount"/>
             <result column="detail_description" property="description"/>
         </collection>
@@ -102,6 +103,7 @@
             d.id AS detail_id,
             d.biz_id AS detail_biz_id,
             d.biz_type AS detail_biz_type,
+            d.calc_type AS detail_calc_type,
             d.pay_amount AS detail_pay_amount,
             d.description AS detail_description
         FROM settle_check_sheet AS s

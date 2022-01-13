@@ -17,6 +17,8 @@ import com.lframework.xingyun.basedata.mappers.ProductPolyPropertyMapper;
 import com.lframework.xingyun.basedata.service.product.*;
 import com.lframework.xingyun.basedata.vo.product.poly.property.CreateProductPolyPropertyVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,7 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
     @Autowired
     private IProductCategoryPropertyService productCategoryPropertyService;
 
+    @Cacheable(value = ProductPolyPropertyDto.CACHE_NAME, key = "#polyId", unless = "#result == null or #result.size() == 0")
     @Override
     public List<ProductPolyPropertyDto> getByPolyId(String polyId) {
 
@@ -65,6 +68,11 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
                 }
             }
         }
+
+        IProductPolyPropertyService thisService = getThis(this.getClass());
+        for (ProductPolyPropertyDto data : datas) {
+            thisService.cleanCacheByKey(data.getPolyId());
+        }
     }
 
     @Transactional
@@ -75,6 +83,13 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
         List<ProductCategoryPropertyDto> categoryList = productCategoryPropertyService.getByPropertyId(propertyId);
         for (ProductCategoryPropertyDto productCategoryPropertyDto : categoryList) {
             productPolyPropertyMapper.setCommonToAppoint(propertyId, productCategoryPropertyDto.getCategoryId());
+        }
+
+        List<ProductPolyPropertyDto> datas = productPolyPropertyMapper.getByPropertyId(propertyId);
+
+        IProductPolyPropertyService thisService = getThis(this.getClass());
+        for (ProductPolyPropertyDto data : datas) {
+            thisService.cleanCacheByKey(data.getPolyId());
         }
     }
 
@@ -98,7 +113,13 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
                     productPolyPropertyMapper.insert(data);
                 }
             }
+        }
 
+        List<ProductPolyPropertyDto> datas = productPolyPropertyMapper.getByPropertyId(propertyId);
+
+        IProductPolyPropertyService thisService = getThis(this.getClass());
+        for (ProductPolyPropertyDto data : datas) {
+            thisService.cleanCacheByKey(data.getPolyId());
         }
     }
 
@@ -131,6 +152,13 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
                     }
                 }
             }
+        }
+
+        List<ProductPolyPropertyDto> datas = productPolyPropertyMapper.getByPropertyId(propertyId);
+
+        IProductPolyPropertyService thisService = getThis(this.getClass());
+        for (ProductPolyPropertyDto data : datas) {
+            thisService.cleanCacheByKey(data.getPolyId());
         }
     }
 
@@ -169,5 +197,11 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
         productPolyPropertyMapper.insert(data);
 
         return data.getId();
+    }
+
+    @CacheEvict(value = ProductPropertyDto.CACHE_NAME, key = "#key")
+    @Override
+    public void cleanCacheByKey(String key) {
+
     }
 }

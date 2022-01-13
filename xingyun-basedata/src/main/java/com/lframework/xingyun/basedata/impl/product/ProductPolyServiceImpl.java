@@ -2,7 +2,6 @@ package com.lframework.xingyun.basedata.impl.product;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.exceptions.ClientException;
 import com.lframework.common.exceptions.impl.DefaultClientException;
@@ -12,6 +11,7 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
+import com.lframework.starter.web.utils.CacheUtil;
 import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.xingyun.basedata.dto.product.brand.ProductBrandDto;
 import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
@@ -60,16 +60,17 @@ public class ProductPolyServiceImpl implements IProductPolyService {
     @Autowired
     private IProductService productService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Cacheable(value = ProductPolyDto.CACHE_NAME, key = "#id", unless = "#result == null")
     @Override
     public ProductPolyDto getById(String id) {
 
-        ProductPolyDto data = productPolyMapper.getById(id);
+        ProductPolyDto data = CacheUtil.get(ProductPolyDto.CACHE_NAME, id, ProductPolyDto.class);
         if (data == null) {
-            return data;
+            data = productPolyMapper.getById(id);
+            if (data == null) {
+                return data;
+            }
+
+            CacheUtil.put(ProductPolyDto.CACHE_NAME, id, data);
         }
 
         return convertDto(data);
@@ -217,6 +218,12 @@ public class ProductPolyServiceImpl implements IProductPolyService {
         if (dto == null) {
             return dto;
         }
+
+        ProductBrandDto brand = productBrandService.getById(dto.getBrandId());
+        dto.setBrandName(brand.getName());
+
+        ProductCategoryDto category = productCategoryService.getById(dto.getCategoryId());
+        dto.setCategoryName(category.getName());
 
         dto.setProperties(productPolyPropertyService.getByPolyId(dto.getId()));
 

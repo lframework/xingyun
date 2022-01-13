@@ -26,10 +26,8 @@
             p.code,
             p.name,
             p.short_name,
-            c.id AS category_id,
-            c.name AS category_name,
-            b.id AS brand_id,
-            b.name AS brand_name,
+            p.category_id AS category_id,
+            p.brand_id AS brand_id,
             p.multi_saleprop,
             p.tax_rate,
             p.sale_tax_rate,
@@ -38,8 +36,6 @@
             p.update_by,
             p.update_time
         FROM base_data_product_poly AS p
-        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
-        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
     </sql>
 
     <select id="getById" resultMap="ProductPolyDto">

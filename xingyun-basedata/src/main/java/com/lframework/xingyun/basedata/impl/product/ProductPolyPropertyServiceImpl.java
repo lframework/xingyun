@@ -199,7 +199,7 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
         return data.getId();
     }
 
-    @CacheEvict(value = ProductPropertyDto.CACHE_NAME, key = "#key")
+    @CacheEvict(value = ProductPolyPropertyDto.CACHE_NAME, key = "#key")
     @Override
     public void cleanCacheByKey(String key) {
 

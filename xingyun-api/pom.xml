@@ -13,11 +13,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.lframework</groupId>
             <artifactId>xingyun-basedata</artifactId>
         </dependency>
@@ -40,11 +35,6 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lframework</groupId>
-            <artifactId>gen</artifactId>
         </dependency>
     </dependencies>
 

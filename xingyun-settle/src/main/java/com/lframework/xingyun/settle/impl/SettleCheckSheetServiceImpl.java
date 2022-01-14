@@ -220,14 +220,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
             throw new DefaultClientException("供应商对账单信息已过期，请刷新重试！");
         }
 
-        //将所有的单据的结算状态更新
-        Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(SettleCheckSheetDetail.class)
-                .eq(SettleCheckSheetDetail::getSheetId, sheet.getId()).orderByAsc(SettleCheckSheetDetail::getOrderNo);
-        List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailMapper.selectList(queryDetailWrapper);
-        for (SettleCheckSheetDetail sheetDetail : sheetDetails) {
-            this.setBizItemSettled(sheetDetail.getBizId(), sheetDetail.getBizType());
-        }
-
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
 
@@ -695,6 +687,14 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 .set(SettleCheckSheet::getSettleStatus, SettleStatus.SETTLED).eq(SettleCheckSheet::getId, id)
                 .in(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
         int count = settleCheckSheetMapper.update(updateWrapper);
+
+        //将所有的单据的结算状态更新
+        Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(SettleCheckSheetDetail.class)
+                .eq(SettleCheckSheetDetail::getSheetId, id).orderByAsc(SettleCheckSheetDetail::getOrderNo);
+        List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailMapper.selectList(queryDetailWrapper);
+        for (SettleCheckSheetDetail sheetDetail : sheetDetails) {
+            this.setBizItemSettled(sheetDetail.getBizId(), sheetDetail.getBizType());
+        }
 
         ISettleCheckSheetService thisService = getThis(this.getClass());
         thisService.cleanCacheByKey(id);

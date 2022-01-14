@@ -3969,6 +3969,7 @@ CREATE TABLE `settle_check_sheet_detail` (
   `sheet_id` varchar(32) NOT NULL COMMENT '对账单ID',
   `biz_id` varchar(32) NOT NULL COMMENT '单据ID',
   `biz_type` tinyint(3) NOT NULL COMMENT '业务类型',
+  `calc_type` tinyint(3) NOT NULL COMMENT '计算类型',
   `pay_amount` decimal(24,2) NOT NULL COMMENT '应付金额',
   `description` varchar(200) DEFAULT NULL COMMENT '备注',
   `order_no` int(11) NOT NULL COMMENT '排序编号',

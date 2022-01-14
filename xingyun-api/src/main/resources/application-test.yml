@@ -1,5 +1,8 @@
 logging:
-  config: classpath:logback-test.xml
+  config: classpath:spring-logback-test.xml
+  #日志文件的目录，默认值是logs
+  #file:
+  #  path: logs
 
 spring:
   servlet:

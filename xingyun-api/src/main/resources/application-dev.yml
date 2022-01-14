@@ -1,5 +1,5 @@
 logging:
-  config: classpath:logback-dev.xml
+  config: classpath:spring-logback-dev.xml
 
 spring:
   servlet:

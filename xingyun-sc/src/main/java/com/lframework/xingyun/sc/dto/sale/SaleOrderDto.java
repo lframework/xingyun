@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 @Data
 public class SaleOrderDto implements BaseDto, Serializable {
 
-    public static final String CACHE_NAME = "SaleOrderDto";
-
     private static final long serialVersionUID = 1L;
 
     /**

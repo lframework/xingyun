@@ -108,7 +108,6 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @Cacheable(value = PurchaseOrderDto.CACHE_NAME, key = "#id")
     @Override
     public PurchaseOrderDto getById(String id) {
 
@@ -220,9 +219,6 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
         OpLogUtil.setVariable("code", order.getCode());
         OpLogUtil.setExtra(vo);
-
-        IPurchaseOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
     }
 
     @OpLog(type = OpLogType.OTHER, name = "审核通过订单，单号：{}", params = "#code")
@@ -264,9 +260,6 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
         OpLogUtil.setVariable("code", order.getCode());
         OpLogUtil.setExtra(vo);
-
-        IPurchaseOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
 
         this.sendApprovePassEvent(order);
     }
@@ -343,9 +336,6 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
         OpLogUtil.setVariable("code", order.getCode());
         OpLogUtil.setExtra(vo);
-
-        IPurchaseOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
     }
 
     @Transactional
@@ -399,9 +389,6 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         purchaseOrderMapper.deleteById(id);
 
         OpLogUtil.setVariable("code", order.getCode());
-
-        IPurchaseOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
     }
 
     @Transactional
@@ -452,15 +439,6 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         }
 
         OpLogUtil.setVariable("code", order.getCode());
-
-        IPurchaseOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
-    }
-
-    @CacheEvict(value = PurchaseOrderDto.CACHE_NAME, key = "#key")
-    @Override
-    public void cleanCacheByKey(String key) {
-
     }
 
     private void create(PurchaseOrder order, CreatePurchaseOrderVo vo) {

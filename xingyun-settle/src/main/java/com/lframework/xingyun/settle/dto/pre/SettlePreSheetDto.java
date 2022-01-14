@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 @Data
 public class SettlePreSheetDto implements BaseDto, Serializable {
 
-    public static final String CACHE_NAME = "SettlePreSheetDto";
-
     private static final long serialVersionUID = 1L;
 
     /**

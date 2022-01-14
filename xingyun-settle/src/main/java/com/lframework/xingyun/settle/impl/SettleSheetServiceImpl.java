@@ -74,7 +74,6 @@ public class SettleSheetServiceImpl implements ISettleSheetService {
         return settleSheetMapper.query(vo);
     }
 
-    @Cacheable(value = SettleSheetDto.CACHE_NAME, key = "#id")
     @Override
     public SettleSheetDto getById(String id) {
 
@@ -158,9 +157,6 @@ public class SettleSheetServiceImpl implements ISettleSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @OpLog(type = OpLogType.OTHER, name = "审核通过供应商结算单，单号：{}", params = "#code")
@@ -207,9 +203,6 @@ public class SettleSheetServiceImpl implements ISettleSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -263,9 +256,6 @@ public class SettleSheetServiceImpl implements ISettleSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -343,9 +333,6 @@ public class SettleSheetServiceImpl implements ISettleSheetService {
         settleSheetMapper.deleteById(id);
 
         OpLogUtil.setVariable("code", sheet.getCode());
-
-        ISettleSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -444,12 +431,6 @@ public class SettleSheetServiceImpl implements ISettleSheetService {
         }
 
         return results;
-    }
-
-    @CacheEvict(value = SettleSheetDto.CACHE_NAME, key = "#key")
-    @Override
-    public void cleanCacheByKey(String key) {
-
     }
 
     private void create(SettleSheet sheet, CreateSettleSheetVo vo) {

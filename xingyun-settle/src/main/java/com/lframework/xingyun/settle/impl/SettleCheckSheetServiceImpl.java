@@ -43,8 +43,6 @@ import com.lframework.xingyun.settle.service.ISettleFeeSheetService;
 import com.lframework.xingyun.settle.service.ISettlePreSheetService;
 import com.lframework.xingyun.settle.vo.check.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,7 +93,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         return settleCheckSheetMapper.query(vo);
     }
 
-    @Cacheable(value = SettleCheckSheetDto.CACHE_NAME, key = "#id")
     @Override
     public SettleCheckSheetDto getById(String id) {
 
@@ -180,9 +177,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleCheckSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @OpLog(type = OpLogType.OTHER, name = "审核通过供应商对账单，单号：{}", params = "#code")
@@ -222,9 +216,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleCheckSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -278,9 +269,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleCheckSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -359,9 +347,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         settleCheckSheetMapper.deleteById(id);
 
         OpLogUtil.setVariable("code", sheet.getCode());
-
-        ISettleCheckSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -658,9 +643,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 .eq(SettleCheckSheet::getSettleStatus, SettleStatus.PART_SETTLE);
         int count = settleCheckSheetMapper.update(updateWrapper);
 
-        ISettleCheckSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(id);
-
         return count;
     }
 
@@ -672,9 +654,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 .set(SettleCheckSheet::getSettleStatus, SettleStatus.PART_SETTLE).eq(SettleCheckSheet::getId, id)
                 .in(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
         int count = settleCheckSheetMapper.update(updateWrapper);
-
-        ISettleCheckSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(id);
 
         return count;
     }
@@ -695,9 +674,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         for (SettleCheckSheetDetail sheetDetail : sheetDetails) {
             this.setBizItemSettled(sheetDetail.getBizId(), sheetDetail.getBizType());
         }
-
-        ISettleCheckSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(id);
 
         return count;
     }
@@ -748,15 +724,6 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         if (NumberUtil.equal(remainTotalPayAmount, 0)) {
             this.setSettled(id);
         }
-
-        ISettleCheckSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(id);
-    }
-
-    @CacheEvict(value = SettleCheckSheetDto.CACHE_NAME, key = "#key")
-    @Override
-    public void cleanCacheByKey(String key) {
-
     }
 
     private void create(SettleCheckSheet sheet, CreateSettleCheckSheetVo vo) {

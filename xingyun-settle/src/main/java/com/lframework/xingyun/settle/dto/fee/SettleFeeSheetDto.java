@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 @Data
 public class SettleFeeSheetDto implements BaseDto, Serializable {
 
-    public static final String CACHE_NAME = "SettleFeeSheetDto";
-
     private static final long serialVersionUID = 1L;
 
     /**

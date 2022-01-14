@@ -76,7 +76,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
         return settleFeeSheetMapper.query(vo);
     }
 
-    @Cacheable(value = SettleFeeSheetDto.CACHE_NAME, key = "#id")
     @Override
     public SettleFeeSheetDto getById(String id) {
 
@@ -153,9 +152,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleFeeSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @OpLog(type = OpLogType.OTHER, name = "审核通过供应商费用单，单号：{}", params = "#code")
@@ -195,9 +191,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleFeeSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -251,9 +244,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
 
         OpLogUtil.setVariable("code", sheet.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleFeeSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -324,9 +314,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
         settleFeeSheetMapper.deleteById(id);
 
         OpLogUtil.setVariable("code", sheet.getCode());
-
-        ISettleFeeSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(sheet.getId());
     }
 
     @Transactional
@@ -358,9 +345,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
                 .eq(SettleFeeSheet::getSettleStatus, SettleStatus.PART_SETTLE);
         int count = settleFeeSheetMapper.update(updateWrapper);
 
-        ISettleFeeSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(id);
-
         return count;
     }
 
@@ -372,9 +356,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
                 .set(SettleFeeSheet::getSettleStatus, SettleStatus.PART_SETTLE).eq(SettleFeeSheet::getId, id)
                 .in(SettleFeeSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
         int count = settleFeeSheetMapper.update(updateWrapper);
-
-        ISettleFeeSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(id);
 
         return count;
     }
@@ -388,9 +369,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
                 .in(SettleFeeSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
         int count = settleFeeSheetMapper.update(updateWrapper);
 
-        ISettleFeeSheetService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(id);
-
         return count;
     }
 
@@ -399,12 +377,6 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
             SettleStatus settleStatus) {
 
         return settleFeeSheetMapper.getApprovedList(supplierId, startTime, endTime, settleStatus);
-    }
-
-    @CacheEvict(value = SettleFeeSheetDto.CACHE_NAME, key = "#key")
-    @Override
-    public void cleanCacheByKey(String key) {
-
     }
 
     private void create(SettleFeeSheet sheet, CreateSettleFeeSheetVo vo) {

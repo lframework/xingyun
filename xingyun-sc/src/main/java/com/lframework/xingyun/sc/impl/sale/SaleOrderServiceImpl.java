@@ -108,7 +108,6 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @Cacheable(value = SaleOrderDto.CACHE_NAME, key = "#id")
     @Override
     public SaleOrderDto getById(String id) {
 
@@ -216,9 +215,6 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
 
         OpLogUtil.setVariable("code", order.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISaleOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
     }
 
     @OpLog(type = OpLogType.OTHER, name = "审核通过订单，单号：{}", params = "#code")
@@ -259,9 +255,6 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
 
         OpLogUtil.setVariable("code", order.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISaleOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
 
         this.sendApprovePassEvent(order);
     }
@@ -337,9 +330,6 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
 
         OpLogUtil.setVariable("code", order.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISaleOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
     }
 
     @Transactional
@@ -392,9 +382,6 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
         saleOrderMapper.deleteById(id);
 
         OpLogUtil.setVariable("code", order.getCode());
-
-        ISaleOrderService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(order.getId());
     }
 
     @Transactional
@@ -415,12 +402,6 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
                 orderNo++;
             }
         }
-    }
-
-    @CacheEvict(value = SaleOrderDto.CACHE_NAME, key = "#key")
-    @Override
-    public void cleanCacheByKey(String key) {
-
     }
 
     private void create(SaleOrder order, CreateSaleOrderVo vo) {

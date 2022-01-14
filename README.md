@@ -3,10 +3,10 @@
 #### 注意事项
 目前项目的登录主要是使用session而不是jwt，后续会增加jwt-starter提供更多的选择。
 ### 演示地址
-[点此进入][demoUrl]
+<a href="http://erp.lframework.com" target="_blank">点此进入</a>
 
 ### 注意事项
-项目依赖的底层框架全部封装成starter，关于这部分的代码详见：[点此进入][juggGitee]
+项目依赖的底层框架全部封装成starter，关于这部分的代码详见：<a href="https://gitee.com/lframework/jugg" target="_blank">点此进入</a>
 
 ### 主要技术框架
 * springboot 2.2.2.RELEASE
@@ -27,8 +27,4 @@
 ### 其他说明
 * 目前项目刚刚发布，使用人数很少，暂不提供交流群，Bug请提Issue。
 * 作者是一个只有几年开发经验的菜鸡，如有错误之处，望斧正。
-* 前端项目Gitee地址：[点此进入][frontGitee]
-
-[frontGitee]: https://gitee.com/lframework/xingyun-front
-[demoUrl]: http://erp.lframework.com
-[juggGitee]: https://gitee.com/lframework/jugg
+* 前端项目Gitee地址：<a href="https://gitee.com/lframework/xingyun-front" target="_blank">点此进入</a>

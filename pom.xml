@@ -2,15 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>parent</artifactId>
-        <groupId>com.lframework</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+
+    <groupId>com.lframework</groupId>
+    <artifactId>xingyun</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>xingyun</artifactId>
 
     <modules>
         <module>xingyun-core</module>
@@ -23,7 +20,9 @@
     <packaging>pom</packaging>
 
     <properties>
-        <xingyun.version>1.0-SNAPSHOT</xingyun.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <xingyun.version>1.0.0-SNAPSHOT</xingyun.version>
     </properties>
 
     <dependencyManagement>
@@ -57,6 +56,28 @@
                 <artifactId>xingyun-core</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.lframework</groupId>
+                <artifactId>parent</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -71,14 +71,15 @@ public class SettleFeeSheetController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<SettleFeeSheetDto> datas = pageResult.getDatas();
                 List<SettleFeeSheetExportModel> models = datas.stream().map(SettleFeeSheetExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

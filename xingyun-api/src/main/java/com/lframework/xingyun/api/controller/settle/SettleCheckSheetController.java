@@ -76,14 +76,15 @@ public class SettleCheckSheetController extends DefaultBaseController {
             while (true) {
                 PageResult<SettleCheckSheetDto> pageResult = settleCheckSheetService
                         .query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<SettleCheckSheetDto> datas = pageResult.getDatas();
                 List<SettleCheckSheetExportModel> models = datas.stream().map(SettleCheckSheetExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

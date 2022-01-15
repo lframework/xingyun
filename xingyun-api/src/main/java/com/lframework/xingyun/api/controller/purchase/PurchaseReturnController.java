@@ -71,14 +71,15 @@ public class PurchaseReturnController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<PurchaseReturnDto> pageResult = purchaseReturnService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<PurchaseReturnDto> datas = pageResult.getDatas();
                 List<PurchaseReturnExportModel> models = datas.stream().map(PurchaseReturnExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

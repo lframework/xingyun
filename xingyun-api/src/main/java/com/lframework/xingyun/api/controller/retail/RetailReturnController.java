@@ -71,14 +71,15 @@ public class RetailReturnController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<RetailReturnDto> pageResult = retailReturnService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<RetailReturnDto> datas = pageResult.getDatas();
                 List<RetailReturnExportModel> models = datas.stream().map(RetailReturnExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

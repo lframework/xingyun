@@ -73,14 +73,15 @@ public class ReceiveSheetController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<ReceiveSheetDto> pageResult = receiveSheetService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<ReceiveSheetDto> datas = pageResult.getDatas();
                 List<ReceiveSheetExportModel> models = datas.stream().map(ReceiveSheetExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

@@ -70,14 +70,15 @@ public class ProductLotController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<ProductLotWithStockDto> pageResult = productLotService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<ProductLotWithStockDto> datas = pageResult.getDatas();
                 List<ProductLotExportModel> models = datas.stream().map(ProductLotExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

@@ -93,14 +93,15 @@ public class SettleInItemController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<SettleInItemDto> pageResult = settleInItemService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<SettleInItemDto> datas = pageResult.getDatas();
                 List<SettleInItemExportModel> models = datas.stream().map(SettleInItemExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

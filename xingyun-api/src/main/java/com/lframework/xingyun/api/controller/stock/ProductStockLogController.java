@@ -72,14 +72,15 @@ public class ProductStockLogController extends DefaultBaseController {
             while (true) {
                 PageResult<ProductStockLogDto> pageResult = productStockLogService
                         .query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<ProductStockLogDto> datas = pageResult.getDatas();
                 List<ProductStockLogExportModel> models = datas.stream().map(ProductStockLogExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

@@ -71,14 +71,15 @@ public class SettlePreSheetController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<SettlePreSheetDto> pageResult = settlePreSheetService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<SettlePreSheetDto> datas = pageResult.getDatas();
                 List<SettlePreSheetExportModel> models = datas.stream().map(SettlePreSheetExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

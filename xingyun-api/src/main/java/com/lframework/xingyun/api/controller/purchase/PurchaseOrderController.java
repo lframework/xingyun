@@ -79,14 +79,15 @@ public class PurchaseOrderController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<PurchaseOrderDto> pageResult = purchaseOrderService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<PurchaseOrderDto> datas = pageResult.getDatas();
                 List<PurchaseOrderExportModel> models = datas.stream().map(PurchaseOrderExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

@@ -77,14 +77,15 @@ public class SaleOrderController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<SaleOrderDto> pageResult = saleOrderService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<SaleOrderDto> datas = pageResult.getDatas();
                 List<SaleOrderExportModel> models = datas.stream().map(SaleOrderExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

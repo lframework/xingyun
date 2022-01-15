@@ -77,14 +77,15 @@ public class SaleOutSheetController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<SaleOutSheetDto> pageResult = saleOutSheetService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<SaleOutSheetDto> datas = pageResult.getDatas();
                 List<SaleOutSheetExportModel> models = datas.stream().map(SaleOutSheetExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

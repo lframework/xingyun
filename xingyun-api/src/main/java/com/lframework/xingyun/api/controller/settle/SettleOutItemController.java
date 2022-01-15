@@ -93,14 +93,15 @@ public class SettleOutItemController extends DefaultBaseController {
             int pageIndex = 1;
             while (true) {
                 PageResult<SettleOutItemDto> pageResult = settleOutItemService.query(pageIndex, getExportSize(), vo);
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
                 List<SettleOutItemDto> datas = pageResult.getDatas();
                 List<SettleOutItemExportModel> models = datas.stream().map(SettleOutItemExportModel::new)
                         .collect(Collectors.toList());
                 builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
             }
         } finally {
             builder.finish();

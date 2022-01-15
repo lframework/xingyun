@@ -22,6 +22,7 @@ import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.settle.dto.fee.SettleFeeSheetDto;
 import com.lframework.xingyun.settle.dto.fee.SettleFeeSheetFullDto;
+import com.lframework.xingyun.settle.dto.item.in.SettleInItemDto;
 import com.lframework.xingyun.settle.dto.item.out.SettleOutItemDto;
 import com.lframework.xingyun.settle.entity.SettleFeeSheet;
 import com.lframework.xingyun.settle.entity.SettleFeeSheetDetail;
@@ -30,6 +31,7 @@ import com.lframework.xingyun.settle.enums.SettleFeeSheetType;
 import com.lframework.xingyun.settle.mappers.SettleFeeSheetDetailMapper;
 import com.lframework.xingyun.settle.mappers.SettleFeeSheetMapper;
 import com.lframework.xingyun.settle.service.ISettleFeeSheetService;
+import com.lframework.xingyun.settle.service.ISettleInItemService;
 import com.lframework.xingyun.settle.service.ISettleOutItemService;
 import com.lframework.xingyun.settle.vo.fee.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,9 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
 
     @Autowired
     private ISettleOutItemService settleOutItemService;
+
+    @Autowired
+    private ISettleInItemService settleInItemService;
 
     @Autowired
     private IGenerateCodeService generateCodeService;
@@ -385,9 +390,16 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
 
         int orderNo = 1;
         for (SettleFeeSheetItemVo itemVo : vo.getItems()) {
-            SettleOutItemDto item = settleOutItemService.getById(itemVo.getId());
-            if (item == null) {
-                throw new DefaultClientException("第" + orderNo + "行项目不存在！");
+            if (vo.getSheetType() == SettleFeeSheetType.RECEIVE.getCode().intValue()) {
+                SettleInItemDto item = settleInItemService.getById(itemVo.getId());
+                if (item == null) {
+                    throw new DefaultClientException("第" + orderNo + "行项目不存在！");
+                }
+            }else {
+                SettleOutItemDto item = settleOutItemService.getById(itemVo.getId());
+                if (item == null) {
+                    throw new DefaultClientException("第" + orderNo + "行项目不存在！");
+                }
             }
             SettleFeeSheetDetail detail = new SettleFeeSheetDetail();
             detail.setId(IdUtil.getId());

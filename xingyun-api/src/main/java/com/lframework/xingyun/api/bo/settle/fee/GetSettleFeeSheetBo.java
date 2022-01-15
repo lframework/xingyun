@@ -1,6 +1,7 @@
 package com.lframework.xingyun.api.bo.settle.fee;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.StringUtil;
@@ -11,7 +12,10 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.supplier.SupplierDto;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.settle.dto.fee.SettleFeeSheetFullDto;
+import com.lframework.xingyun.settle.dto.item.in.SettleInItemDto;
 import com.lframework.xingyun.settle.dto.item.out.SettleOutItemDto;
+import com.lframework.xingyun.settle.enums.SettleFeeSheetType;
+import com.lframework.xingyun.settle.service.ISettleInItemService;
 import com.lframework.xingyun.settle.service.ISettleOutItemService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -135,7 +139,8 @@ public class GetSettleFeeSheetBo extends BaseBo<SettleFeeSheetFullDto> {
         }
 
         if (!CollectionUtil.isEmpty(dto.getDetails())) {
-            this.details = dto.getDetails().stream().map(SheetDetailBo::new).collect(Collectors.toList());
+            this.details = dto.getDetails().stream().map(t -> new SheetDetailBo(t, dto.getSheetType()))
+                    .collect(Collectors.toList());
         }
     }
 
@@ -163,21 +168,32 @@ public class GetSettleFeeSheetBo extends BaseBo<SettleFeeSheetFullDto> {
          */
         private BigDecimal amount;
 
-        public SheetDetailBo() {
+        @JsonIgnore
+        private SettleFeeSheetType sheetType;
 
-        }
+        public SheetDetailBo(SettleFeeSheetFullDto.SheetDetailDto dto, SettleFeeSheetType sheetType) {
 
-        public SheetDetailBo(SettleFeeSheetFullDto.SheetDetailDto dto) {
+            this.sheetType = sheetType;
 
-            super(dto);
+            if (dto != null) {
+                this.convert(dto);
+
+                this.afterInit(dto);
+            }
         }
 
         @Override
         protected void afterInit(SettleFeeSheetFullDto.SheetDetailDto dto) {
 
-            ISettleOutItemService settleOutItemService = ApplicationUtil.getBean(ISettleOutItemService.class);
-            SettleOutItemDto item = settleOutItemService.getById(dto.getItemId());
-            this.itemName = item.getName();
+            if (this.sheetType == SettleFeeSheetType.RECEIVE) {
+                ISettleInItemService settleInItemService = ApplicationUtil.getBean(ISettleInItemService.class);
+                SettleInItemDto item = settleInItemService.getById(dto.getItemId());
+                this.itemName = item.getName();
+            } else {
+                ISettleOutItemService settleOutItemService = ApplicationUtil.getBean(ISettleOutItemService.class);
+                SettleOutItemDto item = settleOutItemService.getById(dto.getItemId());
+                this.itemName = item.getName();
+            }
         }
     }
 }

@@ -24,8 +24,8 @@
 ### License
 项目使用LGPL3.0许可证，请遵守此许可证的限制条件。
 
-### 使用手册文档
-<a href="https://gitee.com/lframework/xingyun-doc" target="_blank">点此进入</a>
+### 使用说明文档
+文档正在逐步更新，<a href="https://gitee.com/lframework/xingyun-doc" target="_blank">点此进入</a>
 
 ### 其他说明
 * 目前项目刚刚发布，使用人数很少，暂不提供交流群，Bug请提Issue。

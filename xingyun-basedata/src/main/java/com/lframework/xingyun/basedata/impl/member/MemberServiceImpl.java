@@ -108,7 +108,7 @@ public class MemberServiceImpl implements IMemberService {
 
         Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class).eq(Member::getCode, vo.getCode());
         if (memberMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("会员编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         Member data = new Member();
@@ -153,7 +153,7 @@ public class MemberServiceImpl implements IMemberService {
         Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class).eq(Member::getCode, vo.getCode())
                 .ne(Member::getId, vo.getId());
         if (memberMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("会员编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         LambdaUpdateWrapper<Member> updateWrapper = Wrappers.lambdaUpdate(Member.class)

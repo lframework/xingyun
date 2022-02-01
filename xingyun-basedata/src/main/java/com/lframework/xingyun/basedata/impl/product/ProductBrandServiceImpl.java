@@ -119,13 +119,13 @@ public class ProductBrandServiceImpl implements IProductBrandService {
         Wrapper<ProductBrand> checkCodeWrapper = Wrappers.lambdaQuery(ProductBrand.class)
                 .eq(ProductBrand::getCode, vo.getCode());
         if (productBrandMapper.selectCount(checkCodeWrapper) > 0) {
-            throw new DefaultClientException("品牌编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         Wrapper<ProductBrand> checkNameWrapper = Wrappers.lambdaQuery(ProductBrand.class)
                 .eq(ProductBrand::getName, vo.getName());
         if (productBrandMapper.selectCount(checkNameWrapper) > 0) {
-            throw new DefaultClientException("品牌名称重复，请重新输入！");
+            throw new DefaultClientException("名称重复，请重新输入！");
         }
 
         ProductBrand data = new ProductBrand();
@@ -159,13 +159,13 @@ public class ProductBrandServiceImpl implements IProductBrandService {
         Wrapper<ProductBrand> checkWrapper = Wrappers.lambdaQuery(ProductBrand.class)
                 .eq(ProductBrand::getCode, vo.getCode()).ne(ProductBrand::getId, vo.getId());
         if (productBrandMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("品牌编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         Wrapper<ProductBrand> checkNameWrapper = Wrappers.lambdaQuery(ProductBrand.class)
                 .eq(ProductBrand::getName, vo.getName()).ne(ProductBrand::getId, vo.getId());
         if (productBrandMapper.selectCount(checkNameWrapper) > 0) {
-            throw new DefaultClientException("品牌名称重复，请重新输入！");
+            throw new DefaultClientException("名称重复，请重新输入！");
         }
 
         LambdaUpdateWrapper<ProductBrand> updateWrapper = Wrappers.lambdaUpdate(ProductBrand.class)

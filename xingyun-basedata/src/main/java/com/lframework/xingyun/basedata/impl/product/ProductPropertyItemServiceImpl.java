@@ -87,14 +87,14 @@ public class ProductPropertyItemServiceImpl implements IProductPropertyItemServi
                 .eq(ProductPropertyItem::getPropertyId, vo.getPropertyId())
                 .eq(ProductPropertyItem::getCode, vo.getCode());
         if (productPropertyItemMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("属性值编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         Wrapper<ProductPropertyItem> checkNameWrapper = Wrappers.lambdaQuery(ProductPropertyItem.class)
                 .eq(ProductPropertyItem::getPropertyId, vo.getPropertyId())
                 .eq(ProductPropertyItem::getName, vo.getName());
         if (productPropertyItemMapper.selectCount(checkNameWrapper) > 0) {
-            throw new DefaultClientException("属性值名称重复，请重新输入！");
+            throw new DefaultClientException("名称重复，请重新输入！");
         }
 
         ProductPropertyItem data = new ProductPropertyItem();
@@ -128,14 +128,14 @@ public class ProductPropertyItemServiceImpl implements IProductPropertyItemServi
                 .eq(ProductPropertyItem::getPropertyId, data.getPropertyId())
                 .eq(ProductPropertyItem::getCode, vo.getCode()).ne(ProductPropertyItem::getId, vo.getId());
         if (productPropertyItemMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("属性值编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         Wrapper<ProductPropertyItem> checkNameWrapper = Wrappers.lambdaQuery(ProductPropertyItem.class)
                 .eq(ProductPropertyItem::getPropertyId, data.getPropertyId())
                 .eq(ProductPropertyItem::getName, vo.getName()).ne(ProductPropertyItem::getId, vo.getId());
         if (productPropertyItemMapper.selectCount(checkNameWrapper) > 0) {
-            throw new DefaultClientException("属性值名称重复，请重新输入！");
+            throw new DefaultClientException("名称重复，请重新输入！");
         }
 
         Wrapper<ProductPropertyItem> updateWrapper = Wrappers.lambdaUpdate(ProductPropertyItem.class)

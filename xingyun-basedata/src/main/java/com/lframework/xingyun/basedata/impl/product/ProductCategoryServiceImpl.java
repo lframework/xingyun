@@ -132,14 +132,14 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
         Wrapper<ProductCategory> checkCodeWrapper = Wrappers.lambdaQuery(ProductCategory.class)
                 .eq(ProductCategory::getCode, vo.getCode());
         if (productCategoryMapper.selectCount(checkCodeWrapper) > 0) {
-            throw new DefaultClientException("类目编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         //查询Name是否重复
         Wrapper<ProductCategory> checkNameWrapper = Wrappers.lambdaQuery(ProductCategory.class)
                 .eq(ProductCategory::getName, vo.getName());
         if (productCategoryMapper.selectCount(checkNameWrapper) > 0) {
-            throw new DefaultClientException("类目名称重复，请重新输入！");
+            throw new DefaultClientException("名称重复，请重新输入！");
         }
 
         //如果parentId不为空，查询上级类目是否存在
@@ -186,15 +186,14 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
         Wrapper<ProductCategory> checkCodeWrapper = Wrappers.lambdaQuery(ProductCategory.class)
                 .eq(ProductCategory::getCode, vo.getCode()).ne(ProductCategory::getId, data.getId());
         if (productCategoryMapper.selectCount(checkCodeWrapper) > 0) {
-            throw new DefaultClientException("类目编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         //查询Name是否重复
         Wrapper<ProductCategory> checkNameWrapper = Wrappers.lambdaQuery(ProductCategory.class)
                 .eq(ProductCategory::getName, vo.getName()).ne(ProductCategory::getId, data.getId());
-        ;
         if (productCategoryMapper.selectCount(checkNameWrapper) > 0) {
-            throw new DefaultClientException("类目名称重复，请重新输入！");
+            throw new DefaultClientException("名称重复，请重新输入！");
         }
 
         Wrapper<ProductCategory> updateWrapper = Wrappers.lambdaUpdate(ProductCategory.class)

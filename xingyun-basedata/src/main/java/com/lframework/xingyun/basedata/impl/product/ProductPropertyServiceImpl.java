@@ -159,13 +159,13 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
         Wrapper<ProductProperty> checkCodeWrapper = Wrappers.lambdaQuery(ProductProperty.class)
                 .eq(ProductProperty::getCode, vo.getCode());
         if (productPropertyMapper.selectCount(checkCodeWrapper) > 0) {
-            throw new DefaultClientException("属性编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         Wrapper<ProductProperty> checkNameWrapper = Wrappers.lambdaQuery(ProductProperty.class)
                 .eq(ProductProperty::getName, vo.getName());
         if (productPropertyMapper.selectCount(checkNameWrapper) > 0) {
-            throw new DefaultClientException("属性名称重复，请重新输入！");
+            throw new DefaultClientException("名称重复，请重新输入！");
         }
 
         if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
@@ -229,13 +229,13 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
         Wrapper<ProductProperty> checkWrapper = Wrappers.lambdaQuery(ProductProperty.class)
                 .eq(ProductProperty::getCode, vo.getCode()).ne(ProductProperty::getId, vo.getId());
         if (productPropertyMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("属性编号重复，请重新输入！");
+            throw new DefaultClientException("编号重复，请重新输入！");
         }
 
         Wrapper<ProductProperty> checkNameWrapper = Wrappers.lambdaQuery(ProductProperty.class)
                 .eq(ProductProperty::getName, vo.getName()).ne(ProductProperty::getId, vo.getId());
         if (productPropertyMapper.selectCount(checkNameWrapper) > 0) {
-            throw new DefaultClientException("属性名称重复，请重新输入！");
+            throw new DefaultClientException("名称重复，请重新输入！");
         }
 
         //如果字段类型是手动录入，那么不允许修改字段类型

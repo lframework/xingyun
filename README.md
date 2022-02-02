@@ -1,9 +1,14 @@
 ### 项目介绍
 星云ERP是基于SpringBoot框架的中小企业完全开源的ERP。
+
 #### 注意事项
 目前项目的登录主要是使用session而不是jwt，后续会增加jwt-starter提供更多的选择。
+
 ### 演示地址
 <a href="http://erp.lframework.com" target="_blank">点此进入</a>
+
+### 使用说明文档
+文档正在逐步更新，<a href="https://gitee.com/lframework/xingyun-doc" target="_blank">点此进入</a>
 
 ### 注意事项
 项目依赖的底层框架全部封装成starter，关于这部分的代码详见：<a href="https://gitee.com/lframework/jugg" target="_blank">点此进入</a>
@@ -23,9 +28,6 @@
 
 ### License
 项目使用LGPL3.0许可证，请遵守此许可证的限制条件。
-
-### 使用说明文档
-文档正在逐步更新，<a href="https://gitee.com/lframework/xingyun-doc" target="_blank">点此进入</a>
 
 ### 其他说明
 * 目前项目刚刚发布，使用人数很少，暂不提供交流群，Bug请提Issue。

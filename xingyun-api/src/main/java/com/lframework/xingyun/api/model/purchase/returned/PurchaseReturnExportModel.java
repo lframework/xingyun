@@ -30,7 +30,7 @@ public class PurchaseReturnExportModel extends BaseBo<PurchaseReturnDto> impleme
     /**
      * 单号
      */
-    @ExcelProperty("采购退货单号")
+    @ExcelProperty("业务单据号")
     private String code;
 
     /**

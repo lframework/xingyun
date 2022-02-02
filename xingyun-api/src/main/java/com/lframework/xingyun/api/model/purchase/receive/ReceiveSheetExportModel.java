@@ -30,7 +30,7 @@ public class ReceiveSheetExportModel extends BaseBo<ReceiveSheetDto> implements 
     /**
      * 单号
      */
-    @ExcelProperty("采购收货单号")
+    @ExcelProperty("业务单据号")
     private String code;
 
     /**

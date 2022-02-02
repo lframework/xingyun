@@ -28,7 +28,7 @@ public class PurchaseOrderExportModel extends BaseBo<PurchaseOrderDto> implement
     /**
      * 单号
      */
-    @ExcelProperty("采购订单号")
+    @ExcelProperty("业务单据号")
     private String code;
 
     /**

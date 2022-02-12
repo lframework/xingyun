@@ -241,7 +241,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
         statusList.add(SettleFeeSheetStatus.CREATED);
         statusList.add(SettleFeeSheetStatus.APPROVE_REFUSE);
 
-        Wrapper<SettleFeeSheet> updateWrapper = Wrappers.lambdaUpdate(SettleFeeSheet.class)
+        Wrapper<SettleFeeSheet> updateWrapper = Wrappers.lambdaUpdate(SettleFeeSheet.class).eq(SettleFeeSheet::getId, sheet.getId())
                 .in(SettleFeeSheet::getStatus, statusList);
         if (settleFeeSheetMapper.update(sheet, updateWrapper) != 1) {
             throw new DefaultClientException("供应商费用单信息已过期，请刷新重试！");
@@ -379,7 +379,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
 
     @Override
     public List<SettleFeeSheetDto> getApprovedList(String supplierId, LocalDateTime startTime, LocalDateTime endTime,
-            SettleStatus settleStatus) {
+                                                   SettleStatus settleStatus) {
 
         return settleFeeSheetMapper.getApprovedList(supplierId, startTime, endTime, settleStatus);
     }
@@ -395,7 +395,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
                 if (item == null) {
                     throw new DefaultClientException("第" + orderNo + "行项目不存在！");
                 }
-            }else {
+            } else {
                 SettleOutItemDto item = settleOutItemService.getById(itemVo.getId());
                 if (item == null) {
                     throw new DefaultClientException("第" + orderNo + "行项目不存在！");

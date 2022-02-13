@@ -198,7 +198,7 @@ public class SettleSheetServiceImpl implements ISettleSheetService {
         List<SettleSheetDetail> details = settleSheetDetailMapper.selectList(queryDetailWrapper);
         for (SettleSheetDetail detail : details) {
             settleCheckSheetService
-                    .setSettleAmount(detail.getBizId(), sheet.getTotalAmount(), sheet.getTotalDiscountAmount());
+                    .setSettleAmount(detail.getBizId(), detail.getPayAmount(), detail.getDiscountAmount());
         }
 
         OpLogUtil.setVariable("code", sheet.getCode());

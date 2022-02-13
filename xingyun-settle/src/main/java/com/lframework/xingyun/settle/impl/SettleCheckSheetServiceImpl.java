@@ -698,14 +698,14 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         if (NumberUtil.lt(checkSheet.getTotalPayAmount(), 0)) {
             if (NumberUtil.gt(remainTotalPayAmount, 0)) {
                 throw new DefaultClientException(
-                        "结账单：" + checkSheet.getCode() + "，剩余付款金额为" + totalPayAmount + "元，本次付款金额为" + NumberUtil
+                        "对账单：" + checkSheet.getCode() + "，剩余付款金额为" + totalPayAmount + "元，本次付款金额为" + NumberUtil
                                 .add(totalPayedAmount, totalDiscountAmount) + "元，无法结算！");
             }
         }
         if (NumberUtil.gt(checkSheet.getTotalPayAmount(), 0)) {
             if (NumberUtil.lt(remainTotalPayAmount, 0)) {
                 throw new DefaultClientException(
-                        "结账单：" + checkSheet.getCode() + "，剩余付款金额为" + totalPayAmount + "元，本次付款金额为" + NumberUtil
+                        "对账单：" + checkSheet.getCode() + "，剩余付款金额为" + totalPayAmount + "元，本次付款金额为" + NumberUtil
                                 .add(totalPayedAmount, totalDiscountAmount) + "元，无法结算！");
             }
         }

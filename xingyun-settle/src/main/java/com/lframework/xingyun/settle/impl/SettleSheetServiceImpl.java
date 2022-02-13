@@ -248,7 +248,7 @@ public class SettleSheetServiceImpl implements ISettleSheetService {
         statusList.add(SettleSheetStatus.CREATED);
         statusList.add(SettleSheetStatus.APPROVE_REFUSE);
 
-        Wrapper<SettleSheet> updateWrapper = Wrappers.lambdaUpdate(SettleSheet.class)
+        Wrapper<SettleSheet> updateWrapper = Wrappers.lambdaUpdate(SettleSheet.class).eq(SettleSheet::getId, sheet.getId())
                 .in(SettleSheet::getStatus, statusList);
         if (settleSheetMapper.update(sheet, updateWrapper) != 1) {
             throw new DefaultClientException("供应商结算单信息已过期，请刷新重试！");

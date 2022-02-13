@@ -234,7 +234,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
         statusList.add(SettlePreSheetStatus.CREATED);
         statusList.add(SettlePreSheetStatus.APPROVE_REFUSE);
 
-        Wrapper<SettlePreSheet> updateWrapper = Wrappers.lambdaUpdate(SettlePreSheet.class)
+        Wrapper<SettlePreSheet> updateWrapper = Wrappers.lambdaUpdate(SettlePreSheet.class).eq(SettlePreSheet::getId, sheet.getId())
                 .in(SettlePreSheet::getStatus, statusList);
         if (settlePreSheetMapper.update(sheet, updateWrapper) != 1) {
             throw new DefaultClientException("供应商预付款单信息已过期，请刷新重试！");
@@ -372,7 +372,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
 
     @Override
     public List<SettlePreSheetDto> getApprovedList(String supplierId, LocalDateTime startTime, LocalDateTime endTime,
-            SettleStatus settleStatus) {
+                                                   SettleStatus settleStatus) {
 
         return settlePreSheetMapper.getApprovedList(supplierId, startTime, endTime, settleStatus);
     }

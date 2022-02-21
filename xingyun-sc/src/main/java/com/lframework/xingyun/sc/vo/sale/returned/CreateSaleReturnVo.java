@@ -1,5 +1,6 @@
 package com.lframework.xingyun.sc.vo.sale.returned;
 
+import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.exceptions.impl.InputErrorException;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
@@ -63,11 +64,20 @@ public class CreateSaleReturnVo implements BaseVo, Serializable {
      */
     private String description;
 
+    /**
+     * 是否关联销售出库单
+     */
+    private Boolean required;
+
     @Override
     public void validate() {
 
         ISaleConfigService saleConfigService = ApplicationUtil.getBean(ISaleConfigService.class);
         SaleConfigDto saleConfig = saleConfigService.get();
+
+        if (!saleConfig.getSaleReturnRequireOutStock().equals(this.required)) {
+            throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");
+        }
 
         this.validate(saleConfig.getSaleReturnRequireOutStock());
     }

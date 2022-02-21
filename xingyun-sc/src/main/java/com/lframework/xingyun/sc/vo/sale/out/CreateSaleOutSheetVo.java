@@ -1,5 +1,6 @@
 package com.lframework.xingyun.sc.vo.sale.out;
 
+import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.exceptions.impl.InputErrorException;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
@@ -63,11 +64,20 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
      */
     private String saleOrderId;
 
+    /**
+     * 是否关联销售订单
+     */
+    private Boolean required;
+
     @Override
     public void validate() {
 
         ISaleConfigService saleConfigService = ApplicationUtil.getBean(ISaleConfigService.class);
         SaleConfigDto saleConfig = saleConfigService.get();
+
+        if (!saleConfig.getOutStockRequireSale().equals(this.required)) {
+            throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");
+        }
 
         this.validate(saleConfig.getOutStockRequireSale());
     }

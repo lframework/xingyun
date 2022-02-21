@@ -1,5 +1,6 @@
 package com.lframework.xingyun.sc.vo.purchase.returned;
 
+import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.exceptions.impl.InputErrorException;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
@@ -62,11 +63,20 @@ public class CreatePurchaseReturnVo implements BaseVo, Serializable {
      */
     private String description;
 
+    /**
+     * 是否关联采购收货单
+     */
+    private Boolean required;
+
     @Override
     public void validate() {
 
         IPurchaseConfigService purchaseConfigService = ApplicationUtil.getBean(IPurchaseConfigService.class);
         PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+
+        if (!purchaseConfig.getPurchaseReturnRequireReceive().equals(this.required)) {
+            throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");
+        }
 
         this.validate(purchaseConfig.getPurchaseReturnRequireReceive());
     }

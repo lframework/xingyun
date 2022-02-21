@@ -1,14 +1,14 @@
 ### 项目介绍
-星云ERP是基于SpringBoot框架的中小企业完全开源的ERP。
+星云ERP基于SpringBoot框架，为中小企业提供完全开源、永久免费、用户体验好的进销存ERP系统，解决开店难、管理难、数据统计难的问题。星云ERP主要包括基础信息管理、商品中心、采购管理、销售管理、零售管理、库存管理、盘点管理、结算管理等，各业务模块均支持参数配置，满足实际遇到的各种业务场景。丰富的报表模块支持用户做各项数据分析。同时支持对部门、岗位、角色、用户、权限等进行精细化管理。最终，达到业务线上化、透明化、简易化管理的目标，实现物流、资金流、信息流的一体化管控。
 
 ### 演示地址
-<a href="http://erp.lframework.com" target="_blank">点此进入</a>
+星云ERP平台地址：http://erp.lframework.com   <a href="http://erp.lframework.com" target="_blank">点此进入</a>
 
 ### 前端项目源码
-<a href="https://gitee.com/lframework/xingyun-front" target="_blank">点此进入</a>
+前端项目码源：https://gitee.com/lframework/xingyun-front   <a href="https://gitee.com/lframework/xingyun-front" target="_blank">点此进入</a>
 
 ### 使用说明文档
-<a href="https://gitee.com/lframework/xingyun-doc" target="_blank">点此进入</a>
+星云ERP说明文档：https://gitee.com/lframework/xingyun-doc   <a href="https://gitee.com/lframework/xingyun-doc" target="_blank">点此进入</a>
 
 ### 系统功能
 | 系统功能 | 功能描述                        |
@@ -27,7 +27,8 @@
 | 系统功能 | 开发进度         |
 |------|--------------|
 | 库存盘点 | 开发文档已完成，正在开发 |
-| 库存成本调整 | 开发文档尚未完成     |
+| 库存成本调整 | 开发文档已完成，待开发     |
+| 库存数量调整 | 开发文档已完成，待开发     |
 | 库存损溢 | 开发文档尚未完成     |
 
 后续还会开发更多功能。
@@ -46,13 +47,33 @@
 * Redis 4.0.8（版本可以根据自己的redis进行调整，项目本身依赖Redis的功能很简单，就是两部分：缓存、Session，不会出现大的兼容问题）
 
 ### 技术交流
-QQ交流群号：717574596，目前项目刚发布不久，人数较少，希望大家不要嫌弃。
+QQ交流群号： **717574596** ，目前项目刚发布不久，人数较少，希望大家不要嫌弃。
 
 ### 注意事项
 项目依赖的底层框架全部封装成starter，关于这部分的代码详见：<a href="https://gitee.com/lframework/jugg" target="_blank">点此进入</a>
 
 ### License
 项目使用LGPL3.0许可证，请遵守此许可证的限制条件。
+
+### 系统展示
+* 首页
+![输入图片说明](screenshots/0%E9%A6%96%E9%A1%B5.png)
+* 系统管理
+![输入图片说明](screenshots/1%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86.png)
+* 基础信息管理
+![输入图片说明](screenshots/2%E5%9F%BA%E7%A1%80%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86.png)
+* 商品中心
+![输入图片说明](screenshots/3%E5%95%86%E5%93%81%E4%B8%AD%E5%BF%83.png)
+* 采购管理
+![输入图片说明](screenshots/4%E9%87%87%E8%B4%AD%E7%AE%A1%E7%90%86.png)
+* 销售管理
+![输入图片说明](screenshots/5%E9%94%80%E5%94%AE%E7%AE%A1%E7%90%86.png)
+* 零售管理
+![输入图片说明](screenshots/6%E9%9B%B6%E5%94%AE%E7%AE%A1%E7%90%86.png)
+* 库存管理
+![输入图片说明](screenshots/7%E5%BA%93%E5%AD%98%E7%AE%A1%E7%90%86.png)
+* 结算管理
+![输入图片说明](screenshots/8%E7%BB%93%E7%AE%97%E7%AE%A1%E7%90%86.png)
 
 ### 其他说明
 作者是两只热爱工作、热爱开源的程序猿、产品经理，欢迎大家提出批评、建议！

@@ -48,4 +48,9 @@ public interface GenerateCodeTypePool {
      * 批次号
      */
     GenerateCodeType LOT_CODE = GenerateCodeType.DEFAULT;
+
+    /**
+     * 预先盘点单
+     */
+    GenerateCodeType PRE_TAKE_STOCK_SHEET = GenerateCodeType.DEFAULT;
 }

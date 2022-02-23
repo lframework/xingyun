@@ -3,10 +3,7 @@ package com.lframework.xingyun.basedata.mappers;
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.dto.product.info.*;
 import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
-import com.lframework.xingyun.basedata.vo.product.info.QueryPurchaseProductVo;
-import com.lframework.xingyun.basedata.vo.product.info.QueryRetailProductVo;
-import com.lframework.xingyun.basedata.vo.product.info.QuerySaleProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -104,4 +101,25 @@ public interface ProductMapper extends BaseMapper<Product> {
      * @return
      */
     RetailProductDto getRetailById(String id);
+
+    /**
+     * 根据关键字查询预先盘点单商品信息
+     * @param condition
+     * @return
+     */
+    List<PreTakeStockProductDto> queryPreTakeStockByCondition(String condition);
+
+    /**
+     * 查询预先盘点单商品信息
+     * @param vo
+     * @return
+     */
+    List<PreTakeStockProductDto> queryPreTakeStockList(@Param("vo") QueryPreTakeStockProductVo vo);
+
+    /**
+     * 根据ID查询
+     * @param id
+     * @return
+     */
+    PreTakeStockProductDto getPreTakeStockById(String id);
 }

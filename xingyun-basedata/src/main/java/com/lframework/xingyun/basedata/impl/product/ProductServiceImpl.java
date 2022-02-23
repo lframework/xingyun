@@ -456,6 +456,39 @@ public class ProductServiceImpl implements IProductService {
         return data;
     }
 
+    @Override
+    public PageResult<PreTakeStockProductDto> queryPreTakeStockByCondition(Integer pageIndex, Integer pageSize, String condition) {
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+
+        List<PreTakeStockProductDto> datas = productMapper.queryPreTakeStockByCondition(condition);
+        PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<PreTakeStockProductDto> queryPreTakeStockList(Integer pageIndex, Integer pageSize, QueryPreTakeStockProductVo vo) {
+
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+
+        List<PreTakeStockProductDto> datas = productMapper.queryPreTakeStockList(vo);
+        PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+        return pageResult;
+    }
+
+    @Override
+    public PreTakeStockProductDto getPreTakeStockById(String id) {
+
+        return productMapper.getPreTakeStockById(id);
+    }
+
     private ProductDto convertDto(ProductDto dto) {
 
         if (dto == null) {

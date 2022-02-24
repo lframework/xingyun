@@ -6,14 +6,19 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
+import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.stock.take.pre.GetPreTakeStockSheetBo;
 import com.lframework.xingyun.api.bo.stock.take.pre.PreTakeStockProductBo;
 import com.lframework.xingyun.api.bo.stock.take.pre.QueryPreTakeStockSheetBo;
+import com.lframework.xingyun.api.model.sale.SaleOrderExportModel;
+import com.lframework.xingyun.api.model.stock.take.pre.PreTakeStockSheetExportModel;
 import com.lframework.xingyun.basedata.dto.product.info.PreTakeStockProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryPreTakeStockProductVo;
+import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetService;
@@ -27,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,7 +56,7 @@ public class PreTakeStockSheetController extends DefaultBaseController {
     /**
      * 查询列表
      */
-    @PreAuthorize("@permission.valid('stock:take:pre:query','stock:take:pre:add','stock:take:pre:modify')")
+    @PreAuthorize("@permission.valid('stock:take:pre:query')")
     @GetMapping("/query")
     public InvokeResult query(@Valid QueryPreTakeStockSheetVo vo) {
 
@@ -65,6 +71,34 @@ public class PreTakeStockSheetController extends DefaultBaseController {
         }
 
         return InvokeResultBuilder.success(pageResult);
+    }
+
+    /**
+     * 导出列表
+     */
+    @PreAuthorize("@permission.valid('stock:take:pre:export')")
+    @PostMapping("/export")
+    public void export(@Valid QueryPreTakeStockSheetVo vo) {
+
+        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("预先盘点单信息", PreTakeStockSheetExportModel.class);
+
+        try {
+            int pageIndex = 1;
+            while (true) {
+                PageResult<PreTakeStockSheetDto> pageResult = preTakeStockSheetService.query(pageIndex, getExportSize(), vo);
+                List<PreTakeStockSheetDto> datas = pageResult.getDatas();
+                List<PreTakeStockSheetExportModel> models = datas.stream().map(PreTakeStockSheetExportModel::new)
+                        .collect(Collectors.toList());
+                builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
+            }
+        } finally {
+            builder.finish();
+        }
     }
 
     /**
@@ -146,6 +180,24 @@ public class PreTakeStockSheetController extends DefaultBaseController {
         vo.validate();
 
         preTakeStockSheetService.update(vo);
+
+        return InvokeResultBuilder.success();
+    }
+
+    @PreAuthorize("@permission.valid('stock:take:pre:delete')")
+    @DeleteMapping
+    public InvokeResult deleteById(@NotBlank(message = "ID不能为空！") String id) {
+
+        preTakeStockSheetService.deleteById(id);
+
+        return InvokeResultBuilder.success();
+    }
+
+    @PreAuthorize("@permission.valid('stock:take:pre:delete')")
+    @DeleteMapping("/batch")
+    public InvokeResult batchDelete(@NotEmpty(message = "请选择要执行操作的预先盘点单！") @RequestBody List<String> ids) {
+
+        preTakeStockSheetService.batchDelete(ids);
 
         return InvokeResultBuilder.success();
     }

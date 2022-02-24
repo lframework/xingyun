@@ -157,6 +157,25 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
         OpLogUtil.setExtra(vo);
     }
 
+    @OpLog(type = OpLogType.OTHER, name = "删除预先盘点单，ID：{}", params = {"#id"})
+    @Transactional
+    @Override
+    public void deleteById(String id) {
+
+        preTakeStockSheetMapper.deleteById(id);
+
+        Wrapper<PreTakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(PreTakeStockSheetDetail.class).eq(PreTakeStockSheetDetail::getSheetId, id);
+        preTakeStockSheetDetailMapper.delete(deleteDetailWrapper);
+    }
+
+    @Transactional
+    @Override
+    public void batchDelete(List<String> ids) {
+        for (String id : ids) {
+            getThis(this.getClass()).deleteById(id);
+        }
+    }
+
     @Override
     public void cleanCacheByKey(String key) {
 

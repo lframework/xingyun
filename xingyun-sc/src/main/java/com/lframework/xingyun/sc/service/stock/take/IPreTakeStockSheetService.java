@@ -56,4 +56,16 @@ public interface IPreTakeStockSheetService extends BaseService {
      */
     void update(UpdatePreTakeStockSheetVo vo);
 
+    /**
+     * 根据ID删除
+     * @param id
+     */
+    void deleteById(String id);
+
+    /**
+     * 根据ID批量删除
+     * @param ids
+     */
+    void batchDelete(List<String> ids);
+
 }

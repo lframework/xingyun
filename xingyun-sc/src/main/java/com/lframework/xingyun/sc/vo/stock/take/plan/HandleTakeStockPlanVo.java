@@ -24,6 +24,11 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
     @NotEmpty(message = "商品信息不能为空！")
     private List<ProductVo> products;
 
+    /**
+     * 备注
+     */
+    private String description;
+
     @Data
     public static class ProductVo implements BaseVo, Serializable {
 

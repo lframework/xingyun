@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.service.stock;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.web.service.BaseService;
 import com.lframework.xingyun.sc.dto.stock.ProductLotDto;
+import com.lframework.xingyun.sc.dto.stock.ProductLotStockDto;
 import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.vo.stock.lot.CreateProductLotVo;
 import com.lframework.xingyun.sc.vo.stock.lot.QueryProductLotVo;
@@ -39,4 +40,13 @@ public interface IProductLotService extends BaseService {
      * @param vo
      */
     String create(CreateProductLotVo vo);
+
+    /**
+     * 查询末次采购入库的批次信息
+     * @param productId
+     * @param scId
+     * @param supplierId null表示不限制供应商
+     * @return null表示没有进行过采购入库
+     */
+    ProductLotWithStockDto getLastPurchaseLot(String productId, String scId, String supplierId);
 }

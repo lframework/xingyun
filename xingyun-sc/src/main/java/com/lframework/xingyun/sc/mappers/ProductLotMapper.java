@@ -32,4 +32,13 @@ public interface ProductLotMapper extends BaseMapper<ProductLot> {
      * @return
      */
     ProductLotDto getById(String id);
+
+    /**
+     * 查询末次采购入库的批次信息
+     * @param productId
+     * @param scId
+     * @param supplierId
+     * @return
+     */
+    ProductLotWithStockDto getLastPurchaseLot(@Param("productId") String productId, @Param("scId") String scId, @Param("supplierId") String supplierId);
 }

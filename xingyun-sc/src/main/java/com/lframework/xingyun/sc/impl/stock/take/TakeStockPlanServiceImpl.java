@@ -23,6 +23,8 @@ import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
+import com.lframework.xingyun.sc.dto.stock.ProductLotStockDto;
+import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
 import com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
@@ -36,6 +38,8 @@ import com.lframework.xingyun.sc.enums.TakeStockPlanStatus;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanMapper;
+import com.lframework.xingyun.sc.service.stock.IProductLotService;
+import com.lframework.xingyun.sc.service.stock.IProductLotStockService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
@@ -77,6 +81,9 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
 
     @Autowired
     private IProductPurchaseService productPurchaseService;
+
+    @Autowired
+    private IProductLotService productLotService;
 
     @Override
     public PageResult<TakeStockPlanDto> query(Integer pageIndex, Integer pageSize, QueryTakeStockPlanVo vo) {
@@ -258,7 +265,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
             throw new DefaultClientException("盘点任务不存在！");
         }
 
-        LambdaUpdateWrapper<TakeStockPlan> updateWrapper = Wrappers.lambdaUpdate(TakeStockPlan.class).set(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.FINISHED).eq(TakeStockPlan::getId, data.getId()).eq(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.DIFF_CREATED);
+        LambdaUpdateWrapper<TakeStockPlan> updateWrapper = Wrappers.lambdaUpdate(TakeStockPlan.class).set(TakeStockPlan::getDescription, StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription()).set(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.FINISHED).eq(TakeStockPlan::getId, data.getId()).eq(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.DIFF_CREATED);
         if (takeStockPlanMapper.update(updateWrapper) != 1) {
             throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
         }
@@ -286,19 +293,22 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
         }
 
         // 进行出入库操作
+        int orderNo = 0;
         for (TakeStockPlanDetail detail : details) {
+            orderNo++;
             if (!NumberUtil.equal(detail.getStockNum(), detail.getTakeNum() )) {
                 if (NumberUtil.lt(detail.getStockNum(), detail.getTakeNum())) {
-                    ProductPurchaseDto productPurchase = productPurchaseService.getById(detail.getProductId());
+                    ProductLotWithStockDto productLot = productLotService.getLastPurchaseLot(detail.getProductId(), data.getScId(), null);
+                    if (productLot == null) {
+                        throw new DefaultClientException("第" + orderNo + "行商品在系统中无入库记录，无法盘点报溢！");
+                    }
                     // 如果库存数量小于盘点数量，则报溢
                     AddProductStockVo addProductStockVo = new AddProductStockVo();
                     addProductStockVo.setProductId(detail.getProductId());
                     addProductStockVo.setScId(data.getScId());
-                    //addProductStockVo.setSupplierId();
+                    addProductStockVo.setSupplierId(productLot.getSupplierId());
                     addProductStockVo.setStockNum(detail.getTakeNum() - detail.getStockNum());
-                    //如果从来没有库存的话，按照采购价入库
-                    addProductStockVo.setDefaultTaxAmount(NumberUtil.getNumber(NumberUtil.mul(productPurchase.getPrice(), addProductStockVo.getStockNum()), 2));
-                    //addProductStockVo.setTaxRate();
+                    addProductStockVo.setTaxRate(productLot.getTaxRate());
                     addProductStockVo.setBizId(data.getId());
                     addProductStockVo.setBizDetailId(detail.getId());
                     addProductStockVo.setBizCode(data.getCode());

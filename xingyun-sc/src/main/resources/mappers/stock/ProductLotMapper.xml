@@ -107,4 +107,15 @@
         <include refid="ProductLotDto_sql"/>
         WHERE id = #{id}
     </select>
+    <select id="getLastPurchaseLot" resultMap="ProductLotWithStockDto">
+        <include refid="ProductLotWithStockDto_sql"/>
+        WHERE s.sc_id = #{scId}
+        AND l.product_id = #{productId}
+        <if test="supplierId != null and supplierId != ''">
+            AND l.supplier_id = #{supplierId}
+        </if>
+        AND l.biz_type = 1
+        ORDER BY l.create_time DESC
+        LIMIT 1
+    </select>
 </mapper>

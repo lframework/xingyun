@@ -80,4 +80,9 @@ public class ProductLotServiceImpl implements IProductLotService {
 
         return record.getId();
     }
+
+    @Override
+    public ProductLotWithStockDto getLastPurchaseLot(String productId, String scId, String supplierId) {
+        return productLotMapper.getLastPurchaseLot(productId, scId, supplierId);
+    }
 }

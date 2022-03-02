@@ -69,7 +69,7 @@ public interface IRetailReturnService extends BaseService {
      * 直接审核通过
      * @param vo
      */
-    void redirectApprovePass(CreateRetailReturnVo vo);
+    void directApprovePass(CreateRetailReturnVo vo);
 
     /**
      * 审核拒绝

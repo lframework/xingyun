@@ -220,7 +220,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreateSettleCheckSheetVo vo) {
+    public void directApprovePass(CreateSettleCheckSheetVo vo) {
 
         ISettleCheckSheetService thisService = getThis(this.getClass());
 

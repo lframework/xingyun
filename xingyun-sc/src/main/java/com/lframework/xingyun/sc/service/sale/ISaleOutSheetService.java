@@ -102,7 +102,7 @@ public interface ISaleOutSheetService extends BaseService {
      * 直接审核通过
      * @param vo
      */
-    void redirectApprovePass(CreateSaleOutSheetVo vo);
+    void directApprovePass(CreateSaleOutSheetVo vo);
 
     /**
      * 审核拒绝

@@ -95,7 +95,7 @@ public interface ISaleOrderService extends BaseService {
      * 直接审核通过
      * @param vo
      */
-    void redirectApprovePass(CreateSaleOrderVo vo);
+    void directApprovePass(CreateSaleOrderVo vo);
 
     /**
      * 审核拒绝

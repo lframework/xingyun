@@ -193,7 +193,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreateSettlePreSheetVo vo) {
+    public void directApprovePass(CreateSettlePreSheetVo vo) {
 
         ISettlePreSheetService thisService = getThis(this.getClass());
 

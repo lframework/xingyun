@@ -67,7 +67,7 @@ public interface ISettleCheckSheetService extends BaseService {
      * 直接审核通过
      * @param vo
      */
-    void redirectApprovePass(CreateSettleCheckSheetVo vo);
+    void directApprovePass(CreateSettleCheckSheetVo vo);
 
     /**
      * 审核拒绝

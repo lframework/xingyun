@@ -286,7 +286,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreatePurchaseOrderVo vo) {
+    public void directApprovePass(CreatePurchaseOrderVo vo) {
 
         IPurchaseOrderService thisService = getThis(this.getClass());
 

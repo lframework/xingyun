@@ -305,7 +305,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreatePurchaseReturnVo vo) {
+    public void directApprovePass(CreatePurchaseReturnVo vo) {
 
         IPurchaseReturnService thisService = getThis(this.getClass());
 

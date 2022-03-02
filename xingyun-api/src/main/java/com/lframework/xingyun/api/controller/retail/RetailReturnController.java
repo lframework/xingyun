@@ -156,10 +156,10 @@ public class RetailReturnController extends DefaultBaseController {
      * 直接审核通过
      */
     @PreAuthorize("@permission.valid('retail:return:approve')")
-    @PostMapping("/approve/pass/redirect")
-    public InvokeResult redirectApprovePass(@RequestBody @Valid CreateRetailReturnVo vo) {
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult directApprovePass(@RequestBody @Valid CreateRetailReturnVo vo) {
 
-        retailReturnService.redirectApprovePass(vo);
+        retailReturnService.directApprovePass(vo);
 
         return InvokeResultBuilder.success();
     }

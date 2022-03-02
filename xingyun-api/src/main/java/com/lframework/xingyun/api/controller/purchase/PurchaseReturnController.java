@@ -156,10 +156,10 @@ public class PurchaseReturnController extends DefaultBaseController {
      * 直接审核通过
      */
     @PreAuthorize("@permission.valid('purchase:return:approve')")
-    @PostMapping("/approve/pass/redirect")
-    public InvokeResult redirectApprovePass(@RequestBody @Valid CreatePurchaseReturnVo vo) {
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult directApprovePass(@RequestBody @Valid CreatePurchaseReturnVo vo) {
 
-        purchaseReturnService.redirectApprovePass(vo);
+        purchaseReturnService.directApprovePass(vo);
 
         return InvokeResultBuilder.success();
     }

@@ -281,7 +281,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreateSaleOrderVo vo) {
+    public void directApprovePass(CreateSaleOrderVo vo) {
 
         ISaleOrderService thisService = getThis(this.getClass());
 

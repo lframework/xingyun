@@ -71,7 +71,7 @@ public interface IPurchaseReturnService extends BaseService {
      * 直接审核通过
      * @param vo
      */
-    void redirectApprovePass(CreatePurchaseReturnVo vo);
+    void directApprovePass(CreatePurchaseReturnVo vo);
 
     /**
      * 审核拒绝

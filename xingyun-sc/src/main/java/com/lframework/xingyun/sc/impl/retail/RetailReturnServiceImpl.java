@@ -307,7 +307,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreateRetailReturnVo vo) {
+    public void directApprovePass(CreateRetailReturnVo vo) {
 
         IRetailReturnService thisService = getThis(this.getClass());
 

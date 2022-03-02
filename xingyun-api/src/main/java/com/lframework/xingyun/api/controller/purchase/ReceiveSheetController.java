@@ -206,10 +206,10 @@ public class ReceiveSheetController extends DefaultBaseController {
      * 直接审核通过
      */
     @PreAuthorize("@permission.valid('purchase:receive:approve')")
-    @PostMapping("/approve/pass/redirect")
-    public InvokeResult redirectApprovePass(@RequestBody @Valid CreateReceiveSheetVo vo) {
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult directApprovePass(@RequestBody @Valid CreateReceiveSheetVo vo) {
 
-        receiveSheetService.redirectApprovePass(vo);
+        receiveSheetService.directApprovePass(vo);
 
         return InvokeResultBuilder.success();
     }

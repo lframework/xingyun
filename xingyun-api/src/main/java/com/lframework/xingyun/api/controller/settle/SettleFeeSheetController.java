@@ -156,10 +156,10 @@ public class SettleFeeSheetController extends DefaultBaseController {
      * 直接审核通过供应商费用单
      */
     @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
-    @PostMapping("/approve/pass/redirect")
-    public InvokeResult redirectApprovePass(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult directApprovePass(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
 
-        settleFeeSheetService.redirectApprovePass(vo);
+        settleFeeSheetService.directApprovePass(vo);
 
         return InvokeResultBuilder.success();
     }

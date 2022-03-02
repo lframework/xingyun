@@ -366,7 +366,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreateReceiveSheetVo vo) {
+    public void directApprovePass(CreateReceiveSheetVo vo) {
 
         IReceiveSheetService thisService = getThis(this.getClass());
 

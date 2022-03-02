@@ -103,7 +103,7 @@ public interface IRetailOutSheetService extends BaseService {
      * 直接审核通过
      * @param vo
      */
-    void redirectApprovePass(CreateRetailOutSheetVo vo);
+    void directApprovePass(CreateRetailOutSheetVo vo);
 
     /**
      * 审核拒绝

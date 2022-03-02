@@ -210,10 +210,10 @@ public class SaleOutSheetController extends DefaultBaseController {
      * 直接审核通过
      */
     @PreAuthorize("@permission.valid('sale:out:approve')")
-    @PostMapping("/approve/pass/redirect")
-    public InvokeResult redirectApprovePass(@RequestBody @Valid CreateSaleOutSheetVo vo) {
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult directApprovePass(@RequestBody @Valid CreateSaleOutSheetVo vo) {
 
-        saleOutSheetService.redirectApprovePass(vo);
+        saleOutSheetService.directApprovePass(vo);
 
         return InvokeResultBuilder.success();
     }

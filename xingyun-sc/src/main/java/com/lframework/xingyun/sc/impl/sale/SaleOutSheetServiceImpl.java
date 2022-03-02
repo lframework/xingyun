@@ -384,7 +384,7 @@ public class SaleOutSheetServiceImpl implements ISaleOutSheetService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreateSaleOutSheetVo vo) {
+    public void directApprovePass(CreateSaleOutSheetVo vo) {
 
         ISaleOutSheetService thisService = getThis(this.getClass());
 

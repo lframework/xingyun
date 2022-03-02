@@ -69,7 +69,7 @@ public interface ISaleReturnService extends BaseService {
      * 直接审核通过
      * @param vo
      */
-    void redirectApprovePass(CreateSaleReturnVo vo);
+    void directApprovePass(CreateSaleReturnVo vo);
 
     /**
      * 审核拒绝

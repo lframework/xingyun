@@ -161,10 +161,10 @@ public class SettleCheckSheetController extends DefaultBaseController {
      * 直接审核通过供应商对账单
      */
     @PreAuthorize("@permission.valid('settle:check-sheet:approve')")
-    @PostMapping("/approve/pass/redirect")
-    public InvokeResult redirectApprovePass(@RequestBody @Valid CreateSettleCheckSheetVo vo) {
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult directApprovePass(@RequestBody @Valid CreateSettleCheckSheetVo vo) {
 
-        settleCheckSheetService.redirectApprovePass(vo);
+        settleCheckSheetService.directApprovePass(vo);
 
         return InvokeResultBuilder.success();
     }

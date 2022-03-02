@@ -343,7 +343,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreateRetailOutSheetVo vo) {
+    public void directApprovePass(CreateRetailOutSheetVo vo) {
 
         IRetailOutSheetService thisService = getThis(this.getClass());
 

@@ -239,10 +239,10 @@ public class PurchaseOrderController extends DefaultBaseController {
      * 直接审核通过订单
      */
     @PreAuthorize("@permission.valid('purchase:order:approve')")
-    @PostMapping("/approve/pass/redirect")
-    public InvokeResult redirectApprovePass(@RequestBody @Valid CreatePurchaseOrderVo vo) {
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult directApprovePass(@RequestBody @Valid CreatePurchaseOrderVo vo) {
 
-        purchaseOrderService.redirectApprovePass(vo);
+        purchaseOrderService.directApprovePass(vo);
 
         return InvokeResultBuilder.success();
     }

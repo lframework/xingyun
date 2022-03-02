@@ -236,10 +236,10 @@ public class SaleOrderController extends DefaultBaseController {
      * 直接审核通过订单
      */
     @PreAuthorize("@permission.valid('sale:order:approve')")
-    @PostMapping("/approve/pass/redirect")
-    public InvokeResult redirectApprovePass(@RequestBody @Valid CreateSaleOrderVo vo) {
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult directApprovePass(@RequestBody @Valid CreateSaleOrderVo vo) {
 
-        saleOrderService.redirectApprovePass(vo);
+        saleOrderService.directApprovePass(vo);
 
         return InvokeResultBuilder.success();
     }

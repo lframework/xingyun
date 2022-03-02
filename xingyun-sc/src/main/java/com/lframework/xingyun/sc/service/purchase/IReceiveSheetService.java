@@ -104,7 +104,7 @@ public interface IReceiveSheetService extends BaseService {
      * 直接审核通过
      * @param vo
      */
-    void redirectApprovePass(CreateReceiveSheetVo vo);
+    void directApprovePass(CreateReceiveSheetVo vo);
 
     /**
      * 审核拒绝

@@ -307,7 +307,7 @@ public class SaleReturnServiceImpl implements ISaleReturnService {
 
     @Transactional
     @Override
-    public void redirectApprovePass(CreateSaleReturnVo vo) {
+    public void directApprovePass(CreateSaleReturnVo vo) {
 
         ISaleReturnService thisService = getThis(this.getClass());
 

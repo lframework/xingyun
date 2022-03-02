@@ -53,6 +53,8 @@ default-setting:
   #是否加载默认系统功能
   sys-function:
     enabled: true
+  #默认单号生成类型 FLOW：流水号 SNOW_FLAKE：雪花算法，如果不配置，默认是SNOW_FLAKE
+  generator-type: SNOW_FLAKE
 
 #不需要认证的Url
 #filter-url:

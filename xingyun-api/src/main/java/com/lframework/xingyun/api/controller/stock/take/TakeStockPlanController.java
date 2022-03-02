@@ -5,19 +5,25 @@ import com.lframework.common.utils.CollectionUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
+import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.stock.take.plan.GetTakeStockPlanBo;
 import com.lframework.xingyun.api.bo.stock.take.plan.QueryTakeStockPlanBo;
 import com.lframework.xingyun.api.bo.stock.take.plan.QueryTakeStockPlanProductBo;
 import com.lframework.xingyun.api.bo.stock.take.plan.TakeStockPlanFullBo;
+import com.lframework.xingyun.api.model.stock.take.plan.TakeStockPlanExportModel;
+import com.lframework.xingyun.api.model.stock.take.sheet.TakeStockSheetExportModel;
 import com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
+import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import com.lframework.xingyun.sc.vo.stock.take.plan.*;
+import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -63,6 +69,34 @@ public class TakeStockPlanController extends DefaultBaseController {
         }
 
         return InvokeResultBuilder.success(pageResult);
+    }
+
+    /**
+     * 导出列表
+     */
+    @PreAuthorize("@permission.valid('stock:take:plan:export')")
+    @PostMapping("/export")
+    public void export(@Valid QueryTakeStockPlanVo vo) {
+
+        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("盘点任务信息", TakeStockPlanExportModel.class);
+
+        try {
+            int pageIndex = 1;
+            while (true) {
+                PageResult<TakeStockPlanDto> pageResult = takeStockPlanService.query(pageIndex, getExportSize(), vo);
+                List<TakeStockPlanDto> datas = pageResult.getDatas();
+                List<TakeStockPlanExportModel> models = datas.stream().map(TakeStockPlanExportModel::new)
+                        .collect(Collectors.toList());
+                builder.doWrite(models);
+
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
+            }
+        } finally {
+            builder.finish();
+        }
     }
 
     /**

@@ -18,6 +18,8 @@ import com.lframework.xingyun.api.bo.purchase.PurchaseOrderSelectorBo;
 import com.lframework.xingyun.api.bo.purchase.receive.ReceiveSheetSelectorBo;
 import com.lframework.xingyun.api.bo.settle.item.in.SettleInItemSelectorBo;
 import com.lframework.xingyun.api.bo.settle.item.out.SettleOutItemSelectorBo;
+import com.lframework.xingyun.api.bo.stock.take.plan.TakeStockPlanSelectorBo;
+import com.lframework.xingyun.api.bo.stock.take.pre.PreTakeStockSheetSelectorBo;
 import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.dto.member.MemberDto;
 import com.lframework.xingyun.basedata.dto.product.brand.ProductBrandDto;
@@ -43,10 +45,16 @@ import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.IDicCityService;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
+import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
+import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
+import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetService;
+import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveSheetSelectorVo;
+import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
+import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.settle.dto.item.in.SettleInItemDto;
 import com.lframework.xingyun.settle.dto.item.out.SettleOutItemDto;
 import com.lframework.xingyun.settle.service.ISettleInItemService;
@@ -109,6 +117,12 @@ public class SelectorController extends DefaultBaseController {
 
     @Autowired
     private IDicCityService dicCityService;
+
+    @Autowired
+    private ITakeStockPlanService takeStockPlanService;
+
+    @Autowired
+    private IPreTakeStockSheetService preTakeStockSheetService;
 
     /**
      * 城市数据
@@ -325,6 +339,48 @@ public class SelectorController extends DefaultBaseController {
 
         if (!CollectionUtil.isEmpty(datas)) {
             List<SettleOutItemSelectorBo> results = datas.stream().map(SettleOutItemSelectorBo::new)
+                    .collect(Collectors.toList());
+
+            PageResultUtil.rebuild(pageResult, results);
+        }
+
+        return InvokeResultBuilder.success(pageResult);
+    }
+
+    /**
+     * 盘点任务
+     * @param vo
+     * @return
+     */
+    @GetMapping("/takestock/plan")
+    public InvokeResult selector(@Valid TakeStockPlanSelectorVo vo) {
+        PageResult<TakeStockPlanSelectorDto> pageResult = takeStockPlanService.selector(getPageIndex(vo), getPageSize(vo), vo);
+
+        List<TakeStockPlanSelectorDto> datas = pageResult.getDatas();
+
+        if (!CollectionUtil.isEmpty(datas)) {
+            List<TakeStockPlanSelectorBo> results = datas.stream().map(TakeStockPlanSelectorBo::new)
+                    .collect(Collectors.toList());
+
+            PageResultUtil.rebuild(pageResult, results);
+        }
+
+        return InvokeResultBuilder.success(pageResult);
+    }
+
+    /**
+     * 预先盘点单
+     * @param vo
+     * @return
+     */
+    @GetMapping("/takestock/pre")
+    public InvokeResult selector(@Valid PreTakeStockSheetSelectorVo vo) {
+        PageResult<PreTakeStockSheetSelectorDto> pageResult = preTakeStockSheetService.selector(getPageIndex(vo), getPageSize(vo), vo);
+
+        List<PreTakeStockSheetSelectorDto> datas = pageResult.getDatas();
+
+        if (!CollectionUtil.isEmpty(datas)) {
+            List<PreTakeStockSheetSelectorBo> results = datas.stream().map(PreTakeStockSheetSelectorBo::new)
                     .collect(Collectors.toList());
 
             PageResultUtil.rebuild(pageResult, results);

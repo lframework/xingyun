@@ -3,7 +3,10 @@ package com.lframework.xingyun.sc.mappers;
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
+import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
+import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
+import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -36,4 +39,19 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
      * @return
      */
     PreTakeStockSheetFullDto getDetail(@Param("id") String id);
+
+    /**
+     * 选择器
+     * @param vo
+     * @return
+     */
+    List<PreTakeStockSheetSelectorDto> selector(@Param("vo") PreTakeStockSheetSelectorVo vo);
+
+    /**
+     * 根据预先盘点单、盘点任务查询商品信息
+     * @param id
+     * @param planId
+     * @return
+     */
+    List<QueryPreTakeStockSheetProductDto> getProducts(@Param("id") String id, @Param("planId") String planId);
 }

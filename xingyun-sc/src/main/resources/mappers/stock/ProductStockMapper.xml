@@ -38,9 +38,9 @@
     <update id="subStock">
         UPDATE tbl_product_stock
         SET stock_num = stock_num - #{stockNum}, tax_amount = tax_amount - #{taxAmount},
-        <if test="reCalcCostPrice">tax_price = CASE WHEN stock_num = 0 THEN 0 ELSE tax_amount / stock_num END,</if>
+        <if test="reCalcCostPrice">tax_price = CASE WHEN stock_num = 0 THEN tax_price ELSE tax_amount / stock_num END,</if>
         un_tax_amount = un_tax_amount - #{unTaxAmount}
-        <if test="reCalcCostPrice">, un_tax_price = CASE WHEN stock_num = 0 THEN 0 ELSE un_tax_amount / stock_num END
+        <if test="reCalcCostPrice">, un_tax_price = CASE WHEN stock_num = 0 THEN un_tax_price ELSE un_tax_amount / stock_num END
         </if>
         WHERE product_id = #{productId}
         AND sc_id = #{scId}
@@ -79,5 +79,10 @@
             </if>
         </where>
         ORDER BY sc.code, product.code
+    </select>
+    <select id="getByProductIdsAndScId" resultMap="ProductStockDto">
+        <include refid="ProductStockDto_sql"/>
+        WHERE product_id IN <foreach collection="productIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        AND sc_id = #{scId}
     </select>
 </mapper>

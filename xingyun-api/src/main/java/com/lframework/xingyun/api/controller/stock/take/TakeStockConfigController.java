@@ -34,7 +34,7 @@ public class TakeStockConfigController extends DefaultBaseController {
     /**
      * 根据ID查询
      */
-    @PreAuthorize("@permission.valid('stock:take:config:modify')")
+    @PreAuthorize("@permission.valid('stock:take:config:modify', 'stock:take:sheet:add', 'stock:take:sheet:modify', 'stock:take:plan:handle:diff')")
     @GetMapping
     public InvokeResult get() {
 

@@ -31,6 +31,26 @@
         </collection>
     </resultMap>
 
+    <resultMap id="PreTakeStockSheetSelectorDto" type="com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="take_status" property="takeStatus"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="QueryPreTakeStockSheetProductDto" type="com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto">
+        <result column="product_id" property="productId"/>
+        <result column="first_num" property="firstNum"/>
+        <result column="second_num" property="secondNum"/>
+        <result column="rand_num" property="randNum"/>
+        <result column="take_status" property="takeStatus"/>
+    </resultMap>
+
     <sql id="PreTakeStockSheetDto_sql">
         SELECT
             tb.id,
@@ -61,6 +81,31 @@
             d.rand_num AS detail_rand_num
         FROM tbl_pre_take_stock_sheet AS tb
         LEFT JOIN tbl_pre_take_stock_sheet_detail AS d ON d.sheet_id = tb.id
+    </sql>
+
+    <sql id="PreTakeStockSheetSelectorDto_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.sc_id,
+            tb.take_status,
+            tb.description,
+            tb.create_by,
+            tb.create_time,
+            tb.update_by,
+            tb.update_time
+        FROM tbl_pre_take_stock_sheet AS tb
+    </sql>
+
+    <sql id="QueryPreTakeStockSheetProductDto_sql">
+        SELECT
+            tb.product_id,
+            tb.first_num,
+            tb.second_num,
+            tb.rand_num,
+            sh.take_status
+        FROM tbl_pre_take_stock_sheet_detail AS tb
+        LEFT JOIN tbl_pre_take_stock_sheet AS sh ON sh.id = tb.sheet_id
     </sql>
 
     <select id="query" resultMap="PreTakeStockSheetDto">
@@ -100,5 +145,36 @@
         <include refid="PreTakeStockSheetFullDto_sql"/>
         WHERE tb.id = #{id}
         ORDER BY d.order_no
+    </select>
+    <select id="selector" resultMap="PreTakeStockSheetSelectorDto">
+        <include refid="PreTakeStockSheetSelectorDto_sql"/>
+        <where>
+            <if test="vo.code != null and vo.code != ''">
+                AND tb.code = #{vo.code}
+            </if>
+            <if test="vo.scId != null and vo.scId != ''">
+                AND tb.sc_id = #{vo.scId}
+            </if>
+            <if test="vo.takeStatus != null">
+                AND tb.take_status = #{vo.takeStatus}
+            </if>
+            <if test="vo.updateTimeStart != null">
+                AND tb.update_time >= #{vo.updateTimeStart}
+            </if>
+            <if test="vo.updateTimeEnd != null">
+                <![CDATA[
+                AND tb.update_time <= #{vo.updateTimeEnd}
+                ]]>
+            </if>
+        </where>
+        ORDER BY tb.update_time DESC
+    </select>
+    <select id="getProducts" resultMap="QueryPreTakeStockSheetProductDto">
+        <include refid="QueryPreTakeStockSheetProductDto_sql"/>
+        WHERE tb.sheet_id = #{id}
+        <if test="planId != null and planId != ''">
+            AND tb.product_id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{planId})
+        </if>
+        ORDER BY tb.order_no
     </select>
 </mapper>

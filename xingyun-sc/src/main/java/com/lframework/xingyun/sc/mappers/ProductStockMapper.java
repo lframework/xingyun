@@ -35,6 +35,14 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
     ProductStockDto getByProductIdAndScId(@Param("productId") String productId, @Param("scId") String scId);
 
     /**
+     * 根据商品ID、仓库ID查询
+     * @param productIds
+     * @param scId
+     * @return
+     */
+    List<ProductStockDto> getByProductIdsAndScId(@Param("productIds") List<String> productIds, @Param("scId") String scId);
+
+    /**
      * 入库
      * @param productId
      * @param scId

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.TakeStockPlanMapper">
+
+    <resultMap id="TakeStockPlanDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="take_type" property="takeType"/>
+        <result column="biz_id" property="bizId"/>
+        <result column="take_status" property="takeStatus"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="TakeStockPlanSelectorDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="take_type" property="takeType"/>
+        <result column="take_status" property="takeStatus"/>
+    </resultMap>
+
+    <resultMap id="QueryTakeStockPlanProductDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto">
+        <result column="product_id" property="productId"/>
+        <result column="stock_num" property="stockNum"/>
+        <result column="total_out_num" property="totalOutNum"/>
+        <result column="total_in_num" property="totalInNum"/>
+    </resultMap>
+
+    <resultMap id="TakeStockPlanFullDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="take_type" property="takeType"/>
+        <result column="take_status" property="takeStatus"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <collection property="details" column="id" javaType="java.util.ArrayList" select="getDetails" />
+    </resultMap>
+
+    <resultMap id="TakeStockPlanFullDetailDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto$DetailDto">
+        <id column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="stock_num" property="stockNum"/>
+        <result column="ori_take_num" property="oriTakeNum"/>
+        <result column="take_num" property="takeNum"/>
+        <result column="total_out_num" property="totalOutNum"/>
+        <result column="total_in_num" property="totalInNum"/>
+        <result column="description" property="description"/>
+    </resultMap>
+
+    <sql id="TakeStockPlanDto_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.sc_id,
+            tb.take_type,
+            tb.biz_id,
+            tb.take_status,
+            tb.description,
+            tb.create_by,
+            tb.create_time,
+            tb.update_by,
+            tb.update_time
+        FROM tbl_take_stock_plan AS tb
+    </sql>
+
+    <sql id="TakeStockPlanSelectorDto_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.sc_id,
+            tb.take_type,
+            tb.take_status,
+            tb.create_time,
+            tb.update_time
+        FROM tbl_take_stock_plan AS tb
+    </sql>
+
+    <sql id="QueryTakeStockPlanProductDto_sql">
+        SELECT
+            tb.product_id,
+            tb.stock_num,
+            tb.total_out_num,
+            tb.total_in_num
+        FROM tbl_take_stock_plan_detail AS tb
+    </sql>
+
+    <sql id="TakeStockPlanFullDto_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.sc_id,
+            tb.take_type,
+            tb.take_status,
+            tb.description,
+            tb.create_by,
+            tb.create_time,
+            tb.update_by,
+            tb.update_time
+        FROM tbl_take_stock_plan AS tb
+    </sql>
+
+    <sql id="TakeStockPlanFullDetailDto_sql">
+        SELECT
+            tb.id,
+            tb.product_id,
+            tb.ori_take_num,
+            tb.take_num,
+            tb.stock_num,
+            tb.total_in_num,
+            tb.total_out_num,
+            tb.description
+        FROM tbl_take_stock_plan_detail AS tb
+        WHERE tb.plan_id = #{id}
+    </sql>
+
+    <select id="query" resultMap="TakeStockPlanDto">
+        <include refid="TakeStockPlanDto_sql"/>
+        <where>
+            <if test="vo.code != null and vo.code != ''">
+                AND tb.code = #{vo.code}
+            </if>
+            <if test="vo.scId != null and vo.scId != ''">
+                AND tb.sc_id = #{vo.scId}
+            </if>
+            <if test="vo.takeStatus != null">
+                AND tb.take_status = #{vo.takeStatus}
+            </if>
+            <if test="vo.createBy != null and vo.createBy != ''">
+                AND tb.create_by = #{vo.createBy}
+            </if>
+            <if test="vo.createTimeStart != null">
+                AND tb.create_time >= #{vo.createTimeStart}
+            </if>
+            <if test="vo.createTimeEnd != null">
+                <![CDATA[
+                AND tb.create_time <= #{vo.createTimeEnd}
+                ]]>
+            </if>
+            <if test="vo.updateBy != null and vo.updateBy != ''">
+                AND tb.update_by = #{vo.updateBy}
+            </if>
+            <if test="vo.updateTimeStart != null">
+                AND tb.update_time >= #{vo.updateTimeStart}
+            </if>
+            <if test="vo.updateTimeEnd != null">
+                <![CDATA[
+                AND tb.update_time <= #{vo.updateTimeEnd}
+                ]]>
+            </if>
+        </where>
+        ORDER BY tb.update_time DESC
+    </select>
+
+    <select id="getById" resultMap="TakeStockPlanDto">
+        <include refid="TakeStockPlanDto_sql"/>
+        <where>
+            AND tb.id = #{id}
+        </where>
+    </select>
+    <select id="selector" resultMap="TakeStockPlanSelectorDto">
+        <include refid="TakeStockPlanSelectorDto_sql"/>
+        <where>
+            <if test="vo.code != null and vo.code != ''">
+                AND tb.code = #{vo.code}
+            </if>
+            <if test="vo.scId != null and vo.scId != ''">
+                AND tb.sc_id = #{vo.scId}
+            </if>
+            <if test="vo.takeStatus != null">
+                AND tb.take_status = #{vo.takeStatus}
+            </if>
+            <if test="vo.createTimeStart != null">
+                AND tb.create_time >= #{vo.createTimeStart}
+            </if>
+            <if test="vo.createTimeEnd != null">
+                <![CDATA[
+                AND tb.create_time <= #{vo.createTimeEnd}
+                ]]>
+            </if>
+            <if test="vo.updateTimeStart != null">
+                AND tb.update_time >= #{vo.updateTimeStart}
+            </if>
+            <if test="vo.updateTimeEnd != null">
+                <![CDATA[
+                AND tb.update_time <= #{vo.updateTimeEnd}
+                ]]>
+            </if>
+            <if test="vo.taking != null and vo.taking">
+                AND tb.take_status = 0
+            </if>
+            <if test="vo.taking != null and !vo.taking">
+                AND tb.take_status != 0
+            </if>
+        </where>
+        ORDER BY tb.update_time DESC
+    </select>
+    <select id="getProducts" resultMap="QueryTakeStockPlanProductDto">
+        <include refid="QueryTakeStockPlanProductDto_sql"/>
+        WHERE tb.plan_id = #{planId}
+        ORDER BY tb.order_no
+    </select>
+    <select id="getDetail" resultMap="TakeStockPlanFullDto">
+        <include refid="TakeStockPlanFullDto_sql"/>
+        WHERE tb.id = #{id}
+    </select>
+
+    <select id="getDetails" resultMap="TakeStockPlanFullDetailDto" parameterType="java.lang.String">
+        <include refid="TakeStockPlanFullDetailDto_sql"/>
+        ORDER BY tb.order_no
+    </select>
+</mapper>

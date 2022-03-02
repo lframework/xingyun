@@ -718,7 +718,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
                 .eq(SettleCheckSheet::getTotalPayedAmount, checkSheet.getTotalPayedAmount())
                 .eq(SettleCheckSheet::getTotalDiscountAmount, checkSheet.getTotalDiscountAmount());
         if (settleCheckSheetMapper.update(updateWrapper) != 1) {
-            throw new DefaultClientException("结账单：" + checkSheet.getCode() + "，信息已过时，请刷新重试！");
+            throw new DefaultClientException("结账单：" + checkSheet.getCode() + "，信息已过期，请刷新重试！");
         }
 
         if (NumberUtil.equal(remainTotalPayAmount, 0)) {

@@ -112,6 +112,20 @@
         <result column="unit" property="unit"/>
     </resultMap>
 
+    <resultMap id="TakeStockSheetProductDto" type="com.lframework.xingyun.basedata.dto.product.info.TakeStockSheetProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+    </resultMap>
+
     <sql id="ProductDto_sql">
         SELECT
             g.id,
@@ -242,6 +256,26 @@
     </sql>
 
     <sql id="PreTakeStockProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
+    </sql>
+
+    <sql id="TakeStockSheetProductDto_sql">
         SELECT
             g.id,
             g.code,
@@ -459,8 +493,56 @@
         </where>
         ORDER BY p.code, g.code
     </select>
-    <select id="getPreTakeStockById" resultMap="PreTakeStockProductDto">
-        <include refid="PreTakeStockProductDto_sql"/>
-        WHERE g.id = #{id}
+    <select id="getByCategoryIds" resultMap="ProductDto">
+        <include refid="ProductDto_sql"/>
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        WHERE c.id IN <foreach collection="categoryIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="getByBrandIds" resultMap="ProductDto">
+        <include refid="ProductDto_sql"/>
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        WHERE b.id IN <foreach collection="brandIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryTakeStockByCondition" resultMap="TakeStockSheetProductDto">
+        <include refid="TakeStockSheetProductDto_sql"/>
+        <where>
+            AND (
+            p.code LIKE CONCAT('%', #{condition}, '%')
+            OR g.name LIKE CONCAT('%', #{condition}, '%')
+            OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+            OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+            <if test="planId != null and planId != ''">
+                AND g.id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{planId})
+            </if>
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryTakeStockList" resultMap="TakeStockSheetProductDto">
+        <include refid="TakeStockSheetProductDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                    p.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+                <if test="vo.planId != null and vo.planId != ''">
+                    AND g.id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{vo.planId})
+                </if>
+            </if>
+        </where>
+        ORDER BY p.code, g.code
     </select>
 </mapper>

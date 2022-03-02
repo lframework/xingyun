@@ -4,7 +4,10 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.web.service.BaseService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
+import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
+import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
+import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
 
@@ -30,6 +33,13 @@ public interface IPreTakeStockSheetService extends BaseService {
     List<PreTakeStockSheetDto> query(QueryPreTakeStockSheetVo vo);
 
     /**
+     * 选择器
+     * @param vo
+     * @return
+     */
+    PageResult<PreTakeStockSheetSelectorDto> selector(Integer pageIndex, Integer pageSize, PreTakeStockSheetSelectorVo vo);
+
+    /**
      * 根据ID查询
      * @param id
      * @return
@@ -42,6 +52,14 @@ public interface IPreTakeStockSheetService extends BaseService {
      * @return
      */
     PreTakeStockSheetFullDto getDetail(String id);
+
+    /**
+     * 根据预先盘点单、盘点任务查询商品信息
+     * @param id
+     * @param planId
+     * @return
+     */
+    List<QueryPreTakeStockSheetProductDto> getProducts(String id, String planId);
 
     /**
      * 创建

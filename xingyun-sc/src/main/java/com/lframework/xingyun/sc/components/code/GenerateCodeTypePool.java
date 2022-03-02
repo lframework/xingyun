@@ -53,4 +53,14 @@ public interface GenerateCodeTypePool {
      * 预先盘点单
      */
     GenerateCodeType PRE_TAKE_STOCK_SHEET = GenerateCodeType.DEFAULT;
+
+    /**
+     * 盘点任务
+     */
+    GenerateCodeType TAKE_STOCK_PLAN = GenerateCodeType.DEFAULT;
+
+    /**
+     * 盘点单
+     */
+    GenerateCodeType TAKE_STOCK_SHEET = GenerateCodeType.DEFAULT;
 }

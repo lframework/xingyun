@@ -1,0 +1,42 @@
+package com.lframework.xingyun.sc.mappers;
+
+import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
+import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDetailDto;
+import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 盘点任务详情 Mapper 接口
+ * </p>
+ *
+ * @author zmj
+ */
+public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetail> {
+
+    /**
+     * 根据盘点任务ID、商品ID查询
+     * @param planId
+     * @param productId
+     * @return
+     */
+    GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(@Param("planId") String planId, @Param("productId") String productId);
+
+    /**
+     * 根据盘点任务ID查询
+     * @param planId
+     * @return
+     */
+    List<TakeStockPlanDetailDto> getDetailsByPlanId(String planId);
+
+    /**
+     * 更新盘点数量
+     * @param planId
+     * @param productId
+     * @param num
+     */
+    void updateOriTakeNum(@Param("planId") String planId, @Param("productId") String productId, @Param("num") Integer num);
+}

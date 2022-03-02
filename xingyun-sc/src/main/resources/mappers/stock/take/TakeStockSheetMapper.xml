@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.TakeStockSheetMapper">
+
+    <resultMap id="TakeStockSheetDto" type="com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="plan_id" property="planId"/>
+        <result column="pre_sheet_id" property="preSheetId"/>
+        <result column="sc_id" property="scId"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+    </resultMap>
+
+    <resultMap id="TakeStockSheetFullDto" type="com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="plan_id" property="planId"/>
+        <result column="pre_sheet_id" property="preSheetId"/>
+        <result column="sc_id" property="scId"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="refuse_reason" property="refuseReason"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <collection property="details" ofType="com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto$SheetDetailDto" javaType="java.util.ArrayList">
+            <id column="detail_id" property="id"/>
+            <result column="detail_product_id" property="productId"/>
+            <result column="detail_take_num" property="takeNum"/>
+            <result column="detail_description" property="description"/>
+        </collection>
+    </resultMap>
+
+    <sql id="TakeStockSheetDto_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.plan_id,
+            tb.pre_sheet_id,
+            tb.sc_id,
+            tb.status,
+            tb.description,
+            tb.create_by,
+            tb.create_time,
+            tb.update_by,
+            tb.update_time,
+            tb.approve_by,
+            tb.approve_time
+        FROM tbl_take_stock_sheet AS tb
+        LEFT JOIN tbl_take_stock_plan AS plan ON plan.id = tb.plan_id
+    </sql>
+
+    <sql id="TakeStockSheetFullDto_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.plan_id,
+            tb.pre_sheet_id,
+            tb.sc_id,
+            tb.status,
+            tb.description,
+            tb.refuse_reason,
+            tb.create_by,
+            tb.create_time,
+            tb.update_by,
+            tb.update_time,
+            tb.approve_by,
+            tb.approve_time,
+            d.id AS detail_id,
+            d.product_id AS detail_product_id,
+            d.take_num AS detail_take_num,
+            d.description AS detail_description
+        FROM tbl_take_stock_sheet AS tb
+        LEFT JOIN tbl_take_stock_sheet_detail AS d ON d.sheet_id = tb.id
+    </sql>
+
+    <select id="query" resultMap="TakeStockSheetDto">
+        <include refid="TakeStockSheetDto_sql"/>
+        <where>
+            <if test="vo.code != null and vo.code != ''">
+                AND tb.code = #{vo.code}
+            </if>
+            <if test="vo.planId != null and vo.planId != ''">
+                AND tb.plan_id = #{vo.planId}
+            </if>
+            <if test="vo.preSheetId != null and vo.preSheetId != ''">
+                AND tb.pre_sheet_id = #{vo.preSheetId}
+            </if>
+            <if test="vo.scId != null and vo.scId != ''">
+                AND tb.sc_id = #{vo.scId}
+            </if>
+            <if test="vo.takeStatus != null">
+                AND plan.take_status = #{vo.takeStatus}
+            </if>
+            <if test="vo.status != null">
+                AND tb.status = #{vo.status}
+            </if>
+            <if test="vo.updateBy != null and vo.updateBy != ''">
+                AND tb.update_by = #{vo.updateBy}
+            </if>
+            <if test="vo.updateTimeStart != null">
+                AND tb.update_time >= #{vo.updateTimeStart}
+            </if>
+            <if test="vo.updateTimeEnd != null">
+                <![CDATA[
+                AND tb.update_time <= #{vo.updateTimeEnd}
+                ]]>
+            </if>
+            <if test="vo.approveBy != null and vo.approveBy != ''">
+                AND tb.approve_by = #{vo.approveBy}
+            </if>
+            <if test="vo.approveTimeStart != null">
+                AND tb.approve_time >= #{vo.approveTimeStart}
+            </if>
+            <if test="vo.approveTimeEnd != null">
+                <![CDATA[
+                AND tb.approve_time <= #{vo.approveTimeEnd}
+                ]]>
+            </if>
+        </where>
+        ORDER BY tb.update_time DESC
+    </select>
+
+    <select id="getById" resultMap="TakeStockSheetDto">
+        <include refid="TakeStockSheetDto_sql"/>
+        <where>
+            AND tb.id = #{id}
+        </where>
+    </select>
+    <select id="getDetail" resultMap="TakeStockSheetFullDto">
+        <include refid="TakeStockSheetFullDto_sql"/>
+        WHERE tb.id = #{id}
+        ORDER BY d.order_no
+    </select>
+    <select id="hasRelatePreTakeStockSheet" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0
+        FROM tbl_take_stock_sheet AS tb
+        WHERE tb.pre_sheet_id = #{preSheetId}
+        LIMIT 1
+    </select>
+    <select id="hasUnApprove" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0
+        FROM tbl_take_stock_sheet AS tb
+        WHERE tb.plan_id = #{planId}
+        AND tb.status != 3
+        LIMIT 1
+    </select>
+</mapper>

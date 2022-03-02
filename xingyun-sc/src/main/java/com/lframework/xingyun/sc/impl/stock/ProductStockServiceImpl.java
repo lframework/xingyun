@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.common.exceptions.impl.DefaultClientException;
+import com.lframework.common.exceptions.impl.DefaultSysException;
 import com.lframework.common.utils.*;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -31,10 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ProductStockServiceImpl implements IProductStockService {
@@ -81,6 +79,15 @@ public class ProductStockServiceImpl implements IProductStockService {
         return productStockMapper.getByProductIdAndScId(productId, scId);
     }
 
+    @Override
+    public List<ProductStockDto> getByProductIdsAndScId(List<String> productIds, String scId) {
+        if (CollectionUtil.isEmpty(productIds)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        return productStockMapper.getByProductIdsAndScId(productIds, scId);
+    }
+
     @Transactional
     @Override
     public ProductStockChangeDto addStock(AddProductStockVo vo) {
@@ -90,6 +97,7 @@ public class ProductStockServiceImpl implements IProductStockService {
 
         ProductStock productStock = productStockMapper.selectOne(queryWrapper);
 
+        boolean isStockEmpty = false;
         if (productStock == null) {
             //首次入库，先新增
             productStock = new ProductStock();
@@ -103,11 +111,24 @@ public class ProductStockServiceImpl implements IProductStockService {
             productStock.setUnTaxAmount(BigDecimal.ZERO);
 
             productStockMapper.insert(productStock);
+
+            isStockEmpty = true;
         }
 
+        // 如果taxAmount为null，代表不重算均价，即：按当前均价直接入库
         boolean reCalcCostPrice = vo.getTaxAmount() != null;
+
         if (vo.getTaxAmount() == null) {
-            vo.setTaxAmount(NumberUtil.mul(productStock.getTaxPrice(), vo.getStockNum()));
+            vo.setTaxAmount(isStockEmpty ? vo.getDefaultTaxAmount() : NumberUtil.mul(productStock.getTaxPrice(), vo.getStockNum()));
+        }
+        if (vo.getTaxAmount() == null) {
+            // 如果此时taxAmount还是null，则代表taxAmount和defaultTaxAmount均为null
+            throw new DefaultSysException("商品ID：" + vo.getProductId() + "，没有库存，taxAmount和defaultTaxAmount不能同时为null！");
+        }
+
+        if (isStockEmpty) {
+            // 如果之前没有库存，那么均价必须重算
+            reCalcCostPrice = true;
         }
 
         vo.setTaxAmount(NumberUtil.getNumber(vo.getTaxAmount(), 2));
@@ -240,6 +261,7 @@ public class ProductStockServiceImpl implements IProductStockService {
             }
         }
 
+        // 如果taxAmount为null，代表不重算均价，即：按当前均价直接出库
         boolean reCalcCostPrice = vo.getTaxAmount() != null;
         if (vo.getTaxAmount() == null) {
             vo.setTaxAmount(NumberUtil.mul(productStock.getTaxPrice(), vo.getStockNum()));

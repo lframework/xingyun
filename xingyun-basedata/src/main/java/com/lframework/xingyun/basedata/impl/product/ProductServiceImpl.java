@@ -12,10 +12,14 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.security.enums.system.NodeType;
+import com.lframework.starter.security.service.system.IRecursionMappingService;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.product.info.*;
 import com.lframework.xingyun.basedata.dto.product.poly.ProductPolyDto;
 import com.lframework.xingyun.basedata.dto.product.saleprop.item.SalePropItemByProductDto;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.mappers.ProductMapper;
 import com.lframework.xingyun.basedata.service.product.*;
 import com.lframework.xingyun.basedata.vo.product.info.*;
@@ -32,8 +36,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements IProductService {
@@ -58,6 +65,9 @@ public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private IProductSalePropItemService productSalePropItemService;
+
+    @Autowired
+    private IRecursionMappingService recursionMappingService;
 
     @Override
     public PageResult<ProductDto> query(Integer pageIndex, Integer pageSize, QueryProductVo vo) {
@@ -294,7 +304,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public PageResult<PurchaseProductDto> queryPurchaseByCondition(Integer pageIndex, Integer pageSize,
-            String condition) {
+                                                                   String condition) {
 
         Assert.greaterThanZero(pageIndex);
         Assert.greaterThanZero(pageSize);
@@ -316,7 +326,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public PageResult<PurchaseProductDto> queryPurchaseList(Integer pageIndex, Integer pageSize,
-            QueryPurchaseProductVo vo) {
+                                                            QueryPurchaseProductVo vo) {
 
         Assert.greaterThanZero(pageIndex);
         Assert.greaterThanZero(pageSize);
@@ -484,9 +494,68 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public PreTakeStockProductDto getPreTakeStockById(String id) {
+    public List<ProductDto> getByCategoryIds(List<String> categoryIds) {
+        if (CollectionUtil.isEmpty(categoryIds)) {
+            return Collections.EMPTY_LIST;
+        }
 
-        return productMapper.getPreTakeStockById(id);
+        // 根据categoryIds查询所有叶子节点
+        List<String> children = new ArrayList<>();
+        for (String categoryId : categoryIds) {
+            children.addAll(recursionMappingService.getNodeChildIds(categoryId, ApplicationUtil.getBean(ProductCategoryNodeType.class)));
+        }
+
+        children.addAll(categoryIds);
+
+        children = children.stream().distinct().collect(Collectors.toList());
+
+        List<ProductDto> datas = productMapper.getByCategoryIds(children);
+        if (!CollectionUtil.isEmpty(datas)) {
+            datas.forEach(this::convertDto);
+        }
+
+        return datas;
+    }
+
+    @Override
+    public List<ProductDto> getByBrandIds(List<String> brandIds) {
+
+        if (CollectionUtil.isEmpty(brandIds)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<ProductDto> datas = productMapper.getByBrandIds(brandIds);
+        if (!CollectionUtil.isEmpty(datas)) {
+            datas.forEach(this::convertDto);
+        }
+
+        return datas;
+    }
+
+    @Override
+    public PageResult<TakeStockSheetProductDto> queryTakeStockByCondition(Integer pageIndex, Integer pageSize, String planId, String condition) {
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+
+        List<TakeStockSheetProductDto> datas = productMapper.queryTakeStockByCondition(planId, condition);
+        PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<TakeStockSheetProductDto> queryTakeStockList(Integer pageIndex, Integer pageSize, QueryTakeStockSheetProductVo vo) {
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+
+        List<TakeStockSheetProductDto> datas = productMapper.queryTakeStockList(vo);
+        PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+        return pageResult;
     }
 
     private ProductDto convertDto(ProductDto dto) {

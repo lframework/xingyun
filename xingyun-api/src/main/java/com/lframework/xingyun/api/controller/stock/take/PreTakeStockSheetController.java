@@ -13,15 +13,20 @@ import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.stock.take.pre.GetPreTakeStockSheetBo;
 import com.lframework.xingyun.api.bo.stock.take.pre.PreTakeStockProductBo;
 import com.lframework.xingyun.api.bo.stock.take.pre.QueryPreTakeStockSheetBo;
+import com.lframework.xingyun.api.bo.stock.take.pre.QueryPreTakeStockSheetProductBo;
 import com.lframework.xingyun.api.model.sale.SaleOrderExportModel;
 import com.lframework.xingyun.api.model.stock.take.pre.PreTakeStockSheetExportModel;
 import com.lframework.xingyun.basedata.dto.product.info.PreTakeStockProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
+import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
+import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
+import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetService;
+import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
@@ -52,6 +57,9 @@ public class PreTakeStockSheetController extends DefaultBaseController {
 
     @Autowired
     private IProductService productService;
+
+    @Autowired
+    private ITakeStockPlanService takeStockPlanService;
 
     /**
      * 查询列表
@@ -154,6 +162,27 @@ public class PreTakeStockSheetController extends DefaultBaseController {
         GetPreTakeStockSheetBo result = new GetPreTakeStockSheetBo(data);
 
         return InvokeResultBuilder.success(result);
+    }
+
+    /**
+     * 根据预先盘点单、盘点任务查询商品信息
+     */
+    @PreAuthorize("@permission.valid('stock:take:sheet:add', 'stock:take:sheet:modify')")
+    @GetMapping("/products")
+    public InvokeResult getProducts(@NotBlank(message = "ID不能为空！") String id, @NotBlank(message = "盘点任务ID不能为空！") String planId) {
+
+        TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(planId);
+        if (takeStockPlan.getTakeType() == TakeStockPlanType.SIMPLE) {
+            planId = null;
+        }
+
+        List<QueryPreTakeStockSheetProductDto> datas = preTakeStockSheetService.getProducts(id, planId);
+        List<QueryPreTakeStockSheetProductBo> results = Collections.EMPTY_LIST;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(t -> new QueryPreTakeStockSheetProductBo(t, takeStockPlan.getScId())).collect(Collectors.toList());
+        }
+
+        return InvokeResultBuilder.success(results);
     }
 
     /**

@@ -37,6 +37,14 @@ public interface IProductStockService extends BaseService {
     ProductStockDto getByProductIdAndScId(String productId, String scId);
 
     /**
+     * 根据商品ID、仓库ID查询
+     * @param productIds
+     * @param scId
+     * @return
+     */
+    List<ProductStockDto> getByProductIdsAndScId(List<String> productIds, String scId);
+
+    /**
      * 入库
      * @param vo
      */

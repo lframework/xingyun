@@ -117,9 +117,30 @@ public interface ProductMapper extends BaseMapper<Product> {
     List<PreTakeStockProductDto> queryPreTakeStockList(@Param("vo") QueryPreTakeStockProductVo vo);
 
     /**
-     * 根据ID查询
-     * @param id
+     * 根据类目ID查询
+     * @param categoryIds
      * @return
      */
-    PreTakeStockProductDto getPreTakeStockById(String id);
+    List<ProductDto> getByCategoryIds(@Param("categoryIds") List<String> categoryIds);
+
+    /**
+     * 根据品牌ID查询
+     * @param brandIds
+     * @return
+     */
+    List<ProductDto> getByBrandIds(@Param("brandIds") List<String> brandIds);
+
+    /**
+     * 根据关键字查询盘点单商品信息
+     * @param condition
+     * @return
+     */
+    List<TakeStockSheetProductDto> queryTakeStockByCondition(@Param("planId") String planId, @Param("condition") String condition);
+
+    /**
+     * 查询盘点单商品信息
+     * @param vo
+     * @return
+     */
+    List<TakeStockSheetProductDto> queryTakeStockList(@Param("vo") QueryTakeStockSheetProductVo vo);
 }

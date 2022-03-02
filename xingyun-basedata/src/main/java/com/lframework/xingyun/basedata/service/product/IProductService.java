@@ -156,9 +156,34 @@ public interface IProductService extends BaseService {
     PageResult<PreTakeStockProductDto> queryPreTakeStockList(Integer pageIndex, Integer pageSize, QueryPreTakeStockProductVo vo);
 
     /**
-     * 根据ID查询
-     * @param id
+     * 根据类目ID查询
+     * @param categoryIds
      * @return
      */
-    PreTakeStockProductDto getPreTakeStockById(String id);
+    List<ProductDto> getByCategoryIds(List<String> categoryIds);
+
+    /**
+     * 根据品牌ID查询
+     * @param brandIds
+     * @return
+     */
+    List<ProductDto> getByBrandIds(List<String> brandIds);
+
+    /**
+     * 根据关键字查询盘点单商品信息
+     * @param pageIndex
+     * @param pageSize
+     * @param condition
+     * @return
+     */
+    PageResult<TakeStockSheetProductDto> queryTakeStockByCondition(Integer pageIndex, Integer pageSize, String planId, String condition);
+
+    /**
+     * 查询盘点单商品信息
+     * @param pageIndex
+     * @param pageSize
+     * @param vo
+     * @return
+     */
+    PageResult<TakeStockSheetProductDto> queryTakeStockList(Integer pageIndex, Integer pageSize, QueryTakeStockSheetProductVo vo);
 }

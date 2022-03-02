@@ -6,6 +6,7 @@ import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.product.info.PreTakeStockProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
@@ -152,12 +153,12 @@ public class GetPreTakeStockSheetBo extends BaseBo<PreTakeStockSheetFullDto> {
 
             IProductService productService = ApplicationUtil.getBean(IProductService.class);
 
-            PreTakeStockProductDto product = productService.getPreTakeStockById(dto.getProductId());
+            ProductDto product = productService.getById(dto.getProductId());
 
             this.productCode = product.getCode();
             this.productName = product.getName();
-            this.brandName = product.getBrandName();
-            this.categoryName = product.getCategoryName();
+            this.brandName = product.getPoly().getBrandName();
+            this.categoryName = product.getPoly().getCategoryName();
             this.skuCode = product.getSkuCode();
             this.externalCode = product.getExternalCode();
             this.spec = product.getSpec();

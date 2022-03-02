@@ -21,16 +21,16 @@ import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
+import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
+import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheetDetail;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import com.lframework.xingyun.sc.mappers.PreTakeStockSheetDetailMapper;
 import com.lframework.xingyun.sc.mappers.PreTakeStockSheetMapper;
 import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetService;
-import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
-import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockProductVo;
-import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
-import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
+import com.lframework.xingyun.sc.service.stock.take.ITakeStockSheetService;
+import com.lframework.xingyun.sc.vo.stock.take.pre.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +48,9 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
 
     @Autowired
     private IGenerateCodeService generateCodeService;
+
+    @Autowired
+    private ITakeStockSheetService takeStockSheetService;
 
     @Override
     public PageResult<PreTakeStockSheetDto> query(Integer pageIndex, Integer pageSize, QueryPreTakeStockSheetVo vo) {
@@ -68,6 +71,18 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
     }
 
     @Override
+    public PageResult<PreTakeStockSheetSelectorDto> selector(Integer pageIndex, Integer pageSize, PreTakeStockSheetSelectorVo vo) {
+
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+        List<PreTakeStockSheetSelectorDto> datas = preTakeStockSheetMapper.selector(vo);
+
+        return PageResultUtil.convert(new PageInfo<>(datas));
+    }
+
+    @Override
     public PreTakeStockSheetDto getById(String id) {
 
         return preTakeStockSheetMapper.getById(id);
@@ -82,6 +97,12 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
         }
 
         return data;
+    }
+
+    @Override
+    public List<QueryPreTakeStockSheetProductDto> getProducts(String id, String planId) {
+
+        return preTakeStockSheetMapper.getProducts(id, planId);
     }
 
     @OpLog(type = OpLogType.OTHER, name = "新增预先盘点单，ID：{}", params = {"#id"})
@@ -161,6 +182,10 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
     @Transactional
     @Override
     public void deleteById(String id) {
+
+        if (takeStockSheetService.hasRelatePreTakeStockSheet(id)) {
+            throw new DefaultClientException("已有库存盘点单关联此预先盘点单，不允许执行删除操作！");
+        }
 
         preTakeStockSheetMapper.deleteById(id);
 

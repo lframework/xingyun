@@ -1,20 +1,16 @@
-package com.lframework.xingyun.sc.dto.stock;
+package com.lframework.xingyun.core.dto.stock;
 
 import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
-public class ProductLotChangeDto implements BaseDto, Serializable {
+public class ProductStockChangeDto implements BaseDto, Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * 批次ID
-     */
-    private String lotId;
 
     /**
      * 仓库ID
@@ -27,9 +23,9 @@ public class ProductLotChangeDto implements BaseDto, Serializable {
     private String productId;
 
     /**
-     * 供应商ID
+     * 变动数量
      */
-    private String supplierId;
+    private Integer num;
 
     /**
      * 含税金额
@@ -42,7 +38,7 @@ public class ProductLotChangeDto implements BaseDto, Serializable {
     private BigDecimal unTaxAmount;
 
     /**
-     * 变动数量
+     * 批次变动记录
      */
-    private Integer num;
+    private List<ProductLotChangeDto> lotChangeList;
 }

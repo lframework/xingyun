@@ -21,6 +21,9 @@ import com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto;
 import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
+import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.core.events.stock.AddStockEvent;
+import com.lframework.xingyun.core.events.stock.SubStockEvent;
 import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.ProductLotStockDto;
@@ -48,6 +51,7 @@ import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -377,5 +381,35 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
     @Override
     public void cleanCacheByKey(String key) {
 
+    }
+
+    @Service
+    public static class AddStockListener implements ApplicationListener<AddStockEvent> {
+
+        @Autowired
+        private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
+
+        @Transactional
+        @Override
+        public void onApplicationEvent(AddStockEvent addStockEvent) {
+
+            ProductStockChangeDto change = addStockEvent.getChange();
+            takeStockPlanDetailMapper.addTotalInNum(change.getScId(), change.getProductId(), change.getNum());
+        }
+    }
+
+    @Service
+    public static class SubStockListener implements ApplicationListener<SubStockEvent> {
+
+        @Autowired
+        private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
+
+        @Transactional
+        @Override
+        public void onApplicationEvent(SubStockEvent addStockEvent) {
+
+            ProductStockChangeDto change = addStockEvent.getChange();
+            takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getProductId(), change.getNum());
+        }
     }
 }

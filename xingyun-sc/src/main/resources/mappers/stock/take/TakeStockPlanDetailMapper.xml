@@ -39,6 +39,14 @@
             tb.order_no
         FROM tbl_take_stock_plan_detail AS tb
     </sql>
+    <insert id="addTotalInNum">
+        UPDATE tbl_take_stock_plan_detail SET total_in_num = total_in_num + #{num}
+        WHERE plan_id IN (SELECT id from tbl_take_stock_plan WHERE sc_id = #{scId} AND take_status = 0) AND product_id = #{productId}
+    </insert>
+    <insert id="addTotalOutNum">
+        UPDATE tbl_take_stock_plan_detail SET total_out_num = total_out_num + #{num}
+        WHERE plan_id IN (SELECT id from tbl_take_stock_plan WHERE sc_id = #{scId} AND take_status = 0) AND product_id = #{productId}
+    </insert>
     <update id="updateOriTakeNum">
         UPDATE tbl_take_stock_plan_detail set ori_take_num = IFNULL(ori_take_num, 0) + #{num}
         WHERE plan_id = #{planId} AND product_id = #{productId}

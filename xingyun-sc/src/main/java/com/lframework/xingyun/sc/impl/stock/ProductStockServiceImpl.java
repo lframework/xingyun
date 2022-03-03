@@ -10,8 +10,13 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.service.IGenerateCodeService;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
+import com.lframework.xingyun.core.dto.stock.ProductLotChangeDto;
+import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.core.events.stock.AddStockEvent;
+import com.lframework.xingyun.core.events.stock.SubStockEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.*;
 import com.lframework.xingyun.sc.entity.ProductStock;
@@ -216,6 +221,9 @@ public class ProductStockServiceImpl implements IProductStockService {
 
         stockChange.setLotChangeList(lotChangeList);
 
+        AddStockEvent addStockEvent = new AddStockEvent(this, stockChange);
+        ApplicationUtil.publishEvent(addStockEvent);
+
         return stockChange;
     }
 
@@ -358,6 +366,9 @@ public class ProductStockServiceImpl implements IProductStockService {
                 lotChangeList.stream().map(ProductLotChangeDto::getUnTaxAmount).reduce(NumberUtil::add)
                         .orElse(BigDecimal.ZERO));
         stockChange.setLotChangeList(lotChangeList);
+
+        SubStockEvent subStockEvent = new SubStockEvent(this, stockChange);
+        ApplicationUtil.publishEvent(subStockEvent);
 
         return stockChange;
     }

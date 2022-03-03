@@ -2,7 +2,7 @@ package com.lframework.xingyun.sc.service.stock;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.web.service.BaseService;
-import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;

@@ -145,4 +145,4 @@ INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `component`, `parent_id`,
 INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `component`, `parent_id`, `path`, `no_cache`, `display`, `hidden`, `permission`, `is_special`, `available`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('3000004003006', '3000004003006', '', '差异处理', '', '3000004003', '', 0, 2, 0, 'stock:take:plan:handle-diff', 1, 1, '', '1', '2021-05-12 22:50:27', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `component`, `parent_id`, `path`, `no_cache`, `display`, `hidden`, `permission`, `is_special`, `available`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('3000004003007', '3000004003007', '', '作废盘点任务', '', '3000004003', '', 0, 2, 0, 'stock:take:plan:cancel', 1, 1, '', '1', '2021-05-12 22:50:27', '1', '2021-07-04 00:34:23');
 
-UPDATE sys_menu` SET `path` = '/menu' WHERE `id` = '1000001';
+UPDATE `sys_menu` SET `path` = '/menu' WHERE `id` = '1000001';

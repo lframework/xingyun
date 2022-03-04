@@ -6,8 +6,10 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
+import com.lframework.starter.web.components.qrtz.QrtzHandler;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.CronUtil;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.stock.take.plan.GetTakeStockPlanBo;
 import com.lframework.xingyun.api.bo.stock.take.plan.QueryTakeStockPlanBo;
@@ -20,6 +22,7 @@ import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDt
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto;
+import com.lframework.xingyun.sc.impl.stock.take.TakeStockPlanServiceImpl;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import com.lframework.xingyun.sc.vo.stock.take.plan.*;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -165,7 +169,12 @@ public class TakeStockPlanController extends DefaultBaseController {
 
         vo.validate();
 
-        takeStockPlanService.create(vo);
+        String id = takeStockPlanService.create(vo);
+
+        TakeStockConfigDto config = takeStockConfigService.get();
+
+        // 自动作废
+        QrtzHandler.addJob(TakeStockPlanServiceImpl.AutoCancelJob.class, CronUtil.getDateTimeCron(LocalDateTime.now().plusHours(config.getCancelHours())), Collections.singletonMap("id", id));
 
         return InvokeResultBuilder.success();
     }

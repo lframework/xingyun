@@ -13,11 +13,12 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.components.qrtz.QrtzJob;
+import com.lframework.starter.web.components.qrtz.QrtzHandler;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto;
 import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
@@ -26,7 +27,6 @@ import com.lframework.xingyun.core.events.stock.AddStockEvent;
 import com.lframework.xingyun.core.events.stock.SubStockEvent;
 import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.stock.ProductLotStockDto;
 import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
 import com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto;
@@ -42,7 +42,6 @@ import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanMapper;
 import com.lframework.xingyun.sc.service.stock.IProductLotService;
-import com.lframework.xingyun.sc.service.stock.IProductLotStockService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
@@ -50,12 +49,15 @@ import com.lframework.xingyun.sc.service.stock.take.ITakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.*;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -410,6 +412,25 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
 
             ProductStockChangeDto change = addStockEvent.getChange();
             takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getProductId(), change.getNum());
+        }
+    }
+
+    /**
+     * 自动作废任务
+     */
+    @Slf4j
+    public static class AutoCancelJob implements QrtzJob {
+
+        @Autowired
+        private ITakeStockPlanService takeStockPlanService;
+
+        @Override
+        public void execute(JobExecutionContext context) throws JobExecutionException {
+            String id = (String) context.getMergedJobDataMap().get("id");
+
+            CancelTakeStockPlanVo cancelVo = new CancelTakeStockPlanVo();
+            cancelVo.setId(id);
+            takeStockPlanService.cancel(cancelVo);
         }
     }
 }

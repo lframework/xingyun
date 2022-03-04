@@ -29,6 +29,16 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
      */
     private String description;
 
+    /**
+     * 是否允许修改数量
+     */
+    private Boolean allowChangeNum;
+
+    /**
+     * 是否自动计算数量
+     */
+    private Boolean autoChangeStock;
+
     @Data
     public static class ProductVo implements BaseVo, Serializable {
 

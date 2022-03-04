@@ -284,6 +284,10 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
             throw new DefaultClientException("盘点任务不存在商品信息，不允许执行差异处理操作！");
         }
 
+        if (!config.getAllowChangeNum().equals(vo.getAllowChangeNum()) || !config.getAutoChangeStock().equals(vo.getAutoChangeStock())) {
+            throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");
+        }
+
         for (TakeStockPlanDetail detail : details) {
             HandleTakeStockPlanVo.ProductVo productVo = vo.getProducts().stream().filter(t -> t.getProductId().equals(detail.getProductId())).findFirst().get();
             if (config.getAllowChangeNum()) {

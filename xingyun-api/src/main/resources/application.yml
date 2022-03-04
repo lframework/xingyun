@@ -5,7 +5,6 @@ server:
     session:
       #SESSION过期时间
       timeout: 120m
-
 spring:
   profiles:
     active: dev
@@ -21,6 +20,11 @@ spring:
       #file-size-threshold: 0
       #是否要延迟解析文件
       #resolve-lazily: false
+  quartz:
+    jdbc:
+      initialize-schema: never
+    job-store-type: jdbc
+    wait-for-jobs-to-complete-on-shutdown: true
   #时间格式
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss

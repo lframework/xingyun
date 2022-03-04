@@ -419,13 +419,13 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
      * 自动作废任务
      */
     @Slf4j
-    public static class AutoCancelJob implements QrtzJob {
+    public static class AutoCancelJob extends QrtzJob {
 
         @Autowired
         private ITakeStockPlanService takeStockPlanService;
 
         @Override
-        public void execute(JobExecutionContext context) throws JobExecutionException {
+        public void onExecute(JobExecutionContext context) {
             String id = (String) context.getMergedJobDataMap().get("id");
 
             CancelTakeStockPlanVo cancelVo = new CancelTakeStockPlanVo();

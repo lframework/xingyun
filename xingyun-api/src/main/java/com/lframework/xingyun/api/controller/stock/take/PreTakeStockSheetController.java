@@ -150,7 +150,7 @@ public class PreTakeStockSheetController extends DefaultBaseController {
     /**
      * 根据ID查询
      */
-    @PreAuthorize("@permission.valid('stock:take:pre:query','stock:take:pre:add','stock:take:pre:modify')")
+    @PreAuthorize("@permission.valid('stock:take:pre:query')")
     @GetMapping
     public InvokeResult getDetail(@NotBlank(message = "id不能为空！") String id) {
 

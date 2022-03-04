@@ -58,7 +58,7 @@ public class TakeStockPlanController extends DefaultBaseController {
     /**
      * 查询列表
      */
-    @PreAuthorize("@permission.valid('stock:take:plan:query','stock:take:plan:add','stock:take:plan:modify')")
+    @PreAuthorize("@permission.valid('stock:take:plan:query')")
     @GetMapping("/query")
     public InvokeResult query(@Valid QueryTakeStockPlanVo vo) {
 

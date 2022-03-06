@@ -6,8 +6,10 @@ import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
+import com.lframework.xingyun.sc.vo.stock.StockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface IProductStockService extends BaseService {
@@ -55,4 +57,10 @@ public interface IProductStockService extends BaseService {
      * @param vo
      */
     ProductStockChangeDto subStock(SubProductStockVo vo);
+
+    /**
+     * 库存成本调整
+     * @param vo
+     */
+    void stockCostAdjust(StockCostAdjustVo vo);
 }

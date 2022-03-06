@@ -39,4 +39,12 @@ public interface ProductLotStockMapper extends BaseMapper<ProductLotStock> {
      * @return
      */
     ProductLotStockDto getByScIdAndLotId(@Param("scId") String scId, @Param("lotId") String lotId);
+
+    /**
+     * 查询所有有库存的批次库存
+     * @param productId
+     * @param scId
+     * @return
+     */
+    List<ProductLotStockDto> getAllHasStockLots(@Param("productId") String productId, @Param("scId") String scId);
 }

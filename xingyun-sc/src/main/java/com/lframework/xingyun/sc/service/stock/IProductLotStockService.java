@@ -47,4 +47,12 @@ public interface IProductLotStockService extends BaseService {
      * @return
      */
     String addStock(AddProductLotStockVo vo);
+
+    /**
+     * 查询所有有库存的批次库存
+     * @param productId
+     * @param scId
+     * @return
+     */
+    List<ProductLotStockDto> getAllHasStockLots(String productId, String scId);
 }

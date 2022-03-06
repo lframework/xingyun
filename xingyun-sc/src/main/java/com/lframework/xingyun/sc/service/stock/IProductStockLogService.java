@@ -4,6 +4,7 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.web.service.BaseService;
 import com.lframework.xingyun.sc.dto.stock.ProductStockLogDto;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
+import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
 
@@ -36,4 +37,10 @@ public interface IProductStockLogService extends BaseService {
      * 添加出库记录
      */
     void addLogWithSubStock(AddLogWithSubStockVo vo);
+
+    /**
+     * 添加库存成本调整记录
+     * @param vo
+     */
+    void addLogWithStockCostAdjust(AddLogWithStockCostAdjustVo vo);
 }

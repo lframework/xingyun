@@ -105,7 +105,7 @@
     </select>
     <select id="getById" resultMap="ProductLotDto">
         <include refid="ProductLotDto_sql"/>
-        WHERE id = #{id}
+        WHERE l.id = #{id}
     </select>
     <select id="getLastPurchaseLot" resultMap="ProductLotWithStockDto">
         <include refid="ProductLotWithStockDto_sql"/>

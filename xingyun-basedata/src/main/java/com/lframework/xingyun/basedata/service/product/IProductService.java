@@ -24,6 +24,13 @@ public interface IProductService extends BaseService {
     List<ProductDto> query(QueryProductVo vo);
 
     /**
+     * 查询商品品种数
+     * @param vo
+     * @return
+     */
+    Integer queryCount(QueryProductVo vo);
+
+    /**
      * 根据ID查询
      * @param id
      * @return
@@ -186,4 +193,23 @@ public interface IProductService extends BaseService {
      * @return
      */
     PageResult<TakeStockSheetProductDto> queryTakeStockList(Integer pageIndex, Integer pageSize, QueryTakeStockSheetProductVo vo);
+
+    /**
+     * 根据关键字查询库存成本调整单商品信息
+     * @param pageIndex
+     * @param pageSize
+     * @param scId
+     * @param condition
+     * @return
+     */
+    PageResult<StockCostAdjustProductDto> queryStockCostAdjustByCondition(Integer pageIndex, Integer pageSize, String scId, String condition);
+
+    /**
+     * 查询库存成本调整单商品信息
+     * @param pageIndex
+     * @param pageSize
+     * @param vo
+     * @return
+     */
+    PageResult<StockCostAdjustProductDto> queryStockCostAdjustList(Integer pageIndex, Integer pageSize, QueryStockCostAdjustProductVo vo);
 }

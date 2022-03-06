@@ -99,4 +99,9 @@ public class ProductLotStockServiceImpl implements IProductLotStockService {
 
         return record.getId();
     }
+
+    @Override
+    public List<ProductLotStockDto> getAllHasStockLots(String productId, String scId) {
+        return productLotStockMapper.getAllHasStockLots(productId, scId);
+    }
 }

@@ -14,6 +14,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.mappers.ProductStockLogMapper;
 import com.lframework.xingyun.sc.service.stock.IProductStockLogService;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
+import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,41 @@ public class ProductStockLogServiceImpl implements IProductStockLogService {
             record.setBizCode(vo.getBizCode());
         }
         record.setBizType(EnumUtil.getByCode(ProductStockBizType.class, vo.getBizType()));
+
+        productStockLogMapper.insert(record);
+    }
+
+    @Transactional
+    @Override
+    public void addLogWithStockCostAdjust(AddLogWithStockCostAdjustVo vo) {
+        ProductStockLog record = new ProductStockLog();
+        record.setId(IdUtil.getId());
+        record.setScId(vo.getScId());
+        record.setProductId(vo.getProductId());
+        record.setLotId(vo.getLotId());
+        record.setOriStockNum(vo.getOriStockNum());
+        record.setCurStockNum(vo.getOriStockNum());
+        record.setOriTaxPrice(vo.getOriTaxPrice());
+        record.setCurTaxPrice(vo.getCurTaxPrice());
+        record.setOriUnTaxPrice(vo.getOriUnTaxPrice());
+        record.setCurUnTaxPrice(vo.getCurUnTaxPrice());
+        record.setStockNum(0);
+        record.setTaxAmount(vo.getTaxAmount());
+        record.setUnTaxAmount(vo.getUnTaxAmount());
+        if (!StringUtil.isBlank(vo.getCreateBy())) {
+            record.setCreateBy(vo.getCreateBy());
+        }
+        record.setCreateTime(vo.getCreateTime());
+        if (!StringUtil.isBlank(vo.getBizId())) {
+            record.setBizId(vo.getBizId());
+        }
+        if (!StringUtil.isBlank(vo.getBizDetailId())) {
+            record.setBizDetailId(vo.getBizDetailId());
+        }
+        if (!StringUtil.isBlank(vo.getBizCode())) {
+            record.setBizCode(vo.getBizCode());
+        }
+        record.setBizType(ProductStockBizType.STOCK_COST_ADJUST);
 
         productStockLogMapper.insert(record);
     }

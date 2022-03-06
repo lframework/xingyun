@@ -77,17 +77,17 @@ public class ProductStockLog extends BaseEntity {
     private BigDecimal curUnTaxPrice;
 
     /**
-     * 库存数量
+     * 变动库存数量
      */
     private Integer stockNum;
 
     /**
-     * 含税金额
+     * 变动含税金额
      */
     private BigDecimal taxAmount;
 
     /**
-     * 无税金额
+     * 变动无税金额
      */
     private BigDecimal unTaxAmount;
 

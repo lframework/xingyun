@@ -39,7 +39,14 @@
     </select>
     <select id="getByScIdAndLotId" resultMap="ProductLotStockDto">
         <include refid="ProductLotStockDto_sql"/>
-        WERE s.sc_id = #{scId}
+        WHERE s.sc_id = #{scId}
         AND s.lot_id = #{lotId}
+    </select>
+    <select id="getAllHasStockLots" resultMap="ProductLotStockDto">
+        <include refid="ProductLotStockDto_sql"/>
+        WHERE s.sc_id = #{scId}
+        AND l.product_id = #{productId}
+        AND s.stock_num > 0
+        ORDER BY l.create_time DESC
     </select>
 </mapper>

@@ -27,8 +27,10 @@ import com.lframework.xingyun.sc.service.stock.IProductStockLogService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
+import com.lframework.xingyun.sc.vo.stock.StockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
+import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.lot.AddProductLotStockVo;
 import com.lframework.xingyun.sc.vo.stock.lot.CreateProductLotVo;
@@ -371,5 +373,49 @@ public class ProductStockServiceImpl implements IProductStockService {
         ApplicationUtil.publishEvent(subStockEvent);
 
         return stockChange;
+    }
+
+    @Transactional
+    @Override
+    public void stockCostAdjust(StockCostAdjustVo vo) {
+        Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
+                .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
+
+        ProductStock productStock = productStockMapper.selectOne(queryWrapper);
+
+        if (productStock == null) {
+            // 没有库存，跳过
+            return;
+        }
+
+        BigDecimal taxPrice = NumberUtil.getNumber(vo.getTaxPrice(), 6);
+        BigDecimal unTaxPrice = NumberUtil.getNumber(NumberUtil.calcUnTaxPrice(vo.getTaxPrice(), vo.getTaxRate()), 6);
+
+        productStockMapper.stockCostAdjust(vo.getProductId(), vo.getScId(), taxPrice, unTaxPrice);
+
+        List<ProductLotStockDto> lotStocks = productLotStockService.getAllHasStockLots(vo.getProductId(), vo.getScId());
+        if (!CollectionUtil.isEmpty(lotStocks)) {
+            for (ProductLotStockDto lotStock : lotStocks) {
+                BigDecimal taxAmount = NumberUtil.getNumber(NumberUtil.mul(lotStock.getStockNum(), NumberUtil.sub(taxPrice, productStock.getTaxPrice())), 2);
+                BigDecimal unTaxAmount = NumberUtil.getNumber(NumberUtil.mul(lotStock.getStockNum(), NumberUtil.sub(unTaxPrice, productStock.getUnTaxPrice())), 6);
+                AddLogWithStockCostAdjustVo logVo = new AddLogWithStockCostAdjustVo();
+                logVo.setLotId(lotStock.getLotId());
+                logVo.setProductId(vo.getProductId());
+                logVo.setScId(vo.getScId());
+                logVo.setTaxAmount(taxAmount);
+                logVo.setUnTaxAmount(unTaxAmount);
+                logVo.setOriStockNum(productStock.getStockNum());
+                logVo.setOriTaxPrice(productStock.getTaxPrice());
+                logVo.setCurTaxPrice(taxPrice);
+                logVo.setOriUnTaxPrice(productStock.getUnTaxPrice());
+                logVo.setCurUnTaxPrice(unTaxPrice);
+                logVo.setCreateTime(vo.getCreateTime());
+                logVo.setBizId(vo.getBizId());
+                logVo.setBizDetailId(vo.getBizDetailId());
+                logVo.setBizCode(vo.getBizCode());
+
+                productStockLogService.addLogWithStockCostAdjust(logVo);
+            }
+        }
     }
 }

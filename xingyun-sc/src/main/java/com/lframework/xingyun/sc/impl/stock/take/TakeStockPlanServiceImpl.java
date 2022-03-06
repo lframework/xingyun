@@ -157,8 +157,12 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
             if (data.getTakeType() == TakeStockPlanType.ALL) {
                 // 全场盘点
                 // 将所有商品添加明细
-                // 性能问题 考虑如果商品过多是否禁用此种方式
-                products = productService.query(new QueryProductVo());
+                QueryProductVo queryProductVo = new QueryProductVo();
+                Integer count = productService.queryCount(queryProductVo);
+                if (count > 2000) {
+                    throw new DefaultClientException(TakeStockPlanType.ALL.getDesc() + "最多支持2000个商品，当前系统内已经超过2000个商品，无法进行" + TakeStockPlanType.ALL.getDesc());
+                }
+                products = productService.query(queryProductVo);
             } else if (data.getTakeType() == TakeStockPlanType.CATEGORY) {
                 // 类目盘点
                 products = productService.getByCategoryIds(vo.getBizIds());

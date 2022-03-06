@@ -92,6 +92,11 @@ public class ProductServiceImpl implements IProductService {
         return datas;
     }
 
+    @Override
+    public Integer queryCount(QueryProductVo vo) {
+        return productMapper.queryCount(vo);
+    }
+
     @Cacheable(value = ProductDto.CACHE_NAME, key = "#id", unless = "#result == null")
     @Override
     public ProductDto getById(String id) {
@@ -554,6 +559,34 @@ public class ProductServiceImpl implements IProductService {
 
         List<TakeStockSheetProductDto> datas = productMapper.queryTakeStockList(vo);
         PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<StockCostAdjustProductDto> queryStockCostAdjustByCondition(Integer pageIndex, Integer pageSize, String scId, String condition) {
+
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+
+        List<StockCostAdjustProductDto> datas = productMapper.queryStockCostAdjustByCondition(scId, condition);
+        PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<StockCostAdjustProductDto> queryStockCostAdjustList(Integer pageIndex, Integer pageSize, QueryStockCostAdjustProductVo vo) {
+
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+
+        List<StockCostAdjustProductDto> datas = productMapper.queryStockCostAdjustList(vo);
+        PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
         return pageResult;
     }

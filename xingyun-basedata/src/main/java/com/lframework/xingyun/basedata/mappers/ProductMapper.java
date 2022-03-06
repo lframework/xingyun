@@ -26,6 +26,13 @@ public interface ProductMapper extends BaseMapper<Product> {
     List<ProductDto> query(@Param("vo") QueryProductVo vo);
 
     /**
+     * 查询商品品种数
+     * @param vo
+     * @return
+     */
+    Integer queryCount(@Param("vo") QueryProductVo vo);
+
+    /**
      * 根据ID查询
      * @param id
      * @return
@@ -143,4 +150,19 @@ public interface ProductMapper extends BaseMapper<Product> {
      * @return
      */
     List<TakeStockSheetProductDto> queryTakeStockList(@Param("vo") QueryTakeStockSheetProductVo vo);
+
+    /**
+     * 根据关键字查询库存成本调整单商品信息
+     * @param scId
+     * @param condition
+     * @return
+     */
+    List<StockCostAdjustProductDto> queryStockCostAdjustByCondition(String scId, String condition);
+
+    /**
+     * 查询库存成本调整单商品信息
+     * @param vo
+     * @return
+     */
+    List<StockCostAdjustProductDto> queryStockCostAdjustList(@Param("vo") QueryStockCostAdjustProductVo vo);
 }

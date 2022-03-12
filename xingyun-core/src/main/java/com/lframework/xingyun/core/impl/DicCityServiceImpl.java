@@ -16,10 +16,11 @@ public class DicCityServiceImpl implements IDicCityService {
     @Autowired
     private DicCityMapper dicCityMapper;
 
+    @Cacheable(value = DicCityDto.SELECTOR_CACHE_NAME, key = "(#parentId == null || #parentId == '') ? 'parent' : #parentId")
     @Override
-    public List<DicCityDto> selector() {
+    public List<DicCityDto> selector(String parentId) {
 
-        return dicCityMapper.selector();
+        return dicCityMapper.selector(parentId);
     }
 
     @Cacheable(value = DicCityDto.CACHE_NAME, key = "#id", unless = "#result == null")

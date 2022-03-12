@@ -10,6 +10,8 @@ public class DicCityDto implements BaseDto, Serializable {
 
     public static final String CACHE_NAME = "DicCityDto";
 
+    public static final String SELECTOR_CACHE_NAME = "DicCitySelectorDto";
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -36,4 +38,9 @@ public class DicCityDto implements BaseDto, Serializable {
      * 层级
      */
     private Integer level;
+
+    /**
+     * 是否末级
+     */
+    private Boolean isFinal;
 }

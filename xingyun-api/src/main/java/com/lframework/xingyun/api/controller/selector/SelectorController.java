@@ -128,9 +128,9 @@ public class SelectorController extends DefaultBaseController {
      * 城市数据
      */
     @GetMapping("/city")
-    public InvokeResult dicCity() {
+    public InvokeResult dicCity(String parentId) {
 
-        List<DicCityDto> datas = dicCityService.selector();
+        List<DicCityDto> datas = dicCityService.selector(parentId);
         List<CitySelectorBo> results = Collections.EMPTY_LIST;
         if (!CollectionUtil.isEmpty(datas)) {
             results = datas.stream().map(CitySelectorBo::new).collect(Collectors.toList());

@@ -8,6 +8,7 @@
         <result column="name" property="name"/>
         <result column="parent_id" property="parentId"/>
         <result column="level" property="level"/>
+        <result column="is_final" property="isFinal"/>
     </resultMap>
 
     <sql id="DicCityDto_sql">
@@ -15,12 +16,21 @@
                code,
                name,
                parent_id,
-               level
+               level,
+               is_final
         FROM dic_city
     </sql>
 
     <select id="selector" resultMap="DicCityDto">
         <include refid="DicCityDto_sql"/>
+        <where>
+            <if test="parentId != null and parentId != ''">
+                AND parent_id = #{parentId}
+            </if>
+            <if test="parentId == null or parentId == ''">
+                AND (parent_id is NULL OR parent_id = '')
+            </if>
+        </where>
         ORDER BY code
     </select>
 

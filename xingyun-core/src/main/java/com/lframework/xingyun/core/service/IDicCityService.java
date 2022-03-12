@@ -11,7 +11,7 @@ public interface IDicCityService extends BaseService {
      * 选择器
      * @return
      */
-    List<DicCityDto> selector();
+    List<DicCityDto> selector(String parentId);
 
     /**
      * 根据ID查询

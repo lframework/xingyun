@@ -17,10 +17,10 @@ import java.util.List;
 public interface DicCityMapper extends BaseMapper<DicCity> {
 
     /**
-     * 选择器
+     * 查询所有数据
      * @return
      */
-    List<DicCityDto> selector(String parentId);
+    List<DicCityDto> getAll();
 
     /**
      * 根据ID查询

@@ -8,10 +8,10 @@ import java.util.List;
 public interface IDicCityService extends BaseService {
 
     /**
-     * 选择器
+     * 查询所有数据
      * @return
      */
-    List<DicCityDto> selector(String parentId);
+    List<DicCityDto> getAll();
 
     /**
      * 根据ID查询
@@ -19,4 +19,11 @@ public interface IDicCityService extends BaseService {
      * @return
      */
     DicCityDto getById(String id);
+
+    /**
+     * 根据ID查询链路数据
+     * @param id
+     * @return
+     */
+    List<DicCityDto> getChainById(String id);
 }

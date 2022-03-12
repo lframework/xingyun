@@ -38,9 +38,4 @@ public class DicCityDto implements BaseDto, Serializable {
      * 层级
      */
     private Integer level;
-
-    /**
-     * 是否末级
-     */
-    private Boolean isFinal;
 }

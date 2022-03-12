@@ -24,11 +24,6 @@ public class CitySelectorBo extends BaseBo<DicCityDto> {
      */
     private String parentId;
 
-    /**
-     * 是否末级
-     */
-    private Boolean isFinal;
-
     public CitySelectorBo() {
 
     }

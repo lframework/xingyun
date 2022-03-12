@@ -1,12 +1,17 @@
 package com.lframework.xingyun.api.bo.basedata.customer;
 
+import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
+import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.IDicCityService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -60,7 +65,7 @@ public class GetCustomerBo extends BaseBo<CustomerDto> {
     /**
      * 地区ID
      */
-    private String cityId;
+    private List<String> city;
 
     /**
      * 地区名称
@@ -151,7 +156,10 @@ public class GetCustomerBo extends BaseBo<CustomerDto> {
 
         if (!StringUtil.isBlank(dto.getCityId())) {
             IDicCityService dicCityService = ApplicationUtil.getBean(IDicCityService.class);
-            this.cityName = dicCityService.getById(dto.getCityId()).getName();
+            List<DicCityDto> cityList = dicCityService.getChainById(dto.getCityId());
+            this.city = cityList.stream().map(DicCityDto::getId).collect(Collectors.toList());
+
+            this.cityName = cityList.stream().map(DicCityDto::getName).collect(Collectors.joining(StringPool.CITY_SPLIT));
         }
     }
 }

@@ -205,18 +205,22 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
         productCategoryMapper.update(updateWrapper);
 
         if (!vo.getAvailable()) {
-            //如果是停用 子节点全部停用
-            List<String> childrenIds = recursionMappingService
-                    .getNodeChildIds(data.getId(), ApplicationUtil.getBean(ProductCategoryNodeType.class));
-            if (!CollectionUtil.isEmpty(childrenIds)) {
-                this.batchUnable(childrenIds);
+            if (data.getAvailable()) {
+                //如果是停用 子节点全部停用
+                List<String> childrenIds = recursionMappingService
+                        .getNodeChildIds(data.getId(), ApplicationUtil.getBean(ProductCategoryNodeType.class));
+                if (!CollectionUtil.isEmpty(childrenIds)) {
+                    this.batchUnable(childrenIds);
+                }
             }
         } else {
-            //如果是启用 父节点全部启用
-            List<String> parentIs = recursionMappingService
-                    .getNodeParentIds(data.getId(), ApplicationUtil.getBean(ProductCategoryNodeType.class));
-            if (!CollectionUtil.isEmpty(parentIs)) {
-                this.batchEnable(parentIs);
+            if (!data.getAvailable()) {
+                //如果是启用 父节点全部启用
+                List<String> parentIs = recursionMappingService
+                        .getNodeParentIds(data.getId(), ApplicationUtil.getBean(ProductCategoryNodeType.class));
+                if (!CollectionUtil.isEmpty(parentIs)) {
+                    this.batchEnable(parentIs);
+                }
             }
         }
 

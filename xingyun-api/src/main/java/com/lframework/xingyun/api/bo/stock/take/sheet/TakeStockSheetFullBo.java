@@ -186,9 +186,11 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
             this.bizName = builder.toString();
         }
 
-        IPreTakeStockSheetService preTakeStockSheetService = ApplicationUtil.getBean(IPreTakeStockSheetService.class);
-        PreTakeStockSheetDto preSheet =preTakeStockSheetService.getById(dto.getPreSheetId());
-        this.preSheetCode = preSheet.getCode();
+        if (!StringUtil.isBlank(dto.getPreSheetId())) {
+            IPreTakeStockSheetService preTakeStockSheetService = ApplicationUtil.getBean(IPreTakeStockSheetService.class);
+            PreTakeStockSheetDto preSheet =preTakeStockSheetService.getById(dto.getPreSheetId());
+            this.preSheetCode = preSheet.getCode();
+        }
 
         IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
         StoreCenterDto sc = storeCenterService.getById(dto.getScId());

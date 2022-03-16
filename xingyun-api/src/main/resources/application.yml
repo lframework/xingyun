@@ -101,7 +101,7 @@ kaptcha:
   back-ground-impl: com.google.code.kaptcha.impl.DefaultBackground
   back-ground-clr-from: lightGray
   back-ground-clr-to: white
-  image-width: 150
+  image-width: 120
   image-height: 40
 
 #终端ID

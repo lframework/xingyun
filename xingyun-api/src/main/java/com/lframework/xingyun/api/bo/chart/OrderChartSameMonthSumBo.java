@@ -6,10 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class OrderChartSumBo extends BaseBo<OrderChartSumDto> {
+public class OrderChartSameMonthSumBo extends BaseBo<OrderChartSumDto> {
 
     /**
      * 单据总金额
@@ -21,11 +22,16 @@ public class OrderChartSumBo extends BaseBo<OrderChartSumDto> {
      */
     private Long totalNum;
 
-    public OrderChartSumBo() {
+    /**
+     * 图表数据
+     */
+    private List<OrderChartSameMonthBo> charts;
+
+    public OrderChartSameMonthSumBo() {
 
     }
 
-    public OrderChartSumBo(OrderChartSumDto dto) {
+    public OrderChartSameMonthSumBo(OrderChartSumDto dto) {
 
         super(dto);
     }

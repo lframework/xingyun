@@ -31,9 +31,6 @@ public class OrderChartServiceImpl implements IOrderChartService {
     @Autowired
     private OrderChartMapper orderChartMapper;
 
-    @Autowired
-    private RedisHandler redisHandler;
-
     @Transactional
     @Override
     public String create(CreateOrderChartVo vo) {
@@ -52,8 +49,6 @@ public class OrderChartServiceImpl implements IOrderChartService {
 
         orderChartMapper.insert(record);
 
-        this.incrOrderChart(record.getBizType(), vo.getCreateTime().toLocalDate(), vo.getTotalAmount());
-
         return record.getId();
     }
 
@@ -62,31 +57,31 @@ public class OrderChartServiceImpl implements IOrderChartService {
 
         LocalDate now = LocalDate.now();
 
-        String key = this.getTodayKey(EnumUtil.getByCode(OrderChartBizType.class, vo.getBizType()), now);
-        Number totalNum = (Number) redisHandler.get(StringUtil.format("{}_{}", key, "totalNum"));
-        Number totalAmount = (Number) redisHandler.get(StringUtil.format("{}_{}", key, "totalAmount"));
+        OrderChartSumDto data = orderChartMapper.getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
+                DateUtil.toLocalDateTimeMax(now));
+        if (data == null) {
+            data = new OrderChartSumDto();
+            data.setTotalAmount(BigDecimal.ZERO);
+            data.setTotalNum(0L);
+        }
 
-        OrderChartSumDto result = new OrderChartSumDto();
-        result.setTotalAmount(totalAmount == null ? BigDecimal.ZERO : NumberUtil.getNumber(totalAmount, 2));
-        result.setTotalNum(totalNum == null ? 0L : NumberUtil.getNumber(totalNum, 0).longValue());
-
-        return result;
+        return data;
     }
 
     @Override
     public OrderChartSumDto getSameMonthChartSum(GetOrderChartVo vo) {
 
         LocalDate startDate = LocalDate.now().withDayOfMonth(1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
-        String key = this.getSameMonthKey(EnumUtil.getByCode(OrderChartBizType.class, vo.getBizType()), startDate);
-        Number totalNum = (Number) redisHandler.get(StringUtil.format("{}_{}", key, "totalNum"));
-        Number totalAmount = (Number) redisHandler.get(StringUtil.format("{}_{}", key, "totalAmount"));
+        OrderChartSumDto data = orderChartMapper.getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(startDate), DateUtil.toLocalDateTimeMax(endDate));
+        if (data == null) {
+            data = new OrderChartSumDto();
+            data.setTotalAmount(BigDecimal.ZERO);
+            data.setTotalNum(0L);
+        }
 
-        OrderChartSumDto result = new OrderChartSumDto();
-        result.setTotalAmount(totalAmount == null ? BigDecimal.ZERO : NumberUtil.getNumber(totalAmount, 2));
-        result.setTotalNum(totalNum == null ? 0L : NumberUtil.getNumber(totalNum, 0).longValue());
-
-        return result;
+        return data;
     }
 
     @Override
@@ -95,7 +90,7 @@ public class OrderChartServiceImpl implements IOrderChartService {
         LocalDate now = LocalDate.now();
 
         List<OrderChartTodayDto> results = orderChartMapper
-                .queryToday(EnumUtil.getByCode(OrderChartBizType.class, vo.getBizType()), DateUtil.toLocalDateTime(now),
+                .queryToday(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
                         DateUtil.toLocalDateTimeMax(now));
 
         int offset = 24;
@@ -127,7 +122,7 @@ public class OrderChartServiceImpl implements IOrderChartService {
         LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
         List<OrderChartSameMonthDto> results = orderChartMapper
-                .querySameMonth(EnumUtil.getByCode(OrderChartBizType.class, vo.getBizType()),
+                .querySameMonth(vo.getBizTypes(),
                         DateUtil.toLocalDateTime(startDate), DateUtil.toLocalDateTimeMax(endDate));
 
         LocalDate lastDate = startDate.plusMonths(1).minusDays(1);
@@ -149,63 +144,5 @@ public class OrderChartServiceImpl implements IOrderChartService {
         }
 
         return newResults;
-    }
-
-    private void incrOrderChart(OrderChartBizType bizType, LocalDate currentDate, BigDecimal totalAmount) {
-
-        Assert.notNull(bizType);
-        Assert.notNull(currentDate);
-        Assert.notNull(totalAmount);
-
-        String todayKey = this.getTodayKey(bizType, currentDate);
-
-        redisHandler.incr(StringUtil.format("{}_{}", todayKey, "totalNum"), 1);
-        redisHandler.expire(StringUtil.format("{}_{}", todayKey, "totalNum"), this.getTodayKeyExpire());
-
-        redisHandler.incr(StringUtil.format("{}_{}", todayKey, "totalAmount"), totalAmount.doubleValue());
-        redisHandler.expire(StringUtil.format("{}_{}", todayKey, "totalAmount"), this.getTodayKeyExpire());
-
-        String sameMonthKey = this.getSameMonthKey(bizType, currentDate);
-
-        redisHandler.incr(StringUtil.format("{}_{}", sameMonthKey, "totalNum"), 1);
-        redisHandler.expire(StringUtil.format("{}_{}", sameMonthKey, "totalNum"), this.getSameMonthKeyExpire());
-
-        redisHandler.incr(StringUtil.format("{}_{}", sameMonthKey, "totalAmount"), totalAmount.doubleValue());
-        redisHandler.expire(StringUtil.format("{}_{}", sameMonthKey, "totalAmount"), this.getSameMonthKeyExpire());
-    }
-
-    private String getTodayKey(OrderChartBizType bizType, LocalDate currentDate) {
-
-        Assert.notNull(bizType);
-        Assert.notNull(currentDate);
-
-        return StringUtil.format("{}_{}_today_{}", OrderChartSumDto.CACHE_NAME, bizType.getCode(),
-                DateUtil.formatDate(currentDate));
-    }
-
-    private String getSameMonthKey(OrderChartBizType bizType, LocalDate currentDate) {
-
-        Assert.notNull(bizType);
-        Assert.notNull(currentDate);
-
-        return StringUtil.format("{}_{}_sameMonth_{}", OrderChartSumDto.CACHE_NAME, bizType.getCode(),
-                DateUtil.formatDate(currentDate.withDayOfMonth(1)));
-    }
-
-    private long getTodayKeyExpire() {
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime maxDateTime = DateUtil.toLocalDateTimeMax(now.toLocalDate());
-
-        return DateUtil.getTime(maxDateTime) - DateUtil.getTime(now);
-    }
-
-    private long getSameMonthKeyExpire() {
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime maxDateTime = DateUtil
-                .toLocalDateTimeMax(now.withDayOfMonth(1).plusMonths(1).minusDays(1).toLocalDate());
-
-        return DateUtil.getTime(maxDateTime) - DateUtil.getTime(now);
     }
 }

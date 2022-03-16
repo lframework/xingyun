@@ -2,6 +2,7 @@ package com.lframework.xingyun.chart.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.chart.dto.OrderChartSameMonthDto;
+import com.lframework.xingyun.chart.dto.OrderChartSumDto;
 import com.lframework.xingyun.chart.dto.OrderChartTodayDto;
 import com.lframework.xingyun.chart.entity.OrderChart;
 import com.lframework.xingyun.chart.enums.OrderChartBizType;
@@ -21,22 +22,32 @@ import java.util.List;
 public interface OrderChartMapper extends BaseMapper<OrderChart> {
 
     /**
-     * 查询列表
-     * @param bizType
+     * 汇总数据
+     * @param bizTypes
      * @param startTime
      * @param endTime
      * @return
      */
-    List<OrderChartSameMonthDto> querySameMonth(@Param("bizType") OrderChartBizType bizType,
+    OrderChartSumDto getChartSum(@Param("bizTypes") List<Integer> bizTypes,
+                                 @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+
+    /**
+     * 查询列表
+     * @param bizTypes
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<OrderChartSameMonthDto> querySameMonth(@Param("bizTypes") List<Integer> bizTypes,
             @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     /**
      * 查询当日数据列表
-     * @param bizType
+     * @param bizTypes
      * @param startTime
      * @param endTime
      * @return
      */
-    List<OrderChartTodayDto> queryToday(@Param("bizType") OrderChartBizType bizType,
+    List<OrderChartTodayDto> queryToday(@Param("bizTypes") List<Integer> bizTypes,
             @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 }

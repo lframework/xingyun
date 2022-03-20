@@ -197,7 +197,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
         }
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "审核通过库存成本调整单，ID：{}", params = {"#id"})
+    @OpLog(type = OpLogType.OTHER, name = "审核通过库存成本调整单，ID：{}", params = {"#vo.id"})
     @Transactional
     @Override
     public void approvePass(ApprovePassStockCostAdjustSheetVo vo) {

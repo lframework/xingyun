@@ -1,5 +1,6 @@
 package com.lframework.xingyun.api.controller.sale;
 
+import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
@@ -9,11 +10,9 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.receive.GetPaymentDateBo;
-import com.lframework.xingyun.api.bo.sale.out.GetSaleOutSheetBo;
-import com.lframework.xingyun.api.bo.sale.out.QuerySaleOutSheetBo;
-import com.lframework.xingyun.api.bo.sale.out.QuerySaleOutSheetWithReturnBo;
-import com.lframework.xingyun.api.bo.sale.out.SaleOutSheetWithReturnBo;
+import com.lframework.xingyun.api.bo.sale.out.*;
 import com.lframework.xingyun.api.model.sale.out.SaleOutSheetExportModel;
+import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
@@ -44,6 +43,25 @@ public class SaleOutSheetController extends DefaultBaseController {
 
     @Autowired
     private ISaleOutSheetService saleOutSheetService;
+
+    /**
+     * 打印
+     */
+    @PreAuthorize("@permission.valid('sale:out:query')")
+    @GetMapping("/print")
+    public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+
+        SaleOutSheetFullDto data = saleOutSheetService.getDetail(id);
+        if (data == null) {
+            throw new DefaultClientException("销售出库单不存在！");
+        }
+
+        PrintSaleOutSheetBo result = new PrintSaleOutSheetBo(data);
+
+        A4ExcelPortraitPrintBo<PrintSaleOutSheetBo> printResult = new A4ExcelPortraitPrintBo<>("print/sale-out-sheet.ftl", result);
+
+        return InvokeResultBuilder.success(printResult);
+    }
 
     /**
      * 订单列表

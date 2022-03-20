@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.dto.purchase.receive;
 
 import com.lframework.starter.web.dto.BaseDto;
-import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
+import com.lframework.xingyun.sc.enums.ReceiveSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import lombok.Data;
 
@@ -109,7 +109,7 @@ public class ReceiveSheetFullDto implements BaseDto, Serializable {
     /**
      * 状态
      */
-    private PurchaseOrderStatus status;
+    private ReceiveSheetStatus status;
 
     /**
      * 拒绝原因

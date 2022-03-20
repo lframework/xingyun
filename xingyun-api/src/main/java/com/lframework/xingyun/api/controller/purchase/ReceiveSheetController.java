@@ -10,6 +10,7 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.receive.*;
 import com.lframework.xingyun.api.model.purchase.receive.ReceiveSheetExportModel;
+import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
@@ -40,6 +41,22 @@ public class ReceiveSheetController extends DefaultBaseController {
 
     @Autowired
     private IReceiveSheetService receiveSheetService;
+
+    /**
+     * 打印
+     */
+    @PreAuthorize("@permission.valid('purchase:receive:query')")
+    @GetMapping("/print")
+    public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+
+        ReceiveSheetFullDto data = receiveSheetService.getDetail(id);
+
+        PrintReceiveSheetBo result = new PrintReceiveSheetBo(data);
+
+        A4ExcelPortraitPrintBo<PrintReceiveSheetBo> printResult = new A4ExcelPortraitPrintBo<PrintReceiveSheetBo>("print/receive-sheet.ftl", result);
+
+        return InvokeResultBuilder.success(printResult);
+    }
 
     /**
      * 订单列表

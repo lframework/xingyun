@@ -1,5 +1,6 @@
 package com.lframework.xingyun.api.controller.purchase;
 
+import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
@@ -11,6 +12,7 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.*;
 import com.lframework.xingyun.api.model.purchase.PurchaseOrderExportModel;
+import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.basedata.dto.product.info.PurchaseProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryPurchaseProductVo;
@@ -46,6 +48,26 @@ public class PurchaseOrderController extends DefaultBaseController {
 
     @Autowired
     private IProductService productService;
+
+    /**
+     * 打印
+     * @param id
+     * @return
+     */
+    @PreAuthorize("@permission.valid('purchase:order:query')")
+    @GetMapping("/print")
+    public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+        PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
+        if (data == null) {
+            throw new DefaultClientException("订单不存在！");
+        }
+
+        PrintPurchaseOrderBo result = new PrintPurchaseOrderBo(data);
+
+        A4ExcelPortraitPrintBo<PrintPurchaseOrderBo> printResult = new A4ExcelPortraitPrintBo<>("print/purchase-order.ftl", result);
+
+        return InvokeResultBuilder.success(printResult);
+    }
 
     /**
      * 订单列表

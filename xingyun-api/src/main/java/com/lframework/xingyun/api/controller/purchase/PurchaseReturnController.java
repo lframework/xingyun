@@ -9,8 +9,10 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.returned.GetPurchaseReturnBo;
+import com.lframework.xingyun.api.bo.purchase.returned.PrintPurchaseReturnBo;
 import com.lframework.xingyun.api.bo.purchase.returned.QueryPurchaseReturnBo;
 import com.lframework.xingyun.api.model.purchase.returned.PurchaseReturnExportModel;
+import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseReturnService;
@@ -38,6 +40,21 @@ public class PurchaseReturnController extends DefaultBaseController {
 
     @Autowired
     private IPurchaseReturnService purchaseReturnService;
+
+    /**
+     * 打印
+     */
+    @PreAuthorize("@permission.valid('purchase:return:query')")
+    @GetMapping("/print")
+    public InvokeResult print(@NotBlank(message = "退单ID不能为空！") String id) {
+
+        PurchaseReturnFullDto data = purchaseReturnService.getDetail(id);
+
+        PrintPurchaseReturnBo result = new PrintPurchaseReturnBo(data);
+        A4ExcelPortraitPrintBo<PrintPurchaseReturnBo> printResult = new A4ExcelPortraitPrintBo<>("print/purchase-return.ftl", result);
+
+        return InvokeResultBuilder.success(printResult);
+    }
 
     /**
      * 退单列表
@@ -91,7 +108,7 @@ public class PurchaseReturnController extends DefaultBaseController {
      */
     @PreAuthorize("@permission.valid('purchase:return:query')")
     @GetMapping
-    public InvokeResult getById(@NotBlank(message = "退ID不能为空！") String id) {
+    public InvokeResult getById(@NotBlank(message = "退单ID不能为空！") String id) {
 
         PurchaseReturnFullDto data = purchaseReturnService.getDetail(id);
 

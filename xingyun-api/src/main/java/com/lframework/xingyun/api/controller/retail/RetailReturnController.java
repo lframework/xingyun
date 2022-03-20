@@ -1,5 +1,6 @@
 package com.lframework.xingyun.api.controller.retail;
 
+import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
@@ -9,8 +10,10 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.retail.returned.GetRetailReturnBo;
+import com.lframework.xingyun.api.bo.retail.returned.PrintRetailReturnBo;
 import com.lframework.xingyun.api.bo.retail.returned.QueryRetailReturnBo;
 import com.lframework.xingyun.api.model.retail.returned.RetailReturnExportModel;
+import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.service.retail.IRetailReturnService;
@@ -38,6 +41,25 @@ public class RetailReturnController extends DefaultBaseController {
 
     @Autowired
     private IRetailReturnService retailReturnService;
+
+    /**
+     * 打印
+     */
+    @PreAuthorize("@permission.valid('retail:return:query')")
+    @GetMapping("/print")
+    public InvokeResult print(@NotBlank(message = "退单ID不能为空！") String id) {
+
+        RetailReturnFullDto data = retailReturnService.getDetail(id);
+        if (data == null) {
+            throw new DefaultClientException("零售退货单不存在！");
+        }
+
+        PrintRetailReturnBo result = new PrintRetailReturnBo(data);
+
+        A4ExcelPortraitPrintBo<PrintRetailReturnBo> printResult = new A4ExcelPortraitPrintBo<>("print/retail-return.ftl", result);
+
+        return InvokeResultBuilder.success(printResult);
+    }
 
     /**
      * 退单列表
@@ -91,7 +113,7 @@ public class RetailReturnController extends DefaultBaseController {
      */
     @PreAuthorize("@permission.valid('retail:return:query')")
     @GetMapping
-    public InvokeResult getById(@NotBlank(message = "退ID不能为空！") String id) {
+    public InvokeResult getById(@NotBlank(message = "退单ID不能为空！") String id) {
 
         RetailReturnFullDto data = retailReturnService.getDetail(id);
 

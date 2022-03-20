@@ -1,5 +1,6 @@
 package com.lframework.xingyun.api.controller.retail;
 
+import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
@@ -9,11 +10,9 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.receive.GetPaymentDateBo;
-import com.lframework.xingyun.api.bo.retail.out.GetRetailOutSheetBo;
-import com.lframework.xingyun.api.bo.retail.out.QueryRetailOutSheetBo;
-import com.lframework.xingyun.api.bo.retail.out.QueryRetailOutSheetWithReturnBo;
-import com.lframework.xingyun.api.bo.retail.out.RetailOutSheetWithReturnBo;
+import com.lframework.xingyun.api.bo.retail.out.*;
 import com.lframework.xingyun.api.model.retail.out.RetailOutSheetExportModel;
+import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
@@ -44,6 +43,24 @@ public class RetailOutSheetController extends DefaultBaseController {
 
     @Autowired
     private IRetailOutSheetService retailOutSheetService;
+
+    /**
+     * 打印
+     */
+    @PreAuthorize("@permission.valid('retail:out:query')")
+    @GetMapping("/print")
+    public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+
+        RetailOutSheetFullDto data = retailOutSheetService.getDetail(id);
+        if (data == null) {
+            throw new DefaultClientException("零售出库单不存在！");
+        }
+
+        PrintRetailOutSheetBo result = new PrintRetailOutSheetBo(data);
+        A4ExcelPortraitPrintBo<PrintRetailOutSheetBo> printResult = new A4ExcelPortraitPrintBo<>("print/retail-out-sheet.ftl", result);
+
+        return InvokeResultBuilder.success(printResult);
+    }
 
     /**
      * 订单列表

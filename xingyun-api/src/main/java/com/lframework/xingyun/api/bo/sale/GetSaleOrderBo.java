@@ -53,11 +53,6 @@ public class GetSaleOrderBo extends BaseBo<SaleOrderFullDto> {
     private String customerId;
 
     /**
-     * 客户编号
-     */
-    private String customerCode;
-
-    /**
      * 客户名称
      */
     private String customerName;

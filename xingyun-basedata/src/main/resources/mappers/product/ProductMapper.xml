@@ -183,7 +183,7 @@
             g.available,
             property.id AS property_id,
             property.name AS property_name,
-            IF(property.column_type = 3, pproperty.property_text, propertyItem.name) AS property_text,
+            IF(property.column_type = 3, pproperty.property_text, IF(property.column_type = 1, GROUP_CONCAT(propertyItem.name order by propertyItem.code SEPARATOR '，'), propertyItem.name)) AS property_text,
             property.column_type AS property_column_type
         FROM base_data_product AS g
         INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id

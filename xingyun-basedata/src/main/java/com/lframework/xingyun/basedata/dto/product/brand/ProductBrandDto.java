@@ -34,6 +34,11 @@ public class ProductBrandDto implements BaseDto, Serializable {
     private String shortName;
 
     /**
+     * logo
+     */
+    private String logo;
+
+    /**
      * 简介
      */
     private String introduction;

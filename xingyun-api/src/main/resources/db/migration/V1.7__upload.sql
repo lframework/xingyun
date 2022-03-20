@@ -1,0 +1,1 @@
+ALTER TABLE `base_data_product_brand` ADD COLUMN `logo` longtext NULL COMMENT 'logo' AFTER `short_name`;

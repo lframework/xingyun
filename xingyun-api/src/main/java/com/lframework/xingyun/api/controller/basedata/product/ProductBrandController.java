@@ -1,12 +1,15 @@
 package com.lframework.xingyun.api.controller.basedata.product;
 
+import com.lframework.common.constants.StringPool;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
+import com.lframework.common.utils.FileUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.UploadUtil;
 import com.lframework.xingyun.api.bo.basedata.product.brand.GetProductBrandBo;
 import com.lframework.xingyun.api.bo.basedata.product.brand.QueryProductBrandBo;
 import com.lframework.xingyun.basedata.dto.product.brand.ProductBrandDto;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -37,6 +41,22 @@ public class ProductBrandController extends DefaultBaseController {
 
     @Autowired
     private IProductBrandService productBrandService;
+
+    @PostMapping("/upload/logo")
+    public InvokeResult uploadLogo(MultipartFile file) {
+
+        if (!FileUtil.IMG_SUFFIX.contains(FileUtil.getSuffix(file.getOriginalFilename()))) {
+            throw new DefaultClientException("Logo图片仅支持【" + CollectionUtil.join(FileUtil.IMG_SUFFIX, StringPool.STR_SPLIT_CN) + "】格式！");
+        }
+
+        if (file.getSize() > 1 << 20) {
+            throw new DefaultClientException("Logo图片大小不允许超过1MB");
+
+        }
+        String url = UploadUtil.upload(file);
+
+        return InvokeResultBuilder.success(url);
+    }
 
     /**
      * 品牌列表

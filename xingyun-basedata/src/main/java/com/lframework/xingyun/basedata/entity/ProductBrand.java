@@ -45,6 +45,11 @@ public class ProductBrand extends BaseEntity {
     private String shortName;
 
     /**
+     * logo
+     */
+    private String logo;
+
+    /**
      * 简介
      */
     private String introduction;

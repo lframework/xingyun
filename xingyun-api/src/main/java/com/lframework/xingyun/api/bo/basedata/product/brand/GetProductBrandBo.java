@@ -30,6 +30,11 @@ public class GetProductBrandBo extends BaseBo<ProductBrandDto> {
     private String shortName;
 
     /**
+     * logo
+     */
+    private String logo;
+
+    /**
      * 简介
      */
     private String introduction;

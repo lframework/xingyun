@@ -1,5 +1,6 @@
 package com.lframework.xingyun.basedata.vo.product.brand;
 
+import com.lframework.starter.web.components.validation.UploadUrl;
 import com.lframework.starter.web.vo.BaseVo;
 import lombok.Data;
 
@@ -27,6 +28,12 @@ public class CreateProductBrandVo implements BaseVo, Serializable {
      * 简称
      */
     private String shortName;
+
+    /**
+     * logo
+     */
+    @UploadUrl(message = "logo文件格式有误！")
+    private String logo;
 
     /**
      * 简介

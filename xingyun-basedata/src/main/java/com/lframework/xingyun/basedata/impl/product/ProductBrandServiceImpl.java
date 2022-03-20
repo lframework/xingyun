@@ -136,6 +136,9 @@ public class ProductBrandServiceImpl implements IProductBrandService {
         data.setIntroduction(StringUtil.isBlank(vo.getIntroduction()) ? StringPool.EMPTY_STR : vo.getIntroduction());
         data.setAvailable(Boolean.TRUE);
         data.setDescription(StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+        if (!StringUtil.isBlank(vo.getLogo())) {
+            data.setLogo(vo.getLogo());
+        }
 
         productBrandMapper.insert(data);
 
@@ -172,6 +175,7 @@ public class ProductBrandServiceImpl implements IProductBrandService {
                 .set(ProductBrand::getCode, vo.getCode()).set(ProductBrand::getName, vo.getName())
                 .set(ProductBrand::getShortName,
                         StringUtil.isBlank(vo.getShortName()) ? StringPool.EMPTY_STR : vo.getShortName())
+                .set(ProductBrand::getLogo, StringUtil.isBlank(vo.getLogo()) ? null : vo.getLogo())
                 .set(ProductBrand::getIntroduction,
                         StringUtil.isBlank(vo.getIntroduction()) ? StringPool.EMPTY_STR : vo.getIntroduction())
                 .set(ProductBrand::getAvailable, vo.getAvailable()).set(ProductBrand::getDescription,

@@ -7,6 +7,7 @@
         <result column="code" property="code"/>
         <result column="name" property="name"/>
         <result column="short_name" property="shortName"/>
+        <result column="logo" property="logo"/>
         <result column="introduction" property="introduction"/>
         <result column="available" property="available"/>
         <result column="description" property="description"/>
@@ -22,6 +23,7 @@
             code,
             name,
             short_name,
+            logo,
             introduction,
             available,
             description,

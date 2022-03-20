@@ -22,8 +22,10 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.member.MemberDto;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
+import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailReturnEvent;
@@ -98,6 +100,9 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
 
     @Autowired
     private IProductLotService productLotService;
+
+    @Autowired
+    private IProductPurchaseService productPurchaseService;
 
     @Override
     public PageResult<RetailReturnDto> query(Integer pageIndex, Integer pageSize, QueryRetailReturnVo vo) {
@@ -265,11 +270,13 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
                 .eq(RetailReturnDetail::getReturnId, retailReturn.getId()).orderByAsc(RetailReturnDetail::getOrderNo);
         List<RetailReturnDetail> details = retailReturnDetailMapper.selectList(queryDetailWrapper);
         for (RetailReturnDetail detail : details) {
+            ProductPurchaseDto productPurchase = productPurchaseService.getById(detail.getProductId());
             AddProductStockVo addProductStockVo = new AddProductStockVo();
             addProductStockVo.setProductId(detail.getProductId());
             addProductStockVo.setScId(retailReturn.getScId());
             addProductStockVo.setSupplierId(detail.getSupplierId());
             addProductStockVo.setStockNum(detail.getReturnNum());
+            addProductStockVo.setDefaultTaxAmount(NumberUtil.mul(productPurchase.getPrice(), detail.getReturnNum()));
             addProductStockVo.setTaxRate(detail.getTaxRate());
             addProductStockVo.setBizId(retailReturn.getId());
             addProductStockVo.setBizDetailId(detail.getId());

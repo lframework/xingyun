@@ -119,3 +119,28 @@ op-logs:
 #repeat-request:
   #重复提交拦截间隔（单位：秒）
   #filter-interval: 1
+
+# 以下配置需要自行修改
+mail:
+  # 邮件服务器的SMTP地址，可选，默认为smtp.<发件人邮箱后缀>
+  #host: smtp.xingyun.com
+  # 邮件服务器的SMTP端口，可选，默认25
+  #port: 25
+  # 发件人（必须正确，否则发送失败）
+  from: test@xingyun.com
+  # 用户名，默认为发件人邮箱前缀
+  #user: test
+  # 密码（注意，某些邮箱需要为SMTP服务单独设置授权码）
+  pass: 123456
+  # 使用SSL安全连接
+  ssl-enable: true
+
+#短信配置
+#以下配置需要自行修改
+sms:
+  #阿里短信服务
+  ali:
+    #地域
+    region: cn-beijing
+    access-key-id: 123456789
+    access-key-secret: 123456789abcdefg

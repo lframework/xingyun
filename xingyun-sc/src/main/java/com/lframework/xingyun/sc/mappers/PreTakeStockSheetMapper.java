@@ -8,9 +8,8 @@ import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProduc
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -21,37 +20,42 @@ import java.util.List;
  */
 public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<PreTakeStockSheetDto> query(@Param("vo") QueryPreTakeStockSheetVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<PreTakeStockSheetDto> query(@Param("vo") QueryPreTakeStockSheetVo vo);
 
-    /**
-     * 根据ID查询
-     */
-    PreTakeStockSheetDto getById(@Param("id") String id);
+  /**
+   * 根据ID查询
+   */
+  PreTakeStockSheetDto getById(@Param("id") String id);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    PreTakeStockSheetFullDto getDetail(@Param("id") String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  PreTakeStockSheetFullDto getDetail(@Param("id") String id);
 
-    /**
-     * 选择器
-     * @param vo
-     * @return
-     */
-    List<PreTakeStockSheetSelectorDto> selector(@Param("vo") PreTakeStockSheetSelectorVo vo);
+  /**
+   * 选择器
+   *
+   * @param vo
+   * @return
+   */
+  List<PreTakeStockSheetSelectorDto> selector(@Param("vo") PreTakeStockSheetSelectorVo vo);
 
-    /**
-     * 根据预先盘点单、盘点任务查询商品信息
-     * @param id
-     * @param planId
-     * @return
-     */
-    List<QueryPreTakeStockSheetProductDto> getProducts(@Param("id") String id, @Param("planId") String planId);
+  /**
+   * 根据预先盘点单、盘点任务查询商品信息
+   *
+   * @param id
+   * @param planId
+   * @return
+   */
+  List<QueryPreTakeStockSheetProductDto> getProducts(@Param("id") String id,
+      @Param("planId") String planId);
 }

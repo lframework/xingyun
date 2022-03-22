@@ -4,9 +4,8 @@ import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDetailDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -17,42 +16,51 @@ import java.util.List;
  */
 public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetail> {
 
-    /**
-     * 根据盘点任务ID、商品ID查询
-     * @param planId
-     * @param productId
-     * @return
-     */
-    GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(@Param("planId") String planId, @Param("productId") String productId);
+  /**
+   * 根据盘点任务ID、商品ID查询
+   *
+   * @param planId
+   * @param productId
+   * @return
+   */
+  GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(@Param("planId") String planId,
+      @Param("productId") String productId);
 
-    /**
-     * 根据盘点任务ID查询
-     * @param planId
-     * @return
-     */
-    List<TakeStockPlanDetailDto> getDetailsByPlanId(String planId);
+  /**
+   * 根据盘点任务ID查询
+   *
+   * @param planId
+   * @return
+   */
+  List<TakeStockPlanDetailDto> getDetailsByPlanId(String planId);
 
-    /**
-     * 更新盘点数量
-     * @param planId
-     * @param productId
-     * @param num
-     */
-    void updateOriTakeNum(@Param("planId") String planId, @Param("productId") String productId, @Param("num") Integer num);
+  /**
+   * 更新盘点数量
+   *
+   * @param planId
+   * @param productId
+   * @param num
+   */
+  void updateOriTakeNum(@Param("planId") String planId, @Param("productId") String productId,
+      @Param("num") Integer num);
 
-    /**
-     * 增加进项数量
-     * @param scId
-     * @param productId
-     * @param num
-     */
-    void addTotalInNum(@Param("scId") String scId, @Param("productId") String productId, @Param("num") Integer num);
+  /**
+   * 增加进项数量
+   *
+   * @param scId
+   * @param productId
+   * @param num
+   */
+  void addTotalInNum(@Param("scId") String scId, @Param("productId") String productId,
+      @Param("num") Integer num);
 
-    /**
-     * 增加出项数量
-     * @param scId
-     * @param productId
-     * @param num
-     */
-    void addTotalOutNum(@Param("scId") String scId, @Param("productId") String productId, @Param("num") Integer num);
+  /**
+   * 增加出项数量
+   *
+   * @param scId
+   * @param productId
+   * @param num
+   */
+  void addTotalOutNum(@Param("scId") String scId, @Param("productId") String productId,
+      @Param("num") Integer num);
 }

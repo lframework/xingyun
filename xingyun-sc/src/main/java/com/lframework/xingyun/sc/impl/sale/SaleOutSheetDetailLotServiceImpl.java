@@ -18,79 +18,82 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SaleOutSheetDetailLotServiceImpl implements ISaleOutSheetDetailLotService {
 
-    @Autowired
-    private SaleOutSheetDetailLotMapper saleOutSheetDetailLotMapper;
+  @Autowired
+  private SaleOutSheetDetailLotMapper saleOutSheetDetailLotMapper;
 
-    @Autowired
-    private IProductService productService;
+  @Autowired
+  private IProductService productService;
 
-    @Autowired
-    private ISaleOutSheetDetailService saleOutSheetDetailService;
+  @Autowired
+  private ISaleOutSheetDetailService saleOutSheetDetailService;
 
-    @Override
-    public SaleOutSheetDetailLotDto getById(String id) {
+  @Override
+  public SaleOutSheetDetailLotDto getById(String id) {
 
-        return saleOutSheetDetailLotMapper.getById(id);
+    return saleOutSheetDetailLotMapper.getById(id);
+  }
+
+  @Transactional
+  @Override
+  public void addReturnNum(String id, Integer num) {
+
+    Assert.notBlank(id);
+    Assert.greaterThanZero(num);
+
+    SaleOutSheetDetailLot detail = saleOutSheetDetailLotMapper.selectById(id);
+
+    Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
+    if (NumberUtil.lt(remainNum, num)) {
+      SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
+
+      ProductDto product = productService.getById(sheetDetail.getProductId());
+
+      throw new DefaultClientException(
+          "（" + product.getCode() + "）" + product.getName() + "剩余退货数量为" + remainNum
+              + "个，本次退货数量不允许大于"
+              + remainNum + "个！");
     }
 
-    @Transactional
-    @Override
-    public void addReturnNum(String id, Integer num) {
+    if (saleOutSheetDetailLotMapper.addReturnNum(detail.getId(), num) != 1) {
+      SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
-        Assert.notBlank(id);
-        Assert.greaterThanZero(num);
+      ProductDto product = productService.getById(sheetDetail.getProductId());
 
-        SaleOutSheetDetailLot detail = saleOutSheetDetailLotMapper.selectById(id);
-
-        Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
-        if (NumberUtil.lt(remainNum, num)) {
-            SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
-
-            ProductDto product = productService.getById(sheetDetail.getProductId());
-
-            throw new DefaultClientException(
-                    "（" + product.getCode() + "）" + product.getName() + "剩余退货数量为" + remainNum + "个，本次退货数量不允许大于"
-                            + remainNum + "个！");
-        }
-
-        if (saleOutSheetDetailLotMapper.addReturnNum(detail.getId(), num) != 1) {
-            SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
-
-            ProductDto product = productService.getById(sheetDetail.getProductId());
-
-            throw new DefaultClientException("（" + product.getCode() + "）" + product.getName() + "剩余退货数量不足，不允许继续退货！");
-        }
-
-        saleOutSheetDetailService.addReturnNum(detail.getDetailId(), num);
+      throw new DefaultClientException(
+          "（" + product.getCode() + "）" + product.getName() + "剩余退货数量不足，不允许继续退货！");
     }
 
-    @Transactional
-    @Override
-    public void subReturnNum(String id, Integer num) {
+    saleOutSheetDetailService.addReturnNum(detail.getDetailId(), num);
+  }
 
-        Assert.notBlank(id);
-        Assert.greaterThanZero(num);
+  @Transactional
+  @Override
+  public void subReturnNum(String id, Integer num) {
 
-        SaleOutSheetDetailLot detail = saleOutSheetDetailLotMapper.selectById(id);
+    Assert.notBlank(id);
+    Assert.greaterThanZero(num);
 
-        if (NumberUtil.lt(detail.getReturnNum(), num)) {
-            SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
+    SaleOutSheetDetailLot detail = saleOutSheetDetailLotMapper.selectById(id);
 
-            ProductDto product = productService.getById(sheetDetail.getProductId());
+    if (NumberUtil.lt(detail.getReturnNum(), num)) {
+      SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
-            throw new DefaultClientException(
-                    "（" + product.getCode() + "）" + product.getName() + "已退货数量为" + detail.getReturnNum()
-                            + "个，本次取消退货数量不允许大于" + detail.getReturnNum() + "个！");
-        }
+      ProductDto product = productService.getById(sheetDetail.getProductId());
 
-        if (saleOutSheetDetailLotMapper.subReturnNum(detail.getId(), num) != 1) {
-            SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
-
-            ProductDto product = productService.getById(sheetDetail.getProductId());
-
-            throw new DefaultClientException("（" + product.getCode() + "）" + product.getName() + "已退货数量不足，不允许取消退货！");
-        }
-
-        saleOutSheetDetailService.subReturnNum(detail.getDetailId(), num);
+      throw new DefaultClientException(
+          "（" + product.getCode() + "）" + product.getName() + "已退货数量为" + detail.getReturnNum()
+              + "个，本次取消退货数量不允许大于" + detail.getReturnNum() + "个！");
     }
+
+    if (saleOutSheetDetailLotMapper.subReturnNum(detail.getId(), num) != 1) {
+      SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
+
+      ProductDto product = productService.getById(sheetDetail.getProductId());
+
+      throw new DefaultClientException(
+          "（" + product.getCode() + "）" + product.getName() + "已退货数量不足，不允许取消退货！");
+    }
+
+    saleOutSheetDetailService.subReturnNum(detail.getDetailId(), num);
+  }
 }

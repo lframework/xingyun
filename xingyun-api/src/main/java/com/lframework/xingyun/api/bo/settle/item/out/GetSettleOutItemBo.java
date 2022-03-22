@@ -9,37 +9,37 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GetSettleOutItemBo extends BaseBo<SettleOutItemDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 岗位编号
-     */
-    private String code;
+  /**
+   * 岗位编号
+   */
+  private String code;
 
-    /**
-     * 岗位名称
-     */
-    private String name;
+  /**
+   * 岗位名称
+   */
+  private String name;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    public GetSettleOutItemBo() {
+  public GetSettleOutItemBo() {
 
-    }
+  }
 
-    public GetSettleOutItemBo(SettleOutItemDto dto) {
+  public GetSettleOutItemBo(SettleOutItemDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

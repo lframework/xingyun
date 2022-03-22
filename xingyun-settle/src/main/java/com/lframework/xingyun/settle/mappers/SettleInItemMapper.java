@@ -5,13 +5,12 @@ import com.lframework.xingyun.settle.dto.item.in.SettleInItemDto;
 import com.lframework.xingyun.settle.entity.SettleInItem;
 import com.lframework.xingyun.settle.vo.item.in.QuerySettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.SettleInItemSelectorVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -19,24 +18,27 @@ import java.util.List;
  */
 public interface SettleInItemMapper extends BaseMapper<SettleInItem> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<SettleInItemDto> query(@Param("vo") QuerySettleInItemVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<SettleInItemDto> query(@Param("vo") QuerySettleInItemVo vo);
 
-    /**
-     * 选择器
-     * @param vo
-     * @return
-     */
-    List<SettleInItemDto> selector(@Param("vo") SettleInItemSelectorVo vo);
+  /**
+   * 选择器
+   *
+   * @param vo
+   * @return
+   */
+  List<SettleInItemDto> selector(@Param("vo") SettleInItemSelectorVo vo);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    SettleInItemDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  SettleInItemDto getById(String id);
 }

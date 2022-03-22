@@ -2,11 +2,10 @@ package com.lframework.xingyun.sc.dto.stock.take.pre;
 
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Data;
 
 /**
  * <p>
@@ -18,9 +17,54 @@ import java.util.List;
 @Data
 public class PreTakeStockSheetFullDto implements BaseDto, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public static final String CACHE_NAME = "PreTakeStockSheetFullDto";
+  public static final String CACHE_NAME = "PreTakeStockSheetFullDto";
+
+  /**
+   * ID
+   */
+  private String id;
+
+  /**
+   * 业务单据号
+   */
+  private String code;
+
+  /**
+   * 仓库ID
+   */
+  private String scId;
+
+  /**
+   * 盘点状态
+   */
+  private PreTakeStockSheetStatus takeStatus;
+
+  /**
+   * 备注
+   */
+  private String description;
+
+  /**
+   * 操作人ID
+   */
+  private String updateBy;
+
+  /**
+   * 操作时间
+   */
+  private LocalDateTime updateTime;
+
+  /**
+   * 明细
+   */
+  private List<SheetDetailDto> details;
+
+  @Data
+  public static class SheetDetailDto implements BaseDto, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * ID
@@ -28,68 +72,23 @@ public class PreTakeStockSheetFullDto implements BaseDto, Serializable {
     private String id;
 
     /**
-     * 业务单据号
+     * 商品ID
      */
-    private String code;
+    private String productId;
 
     /**
-     * 仓库ID
+     * 初盘数量
      */
-    private String scId;
+    private Integer firstNum;
 
     /**
-     * 盘点状态
+     * 复盘数量
      */
-    private PreTakeStockSheetStatus takeStatus;
+    private Integer secondNum;
 
     /**
-     * 备注
+     * 抽盘数量
      */
-    private String description;
-
-    /**
-     * 操作人ID
-     */
-    private String updateBy;
-
-    /**
-     * 操作时间
-     */
-    private LocalDateTime updateTime;
-
-    /**
-     * 明细
-     */
-    private List<SheetDetailDto> details;
-
-    @Data
-    public static class SheetDetailDto implements BaseDto, Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * ID
-         */
-        private String id;
-
-        /**
-         * 商品ID
-         */
-        private String productId;
-
-        /**
-         * 初盘数量
-         */
-        private Integer firstNum;
-
-        /**
-         * 复盘数量
-         */
-        private Integer secondNum;
-
-        /**
-         * 抽盘数量
-         */
-        private Integer randNum;
-    }
+    private Integer randNum;
+  }
 }

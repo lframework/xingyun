@@ -18,30 +18,30 @@ import lombok.EqualsAndHashCode;
 @TableName("tbl_purchase_config")
 public class PurchaseConfig extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 采购收货单是否关联采购订单
-     */
-    private Boolean receiveRequirePurchase;
+  /**
+   * 采购收货单是否关联采购订单
+   */
+  private Boolean receiveRequirePurchase;
 
-    /**
-     * 采购收货单是否多次关联采购订单
-     */
-    private Boolean receiveMultipleRelatePurchase;
+  /**
+   * 采购收货单是否多次关联采购订单
+   */
+  private Boolean receiveMultipleRelatePurchase;
 
-    /**
-     * 采购退货单是否关联采购收货单
-     */
-    private Boolean purchaseReturnRequireReceive;
+  /**
+   * 采购退货单是否关联采购收货单
+   */
+  private Boolean purchaseReturnRequireReceive;
 
-    /**
-     * 采购退货单是否多次关联采购收货单
-     */
-    private Boolean purchaseReturnMultipleRelateReceive;
+  /**
+   * 采购退货单是否多次关联采购收货单
+   */
+  private Boolean purchaseReturnMultipleRelateReceive;
 }

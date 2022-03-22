@@ -18,47 +18,47 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PurchaseConfigServiceImpl implements IPurchaseConfigService {
 
-    @Autowired
-    private PurchaseConfigMapper purchaseConfigMapper;
+  @Autowired
+  private PurchaseConfigMapper purchaseConfigMapper;
 
-    @Cacheable(value = PurchaseConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
-    @Override
-    public PurchaseConfigDto get() {
+  @Cacheable(value = PurchaseConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Override
+  public PurchaseConfigDto get() {
 
-        PurchaseConfig config = purchaseConfigMapper.selectOne(Wrappers.query());
+    PurchaseConfig config = purchaseConfigMapper.selectOne(Wrappers.query());
 
-        PurchaseConfigDto result = new PurchaseConfigDto();
-        result.setId(config.getId());
-        result.setReceiveRequirePurchase(config.getReceiveRequirePurchase());
-        result.setReceiveMultipleRelatePurchase(config.getReceiveMultipleRelatePurchase());
-        result.setPurchaseReturnRequireReceive(config.getPurchaseReturnRequireReceive());
-        result.setPurchaseReturnMultipleRelateReceive(config.getPurchaseReturnMultipleRelateReceive());
+    PurchaseConfigDto result = new PurchaseConfigDto();
+    result.setId(config.getId());
+    result.setReceiveRequirePurchase(config.getReceiveRequirePurchase());
+    result.setReceiveMultipleRelatePurchase(config.getReceiveMultipleRelatePurchase());
+    result.setPurchaseReturnRequireReceive(config.getPurchaseReturnRequireReceive());
+    result.setPurchaseReturnMultipleRelateReceive(config.getPurchaseReturnMultipleRelateReceive());
 
-        return result;
-    }
+    return result;
+  }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改采购参数设置")
-    @Transactional
-    @Override
-    public void update(UpdatePurchaseConfigVo vo) {
+  @OpLog(type = OpLogType.OTHER, name = "修改采购参数设置")
+  @Transactional
+  @Override
+  public void update(UpdatePurchaseConfigVo vo) {
 
-        PurchaseConfig config = purchaseConfigMapper.selectOne(Wrappers.query());
-        config.setReceiveRequirePurchase(vo.getReceiveRequirePurchase());
-        config.setReceiveMultipleRelatePurchase(vo.getReceiveMultipleRelatePurchase());
-        config.setPurchaseReturnRequireReceive(vo.getPurchaseReturnRequireReceive());
-        config.setPurchaseReturnMultipleRelateReceive(vo.getPurchaseReturnMultipleRelateReceive());
+    PurchaseConfig config = purchaseConfigMapper.selectOne(Wrappers.query());
+    config.setReceiveRequirePurchase(vo.getReceiveRequirePurchase());
+    config.setReceiveMultipleRelatePurchase(vo.getReceiveMultipleRelatePurchase());
+    config.setPurchaseReturnRequireReceive(vo.getPurchaseReturnRequireReceive());
+    config.setPurchaseReturnMultipleRelateReceive(vo.getPurchaseReturnMultipleRelateReceive());
 
-        purchaseConfigMapper.updateById(config);
+    purchaseConfigMapper.updateById(config);
 
-        OpLogUtil.setExtra(vo);
+    OpLogUtil.setExtra(vo);
 
-        IPurchaseConfigService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(config.getId());
-    }
+    IPurchaseConfigService thisService = getThis(this.getClass());
+    thisService.cleanCacheByKey(config.getId());
+  }
 
-    @CacheEvict(value = PurchaseConfigDto.CACHE_NAME, key = "'config'")
-    @Override
-    public void cleanCacheByKey(String key) {
+  @CacheEvict(value = PurchaseConfigDto.CACHE_NAME, key = "'config'")
+  @Override
+  public void cleanCacheByKey(String key) {
 
-    }
+  }
 }

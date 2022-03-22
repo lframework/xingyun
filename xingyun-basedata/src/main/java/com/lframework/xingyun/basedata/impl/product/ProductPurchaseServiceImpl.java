@@ -18,52 +18,52 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductPurchaseServiceImpl implements IProductPurchaseService {
 
-    @Autowired
-    private ProductPurchaseMapper productPurchaseMapper;
+  @Autowired
+  private ProductPurchaseMapper productPurchaseMapper;
 
-    @Override
-    public ProductPurchaseDto getById(String id) {
+  @Override
+  public ProductPurchaseDto getById(String id) {
 
-        return productPurchaseMapper.getById(id);
+    return productPurchaseMapper.getById(id);
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
+  @Transactional
+  @Override
+  public String create(CreateProductPurchaseVo vo) {
+
+    ProductPurchase data = new ProductPurchase();
+    data.setId(IdUtil.getId());
+    if (!StringUtil.isBlank(vo.getId())) {
+      data.setId(vo.getId());
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
-    @Transactional
-    @Override
-    public String create(CreateProductPurchaseVo vo) {
+    data.setPrice(vo.getPrice());
 
-        ProductPurchase data = new ProductPurchase();
-        data.setId(IdUtil.getId());
-        if (!StringUtil.isBlank(vo.getId())) {
-            data.setId(vo.getId());
-        }
+    productPurchaseMapper.insert(data);
 
-        data.setPrice(vo.getPrice());
+    return data.getId();
+  }
 
-        productPurchaseMapper.insert(data);
+  @OpLog(type = OpLogType.OTHER, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
+  @Transactional
+  @Override
+  public void update(UpdateProductPurchaseVo vo) {
 
-        return data.getId();
+    if (vo.getPrice() == null) {
+      throw new InputErrorException("采购价不能为空！");
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
-    @Transactional
-    @Override
-    public void update(UpdateProductPurchaseVo vo) {
-
-        if (vo.getPrice() == null) {
-            throw new InputErrorException("采购价不能为空！");
-        }
-
-        if (vo.getPrice().doubleValue() < 0D) {
-            throw new InputErrorException("采购价必须大于0！");
-        }
-
-        productPurchaseMapper.deleteById(vo.getId());
-
-        CreateProductPurchaseVo createVo = new CreateProductPurchaseVo();
-        createVo.setId(vo.getId());
-        createVo.setPrice(vo.getPrice());
-
-        this.create(createVo);
+    if (vo.getPrice().doubleValue() < 0D) {
+      throw new InputErrorException("采购价必须大于0！");
     }
+
+    productPurchaseMapper.deleteById(vo.getId());
+
+    CreateProductPurchaseVo createVo = new CreateProductPurchaseVo();
+    createVo.setId(vo.getId());
+    createVo.setPrice(vo.getPrice());
+
+    this.create(createVo);
+  }
 }

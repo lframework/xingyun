@@ -14,16 +14,21 @@ import com.lframework.xingyun.basedata.service.product.IProductSalePropGroupServ
 import com.lframework.xingyun.basedata.vo.product.saleprop.CreateProductSalePropGroupVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.UpdateProductSalePropGroupVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 销售属性组管理
@@ -35,91 +40,94 @@ import java.util.stream.Collectors;
 @RequestMapping("/basedata/product/saleprop/group")
 public class ProductSalePropGroupController extends DefaultBaseController {
 
-    @Autowired
-    private IProductSalePropGroupService productSalePropGroupService;
+  @Autowired
+  private IProductSalePropGroupService productSalePropGroupService;
 
-    /**
-     * 销售属性组列表
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-group:query','base-data:product:saleprop-group:add','base-data:product:saleprop-group:modify')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QueryProductSalePropGroupVo vo) {
+  /**
+   * 销售属性组列表
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-group:query','base-data:product:saleprop-group:add','base-data:product:saleprop-group:modify')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QueryProductSalePropGroupVo vo) {
 
-        PageResult<ProductSalePropGroupDto> pageResult = productSalePropGroupService
-                .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<ProductSalePropGroupDto> pageResult = productSalePropGroupService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
-        List<ProductSalePropGroupDto> datas = pageResult.getDatas();
+    List<ProductSalePropGroupDto> datas = pageResult.getDatas();
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QueryProductSalePropGroupBo> results = datas.stream().map(QueryProductSalePropGroupBo::new)
-                    .collect(Collectors.toList());
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QueryProductSalePropGroupBo> results = datas.stream()
+          .map(QueryProductSalePropGroupBo::new)
+          .collect(Collectors.toList());
 
-            PageResultUtil.rebuild(pageResult, results);
-        }
-
-        return InvokeResultBuilder.success(pageResult);
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 查询销售属性组
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-group:query','base-data:product:saleprop-group:add','base-data:product:saleprop-group:modify')")
-    @GetMapping
-    public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        ProductSalePropGroupDto data = productSalePropGroupService.getById(id);
-        if (data == null) {
-            throw new DefaultClientException("销售属性组不存在！");
-        }
+  /**
+   * 查询销售属性组
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-group:query','base-data:product:saleprop-group:add','base-data:product:saleprop-group:modify')")
+  @GetMapping
+  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
 
-        GetProductSalePropGroupBo result = new GetProductSalePropGroupBo(data);
-
-        return InvokeResultBuilder.success(result);
+    ProductSalePropGroupDto data = productSalePropGroupService.getById(id);
+    if (data == null) {
+      throw new DefaultClientException("销售属性组不存在！");
     }
 
-    /**
-     * 批量停用销售属性组
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-group:modify')")
-    @PatchMapping("/unable/batch")
-    public InvokeResult batchUnable(@NotEmpty(message = "请选择需要停用的销售属性组！") @RequestBody List<String> ids) {
+    GetProductSalePropGroupBo result = new GetProductSalePropGroupBo(data);
 
-        productSalePropGroupService.batchUnable(ids);
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success(result);
+  }
 
-    /**
-     * 批量启用销售属性组
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-group:modify')")
-    @PatchMapping("/enable/batch")
-    public InvokeResult batchEnable(@NotEmpty(message = "请选择需要启用的销售属性组！") @RequestBody List<String> ids) {
+  /**
+   * 批量停用销售属性组
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-group:modify')")
+  @PatchMapping("/unable/batch")
+  public InvokeResult batchUnable(
+      @NotEmpty(message = "请选择需要停用的销售属性组！") @RequestBody List<String> ids) {
 
-        productSalePropGroupService.batchEnable(ids);
-        return InvokeResultBuilder.success();
-    }
+    productSalePropGroupService.batchUnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 新增销售属性组
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-group:add')")
-    @PostMapping
-    public InvokeResult create(@Valid CreateProductSalePropGroupVo vo) {
+  /**
+   * 批量启用销售属性组
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-group:modify')")
+  @PatchMapping("/enable/batch")
+  public InvokeResult batchEnable(
+      @NotEmpty(message = "请选择需要启用的销售属性组！") @RequestBody List<String> ids) {
 
-        productSalePropGroupService.create(vo);
+    productSalePropGroupService.batchEnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 新增销售属性组
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-group:add')")
+  @PostMapping
+  public InvokeResult create(@Valid CreateProductSalePropGroupVo vo) {
 
-    /**
-     * 修改销售属性组
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-group:modify')")
-    @PutMapping
-    public InvokeResult update(@Valid UpdateProductSalePropGroupVo vo) {
+    productSalePropGroupService.create(vo);
 
-        productSalePropGroupService.update(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 修改销售属性组
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-group:modify')")
+  @PutMapping
+  public InvokeResult update(@Valid UpdateProductSalePropGroupVo vo) {
+
+    productSalePropGroupService.update(vo);
+
+    return InvokeResultBuilder.success();
+  }
 }

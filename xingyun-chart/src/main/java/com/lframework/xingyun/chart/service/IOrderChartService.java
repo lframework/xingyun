@@ -7,43 +7,47 @@ import com.lframework.xingyun.chart.dto.OrderChartTodayDto;
 import com.lframework.xingyun.chart.vo.CreateOrderChartVo;
 import com.lframework.xingyun.chart.vo.GetOrderChartVo;
 import com.lframework.xingyun.chart.vo.QueryOrderChartVo;
-
 import java.util.List;
 
 public interface IOrderChartService extends BaseService {
 
-    /**
-     * 创建
-     * @param vo
-     * @return
-     */
-    String create(CreateOrderChartVo vo);
+  /**
+   * 创建
+   *
+   * @param vo
+   * @return
+   */
+  String create(CreateOrderChartVo vo);
 
-    /**
-     * 查询当日汇总数据
-     * @param vo
-     * @return
-     */
-    OrderChartSumDto getTodayChartSum(GetOrderChartVo vo);
+  /**
+   * 查询当日汇总数据
+   *
+   * @param vo
+   * @return
+   */
+  OrderChartSumDto getTodayChartSum(GetOrderChartVo vo);
 
-    /**
-     * 查询当月汇总数据
-     * @param vo
-     * @return
-     */
-    OrderChartSumDto getSameMonthChartSum(GetOrderChartVo vo);
+  /**
+   * 查询当月汇总数据
+   *
+   * @param vo
+   * @return
+   */
+  OrderChartSumDto getSameMonthChartSum(GetOrderChartVo vo);
 
-    /**
-     * 查询当日数据
-     * @param vo
-     * @return
-     */
-    List<OrderChartTodayDto> queryTodayChart(QueryOrderChartVo vo);
+  /**
+   * 查询当日数据
+   *
+   * @param vo
+   * @return
+   */
+  List<OrderChartTodayDto> queryTodayChart(QueryOrderChartVo vo);
 
-    /**
-     * 查询当月数据
-     * @param vo
-     * @return
-     */
-    List<OrderChartSameMonthDto> querySameMonthChart(QueryOrderChartVo vo);
+  /**
+   * 查询当月数据
+   *
+   * @param vo
+   * @return
+   */
+  List<OrderChartSameMonthDto> querySameMonthChart(QueryOrderChartVo vo);
 }

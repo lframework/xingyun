@@ -14,15 +14,18 @@ import com.lframework.xingyun.basedata.service.product.IProductPropertyItemServi
 import com.lframework.xingyun.basedata.vo.product.property.item.CreateProductPropertyItemVo;
 import com.lframework.xingyun.basedata.vo.product.property.item.QueryProductPropertyItemVo;
 import com.lframework.xingyun.basedata.vo.product.property.item.UpdateProductPropertyItemVo;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 属性值管理
@@ -34,69 +37,69 @@ import java.util.stream.Collectors;
 @RequestMapping("/basedata/product/property/item")
 public class ProductPropertyItemController extends DefaultBaseController {
 
-    @Autowired
-    private IProductPropertyItemService productPropertyItemService;
+  @Autowired
+  private IProductPropertyItemService productPropertyItemService;
 
-    /**
-     * 属性值列表
-     */
-    @PreAuthorize("@permission.valid('base-data:product:property-item:query','base-data:product:property-item:add','base-data:product:property-item:modify')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QueryProductPropertyItemVo vo) {
+  /**
+   * 属性值列表
+   */
+  @PreAuthorize("@permission.valid('base-data:product:property-item:query','base-data:product:property-item:add','base-data:product:property-item:modify')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QueryProductPropertyItemVo vo) {
 
-        PageResult<ProductPropertyItemDto> pageResult = productPropertyItemService
-                .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<ProductPropertyItemDto> pageResult = productPropertyItemService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
-        List<ProductPropertyItemDto> datas = pageResult.getDatas();
+    List<ProductPropertyItemDto> datas = pageResult.getDatas();
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QueryProductPropertyItemBo> results = datas.stream().map(QueryProductPropertyItemBo::new)
-                    .collect(Collectors.toList());
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QueryProductPropertyItemBo> results = datas.stream().map(QueryProductPropertyItemBo::new)
+          .collect(Collectors.toList());
 
-            PageResultUtil.rebuild(pageResult, results);
-        }
-
-        return InvokeResultBuilder.success(pageResult);
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 查询属性值
-     */
-    @PreAuthorize("@permission.valid('base-data:product:property-item:query','base-data:product:property-item:add','base-data:product:property-item:modify')")
-    @GetMapping
-    public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        ProductPropertyItemDto data = productPropertyItemService.getById(id);
-        if (data == null) {
-            throw new DefaultClientException("属性值不存在！");
-        }
+  /**
+   * 查询属性值
+   */
+  @PreAuthorize("@permission.valid('base-data:product:property-item:query','base-data:product:property-item:add','base-data:product:property-item:modify')")
+  @GetMapping
+  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
 
-        GetProductPropertyItemBo result = new GetProductPropertyItemBo(data);
-
-        return InvokeResultBuilder.success(result);
+    ProductPropertyItemDto data = productPropertyItemService.getById(id);
+    if (data == null) {
+      throw new DefaultClientException("属性值不存在！");
     }
 
-    /**
-     * 新增属性值
-     */
-    @PreAuthorize("@permission.valid('base-data:product:property-item:add')")
-    @PostMapping
-    public InvokeResult create(@Valid CreateProductPropertyItemVo vo) {
+    GetProductPropertyItemBo result = new GetProductPropertyItemBo(data);
 
-        productPropertyItemService.create(vo);
+    return InvokeResultBuilder.success(result);
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 新增属性值
+   */
+  @PreAuthorize("@permission.valid('base-data:product:property-item:add')")
+  @PostMapping
+  public InvokeResult create(@Valid CreateProductPropertyItemVo vo) {
 
-    /**
-     * 修改属性值
-     */
-    @PreAuthorize("@permission.valid('base-data:product:property-item:modify')")
-    @PutMapping
-    public InvokeResult update(@Valid UpdateProductPropertyItemVo vo) {
+    productPropertyItemService.create(vo);
 
-        productPropertyItemService.update(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 修改属性值
+   */
+  @PreAuthorize("@permission.valid('base-data:product:property-item:modify')")
+  @PutMapping
+  public InvokeResult update(@Valid UpdateProductPropertyItemVo vo) {
+
+    productPropertyItemService.update(vo);
+
+    return InvokeResultBuilder.success();
+  }
 }

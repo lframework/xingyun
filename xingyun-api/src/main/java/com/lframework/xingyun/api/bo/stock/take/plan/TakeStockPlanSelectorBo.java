@@ -7,73 +7,74 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class TakeStockPlanSelectorBo extends BaseBo<TakeStockPlanSelectorDto> {
-    /**
-     * ID
-     */
-    private String id;
 
-    /**
-     * 业务单据号
-     */
-    private String code;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 仓库编号
-     */
-    private String scCode;
+  /**
+   * 业务单据号
+   */
+  private String code;
 
-    /**
-     * 仓库名称
-     */
-    private String scName;
+  /**
+   * 仓库编号
+   */
+  private String scCode;
 
-    /**
-     * 盘点类别
-     */
-    private Integer takeType;
+  /**
+   * 仓库名称
+   */
+  private String scName;
 
-    /**
-     * 盘点状态
-     */
-    private Integer takeStatus;
+  /**
+   * 盘点类别
+   */
+  private Integer takeType;
 
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime createTime;
+  /**
+   * 盘点状态
+   */
+  private Integer takeStatus;
 
-    /**
-     * 修改时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime updateTime;
+  /**
+   * 创建时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime createTime;
 
-    public TakeStockPlanSelectorBo(TakeStockPlanSelectorDto dto) {
-        super(dto);
-    }
+  /**
+   * 修改时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime updateTime;
 
-    @Override
-    public <A> BaseBo<TakeStockPlanSelectorDto> convert(TakeStockPlanSelectorDto dto) {
-        return super.convert(dto, TakeStockPlanSelectorBo::getTakeType, TakeStockPlanSelectorBo::getTakeStatus);
-    }
+  public TakeStockPlanSelectorBo(TakeStockPlanSelectorDto dto) {
+    super(dto);
+  }
 
-    @Override
-    protected void afterInit(TakeStockPlanSelectorDto dto) {
-        this.takeType = dto.getTakeType().getCode();
-        this.takeStatus = dto.getTakeStatus().getCode();
+  @Override
+  public <A> BaseBo<TakeStockPlanSelectorDto> convert(TakeStockPlanSelectorDto dto) {
+    return super
+        .convert(dto, TakeStockPlanSelectorBo::getTakeType, TakeStockPlanSelectorBo::getTakeStatus);
+  }
 
-        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-        StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-        this.scCode = sc.getCode();
-        this.scName = sc.getName();
-    }
+  @Override
+  protected void afterInit(TakeStockPlanSelectorDto dto) {
+    this.takeType = dto.getTakeType().getCode();
+    this.takeStatus = dto.getTakeStatus().getCode();
+
+    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
+    this.scCode = sc.getCode();
+    this.scName = sc.getName();
+  }
 }

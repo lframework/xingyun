@@ -22,19 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/basedata/product/poly")
 public class ProductPolyController extends DefaultBaseController {
 
-    @Autowired
-    private IProductPolyService productPolyService;
+  @Autowired
+  private IProductPolyService productPolyService;
 
-    /**
-     * 新增商品聚合
-     */
-    @PostMapping
-    public InvokeResult create(@RequestBody CreateProductPolyVo vo) {
+  /**
+   * 新增商品聚合
+   */
+  @PostMapping
+  public InvokeResult create(@RequestBody CreateProductPolyVo vo) {
 
-        vo.validate();
+    vo.validate();
 
-        productPolyService.create(vo);
+    productPolyService.create(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 }

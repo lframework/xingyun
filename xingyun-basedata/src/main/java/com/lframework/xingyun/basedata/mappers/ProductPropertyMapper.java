@@ -5,14 +5,13 @@ import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyDto;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.Collection;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -20,24 +19,28 @@ import java.util.List;
  */
 public interface ProductPropertyMapper extends BaseMapper<ProductProperty> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<ProductPropertyDto> query(@Param("vo") QueryProductPropertyVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductPropertyDto> query(@Param("vo") QueryProductPropertyVo vo);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    ProductPropertyDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  ProductPropertyDto getById(String id);
 
-    /**
-     * 根据商品类目查询
-     * @param categoryIds
-     * @return
-     */
-    List<ProductPropertyModelorDto> getModelorByCategoryId(@Param("categoryIds") Collection<String> categoryIds);
+  /**
+   * 根据商品类目查询
+   *
+   * @param categoryIds
+   * @return
+   */
+  List<ProductPropertyModelorDto> getModelorByCategoryId(
+      @Param("categoryIds") Collection<String> categoryIds);
 }

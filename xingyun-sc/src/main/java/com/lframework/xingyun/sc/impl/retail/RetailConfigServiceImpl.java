@@ -18,44 +18,44 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RetailConfigServiceImpl implements IRetailConfigService {
 
-    @Autowired
-    private RetailConfigMapper retailConfigMapper;
+  @Autowired
+  private RetailConfigMapper retailConfigMapper;
 
-    @Cacheable(value = RetailConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
-    @Override
-    public RetailConfigDto get() {
+  @Cacheable(value = RetailConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Override
+  public RetailConfigDto get() {
 
-        RetailConfig config = retailConfigMapper.selectOne(Wrappers.query());
+    RetailConfig config = retailConfigMapper.selectOne(Wrappers.query());
 
-        RetailConfigDto result = new RetailConfigDto();
+    RetailConfigDto result = new RetailConfigDto();
 
-        result.setId(config.getId());
-        result.setRetailReturnRequireOutStock(config.getRetailReturnRequireOutStock());
-        result.setRetailReturnMultipleRelateOutStock(config.getRetailReturnMultipleRelateOutStock());
+    result.setId(config.getId());
+    result.setRetailReturnRequireOutStock(config.getRetailReturnRequireOutStock());
+    result.setRetailReturnMultipleRelateOutStock(config.getRetailReturnMultipleRelateOutStock());
 
-        return result;
-    }
+    return result;
+  }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改零售参数设置")
-    @Transactional
-    @Override
-    public void update(UpdateRetailConfigVo vo) {
+  @OpLog(type = OpLogType.OTHER, name = "修改零售参数设置")
+  @Transactional
+  @Override
+  public void update(UpdateRetailConfigVo vo) {
 
-        RetailConfig config = retailConfigMapper.selectOne(Wrappers.query());
-        config.setRetailReturnRequireOutStock(vo.getRetailReturnRequireOutStock());
-        config.setRetailReturnMultipleRelateOutStock(vo.getRetailReturnMultipleRelateOutStock());
+    RetailConfig config = retailConfigMapper.selectOne(Wrappers.query());
+    config.setRetailReturnRequireOutStock(vo.getRetailReturnRequireOutStock());
+    config.setRetailReturnMultipleRelateOutStock(vo.getRetailReturnMultipleRelateOutStock());
 
-        retailConfigMapper.updateById(config);
+    retailConfigMapper.updateById(config);
 
-        OpLogUtil.setExtra(vo);
+    OpLogUtil.setExtra(vo);
 
-        IRetailConfigService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(config.getId());
-    }
+    IRetailConfigService thisService = getThis(this.getClass());
+    thisService.cleanCacheByKey(config.getId());
+  }
 
-    @CacheEvict(value = RetailConfigDto.CACHE_NAME, key = "'config'")
-    @Override
-    public void cleanCacheByKey(String key) {
+  @CacheEvict(value = RetailConfigDto.CACHE_NAME, key = "'config'")
+  @Override
+  public void cleanCacheByKey(String key) {
 
-    }
+  }
 }

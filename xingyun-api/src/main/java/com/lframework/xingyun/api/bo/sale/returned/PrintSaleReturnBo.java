@@ -20,219 +20,220 @@ import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.enums.SaleReturnStatus;
 import com.lframework.xingyun.sc.service.sale.ISaleOutSheetService;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PrintSaleReturnBo extends BasePrintDataBo<SaleReturnFullDto> {
 
-    /**
-     * 单号
-     */
-    private String code;
+  /**
+   * 单号
+   */
+  private String code;
+
+  /**
+   * 仓库编号
+   */
+  private String scCode;
+
+  /**
+   * 仓库名称
+   */
+  private String scName;
+
+  /**
+   * 客户编号
+   */
+  private String customerCode;
+
+  /**
+   * 客户名称
+   */
+  private String customerName;
+
+  /**
+   * 销售员姓名
+   */
+  private String salerName;
+
+  /**
+   * 付款日期
+   */
+  private String paymentDate;
+
+  /**
+   * 销售出库单号
+   */
+  private String outSheetCode;
+
+  /**
+   * 备注
+   */
+  private String description;
+
+  /**
+   * 创建人
+   */
+  private String createBy;
+
+  /**
+   * 创建时间
+   */
+  private String createTime;
+
+  /**
+   * 审核人
+   */
+  private String approveBy;
+
+  /**
+   * 审核时间
+   */
+  private String approveTime;
+
+  /**
+   * 订单明细
+   */
+  private List<ReturnDetailBo> details;
+
+  public PrintSaleReturnBo(SaleReturnFullDto dto) {
+
+    super(dto);
+  }
+
+  @Override
+  public BaseBo<SaleReturnFullDto> convert(SaleReturnFullDto dto) {
+
+    return super.convert(dto, PrintSaleReturnBo::getDetails);
+  }
+
+  @Override
+  protected void afterInit(SaleReturnFullDto dto) {
+
+    this.salerName = StringPool.EMPTY_STR;
+    this.paymentDate = StringPool.EMPTY_STR;
+    this.outSheetCode = StringPool.EMPTY_STR;
+    this.description = StringPool.EMPTY_STR;
+    this.approveBy = StringPool.EMPTY_STR;
+    this.approveTime = StringPool.EMPTY_STR;
+
+    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
+    this.scCode = sc.getCode();
+    this.scName = sc.getName();
+
+    ICustomerService customerService = ApplicationUtil.getBean(ICustomerService.class);
+    CustomerDto customer = customerService.getById(dto.getCustomerId());
+    this.customerCode = customer.getCode();
+    this.customerName = customer.getName();
+
+    IUserService userService = ApplicationUtil.getBean(IUserService.class);
+    if (!StringUtil.isBlank(dto.getSalerId())) {
+      this.salerName = userService.getById(dto.getSalerId()).getName();
+    }
+
+    ISaleOutSheetService saleOutSheetService = ApplicationUtil.getBean(ISaleOutSheetService.class);
+    if (!StringUtil.isBlank(dto.getOutSheetId())) {
+      SaleOutSheetDto outSheet = saleOutSheetService.getById(dto.getOutSheetId());
+      this.outSheetCode = outSheet.getCode();
+    }
+
+    if (dto.getPaymentDate() != null) {
+      this.paymentDate = DateUtil.formatDate(dto.getPaymentDate());
+    }
+
+    this.createBy = userService.getById(dto.getCreateBy()).getName();
+    this.createTime = DateUtil.formatDateTime(dto.getCreateTime());
+
+    if (!StringUtil.isBlank(dto.getApproveBy())
+        && dto.getStatus() == SaleReturnStatus.APPROVE_PASS) {
+      this.approveBy = userService.getById(dto.getApproveBy()).getName();
+      this.approveTime = DateUtil.formatDateTime(dto.getApproveTime());
+    }
+
+    if (!CollectionUtil.isEmpty(dto.getDetails())) {
+      this.details = dto.getDetails().stream().map(ReturnDetailBo::new)
+          .collect(Collectors.toList());
+    }
+  }
+
+  @Data
+  @EqualsAndHashCode(callSuper = true)
+  public static class ReturnDetailBo extends BaseBo<SaleReturnFullDto.ReturnDetailDto> {
 
     /**
-     * 仓库编号
+     * 供应商名称
      */
-    private String scCode;
+    private String supplierName;
 
     /**
-     * 仓库名称
+     * 商品编号
      */
-    private String scName;
+    private String productCode;
 
     /**
-     * 客户编号
+     * 商品名称
      */
-    private String customerCode;
+    private String productName;
 
     /**
-     * 客户名称
+     * SKU编号
      */
-    private String customerName;
+    private String skuCode;
 
     /**
-     * 销售员姓名
+     * 外部编号
      */
-    private String salerName;
+    private String externalCode;
 
     /**
-     * 付款日期
+     * 退货数量
      */
-    private String paymentDate;
+    private Integer returnNum;
 
     /**
-     * 销售出库单号
+     * 价格
      */
-    private String outSheetCode;
+    private BigDecimal taxPrice;
 
     /**
-     * 备注
+     * 退货金额
      */
-    private String description;
+    private BigDecimal returnAmount;
 
-    /**
-     * 创建人
-     */
-    private String createBy;
+    public ReturnDetailBo(SaleReturnFullDto.ReturnDetailDto dto) {
 
-    /**
-     * 创建时间
-     */
-    private String createTime;
-
-    /**
-     * 审核人
-     */
-    private String approveBy;
-
-    /**
-     * 审核时间
-     */
-    private String approveTime;
-
-    /**
-     * 订单明细
-     */
-    private List<ReturnDetailBo> details;
-
-    public PrintSaleReturnBo(SaleReturnFullDto dto) {
-
-        super(dto);
+      super(dto);
     }
 
     @Override
-    public BaseBo<SaleReturnFullDto> convert(SaleReturnFullDto dto) {
+    public BaseBo<SaleReturnFullDto.ReturnDetailDto> convert(
+        SaleReturnFullDto.ReturnDetailDto dto) {
 
-        return super.convert(dto, PrintSaleReturnBo::getDetails);
+      return super.convert(dto);
     }
 
     @Override
-    protected void afterInit(SaleReturnFullDto dto) {
+    protected void afterInit(SaleReturnFullDto.ReturnDetailDto dto) {
 
-        this.salerName = StringPool.EMPTY_STR;
-        this.paymentDate = StringPool.EMPTY_STR;
-        this.outSheetCode = StringPool.EMPTY_STR;
-        this.description = StringPool.EMPTY_STR;
-        this.approveBy = StringPool.EMPTY_STR;
-        this.approveTime = StringPool.EMPTY_STR;
+      this.returnNum = dto.getReturnNum();
+      this.taxPrice = dto.getTaxPrice();
+      this.returnAmount = NumberUtil.mul(dto.getTaxPrice(), dto.getReturnNum());
 
-        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-        StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-        this.scCode = sc.getCode();
-        this.scName = sc.getName();
+      ISupplierService supplierService = ApplicationUtil.getBean(ISupplierService.class);
+      this.supplierName = supplierService.getById(dto.getSupplierId()).getName();
 
-        ICustomerService customerService = ApplicationUtil.getBean(ICustomerService.class);
-        CustomerDto customer = customerService.getById(dto.getCustomerId());
-        this.customerCode = customer.getCode();
-        this.customerName = customer.getName();
+      IProductService productService = ApplicationUtil.getBean(IProductService.class);
+      SaleProductDto product = productService.getSaleById(dto.getProductId());
 
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        if (!StringUtil.isBlank(dto.getSalerId())) {
-            this.salerName = userService.getById(dto.getSalerId()).getName();
-        }
-
-        ISaleOutSheetService saleOutSheetService = ApplicationUtil.getBean(ISaleOutSheetService.class);
-        if (!StringUtil.isBlank(dto.getOutSheetId())) {
-            SaleOutSheetDto outSheet = saleOutSheetService.getById(dto.getOutSheetId());
-            this.outSheetCode = outSheet.getCode();
-        }
-
-        if (dto.getPaymentDate() != null) {
-            this.paymentDate = DateUtil.formatDate(dto.getPaymentDate());
-        }
-
-        this.createBy = userService.getById(dto.getCreateBy()).getName();
-        this.createTime = DateUtil.formatDateTime(dto.getCreateTime());
-
-        if (!StringUtil.isBlank(dto.getApproveBy()) && dto.getStatus() == SaleReturnStatus.APPROVE_PASS) {
-            this.approveBy = userService.getById(dto.getApproveBy()).getName();
-            this.approveTime = DateUtil.formatDateTime(dto.getApproveTime());
-        }
-
-        if (!CollectionUtil.isEmpty(dto.getDetails())) {
-            this.details = dto.getDetails().stream().map(ReturnDetailBo::new)
-                    .collect(Collectors.toList());
-        }
+      this.productCode = product.getCode();
+      this.productName = product.getName();
+      this.skuCode = product.getSkuCode();
+      this.externalCode = product.getExternalCode();
     }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class ReturnDetailBo extends BaseBo<SaleReturnFullDto.ReturnDetailDto> {
-
-        /**
-         * 供应商名称
-         */
-        private String supplierName;
-
-        /**
-         * 商品编号
-         */
-        private String productCode;
-
-        /**
-         * 商品名称
-         */
-        private String productName;
-
-        /**
-         * SKU编号
-         */
-        private String skuCode;
-
-        /**
-         * 外部编号
-         */
-        private String externalCode;
-
-        /**
-         * 退货数量
-         */
-        private Integer returnNum;
-
-        /**
-         * 价格
-         */
-        private BigDecimal taxPrice;
-
-        /**
-         * 退货金额
-         */
-        private BigDecimal returnAmount;
-
-        public ReturnDetailBo(SaleReturnFullDto.ReturnDetailDto dto) {
-
-            super(dto);
-        }
-
-        @Override
-        public BaseBo<SaleReturnFullDto.ReturnDetailDto> convert(SaleReturnFullDto.ReturnDetailDto dto) {
-
-            return super.convert(dto);
-        }
-
-        @Override
-        protected void afterInit(SaleReturnFullDto.ReturnDetailDto dto) {
-
-            this.returnNum = dto.getReturnNum();
-            this.taxPrice = dto.getTaxPrice();
-            this.returnAmount = NumberUtil.mul(dto.getTaxPrice(), dto.getReturnNum());
-
-            ISupplierService supplierService = ApplicationUtil.getBean(ISupplierService.class);
-            this.supplierName = supplierService.getById(dto.getSupplierId()).getName();
-
-            IProductService productService = ApplicationUtil.getBean(IProductService.class);
-            SaleProductDto product = productService.getSaleById(dto.getProductId());
-
-            this.productCode = product.getCode();
-            this.productName = product.getName();
-            this.skuCode = product.getSkuCode();
-            this.externalCode = product.getExternalCode();
-        }
-    }
+  }
 }

@@ -2,10 +2,9 @@ package com.lframework.xingyun.sc.dto.stock.take.pre;
 
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * <p>
@@ -17,53 +16,53 @@ import java.time.LocalDateTime;
 @Data
 public class PreTakeStockSheetDto implements BaseDto, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public static final String CACHE_NAME = "PreTakeStockSheetDto";
+  public static final String CACHE_NAME = "PreTakeStockSheetDto";
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 业务单据号
-     */
-    private String code;
+  /**
+   * 业务单据号
+   */
+  private String code;
 
-    /**
-     * 仓库ID
-     */
-    private String scId;
+  /**
+   * 仓库ID
+   */
+  private String scId;
 
-    /**
-     * 盘点状态
-     */
-    private PreTakeStockSheetStatus takeStatus;
+  /**
+   * 盘点状态
+   */
+  private PreTakeStockSheetStatus takeStatus;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    /**
-     * 创建人
-     */
-    private String createBy;
+  /**
+   * 创建人
+   */
+  private String createBy;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
+  /**
+   * 创建时间
+   */
+  private LocalDateTime createTime;
 
-    /**
-     * 修改人
-     */
-    private String updateBy;
+  /**
+   * 修改人
+   */
+  private String updateBy;
 
-    /**
-     * 修改时间
-     */
-    private LocalDateTime updateTime;
+  /**
+   * 修改时间
+   */
+  private LocalDateTime updateTime;
 
 }

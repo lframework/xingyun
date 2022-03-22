@@ -8,10 +8,9 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -24,73 +23,73 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class QueryPreTakeStockSheetBo extends BaseBo<PreTakeStockSheetDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 业务单据号
-     */
-    private String code;
+  /**
+   * 业务单据号
+   */
+  private String code;
 
-    /**
-     * 仓库编号
-     */
-    private String scCode;
+  /**
+   * 仓库编号
+   */
+  private String scCode;
 
-    /**
-     * 仓库名称
-     */
-    private String scName;
+  /**
+   * 仓库名称
+   */
+  private String scName;
 
-    /**
-     * 盘点状态
-     */
-    private Integer takeStatus;
+  /**
+   * 盘点状态
+   */
+  private Integer takeStatus;
 
-    /**
-     * 修改时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime updateTime;
+  /**
+   * 修改时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime updateTime;
 
-    /**
-     * 修改人
-     */
-    private String updateBy;
+  /**
+   * 修改人
+   */
+  private String updateBy;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    public QueryPreTakeStockSheetBo() {
+  public QueryPreTakeStockSheetBo() {
 
-    }
+  }
 
-    public QueryPreTakeStockSheetBo(PreTakeStockSheetDto dto) {
+  public QueryPreTakeStockSheetBo(PreTakeStockSheetDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 
-    @Override
-    public BaseBo<PreTakeStockSheetDto> convert(PreTakeStockSheetDto dto) {
+  @Override
+  public BaseBo<PreTakeStockSheetDto> convert(PreTakeStockSheetDto dto) {
 
-        return super.convert(dto, QueryPreTakeStockSheetBo::getTakeStatus);
-    }
+    return super.convert(dto, QueryPreTakeStockSheetBo::getTakeStatus);
+  }
 
-    @Override
-    protected void afterInit(PreTakeStockSheetDto dto) {
+  @Override
+  protected void afterInit(PreTakeStockSheetDto dto) {
 
-        this.takeStatus = dto.getTakeStatus().getCode();
+    this.takeStatus = dto.getTakeStatus().getCode();
 
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        this.updateBy = userService.getById(dto.getUpdateBy()).getName();
+    IUserService userService = ApplicationUtil.getBean(IUserService.class);
+    this.updateBy = userService.getById(dto.getUpdateBy()).getName();
 
-        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-        StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-        this.scCode = sc.getCode();
-        this.scName = sc.getName();
-    }
+    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
+    this.scCode = sc.getCode();
+    this.scName = sc.getName();
+  }
 }

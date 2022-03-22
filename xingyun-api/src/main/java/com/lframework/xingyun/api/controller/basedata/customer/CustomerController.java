@@ -14,16 +14,21 @@ import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.UpdateCustomerVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 客户管理
@@ -35,89 +40,93 @@ import java.util.stream.Collectors;
 @RequestMapping("/basedata/customer")
 public class CustomerController extends DefaultBaseController {
 
-    @Autowired
-    private ICustomerService customerService;
+  @Autowired
+  private ICustomerService customerService;
 
-    /**
-     * 客户列表
-     */
-    @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QueryCustomerVo vo) {
+  /**
+   * 客户列表
+   */
+  @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QueryCustomerVo vo) {
 
-        PageResult<CustomerDto> pageResult = customerService.query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<CustomerDto> pageResult = customerService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
-        List<CustomerDto> datas = pageResult.getDatas();
+    List<CustomerDto> datas = pageResult.getDatas();
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QueryCustomerBo> results = datas.stream().map(QueryCustomerBo::new).collect(Collectors.toList());
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QueryCustomerBo> results = datas.stream().map(QueryCustomerBo::new)
+          .collect(Collectors.toList());
 
-            PageResultUtil.rebuild(pageResult, results);
-        }
-
-        return InvokeResultBuilder.success(pageResult);
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 查询客户
-     */
-    @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
-    @GetMapping
-    public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        CustomerDto data = customerService.getById(id);
-        if (data == null) {
-            throw new DefaultClientException("客户不存在！");
-        }
+  /**
+   * 查询客户
+   */
+  @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
+  @GetMapping
+  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
 
-        GetCustomerBo result = new GetCustomerBo(data);
-
-        return InvokeResultBuilder.success(result);
+    CustomerDto data = customerService.getById(id);
+    if (data == null) {
+      throw new DefaultClientException("客户不存在！");
     }
 
-    /**
-     * 批量停用客户
-     */
-    @PreAuthorize("@permission.valid('base-data:customer:modify')")
-    @PatchMapping("/unable/batch")
-    public InvokeResult batchUnable(@NotEmpty(message = "请选择需要停用的客户！") @RequestBody List<String> ids) {
+    GetCustomerBo result = new GetCustomerBo(data);
 
-        customerService.batchUnable(ids);
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success(result);
+  }
 
-    /**
-     * 批量启用客户
-     */
-    @PreAuthorize("@permission.valid('base-data:customer:modify')")
-    @PatchMapping("/enable/batch")
-    public InvokeResult batchEnable(@NotEmpty(message = "请选择需要启用的客户！") @RequestBody List<String> ids) {
+  /**
+   * 批量停用客户
+   */
+  @PreAuthorize("@permission.valid('base-data:customer:modify')")
+  @PatchMapping("/unable/batch")
+  public InvokeResult batchUnable(
+      @NotEmpty(message = "请选择需要停用的客户！") @RequestBody List<String> ids) {
 
-        customerService.batchEnable(ids);
-        return InvokeResultBuilder.success();
-    }
+    customerService.batchUnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 新增客户
-     */
-    @PreAuthorize("@permission.valid('base-data:customer:add')")
-    @PostMapping
-    public InvokeResult create(@Valid CreateCustomerVo vo) {
+  /**
+   * 批量启用客户
+   */
+  @PreAuthorize("@permission.valid('base-data:customer:modify')")
+  @PatchMapping("/enable/batch")
+  public InvokeResult batchEnable(
+      @NotEmpty(message = "请选择需要启用的客户！") @RequestBody List<String> ids) {
 
-        customerService.create(vo);
+    customerService.batchEnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 新增客户
+   */
+  @PreAuthorize("@permission.valid('base-data:customer:add')")
+  @PostMapping
+  public InvokeResult create(@Valid CreateCustomerVo vo) {
 
-    /**
-     * 修改客户
-     */
-    @PreAuthorize("@permission.valid('base-data:customer:modify')")
-    @PutMapping
-    public InvokeResult update(@Valid UpdateCustomerVo vo) {
+    customerService.create(vo);
 
-        customerService.update(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 修改客户
+   */
+  @PreAuthorize("@permission.valid('base-data:customer:modify')")
+  @PutMapping
+  public InvokeResult update(@Valid UpdateCustomerVo vo) {
+
+    customerService.update(vo);
+
+    return InvokeResultBuilder.success();
+  }
 }

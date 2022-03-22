@@ -7,14 +7,13 @@ import com.lframework.xingyun.api.bo.retail.config.GetRetailConfigBo;
 import com.lframework.xingyun.sc.dto.retail.config.RetailConfigDto;
 import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
 import com.lframework.xingyun.sc.vo.retail.config.UpdateRetailConfigVo;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 /**
  * 零售参数设置
@@ -26,23 +25,23 @@ import javax.validation.Valid;
 @RequestMapping("/retail/config")
 public class RetailConfigController extends DefaultBaseController {
 
-    @Autowired
-    private IRetailConfigService retailConfigService;
+  @Autowired
+  private IRetailConfigService retailConfigService;
 
-    @GetMapping
-    public InvokeResult get() {
+  @GetMapping
+  public InvokeResult get() {
 
-        RetailConfigDto config = retailConfigService.get();
-        GetRetailConfigBo result = new GetRetailConfigBo(config);
+    RetailConfigDto config = retailConfigService.get();
+    GetRetailConfigBo result = new GetRetailConfigBo(config);
 
-        return InvokeResultBuilder.success(result);
-    }
+    return InvokeResultBuilder.success(result);
+  }
 
-    @PutMapping
-    public InvokeResult update(@Valid UpdateRetailConfigVo vo) {
+  @PutMapping
+  public InvokeResult update(@Valid UpdateRetailConfigVo vo) {
 
-        retailConfigService.update(vo);
+    retailConfigService.update(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 }

@@ -9,59 +9,59 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class QueryProductPropertyBo extends BaseBo<ProductPropertyDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 编号
-     */
-    private String code;
+  /**
+   * 编号
+   */
+  private String code;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 是否必填
-     */
-    private Boolean isRequired;
+  /**
+   * 是否必填
+   */
+  private Boolean isRequired;
 
-    /**
-     * 录入类型
-     */
-    private Integer columnType;
+  /**
+   * 录入类型
+   */
+  private Integer columnType;
 
-    /**
-     * 属性类别
-     */
-    private Integer propertyType;
+  /**
+   * 属性类别
+   */
+  private Integer propertyType;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    public QueryProductPropertyBo() {
+  public QueryProductPropertyBo() {
 
-    }
+  }
 
-    public QueryProductPropertyBo(ProductPropertyDto dto) {
+  public QueryProductPropertyBo(ProductPropertyDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 
-    @Override
-    protected void afterInit(ProductPropertyDto dto) {
+  @Override
+  protected void afterInit(ProductPropertyDto dto) {
 
-        this.columnType = dto.getColumnType().getCode();
-        this.propertyType = dto.getPropertyType().getCode();
-    }
+    this.columnType = dto.getColumnType().getCode();
+    this.propertyType = dto.getPropertyType().getCode();
+  }
 }

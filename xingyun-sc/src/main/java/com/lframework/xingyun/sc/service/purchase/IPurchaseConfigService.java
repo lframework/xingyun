@@ -6,15 +6,17 @@ import com.lframework.xingyun.sc.vo.purchase.config.UpdatePurchaseConfigVo;
 
 public interface IPurchaseConfigService extends BaseService {
 
-    /**
-     * 查询
-     * @return
-     */
-    PurchaseConfigDto get();
+  /**
+   * 查询
+   *
+   * @return
+   */
+  PurchaseConfigDto get();
 
-    /**
-     * 修改
-     * @param vo
-     */
-    void update(UpdatePurchaseConfigVo vo);
+  /**
+   * 修改
+   *
+   * @param vo
+   */
+  void update(UpdatePurchaseConfigVo vo);
 }

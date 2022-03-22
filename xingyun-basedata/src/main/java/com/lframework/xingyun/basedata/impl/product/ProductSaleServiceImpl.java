@@ -18,52 +18,52 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductSaleServiceImpl implements IProductSaleService {
 
-    @Autowired
-    private ProductSaleMapper productSaleMapper;
+  @Autowired
+  private ProductSaleMapper productSaleMapper;
 
-    @Override
-    public ProductSaleDto getById(String id) {
+  @Override
+  public ProductSaleDto getById(String id) {
 
-        return productSaleMapper.getById(id);
+    return productSaleMapper.getById(id);
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
+  @Transactional
+  @Override
+  public String create(CreateProductSaleVo vo) {
+
+    ProductSale data = new ProductSale();
+    data.setId(IdUtil.getId());
+    if (!StringUtil.isBlank(vo.getId())) {
+      data.setId(vo.getId());
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
-    @Transactional
-    @Override
-    public String create(CreateProductSaleVo vo) {
+    data.setPrice(vo.getPrice());
 
-        ProductSale data = new ProductSale();
-        data.setId(IdUtil.getId());
-        if (!StringUtil.isBlank(vo.getId())) {
-            data.setId(vo.getId());
-        }
+    productSaleMapper.insert(data);
 
-        data.setPrice(vo.getPrice());
+    return data.getId();
+  }
 
-        productSaleMapper.insert(data);
+  @OpLog(type = OpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
+  @Transactional
+  @Override
+  public void update(UpdateProductSaleVo vo) {
 
-        return data.getId();
+    if (vo.getPrice() == null) {
+      throw new InputErrorException("销售价不能为空！");
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
-    @Transactional
-    @Override
-    public void update(UpdateProductSaleVo vo) {
-
-        if (vo.getPrice() == null) {
-            throw new InputErrorException("销售价不能为空！");
-        }
-
-        if (vo.getPrice().doubleValue() < 0D) {
-            throw new InputErrorException("销售价必须大于0！");
-        }
-
-        productSaleMapper.deleteById(vo.getId());
-
-        CreateProductSaleVo createVo = new CreateProductSaleVo();
-        createVo.setId(vo.getId());
-        createVo.setPrice(vo.getPrice());
-
-        this.create(createVo);
+    if (vo.getPrice().doubleValue() < 0D) {
+      throw new InputErrorException("销售价必须大于0！");
     }
+
+    productSaleMapper.deleteById(vo.getId());
+
+    CreateProductSaleVo createVo = new CreateProductSaleVo();
+    createVo.setId(vo.getId());
+    createVo.setPrice(vo.getPrice());
+
+    this.create(createVo);
+  }
 }

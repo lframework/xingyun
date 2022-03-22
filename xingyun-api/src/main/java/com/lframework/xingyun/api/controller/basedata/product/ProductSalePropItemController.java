@@ -15,16 +15,19 @@ import com.lframework.xingyun.basedata.service.product.IProductSalePropItemServi
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.CreateProductSalePropItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.QueryProductSalePropItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.UpdateProductSalePropItemVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 销售属性管理
@@ -36,84 +39,84 @@ import java.util.stream.Collectors;
 @RequestMapping("/basedata/product/saleprop/item")
 public class ProductSalePropItemController extends DefaultBaseController {
 
-    @Autowired
-    private IProductSalePropItemService productSalePropItemService;
+  @Autowired
+  private IProductSalePropItemService productSalePropItemService;
 
-    /**
-     * 销售属性列表
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-item:query','base-data:product:saleprop-item:add','base-data:product:saleprop-item:modify')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QueryProductSalePropItemVo vo) {
+  /**
+   * 销售属性列表
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-item:query','base-data:product:saleprop-item:add','base-data:product:saleprop-item:modify')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QueryProductSalePropItemVo vo) {
 
-        PageResult<ProductSalePropItemDto> pageResult = productSalePropItemService
-                .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<ProductSalePropItemDto> pageResult = productSalePropItemService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
-        List<ProductSalePropItemDto> datas = pageResult.getDatas();
+    List<ProductSalePropItemDto> datas = pageResult.getDatas();
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QueryProductSalePropItemBo> results = datas.stream().map(QueryProductSalePropItemBo::new)
-                    .collect(Collectors.toList());
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QueryProductSalePropItemBo> results = datas.stream().map(QueryProductSalePropItemBo::new)
+          .collect(Collectors.toList());
 
-            PageResultUtil.rebuild(pageResult, results);
-        }
-
-        return InvokeResultBuilder.success(pageResult);
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 查询销售属性
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-item:query','base-data:product:saleprop-item:add','base-data:product:saleprop-item:modify')")
-    @GetMapping
-    public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        ProductSalePropItemDto data = productSalePropItemService.getById(id);
-        if (data == null) {
-            throw new DefaultClientException("销售属性不存在！");
-        }
+  /**
+   * 查询销售属性
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-item:query','base-data:product:saleprop-item:add','base-data:product:saleprop-item:modify')")
+  @GetMapping
+  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
 
-        GetProductSalePropItemBo result = new GetProductSalePropItemBo(data);
-
-        return InvokeResultBuilder.success(result);
+    ProductSalePropItemDto data = productSalePropItemService.getById(id);
+    if (data == null) {
+      throw new DefaultClientException("销售属性不存在！");
     }
 
-    /**
-     * 新增销售属性
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-item:add')")
-    @PostMapping
-    public InvokeResult create(@Valid CreateProductSalePropItemVo vo) {
+    GetProductSalePropItemBo result = new GetProductSalePropItemBo(data);
 
-        productSalePropItemService.create(vo);
+    return InvokeResultBuilder.success(result);
+  }
 
-        return InvokeResultBuilder.success();
+  /**
+   * 新增销售属性
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-item:add')")
+  @PostMapping
+  public InvokeResult create(@Valid CreateProductSalePropItemVo vo) {
+
+    productSalePropItemService.create(vo);
+
+    return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 修改销售属性
+   */
+  @PreAuthorize("@permission.valid('base-data:product:saleprop-item:modify')")
+  @PutMapping
+  public InvokeResult update(@Valid UpdateProductSalePropItemVo vo) {
+
+    productSalePropItemService.update(vo);
+
+    return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 根据销售属性组ID查询启用的销售属性
+   */
+  @GetMapping("/enable")
+  public InvokeResult queryEnableList(@NotBlank(message = "销售属性组ID不能为空！") String groupId) {
+
+    List<ProductSalePropItemDto> datas = productSalePropItemService.getEnablesByGroupId(groupId);
+    List<GetEnableSalePropItemBo> results = Collections.EMPTY_LIST;
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(GetEnableSalePropItemBo::new).collect(Collectors.toList());
     }
 
-    /**
-     * 修改销售属性
-     */
-    @PreAuthorize("@permission.valid('base-data:product:saleprop-item:modify')")
-    @PutMapping
-    public InvokeResult update(@Valid UpdateProductSalePropItemVo vo) {
-
-        productSalePropItemService.update(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 根据销售属性组ID查询启用的销售属性
-     */
-    @GetMapping("/enable")
-    public InvokeResult queryEnableList(@NotBlank(message = "销售属性组ID不能为空！") String groupId) {
-
-        List<ProductSalePropItemDto> datas = productSalePropItemService.getEnablesByGroupId(groupId);
-        List<GetEnableSalePropItemBo> results = Collections.EMPTY_LIST;
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(GetEnableSalePropItemBo::new).collect(Collectors.toList());
-        }
-
-        return InvokeResultBuilder.success(results);
-    }
+    return InvokeResultBuilder.success(results);
+  }
 }

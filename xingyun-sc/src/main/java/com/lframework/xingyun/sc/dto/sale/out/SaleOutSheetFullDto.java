@@ -3,63 +3,167 @@ package com.lframework.xingyun.sc.dto.sale.out;
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class SaleOutSheetFullDto implements BaseDto, Serializable {
 
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * ID
+   */
+  private String id;
+
+  /**
+   * 单号
+   */
+  private String code;
+
+  /**
+   * 仓库ID
+   */
+  private String scId;
+
+  /**
+   * 客户ID
+   */
+  private String customerId;
+
+  /**
+   * 销售员ID
+   */
+  private String salerId;
+
+  /**
+   * 付款日期
+   */
+  private LocalDate paymentDate;
+
+  /**
+   * 商品数量
+   */
+  private Integer totalNum;
+
+  /**
+   * 赠品数量
+   */
+  private Integer totalGiftNum;
+
+  /**
+   * 出库总金额
+   */
+  private BigDecimal totalAmount;
+
+  /**
+   * 备注
+   */
+  private String description;
+
+  /**
+   * 创建人
+   */
+  private String createBy;
+
+  /**
+   * 创建时间
+   */
+  private LocalDateTime createTime;
+
+  /**
+   * 修改人
+   */
+  private String updateBy;
+
+  /**
+   * 修改时间
+   */
+  private LocalDateTime updateTime;
+
+  /**
+   * 审核人
+   */
+  private String approveBy;
+
+  /**
+   * 审核时间
+   */
+  private LocalDateTime approveTime;
+
+  /**
+   * 状态
+   */
+  private SaleOutSheetStatus status;
+
+  /**
+   * 拒绝原因
+   */
+  private String refuseReason;
+
+  /**
+   * 销售订单ID
+   */
+  private String saleOrderId;
+
+  /**
+   * 结算状态
+   */
+  private SettleStatus settleStatus;
+
+  /**
+   * 订单明细
+   */
+  private List<SheetDetailDto> details;
+
+  @Data
+  public static class SheetDetailDto implements BaseDto, Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /**
-     * ID
+     * 明细ID
      */
     private String id;
 
     /**
-     * 单号
+     * 商品ID
      */
-    private String code;
+    private String productId;
 
     /**
-     * 仓库ID
+     * 出库数量
      */
-    private String scId;
+    private Integer orderNum;
 
     /**
-     * 客户ID
+     * 原价
      */
-    private String customerId;
+    private BigDecimal oriPrice;
 
     /**
-     * 销售员ID
+     * 现价
      */
-    private String salerId;
+    private BigDecimal taxPrice;
 
     /**
-     * 付款日期
+     * 折扣（%）
      */
-    private LocalDate paymentDate;
+    private BigDecimal discountRate;
 
     /**
-     * 商品数量
+     * 是否赠品
      */
-    private Integer totalNum;
+    private Boolean isGift;
 
     /**
-     * 赠品数量
+     * 税率（%）
      */
-    private Integer totalGiftNum;
-
-    /**
-     * 出库总金额
-     */
-    private BigDecimal totalAmount;
+    private BigDecimal taxRate;
 
     /**
      * 备注
@@ -67,49 +171,9 @@ public class SaleOutSheetFullDto implements BaseDto, Serializable {
     private String description;
 
     /**
-     * 创建人
+     * 排序编号
      */
-    private String createBy;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 修改人
-     */
-    private String updateBy;
-
-    /**
-     * 修改时间
-     */
-    private LocalDateTime updateTime;
-
-    /**
-     * 审核人
-     */
-    private String approveBy;
-
-    /**
-     * 审核时间
-     */
-    private LocalDateTime approveTime;
-
-    /**
-     * 状态
-     */
-    private SaleOutSheetStatus status;
-
-    /**
-     * 拒绝原因
-     */
-    private String refuseReason;
-
-    /**
-     * 销售订单ID
-     */
-    private String saleOrderId;
+    private Integer orderNo;
 
     /**
      * 结算状态
@@ -117,73 +181,8 @@ public class SaleOutSheetFullDto implements BaseDto, Serializable {
     private SettleStatus settleStatus;
 
     /**
-     * 订单明细
+     * 销售订单明细ID
      */
-    private List<SheetDetailDto> details;
-
-    @Data
-    public static class SheetDetailDto implements BaseDto, Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * 明细ID
-         */
-        private String id;
-
-        /**
-         * 商品ID
-         */
-        private String productId;
-
-        /**
-         * 出库数量
-         */
-        private Integer orderNum;
-
-        /**
-         * 原价
-         */
-        private BigDecimal oriPrice;
-
-        /**
-         * 现价
-         */
-        private BigDecimal taxPrice;
-
-        /**
-         * 折扣（%）
-         */
-        private BigDecimal discountRate;
-
-        /**
-         * 是否赠品
-         */
-        private Boolean isGift;
-
-        /**
-         * 税率（%）
-         */
-        private BigDecimal taxRate;
-
-        /**
-         * 备注
-         */
-        private String description;
-
-        /**
-         * 排序编号
-         */
-        private Integer orderNo;
-
-        /**
-         * 结算状态
-         */
-        private SettleStatus settleStatus;
-
-        /**
-         * 销售订单明细ID
-         */
-        private String saleOrderDetailId;
-    }
+    private String saleOrderDetailId;
+  }
 }

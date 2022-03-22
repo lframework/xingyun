@@ -18,25 +18,25 @@ import lombok.EqualsAndHashCode;
 @TableName("base_data_product_saleprop_item_relation")
 public class ProductSalePropItemRelation extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 商品ID
-     */
-    private String productId;
+  /**
+   * 商品ID
+   */
+  private String productId;
 
-    /**
-     * 销售属性值ID
-     */
-    private String salePropItemId;
+  /**
+   * 销售属性值ID
+   */
+  private String salePropItemId;
 
-    /**
-     * 排序
-     */
-    private Integer orderNo;
+  /**
+   * 排序
+   */
+  private Integer orderNo;
 }

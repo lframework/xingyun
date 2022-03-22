@@ -4,13 +4,12 @@ import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.stock.ProductStockLogDto;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -18,10 +17,11 @@ import java.util.List;
  */
 public interface ProductStockLogMapper extends BaseMapper<ProductStockLog> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<ProductStockLogDto> query(@Param("vo") QueryProductStockLogVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductStockLogDto> query(@Param("vo") QueryProductStockLogVo vo);
 }

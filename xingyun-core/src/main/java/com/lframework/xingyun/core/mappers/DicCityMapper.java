@@ -3,12 +3,11 @@ package com.lframework.xingyun.core.mappers;
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.entity.DicCity;
-
 import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -16,16 +15,18 @@ import java.util.List;
  */
 public interface DicCityMapper extends BaseMapper<DicCity> {
 
-    /**
-     * 查询所有数据
-     * @return
-     */
-    List<DicCityDto> getAll();
+  /**
+   * 查询所有数据
+   *
+   * @return
+   */
+  List<DicCityDto> getAll();
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    DicCityDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  DicCityDto getById(String id);
 }

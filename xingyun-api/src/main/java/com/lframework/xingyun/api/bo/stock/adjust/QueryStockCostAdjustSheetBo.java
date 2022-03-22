@@ -9,11 +9,10 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetDto;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -26,97 +25,97 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class QueryStockCostAdjustSheetBo extends BaseBo<StockCostAdjustSheetDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 业务单据号
-     */
-    private String code;
+  /**
+   * 业务单据号
+   */
+  private String code;
 
-    /**
-     * 仓库编号
-     */
-    private String scCode;
+  /**
+   * 仓库编号
+   */
+  private String scCode;
 
-    /**
-     * 仓库名称
-     */
-    private String scName;
+  /**
+   * 仓库名称
+   */
+  private String scName;
 
-    /**
-     * 调价品种数
-     */
-    private Integer productNum;
+  /**
+   * 调价品种数
+   */
+  private Integer productNum;
 
-    /**
-     * 库存调价差额
-     */
-    private BigDecimal diffAmount;
+  /**
+   * 库存调价差额
+   */
+  private BigDecimal diffAmount;
 
-    /**
-     * 状态
-     */
-    private Integer status;
+  /**
+   * 状态
+   */
+  private Integer status;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    /**
-     * 修改人
-     */
-    private String updateBy;
+  /**
+   * 修改人
+   */
+  private String updateBy;
 
-    /**
-     * 修改时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime updateTime;
+  /**
+   * 修改时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime updateTime;
 
-    /**
-     * 审核人
-     */
-    private String approveBy;
+  /**
+   * 审核人
+   */
+  private String approveBy;
 
-    /**
-     * 审核时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime approveTime;
+  /**
+   * 审核时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime approveTime;
 
-    public QueryStockCostAdjustSheetBo() {
+  public QueryStockCostAdjustSheetBo() {
 
+  }
+
+  public QueryStockCostAdjustSheetBo(StockCostAdjustSheetDto dto) {
+
+    super(dto);
+  }
+
+  @Override
+  public BaseBo<StockCostAdjustSheetDto> convert(StockCostAdjustSheetDto dto) {
+
+    return super.convert(dto, QueryStockCostAdjustSheetBo::getStatus);
+  }
+
+  @Override
+  protected void afterInit(StockCostAdjustSheetDto dto) {
+
+    this.status = dto.getStatus().getCode();
+
+    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
+    this.scCode = sc.getCode();
+    this.scName = sc.getName();
+
+    IUserService userService = ApplicationUtil.getBean(IUserService.class);
+    this.updateBy = userService.getById(dto.getUpdateBy()).getName();
+    if (!StringUtil.isBlank(dto.getApproveBy())) {
+      this.approveBy = userService.getById(dto.getApproveBy()).getName();
     }
-
-    public QueryStockCostAdjustSheetBo(StockCostAdjustSheetDto dto) {
-
-        super(dto);
-    }
-
-    @Override
-    public BaseBo<StockCostAdjustSheetDto> convert(StockCostAdjustSheetDto dto) {
-
-        return super.convert(dto, QueryStockCostAdjustSheetBo::getStatus);
-    }
-
-    @Override
-    protected void afterInit(StockCostAdjustSheetDto dto) {
-
-        this.status = dto.getStatus().getCode();
-
-        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-        StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-        this.scCode = sc.getCode();
-        this.scName = sc.getName();
-
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        this.updateBy = userService.getById(dto.getUpdateBy()).getName();
-        if (!StringUtil.isBlank(dto.getApproveBy())) {
-            this.approveBy = userService.getById(dto.getApproveBy()).getName();
-        }
-    }
+  }
 }

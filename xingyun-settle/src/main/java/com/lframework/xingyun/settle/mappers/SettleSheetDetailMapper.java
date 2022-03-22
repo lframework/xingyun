@@ -5,7 +5,7 @@ import com.lframework.xingyun.settle.entity.SettleSheetDetail;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj

@@ -13,59 +13,60 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GetProductCategoryBo extends BaseBo<ProductCategoryDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 编号
-     */
-    private String code;
+  /**
+   * 编号
+   */
+  private String code;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 父级ID
-     */
-    private String parentId;
+  /**
+   * 父级ID
+   */
+  private String parentId;
 
-    /**
-     * 父级名称
-     */
-    private String parentName;
+  /**
+   * 父级名称
+   */
+  private String parentName;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    public GetProductCategoryBo() {
+  public GetProductCategoryBo() {
 
+  }
+
+  public GetProductCategoryBo(ProductCategoryDto dto) {
+
+    super(dto);
+  }
+
+  @Override
+  protected void afterInit(ProductCategoryDto dto) {
+
+    if (!StringUtil.isBlank(this.getParentId())) {
+      IProductCategoryService productCategoryService = ApplicationUtil
+          .getBean(IProductCategoryService.class);
+      ProductCategoryDto parentCategory = productCategoryService.getById(this.getParentId());
+      if (!ObjectUtil.isNull(parentCategory)) {
+        this.setParentName(parentCategory.getName());
+      }
     }
-
-    public GetProductCategoryBo(ProductCategoryDto dto) {
-
-        super(dto);
-    }
-
-    @Override
-    protected void afterInit(ProductCategoryDto dto) {
-
-        if (!StringUtil.isBlank(this.getParentId())) {
-            IProductCategoryService productCategoryService = ApplicationUtil.getBean(IProductCategoryService.class);
-            ProductCategoryDto parentCategory = productCategoryService.getById(this.getParentId());
-            if (!ObjectUtil.isNull(parentCategory)) {
-                this.setParentName(parentCategory.getName());
-            }
-        }
-    }
+  }
 }

@@ -15,244 +15,246 @@ import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveDto> {
 
+  /**
+   * 订单ID
+   */
+  private String id;
+
+  /**
+   * 仓库ID
+   */
+  private String scId;
+
+  /**
+   * 仓库名称
+   */
+  private String scName;
+
+  /**
+   * 供应商ID
+   */
+  private String supplierId;
+
+  /**
+   * 供应商名称
+   */
+  private String supplierName;
+
+  /**
+   * 采购员ID
+   */
+  private String purchaserId;
+
+  /**
+   * 采购员姓名
+   */
+  private String purchaserName;
+
+  /**
+   * 订单明细
+   */
+  private List<DetailBo> details;
+
+  public PurchaseOrderWithReceiveBo() {
+
+  }
+
+  public PurchaseOrderWithReceiveBo(PurchaseOrderWithReceiveDto dto) {
+
+    super(dto);
+  }
+
+  @Override
+  public BaseBo<PurchaseOrderWithReceiveDto> convert(PurchaseOrderWithReceiveDto dto) {
+
+    return super.convert(dto, PurchaseOrderWithReceiveBo::getPurchaserId,
+        PurchaseOrderWithReceiveBo::getDetails);
+  }
+
+  @Override
+  protected void afterInit(PurchaseOrderWithReceiveDto dto) {
+
+    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
+    this.scName = sc.getName();
+
+    ISupplierService supplierService = ApplicationUtil.getBean(ISupplierService.class);
+    SupplierDto supplier = supplierService.getById(dto.getSupplierId());
+    this.supplierName = supplier.getName();
+
+    if (!StringUtil.isBlank(dto.getPurchaserId())) {
+      IUserService userService = ApplicationUtil.getBean(IUserService.class);
+      UserDto purchaser = userService.getById(dto.getPurchaserId());
+
+      this.purchaserId = purchaser.getId();
+      this.purchaserName = purchaser.getName();
+    }
+
+    if (!CollectionUtil.isEmpty(dto.getDetails())) {
+      this.details = dto.getDetails().stream().map(DetailBo::new).collect(Collectors.toList());
+    }
+  }
+
+  @Data
+  @EqualsAndHashCode(callSuper = true)
+  public static class DetailBo extends BaseBo<PurchaseOrderWithReceiveDto.DetailDto> {
+
     /**
-     * 订单ID
+     * ID
      */
     private String id;
 
     /**
-     * 仓库ID
+     * 商品ID
      */
-    private String scId;
+    private String productId;
 
     /**
-     * 仓库名称
+     * 商品编号
      */
-    private String scName;
+    private String productCode;
 
     /**
-     * 供应商ID
+     * 商品名称
      */
-    private String supplierId;
+    private String productName;
 
     /**
-     * 供应商名称
+     * SKU编号
      */
-    private String supplierName;
+    private String skuCode;
 
     /**
-     * 采购员ID
+     * 外部编号
      */
-    private String purchaserId;
+    private String externalCode;
 
     /**
-     * 采购员姓名
+     * 单位
      */
-    private String purchaserName;
+    private String unit;
 
     /**
-     * 订单明细
+     * 规格
      */
-    private List<DetailBo> details;
+    private String spec;
 
-    public PurchaseOrderWithReceiveBo() {
+    /**
+     * 类目名称
+     */
+    private String categoryName;
+
+    /**
+     * 品牌名称
+     */
+    private String brandName;
+
+    /**
+     * 销售属性1
+     */
+    private String salePropItemName1;
+
+    /**
+     * 销售属性2
+     */
+    private String salePropItemName2;
+
+    /**
+     * 采购数量
+     */
+    private Integer orderNum;
+
+    /**
+     * 采购价
+     */
+    private BigDecimal purchasePrice;
+
+    /**
+     * 剩余收货数量
+     */
+    private Integer remainNum;
+
+    /**
+     * 是否赠品
+     */
+    private Boolean isGift;
+
+    /**
+     * 税率（%）
+     */
+    private BigDecimal taxRate;
+
+    /**
+     * 备注
+     */
+    private String description;
+
+    public DetailBo() {
 
     }
 
-    public PurchaseOrderWithReceiveBo(PurchaseOrderWithReceiveDto dto) {
+    public DetailBo(PurchaseOrderWithReceiveDto.DetailDto dto) {
 
-        super(dto);
+      super(dto);
     }
 
     @Override
-    public BaseBo<PurchaseOrderWithReceiveDto> convert(PurchaseOrderWithReceiveDto dto) {
+    public BaseBo<PurchaseOrderWithReceiveDto.DetailDto> convert(
+        PurchaseOrderWithReceiveDto.DetailDto dto) {
 
-        return super.convert(dto, PurchaseOrderWithReceiveBo::getPurchaserId, PurchaseOrderWithReceiveBo::getDetails);
+      return this;
     }
 
     @Override
-    protected void afterInit(PurchaseOrderWithReceiveDto dto) {
+    public <A> BaseBo<PurchaseOrderWithReceiveDto.DetailDto> convert(
+        PurchaseOrderWithReceiveDto.DetailDto dto,
+        SFunction<A, ?>... columns) {
 
-        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-        StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-        this.scName = sc.getName();
-
-        ISupplierService supplierService = ApplicationUtil.getBean(ISupplierService.class);
-        SupplierDto supplier = supplierService.getById(dto.getSupplierId());
-        this.supplierName = supplier.getName();
-
-        if (!StringUtil.isBlank(dto.getPurchaserId())) {
-            IUserService userService = ApplicationUtil.getBean(IUserService.class);
-            UserDto purchaser = userService.getById(dto.getPurchaserId());
-
-            this.purchaserId = purchaser.getId();
-            this.purchaserName = purchaser.getName();
-        }
-
-        if (!CollectionUtil.isEmpty(dto.getDetails())) {
-            this.details = dto.getDetails().stream().map(DetailBo::new).collect(Collectors.toList());
-        }
+      return this;
     }
 
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class DetailBo extends BaseBo<PurchaseOrderWithReceiveDto.DetailDto> {
+    @Override
+    protected void afterInit(PurchaseOrderWithReceiveDto.DetailDto dto) {
 
-        /**
-         * ID
-         */
-        private String id;
+      IProductService productService = ApplicationUtil.getBean(IProductService.class);
+      PurchaseProductDto product = productService.getPurchaseById(dto.getProductId());
 
-        /**
-         * 商品ID
-         */
-        private String productId;
-
-        /**
-         * 商品编号
-         */
-        private String productCode;
-
-        /**
-         * 商品名称
-         */
-        private String productName;
-
-        /**
-         * SKU编号
-         */
-        private String skuCode;
-
-        /**
-         * 外部编号
-         */
-        private String externalCode;
-
-        /**
-         * 单位
-         */
-        private String unit;
-
-        /**
-         * 规格
-         */
-        private String spec;
-
-        /**
-         * 类目名称
-         */
-        private String categoryName;
-
-        /**
-         * 品牌名称
-         */
-        private String brandName;
-
-        /**
-         * 销售属性1
-         */
-        private String salePropItemName1;
-
-        /**
-         * 销售属性2
-         */
-        private String salePropItemName2;
-
-        /**
-         * 采购数量
-         */
-        private Integer orderNum;
-
-        /**
-         * 采购价
-         */
-        private BigDecimal purchasePrice;
-
-        /**
-         * 剩余收货数量
-         */
-        private Integer remainNum;
-
-        /**
-         * 是否赠品
-         */
-        private Boolean isGift;
-
-        /**
-         * 税率（%）
-         */
-        private BigDecimal taxRate;
-
-        /**
-         * 备注
-         */
-        private String description;
-
-        public DetailBo() {
-
+      this.id = dto.getId();
+      this.productId = product.getId();
+      this.productCode = product.getCode();
+      this.productName = product.getName();
+      this.skuCode = product.getSkuCode();
+      this.externalCode = product.getExternalCode();
+      this.unit = product.getUnit();
+      this.spec = product.getSpec();
+      this.categoryName = product.getCategoryName();
+      this.brandName = product.getBrandName();
+      if (!CollectionUtil.isEmpty(product.getSaleProps())) {
+        if (product.getSaleProps().size() > 0) {
+          this.salePropItemName1 = product.getSaleProps().get(0).getName();
         }
 
-        public DetailBo(PurchaseOrderWithReceiveDto.DetailDto dto) {
-
-            super(dto);
+        if (product.getSaleProps().size() > 1) {
+          this.salePropItemName2 = product.getSaleProps().get(1).getName();
         }
+      }
 
-        @Override
-        public BaseBo<PurchaseOrderWithReceiveDto.DetailDto> convert(PurchaseOrderWithReceiveDto.DetailDto dto) {
-
-            return this;
-        }
-
-        @Override
-        public <A> BaseBo<PurchaseOrderWithReceiveDto.DetailDto> convert(PurchaseOrderWithReceiveDto.DetailDto dto,
-                SFunction<A, ?>... columns) {
-
-            return this;
-        }
-
-        @Override
-        protected void afterInit(PurchaseOrderWithReceiveDto.DetailDto dto) {
-
-            IProductService productService = ApplicationUtil.getBean(IProductService.class);
-            PurchaseProductDto product = productService.getPurchaseById(dto.getProductId());
-
-            this.id = dto.getId();
-            this.productId = product.getId();
-            this.productCode = product.getCode();
-            this.productName = product.getName();
-            this.skuCode = product.getSkuCode();
-            this.externalCode = product.getExternalCode();
-            this.unit = product.getUnit();
-            this.spec = product.getSpec();
-            this.categoryName = product.getCategoryName();
-            this.brandName = product.getBrandName();
-            if (!CollectionUtil.isEmpty(product.getSaleProps())) {
-                if (product.getSaleProps().size() > 0) {
-                    this.salePropItemName1 = product.getSaleProps().get(0).getName();
-                }
-
-                if (product.getSaleProps().size() > 1) {
-                    this.salePropItemName2 = product.getSaleProps().get(1).getName();
-                }
-            }
-
-            this.orderNum = dto.getOrderNum();
-            this.purchasePrice = dto.getTaxPrice();
-            this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReceiveNum()).intValue();
-            this.isGift = dto.getIsGift();
-            this.taxRate = dto.getTaxRate();
-            this.description = dto.getDescription();
-        }
+      this.orderNum = dto.getOrderNum();
+      this.purchasePrice = dto.getTaxPrice();
+      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReceiveNum()).intValue();
+      this.isGift = dto.getIsGift();
+      this.taxRate = dto.getTaxRate();
+      this.description = dto.getDescription();
     }
+  }
 }

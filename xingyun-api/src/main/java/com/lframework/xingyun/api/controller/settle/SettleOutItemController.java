@@ -17,16 +17,21 @@ import com.lframework.xingyun.settle.service.ISettleOutItemService;
 import com.lframework.xingyun.settle.vo.item.out.CreateSettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.QuerySettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.UpdateSettleOutItemVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 支出项目
@@ -38,119 +43,123 @@ import java.util.stream.Collectors;
 @RequestMapping("/settle/item/out")
 public class SettleOutItemController extends DefaultBaseController {
 
-    @Autowired
-    private ISettleOutItemService settleOutItemService;
+  @Autowired
+  private ISettleOutItemService settleOutItemService;
 
-    /**
-     * 支出项目列表
-     */
-    @PreAuthorize("@permission.valid('settle:out-item:query','settle:out-item:add','settle:out-item:modify')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QuerySettleOutItemVo vo) {
+  /**
+   * 支出项目列表
+   */
+  @PreAuthorize("@permission.valid('settle:out-item:query','settle:out-item:add','settle:out-item:modify')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QuerySettleOutItemVo vo) {
 
-        PageResult<SettleOutItemDto> pageResult = settleOutItemService.query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SettleOutItemDto> pageResult = settleOutItemService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
+    List<SettleOutItemDto> datas = pageResult.getDatas();
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QuerySettleOutItemBo> results = datas.stream().map(QuerySettleOutItemBo::new)
+          .collect(Collectors.toList());
+
+      PageResultUtil.rebuild(pageResult, results);
+    }
+
+    return InvokeResultBuilder.success(pageResult);
+  }
+
+  /**
+   * 查询支出项目
+   */
+  @PreAuthorize("@permission.valid('settle:out-item:query','settle:out-item:add','settle:out-item:modify')")
+  @GetMapping
+  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+
+    SettleOutItemDto data = settleOutItemService.getById(id);
+    if (data == null) {
+      throw new DefaultClientException("支出项目不存在！");
+    }
+
+    GetSettleOutItemBo result = new GetSettleOutItemBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 导出支出项目
+   */
+  @PreAuthorize("@permission.valid('settle:out-item:export')")
+  @PostMapping("/export")
+  public void export(@Valid QuerySettleOutItemVo vo) {
+
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
+        .multipartExportXls("支出项目信息", SettleOutItemExportModel.class);
+
+    try {
+      int pageIndex = 1;
+      while (true) {
+        PageResult<SettleOutItemDto> pageResult = settleOutItemService
+            .query(pageIndex, getExportSize(), vo);
         List<SettleOutItemDto> datas = pageResult.getDatas();
+        List<SettleOutItemExportModel> models = datas.stream().map(SettleOutItemExportModel::new)
+            .collect(Collectors.toList());
+        builder.doWrite(models);
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QuerySettleOutItemBo> results = datas.stream().map(QuerySettleOutItemBo::new)
-                    .collect(Collectors.toList());
-
-            PageResultUtil.rebuild(pageResult, results);
+        if (!pageResult.isHasNext()) {
+          break;
         }
-
-        return InvokeResultBuilder.success(pageResult);
+        pageIndex++;
+      }
+    } finally {
+      builder.finish();
     }
+  }
 
-    /**
-     * 查询支出项目
-     */
-    @PreAuthorize("@permission.valid('settle:out-item:query','settle:out-item:add','settle:out-item:modify')")
-    @GetMapping
-    public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+  /**
+   * 批量停用支出项目
+   */
+  @PreAuthorize("@permission.valid('settle:out-item:modify')")
+  @PatchMapping("/unable/batch")
+  public InvokeResult batchUnable(
+      @NotEmpty(message = "请选择需要停用的支出项目！") @RequestBody List<String> ids) {
 
-        SettleOutItemDto data = settleOutItemService.getById(id);
-        if (data == null) {
-            throw new DefaultClientException("支出项目不存在！");
-        }
+    settleOutItemService.batchUnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-        GetSettleOutItemBo result = new GetSettleOutItemBo(data);
+  /**
+   * 批量启用支出项目
+   */
+  @PreAuthorize("@permission.valid('settle:out-item:modify')")
+  @PatchMapping("/enable/batch")
+  public InvokeResult batchEnable(
+      @NotEmpty(message = "请选择需要启用的支出项目！") @RequestBody List<String> ids) {
 
-        return InvokeResultBuilder.success(result);
-    }
+    settleOutItemService.batchEnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 导出支出项目
-     */
-    @PreAuthorize("@permission.valid('settle:out-item:export')")
-    @PostMapping("/export")
-    public void export(@Valid QuerySettleOutItemVo vo) {
+  /**
+   * 新增支出项目
+   */
+  @PreAuthorize("@permission.valid('settle:out-item:add')")
+  @PostMapping
+  public InvokeResult create(@Valid CreateSettleOutItemVo vo) {
 
-        ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-                .multipartExportXls("支出项目信息", SettleOutItemExportModel.class);
+    settleOutItemService.create(vo);
 
-        try {
-            int pageIndex = 1;
-            while (true) {
-                PageResult<SettleOutItemDto> pageResult = settleOutItemService.query(pageIndex, getExportSize(), vo);
-                List<SettleOutItemDto> datas = pageResult.getDatas();
-                List<SettleOutItemExportModel> models = datas.stream().map(SettleOutItemExportModel::new)
-                        .collect(Collectors.toList());
-                builder.doWrite(models);
+    return InvokeResultBuilder.success();
+  }
 
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
-            }
-        } finally {
-            builder.finish();
-        }
-    }
+  /**
+   * 修改支出项目
+   */
+  @PreAuthorize("@permission.valid('settle:out-item:modify')")
+  @PutMapping
+  public InvokeResult update(@Valid UpdateSettleOutItemVo vo) {
 
-    /**
-     * 批量停用支出项目
-     */
-    @PreAuthorize("@permission.valid('settle:out-item:modify')")
-    @PatchMapping("/unable/batch")
-    public InvokeResult batchUnable(@NotEmpty(message = "请选择需要停用的支出项目！") @RequestBody List<String> ids) {
+    settleOutItemService.update(vo);
 
-        settleOutItemService.batchUnable(ids);
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量启用支出项目
-     */
-    @PreAuthorize("@permission.valid('settle:out-item:modify')")
-    @PatchMapping("/enable/batch")
-    public InvokeResult batchEnable(@NotEmpty(message = "请选择需要启用的支出项目！") @RequestBody List<String> ids) {
-
-        settleOutItemService.batchEnable(ids);
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 新增支出项目
-     */
-    @PreAuthorize("@permission.valid('settle:out-item:add')")
-    @PostMapping
-    public InvokeResult create(@Valid CreateSettleOutItemVo vo) {
-
-        settleOutItemService.create(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 修改支出项目
-     */
-    @PreAuthorize("@permission.valid('settle:out-item:modify')")
-    @PutMapping
-    public InvokeResult update(@Valid UpdateSettleOutItemVo vo) {
-
-        settleOutItemService.update(vo);
-
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 }

@@ -9,32 +9,32 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class SettleOutItemSelectorBo extends BaseBo<SettleOutItemDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 岗位编号
-     */
-    private String code;
+  /**
+   * 岗位编号
+   */
+  private String code;
 
-    /**
-     * 岗位名称
-     */
-    private String name;
+  /**
+   * 岗位名称
+   */
+  private String name;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    public SettleOutItemSelectorBo() {
+  public SettleOutItemSelectorBo() {
 
-    }
+  }
 
-    public SettleOutItemSelectorBo(SettleOutItemDto dto) {
+  public SettleOutItemSelectorBo(SettleOutItemDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

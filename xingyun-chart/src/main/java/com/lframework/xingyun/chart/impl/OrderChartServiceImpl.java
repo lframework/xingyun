@@ -1,8 +1,8 @@
 package com.lframework.xingyun.chart.impl;
 
 import com.lframework.common.constants.StringPool;
-import com.lframework.common.utils.*;
-import com.lframework.starter.redis.components.RedisHandler;
+import com.lframework.common.utils.DateUtil;
+import com.lframework.common.utils.IdUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.chart.dto.OrderChartSameMonthDto;
 import com.lframework.xingyun.chart.dto.OrderChartSumDto;
@@ -14,135 +14,139 @@ import com.lframework.xingyun.chart.service.IOrderChartService;
 import com.lframework.xingyun.chart.vo.CreateOrderChartVo;
 import com.lframework.xingyun.chart.vo.GetOrderChartVo;
 import com.lframework.xingyun.chart.vo.QueryOrderChartVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderChartServiceImpl implements IOrderChartService {
 
-    @Autowired
-    private OrderChartMapper orderChartMapper;
+  @Autowired
+  private OrderChartMapper orderChartMapper;
 
-    @Transactional
-    @Override
-    public String create(CreateOrderChartVo vo) {
+  @Transactional
+  @Override
+  public String create(CreateOrderChartVo vo) {
 
-        if (vo.getCreateTime() == null) {
-            vo.setCreateTime(LocalDateTime.now());
-        }
-
-        OrderChart record = new OrderChart();
-        record.setId(IdUtil.getId());
-        record.setTotalAmount(vo.getTotalAmount());
-        record.setCreateTime(vo.getCreateTime());
-        record.setBizType(EnumUtil.getByCode(OrderChartBizType.class, vo.getBizType()));
-        record.setCreateDate(DateUtil.formatDate(vo.getCreateTime().toLocalDate()));
-        record.setCreateHour(DateUtil.format(vo.getCreateTime(), StringPool.DATE_TIME_HOUR_PATTER));
-
-        orderChartMapper.insert(record);
-
-        return record.getId();
+    if (vo.getCreateTime() == null) {
+      vo.setCreateTime(LocalDateTime.now());
     }
 
-    @Override
-    public OrderChartSumDto getTodayChartSum(GetOrderChartVo vo) {
+    OrderChart record = new OrderChart();
+    record.setId(IdUtil.getId());
+    record.setTotalAmount(vo.getTotalAmount());
+    record.setCreateTime(vo.getCreateTime());
+    record.setBizType(EnumUtil.getByCode(OrderChartBizType.class, vo.getBizType()));
+    record.setCreateDate(DateUtil.formatDate(vo.getCreateTime().toLocalDate()));
+    record.setCreateHour(DateUtil.format(vo.getCreateTime(), StringPool.DATE_TIME_HOUR_PATTER));
 
-        LocalDate now = LocalDate.now();
+    orderChartMapper.insert(record);
 
-        OrderChartSumDto data = orderChartMapper.getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
-                DateUtil.toLocalDateTimeMax(now));
-        if (data == null) {
-            data = new OrderChartSumDto();
-            data.setTotalAmount(BigDecimal.ZERO);
-            data.setTotalNum(0L);
-        }
+    return record.getId();
+  }
 
-        return data;
+  @Override
+  public OrderChartSumDto getTodayChartSum(GetOrderChartVo vo) {
+
+    LocalDate now = LocalDate.now();
+
+    OrderChartSumDto data = orderChartMapper
+        .getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
+            DateUtil.toLocalDateTimeMax(now));
+    if (data == null) {
+      data = new OrderChartSumDto();
+      data.setTotalAmount(BigDecimal.ZERO);
+      data.setTotalNum(0L);
     }
 
-    @Override
-    public OrderChartSumDto getSameMonthChartSum(GetOrderChartVo vo) {
+    return data;
+  }
 
-        LocalDate startDate = LocalDate.now().withDayOfMonth(1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+  @Override
+  public OrderChartSumDto getSameMonthChartSum(GetOrderChartVo vo) {
 
-        OrderChartSumDto data = orderChartMapper.getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(startDate), DateUtil.toLocalDateTimeMax(endDate));
-        if (data == null) {
-            data = new OrderChartSumDto();
-            data.setTotalAmount(BigDecimal.ZERO);
-            data.setTotalNum(0L);
-        }
+    LocalDate startDate = LocalDate.now().withDayOfMonth(1);
+    LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
-        return data;
+    OrderChartSumDto data = orderChartMapper
+        .getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(startDate),
+            DateUtil.toLocalDateTimeMax(endDate));
+    if (data == null) {
+      data = new OrderChartSumDto();
+      data.setTotalAmount(BigDecimal.ZERO);
+      data.setTotalNum(0L);
     }
 
-    @Override
-    public List<OrderChartTodayDto> queryTodayChart(QueryOrderChartVo vo) {
+    return data;
+  }
 
-        LocalDate now = LocalDate.now();
+  @Override
+  public List<OrderChartTodayDto> queryTodayChart(QueryOrderChartVo vo) {
 
-        List<OrderChartTodayDto> results = orderChartMapper
-                .queryToday(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
-                        DateUtil.toLocalDateTimeMax(now));
+    LocalDate now = LocalDate.now();
 
-        int offset = 24;
-        List<OrderChartTodayDto> newResults = new ArrayList<>(offset);
+    List<OrderChartTodayDto> results = orderChartMapper
+        .queryToday(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
+            DateUtil.toLocalDateTimeMax(now));
 
-        for (int i = 0; i < offset; i++) {
-            LocalTime localTime = LocalTime.of(i, 0, 0);
-            String filterDateStr = DateUtil
-                    .formatDateTime(LocalDateTime.of(now, localTime), StringPool.DATE_TIME_HOUR_PATTER);
-            OrderChartTodayDto result = results.stream().filter(t -> t.getCreateHour().equals(filterDateStr))
-                    .findFirst().orElse(null);
-            if (result == null) {
-                result = new OrderChartTodayDto();
-                result.setCreateHour(filterDateStr);
-                result.setTotalAmount(BigDecimal.ZERO);
-                result.setTotalNum(0);
-            }
+    int offset = 24;
+    List<OrderChartTodayDto> newResults = new ArrayList<>(offset);
 
-            newResults.add(result);
-        }
+    for (int i = 0; i < offset; i++) {
+      LocalTime localTime = LocalTime.of(i, 0, 0);
+      String filterDateStr = DateUtil
+          .formatDateTime(LocalDateTime.of(now, localTime), StringPool.DATE_TIME_HOUR_PATTER);
+      OrderChartTodayDto result = results.stream()
+          .filter(t -> t.getCreateHour().equals(filterDateStr))
+          .findFirst().orElse(null);
+      if (result == null) {
+        result = new OrderChartTodayDto();
+        result.setCreateHour(filterDateStr);
+        result.setTotalAmount(BigDecimal.ZERO);
+        result.setTotalNum(0);
+      }
 
-        return newResults;
+      newResults.add(result);
     }
 
-    @Override
-    public List<OrderChartSameMonthDto> querySameMonthChart(QueryOrderChartVo vo) {
+    return newResults;
+  }
 
-        LocalDate startDate = LocalDate.now().withDayOfMonth(1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+  @Override
+  public List<OrderChartSameMonthDto> querySameMonthChart(QueryOrderChartVo vo) {
 
-        List<OrderChartSameMonthDto> results = orderChartMapper
-                .querySameMonth(vo.getBizTypes(),
-                        DateUtil.toLocalDateTime(startDate), DateUtil.toLocalDateTimeMax(endDate));
+    LocalDate startDate = LocalDate.now().withDayOfMonth(1);
+    LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
-        LocalDate lastDate = startDate.plusMonths(1).minusDays(1);
-        int offset = lastDate.getDayOfMonth() - startDate.getDayOfMonth() + 1;
-        List<OrderChartSameMonthDto> newResults = new ArrayList<>(offset);
+    List<OrderChartSameMonthDto> results = orderChartMapper
+        .querySameMonth(vo.getBizTypes(),
+            DateUtil.toLocalDateTime(startDate), DateUtil.toLocalDateTimeMax(endDate));
 
-        for (int i = 0; i < offset; i++) {
-            String filterDateStr = DateUtil.formatDate(startDate.plusDays(i));
-            OrderChartSameMonthDto result = results.stream().filter(t -> t.getCreateDate().equals(filterDateStr))
-                    .findFirst().orElse(null);
-            if (result == null) {
-                result = new OrderChartSameMonthDto();
-                result.setCreateDate(filterDateStr);
-                result.setTotalAmount(BigDecimal.ZERO);
-                result.setTotalNum(0);
-            }
+    LocalDate lastDate = startDate.plusMonths(1).minusDays(1);
+    int offset = lastDate.getDayOfMonth() - startDate.getDayOfMonth() + 1;
+    List<OrderChartSameMonthDto> newResults = new ArrayList<>(offset);
 
-            newResults.add(result);
-        }
+    for (int i = 0; i < offset; i++) {
+      String filterDateStr = DateUtil.formatDate(startDate.plusDays(i));
+      OrderChartSameMonthDto result = results.stream()
+          .filter(t -> t.getCreateDate().equals(filterDateStr))
+          .findFirst().orElse(null);
+      if (result == null) {
+        result = new OrderChartSameMonthDto();
+        result.setCreateDate(filterDateStr);
+        result.setTotalAmount(BigDecimal.ZERO);
+        result.setTotalNum(0);
+      }
 
-        return newResults;
+      newResults.add(result);
     }
+
+    return newResults;
+  }
 }

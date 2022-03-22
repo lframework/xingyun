@@ -5,7 +5,7 @@ import com.lframework.xingyun.sc.entity.PurchaseReturnDetail;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj

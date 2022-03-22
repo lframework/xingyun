@@ -1,36 +1,35 @@
 package com.lframework.xingyun.basedata.vo.product.saleprop.item;
 
 import com.lframework.starter.web.vo.BaseVo;
-import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 public class CreateProductSalePropItemVo implements BaseVo, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * 编号
-     */
-    @NotBlank(message = "请输入编号！")
-    private String code;
+  /**
+   * 编号
+   */
+  @NotBlank(message = "请输入编号！")
+  private String code;
 
-    /**
-     * 名称
-     */
-    @NotBlank(message = "请输入名称！")
-    private String name;
+  /**
+   * 名称
+   */
+  @NotBlank(message = "请输入名称！")
+  private String name;
 
-    /**
-     * 销售属性组ID
-     */
-    @NotBlank(message = "GroupID不能为空！")
-    private String groupId;
+  /**
+   * 销售属性组ID
+   */
+  @NotBlank(message = "GroupID不能为空！")
+  private String groupId;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 }

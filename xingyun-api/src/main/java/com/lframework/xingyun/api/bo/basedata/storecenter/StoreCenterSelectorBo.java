@@ -9,32 +9,32 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class StoreCenterSelectorBo extends BaseBo<StoreCenterDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 编号
-     */
-    private String code;
+  /**
+   * 编号
+   */
+  private String code;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    public StoreCenterSelectorBo() {
+  public StoreCenterSelectorBo() {
 
-    }
+  }
 
-    public StoreCenterSelectorBo(StoreCenterDto dto) {
+  public StoreCenterSelectorBo(StoreCenterDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

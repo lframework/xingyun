@@ -6,7 +6,7 @@ import com.lframework.xingyun.basedata.entity.ProductRetail;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -14,10 +14,11 @@ import com.lframework.xingyun.basedata.entity.ProductRetail;
  */
 public interface ProductRetailMapper extends BaseMapper<ProductRetail> {
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    ProductRetailDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  ProductRetailDto getById(String id);
 }

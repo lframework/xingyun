@@ -7,23 +7,26 @@ import com.lframework.xingyun.basedata.vo.product.purchase.UpdateProductPurchase
 
 public interface IProductPurchaseService extends BaseService {
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    ProductPurchaseDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  ProductPurchaseDto getById(String id);
 
-    /**
-     * 创建
-     * @param vo
-     * @return
-     */
-    String create(CreateProductPurchaseVo vo);
+  /**
+   * 创建
+   *
+   * @param vo
+   * @return
+   */
+  String create(CreateProductPurchaseVo vo);
 
-    /**
-     * 修改
-     * @param vo
-     */
-    void update(UpdateProductPurchaseVo vo);
+  /**
+   * 修改
+   *
+   * @param vo
+   */
+  void update(UpdateProductPurchaseVo vo);
 }

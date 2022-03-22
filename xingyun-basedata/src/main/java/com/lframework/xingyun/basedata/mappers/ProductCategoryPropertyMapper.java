@@ -3,12 +3,11 @@ package com.lframework.xingyun.basedata.mappers;
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
-
 import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -16,10 +15,11 @@ import java.util.List;
  */
 public interface ProductCategoryPropertyMapper extends BaseMapper<ProductCategoryProperty> {
 
-    /**
-     * 根据属性ID查询
-     * @param propertyId
-     * @return
-     */
-    List<ProductCategoryPropertyDto> getByPropertyId(String propertyId);
+  /**
+   * 根据属性ID查询
+   *
+   * @param propertyId
+   * @return
+   */
+  List<ProductCategoryPropertyDto> getByPropertyId(String propertyId);
 }

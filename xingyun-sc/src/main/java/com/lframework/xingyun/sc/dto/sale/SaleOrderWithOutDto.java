@@ -1,11 +1,10 @@
 package com.lframework.xingyun.sc.dto.sale;
 
 import com.lframework.starter.web.dto.BaseDto;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.Data;
 
 /**
  * 销售订单在出库业务的Dto
@@ -13,91 +12,91 @@ import java.util.List;
 @Data
 public class SaleOrderWithOutDto implements BaseDto, Serializable {
 
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * ID
+   */
+  private String id;
+
+  /**
+   * 仓库ID
+   */
+  private String scId;
+
+  /**
+   * 客户ID
+   */
+  private String customerId;
+
+  /**
+   * 销售员ID
+   */
+  private String salerId;
+
+  /**
+   * 订单明细
+   */
+  private List<DetailDto> details;
+
+  @Data
+  public static class DetailDto implements BaseDto, Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /**
-     * ID
+     * 明细ID
      */
     private String id;
 
     /**
-     * 仓库ID
+     * 商品ID
      */
-    private String scId;
+    private String productId;
 
     /**
-     * 客户ID
+     * 销售数量
      */
-    private String customerId;
+    private Integer orderNum;
 
     /**
-     * 销售员ID
+     * 原价
      */
-    private String salerId;
+    private BigDecimal oriPrice;
 
     /**
-     * 订单明细
+     * 现价
      */
-    private List<DetailDto> details;
+    private BigDecimal taxPrice;
 
-    @Data
-    public static class DetailDto implements BaseDto, Serializable {
+    /**
+     * 折扣（%）
+     */
+    private BigDecimal discountRate;
 
-        private static final long serialVersionUID = 1L;
+    /**
+     * 是否赠品
+     */
+    private Boolean isGift;
 
-        /**
-         * 明细ID
-         */
-        private String id;
+    /**
+     * 税率（%）
+     */
+    private BigDecimal taxRate;
 
-        /**
-         * 商品ID
-         */
-        private String productId;
+    /**
+     * 备注
+     */
+    private String description;
 
-        /**
-         * 销售数量
-         */
-        private Integer orderNum;
+    /**
+     * 排序编号
+     */
+    private Integer orderNo;
 
-        /**
-         * 原价
-         */
-        private BigDecimal oriPrice;
-
-        /**
-         * 现价
-         */
-        private BigDecimal taxPrice;
-
-        /**
-         * 折扣（%）
-         */
-        private BigDecimal discountRate;
-
-        /**
-         * 是否赠品
-         */
-        private Boolean isGift;
-
-        /**
-         * 税率（%）
-         */
-        private BigDecimal taxRate;
-
-        /**
-         * 备注
-         */
-        private String description;
-
-        /**
-         * 排序编号
-         */
-        private Integer orderNo;
-
-        /**
-         * 已出库数量
-         */
-        private Integer outNum;
-    }
+    /**
+     * 已出库数量
+     */
+    private Integer outNum;
+  }
 }

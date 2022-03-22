@@ -5,13 +5,12 @@ import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -19,24 +18,27 @@ import java.util.List;
  */
 public interface CustomerMapper extends BaseMapper<Customer> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<CustomerDto> query(@Param("vo") QueryCustomerVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<CustomerDto> query(@Param("vo") QueryCustomerVo vo);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    CustomerDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  CustomerDto getById(String id);
 
-    /**
-     * 选择器
-     * @param vo
-     * @return
-     */
-    List<CustomerDto> selector(@Param("vo") QueryCustomerSelectorVo vo);
+  /**
+   * 选择器
+   *
+   * @param vo
+   * @return
+   */
+  List<CustomerDto> selector(@Param("vo") QueryCustomerSelectorVo vo);
 }

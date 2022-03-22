@@ -9,52 +9,52 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GetProductBrandBo extends BaseBo<ProductBrandDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 编号
-     */
-    private String code;
+  /**
+   * 编号
+   */
+  private String code;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 简称
-     */
-    private String shortName;
+  /**
+   * 简称
+   */
+  private String shortName;
 
-    /**
-     * logo
-     */
-    private String logo;
+  /**
+   * logo
+   */
+  private String logo;
 
-    /**
-     * 简介
-     */
-    private String introduction;
+  /**
+   * 简介
+   */
+  private String introduction;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    public GetProductBrandBo() {
+  public GetProductBrandBo() {
 
-    }
+  }
 
-    public GetProductBrandBo(ProductBrandDto dto) {
+  public GetProductBrandBo(ProductBrandDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

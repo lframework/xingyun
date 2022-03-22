@@ -18,30 +18,30 @@ import lombok.EqualsAndHashCode;
 @TableName("tbl_sale_config")
 public class SaleConfig extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 销售出库单是否关联销售订单
-     */
-    private Boolean outStockRequireSale;
+  /**
+   * 销售出库单是否关联销售订单
+   */
+  private Boolean outStockRequireSale;
 
-    /**
-     * 销售出库单是否多次关联销售订单
-     */
-    private Boolean outStockMultipleRelateSale;
+  /**
+   * 销售出库单是否多次关联销售订单
+   */
+  private Boolean outStockMultipleRelateSale;
 
-    /**
-     * 销售退货单是否关联销售出库单
-     */
-    private Boolean saleReturnRequireOutStock;
+  /**
+   * 销售退货单是否关联销售出库单
+   */
+  private Boolean saleReturnRequireOutStock;
 
-    /**
-     * 销售退货单是否多次关联销售出库单
-     */
-    private Boolean saleReturnMultipleRelateOutStock;
+  /**
+   * 销售退货单是否多次关联销售出库单
+   */
+  private Boolean saleReturnMultipleRelateOutStock;
 }

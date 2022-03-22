@@ -16,28 +16,35 @@ import com.lframework.xingyun.api.bo.stock.take.plan.QueryTakeStockPlanBo;
 import com.lframework.xingyun.api.bo.stock.take.plan.QueryTakeStockPlanProductBo;
 import com.lframework.xingyun.api.bo.stock.take.plan.TakeStockPlanFullBo;
 import com.lframework.xingyun.api.model.stock.take.plan.TakeStockPlanExportModel;
-import com.lframework.xingyun.api.model.stock.take.sheet.TakeStockSheetExportModel;
 import com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
-import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto;
 import com.lframework.xingyun.sc.impl.stock.take.TakeStockPlanServiceImpl;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
-import com.lframework.xingyun.sc.vo.stock.take.plan.*;
-import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import com.lframework.xingyun.sc.vo.stock.take.plan.CancelTakeStockPlanVo;
+import com.lframework.xingyun.sc.vo.stock.take.plan.CreateTakeStockPlanVo;
+import com.lframework.xingyun.sc.vo.stock.take.plan.HandleTakeStockPlanVo;
+import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
+import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 盘点任务 Controller
@@ -49,193 +56,200 @@ import java.util.stream.Collectors;
 @RequestMapping("/stock/take/plan")
 public class TakeStockPlanController extends DefaultBaseController {
 
-    @Autowired
-    private ITakeStockPlanService takeStockPlanService;
+  @Autowired
+  private ITakeStockPlanService takeStockPlanService;
 
-    @Autowired
-    private ITakeStockConfigService takeStockConfigService;
+  @Autowired
+  private ITakeStockConfigService takeStockConfigService;
 
-    /**
-     * 查询列表
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:query')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QueryTakeStockPlanVo vo) {
+  /**
+   * 查询列表
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:query')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QueryTakeStockPlanVo vo) {
 
-        PageResult<TakeStockPlanDto> pageResult = takeStockPlanService.query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<TakeStockPlanDto> pageResult = takeStockPlanService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
+    List<TakeStockPlanDto> datas = pageResult.getDatas();
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QueryTakeStockPlanBo> results = datas.stream().map(QueryTakeStockPlanBo::new)
+          .collect(Collectors.toList());
+
+      PageResultUtil.rebuild(pageResult, results);
+    }
+
+    return InvokeResultBuilder.success(pageResult);
+  }
+
+  /**
+   * 导出列表
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:export')")
+  @PostMapping("/export")
+  public void export(@Valid QueryTakeStockPlanVo vo) {
+
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
+        .multipartExportXls("盘点任务信息", TakeStockPlanExportModel.class);
+
+    try {
+      int pageIndex = 1;
+      while (true) {
+        PageResult<TakeStockPlanDto> pageResult = takeStockPlanService
+            .query(pageIndex, getExportSize(), vo);
         List<TakeStockPlanDto> datas = pageResult.getDatas();
+        List<TakeStockPlanExportModel> models = datas.stream().map(TakeStockPlanExportModel::new)
+            .collect(Collectors.toList());
+        builder.doWrite(models);
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QueryTakeStockPlanBo> results = datas.stream().map(QueryTakeStockPlanBo::new).collect(Collectors.toList());
-
-            PageResultUtil.rebuild(pageResult, results);
+        if (!pageResult.isHasNext()) {
+          break;
         }
+        pageIndex++;
+      }
+    } finally {
+      builder.finish();
+    }
+  }
 
-        return InvokeResultBuilder.success(pageResult);
+  /**
+   * 根据ID查询
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:query', 'stock:take:sheet:add', 'stock:take:sheet:modify')")
+  @GetMapping
+  public InvokeResult get(@NotBlank(message = "id不能为空！") String id) {
+
+    TakeStockPlanDto data = takeStockPlanService.getById(id);
+    if (data == null) {
+      throw new DefaultClientException("盘点任务不存在！");
     }
 
-    /**
-     * 导出列表
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:export')")
-    @PostMapping("/export")
-    public void export(@Valid QueryTakeStockPlanVo vo) {
+    GetTakeStockPlanBo result = new GetTakeStockPlanBo(data);
 
-        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("盘点任务信息", TakeStockPlanExportModel.class);
+    return InvokeResultBuilder.success(result);
+  }
 
-        try {
-            int pageIndex = 1;
-            while (true) {
-                PageResult<TakeStockPlanDto> pageResult = takeStockPlanService.query(pageIndex, getExportSize(), vo);
-                List<TakeStockPlanDto> datas = pageResult.getDatas();
-                List<TakeStockPlanExportModel> models = datas.stream().map(TakeStockPlanExportModel::new)
-                        .collect(Collectors.toList());
-                builder.doWrite(models);
+  /**
+   * 根据ID查询
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:query', 'stock:take:sheet:add', 'stock:take:sheet:modify')")
+  @GetMapping("/detail")
+  public InvokeResult getDetail(@NotBlank(message = "id不能为空！") String id) {
 
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
-            }
-        } finally {
-            builder.finish();
-        }
+    TakeStockPlanFullDto data = takeStockPlanService.getDetail(id);
+    if (data == null) {
+      throw new DefaultClientException("盘点任务不存在！");
     }
 
-    /**
-     * 根据ID查询
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:query', 'stock:take:sheet:add', 'stock:take:sheet:modify')")
-    @GetMapping
-    public InvokeResult get(@NotBlank(message = "id不能为空！") String id) {
+    TakeStockPlanFullBo result = new TakeStockPlanFullBo(data);
 
-        TakeStockPlanDto data = takeStockPlanService.getById(id);
-        if (data == null) {
-            throw new DefaultClientException("盘点任务不存在！");
-        }
+    return InvokeResultBuilder.success(result);
+  }
 
-        GetTakeStockPlanBo result = new GetTakeStockPlanBo(data);
+  /**
+   * 根据盘点任务ID查询商品信息
+   */
+  @PreAuthorize("@permission.valid('stock:take:sheet:add', 'stock:take:sheet:modify')")
+  @GetMapping("/products")
+  public InvokeResult getProducts(@NotBlank(message = "id不能为空！") String id) {
 
-        return InvokeResultBuilder.success(result);
+    TakeStockConfigDto config = takeStockConfigService.get();
+    if (!config.getShowProduct()) {
+      // 如果不显示商品的话，则显示emptyList
+      return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
 
-    /**
-     * 根据ID查询
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:query', 'stock:take:sheet:add', 'stock:take:sheet:modify')")
-    @GetMapping("/detail")
-    public InvokeResult getDetail(@NotBlank(message = "id不能为空！") String id) {
-
-        TakeStockPlanFullDto data = takeStockPlanService.getDetail(id);
-        if (data == null) {
-            throw new DefaultClientException("盘点任务不存在！");
-        }
-
-        TakeStockPlanFullBo result = new TakeStockPlanFullBo(data);
-
-        return InvokeResultBuilder.success(result);
+    List<QueryTakeStockPlanProductDto> datas = takeStockPlanService.getProducts(id);
+    if (CollectionUtil.isEmpty(datas)) {
+      return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
 
-    /**
-     * 根据盘点任务ID查询商品信息
-     */
-    @PreAuthorize("@permission.valid('stock:take:sheet:add', 'stock:take:sheet:modify')")
-    @GetMapping("/products")
-    public InvokeResult getProducts(@NotBlank(message = "id不能为空！") String id) {
+    List<QueryTakeStockPlanProductBo> results = datas.stream().map(QueryTakeStockPlanProductBo::new)
+        .collect(Collectors.toList());
 
-        TakeStockConfigDto config = takeStockConfigService.get();
-        if (!config.getShowProduct()) {
-            // 如果不显示商品的话，则显示emptyList
-            return InvokeResultBuilder.success(Collections.EMPTY_LIST);
-        }
+    return InvokeResultBuilder.success(results);
+  }
 
-        List<QueryTakeStockPlanProductDto> datas = takeStockPlanService.getProducts(id);
-        if (CollectionUtil.isEmpty(datas)) {
-            return InvokeResultBuilder.success(Collections.EMPTY_LIST);
-        }
+  /**
+   * 新增
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:add')")
+  @PostMapping
+  public InvokeResult create(@Valid @RequestBody CreateTakeStockPlanVo vo) {
 
-        List<QueryTakeStockPlanProductBo> results = datas.stream().map(QueryTakeStockPlanProductBo::new).collect(Collectors.toList());
+    vo.validate();
 
-        return InvokeResultBuilder.success(results);
-    }
+    String id = takeStockPlanService.create(vo);
 
-    /**
-     * 新增
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:add')")
-    @PostMapping
-    public InvokeResult create(@Valid @RequestBody CreateTakeStockPlanVo vo) {
+    TakeStockConfigDto config = takeStockConfigService.get();
 
-        vo.validate();
+    // 自动作废
+    QrtzHandler.addJob(TakeStockPlanServiceImpl.AutoCancelJob.class,
+        CronUtil.getDateTimeCron(LocalDateTime.now().plusHours(config.getCancelHours())),
+        Collections.singletonMap("id", id));
 
-        String id = takeStockPlanService.create(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        TakeStockConfigDto config = takeStockConfigService.get();
+  /**
+   * 修改
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:modify')")
+  @PutMapping
+  public InvokeResult update(@Valid UpdateTakeStockPlanVo vo) {
 
-        // 自动作废
-        QrtzHandler.addJob(TakeStockPlanServiceImpl.AutoCancelJob.class, CronUtil.getDateTimeCron(LocalDateTime.now().plusHours(config.getCancelHours())), Collections.singletonMap("id", id));
+    takeStockPlanService.update(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 修改
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:modify')")
-    @PutMapping
-    public InvokeResult update(@Valid UpdateTakeStockPlanVo vo) {
+  /**
+   * 差异生成
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:create-diff')")
+  @PatchMapping("/diff")
+  public InvokeResult createDiff(@NotBlank(message = "ID不能为空！") String id) {
 
-        takeStockPlanService.update(vo);
+    takeStockPlanService.createDiff(id);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 差异生成
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:create-diff')")
-    @PatchMapping("/diff")
-    public InvokeResult createDiff(@NotBlank(message = "ID不能为空！") String id) {
+  /**
+   * 差异处理
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:handle-diff')")
+  @PatchMapping("/handle")
+  public InvokeResult handleDiff(@Valid @RequestBody HandleTakeStockPlanVo vo) {
 
-        takeStockPlanService.createDiff(id);
+    takeStockPlanService.handleDiff(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 差异处理
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:handle-diff')")
-    @PatchMapping("/handle")
-    public InvokeResult handleDiff(@Valid @RequestBody HandleTakeStockPlanVo vo) {
+  /**
+   * 作废
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:cancel')")
+  @PatchMapping("/cancel")
+  public InvokeResult cancel(@Valid CancelTakeStockPlanVo vo) {
 
-        takeStockPlanService.handleDiff(vo);
+    takeStockPlanService.cancel(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 作废
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:cancel')")
-    @PatchMapping("/cancel")
-    public InvokeResult cancel(@Valid CancelTakeStockPlanVo vo) {
+  /**
+   * 删除
+   */
+  @PreAuthorize("@permission.valid('stock:take:plan:delete')")
+  @DeleteMapping
+  public InvokeResult deleteById(@NotBlank(message = "ID不能为空！") String id) {
 
-        takeStockPlanService.cancel(vo);
+    takeStockPlanService.deleteById(id);
 
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 删除
-     */
-    @PreAuthorize("@permission.valid('stock:take:plan:delete')")
-    @DeleteMapping
-    public InvokeResult deleteById(@NotBlank(message = "ID不能为空！") String id) {
-
-        takeStockPlanService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 }

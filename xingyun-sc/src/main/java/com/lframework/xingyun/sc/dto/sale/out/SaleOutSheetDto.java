@@ -3,115 +3,114 @@ package com.lframework.xingyun.sc.dto.sale.out;
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 @Data
 public class SaleOutSheetDto implements BaseDto, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 单号
-     */
-    private String code;
+  /**
+   * 单号
+   */
+  private String code;
 
-    /**
-     * 仓库ID
-     */
-    private String scId;
+  /**
+   * 仓库ID
+   */
+  private String scId;
 
-    /**
-     * 客户ID
-     */
-    private String customerId;
+  /**
+   * 客户ID
+   */
+  private String customerId;
 
-    /**
-     * 销售员ID
-     */
-    private String salerId;
+  /**
+   * 销售员ID
+   */
+  private String salerId;
 
-    /**
-     * 付款日期
-     */
-    private LocalDate paymentDate;
+  /**
+   * 付款日期
+   */
+  private LocalDate paymentDate;
 
-    /**
-     * 销售单ID
-     */
-    private String saleOrderId;
+  /**
+   * 销售单ID
+   */
+  private String saleOrderId;
 
-    /**
-     * 商品数量
-     */
-    private Integer totalNum;
+  /**
+   * 商品数量
+   */
+  private Integer totalNum;
 
-    /**
-     * 赠品数量
-     */
-    private Integer totalGiftNum;
+  /**
+   * 赠品数量
+   */
+  private Integer totalGiftNum;
 
-    /**
-     * 出库金额
-     */
-    private BigDecimal totalAmount;
+  /**
+   * 出库金额
+   */
+  private BigDecimal totalAmount;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    /**
-     * 创建人ID
-     */
-    private String createBy;
+  /**
+   * 创建人ID
+   */
+  private String createBy;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
+  /**
+   * 创建时间
+   */
+  private LocalDateTime createTime;
 
-    /**
-     * 修改人ID
-     */
-    private String updateBy;
+  /**
+   * 修改人ID
+   */
+  private String updateBy;
 
-    /**
-     * 修改时间
-     */
-    private LocalDateTime updateTime;
+  /**
+   * 修改时间
+   */
+  private LocalDateTime updateTime;
 
-    /**
-     * 审核人
-     */
-    private String approveBy;
+  /**
+   * 审核人
+   */
+  private String approveBy;
 
-    /**
-     * 审核时间
-     */
-    private LocalDateTime approveTime;
+  /**
+   * 审核时间
+   */
+  private LocalDateTime approveTime;
 
-    /**
-     * 状态
-     */
-    private SaleOutSheetStatus status;
+  /**
+   * 状态
+   */
+  private SaleOutSheetStatus status;
 
-    /**
-     * 拒绝原因
-     */
-    private String refuseReason;
+  /**
+   * 拒绝原因
+   */
+  private String refuseReason;
 
-    /**
-     * 结算状态
-     */
-    private SettleStatus settleStatus;
+  /**
+   * 结算状态
+   */
+  private SettleStatus settleStatus;
 }

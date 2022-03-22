@@ -14,17 +14,29 @@ import com.lframework.xingyun.api.model.settle.fee.SettleFeeSheetExportModel;
 import com.lframework.xingyun.settle.dto.fee.SettleFeeSheetDto;
 import com.lframework.xingyun.settle.dto.fee.SettleFeeSheetFullDto;
 import com.lframework.xingyun.settle.service.ISettleFeeSheetService;
-import com.lframework.xingyun.settle.vo.fee.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
+import com.lframework.xingyun.settle.vo.fee.ApprovePassSettleFeeSheetVo;
+import com.lframework.xingyun.settle.vo.fee.ApproveRefuseSettleFeeSheetVo;
+import com.lframework.xingyun.settle.vo.fee.BatchApprovePassSettleFeeSheetVo;
+import com.lframework.xingyun.settle.vo.fee.BatchApproveRefuseSettleFeeSheetVo;
+import com.lframework.xingyun.settle.vo.fee.CreateSettleFeeSheetVo;
+import com.lframework.xingyun.settle.vo.fee.QuerySettleFeeSheetVo;
+import com.lframework.xingyun.settle.vo.fee.UpdateSettleFeeSheetVo;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 供应商费用单
@@ -36,179 +48,183 @@ import java.util.stream.Collectors;
 @RequestMapping("/settle/feesheet")
 public class SettleFeeSheetController extends DefaultBaseController {
 
-    @Autowired
-    private ISettleFeeSheetService settleFeeSheetService;
+  @Autowired
+  private ISettleFeeSheetService settleFeeSheetService;
 
-    /**
-     * 供应商费用单列表
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:query')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QuerySettleFeeSheetVo vo) {
+  /**
+   * 供应商费用单列表
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:query')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QuerySettleFeeSheetVo vo) {
 
-        PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService.query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
+    List<SettleFeeSheetDto> datas = pageResult.getDatas();
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QuerySettleFeeSheetBo> results = datas.stream().map(QuerySettleFeeSheetBo::new)
+          .collect(Collectors.toList());
+
+      PageResultUtil.rebuild(pageResult, results);
+    }
+
+    return InvokeResultBuilder.success(pageResult);
+  }
+
+  @PreAuthorize("@permission.valid('settle:fee-sheet:export')")
+  @PostMapping("/export")
+  public void export(@Valid QuerySettleFeeSheetVo vo) {
+
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
+        .multipartExportXls("供应商费用单信息", SettleFeeSheetExportModel.class);
+
+    try {
+      int pageIndex = 1;
+      while (true) {
+        PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService
+            .query(pageIndex, getExportSize(), vo);
         List<SettleFeeSheetDto> datas = pageResult.getDatas();
+        List<SettleFeeSheetExportModel> models = datas.stream().map(SettleFeeSheetExportModel::new)
+            .collect(Collectors.toList());
+        builder.doWrite(models);
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QuerySettleFeeSheetBo> results = datas.stream().map(QuerySettleFeeSheetBo::new)
-                    .collect(Collectors.toList());
-
-            PageResultUtil.rebuild(pageResult, results);
+        if (!pageResult.isHasNext()) {
+          break;
         }
-
-        return InvokeResultBuilder.success(pageResult);
+        pageIndex++;
+      }
+    } finally {
+      builder.finish();
     }
+  }
 
-    @PreAuthorize("@permission.valid('settle:fee-sheet:export')")
-    @PostMapping("/export")
-    public void export(@Valid QuerySettleFeeSheetVo vo) {
+  /**
+   * 根据ID查询
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:query')")
+  @GetMapping
+  public InvokeResult getById(@NotBlank(message = "供应商费用单ID不能为空！") String id) {
 
-        ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-                .multipartExportXls("供应商费用单信息", SettleFeeSheetExportModel.class);
+    SettleFeeSheetFullDto data = settleFeeSheetService.getDetail(id);
 
-        try {
-            int pageIndex = 1;
-            while (true) {
-                PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService.query(pageIndex, getExportSize(), vo);
-                List<SettleFeeSheetDto> datas = pageResult.getDatas();
-                List<SettleFeeSheetExportModel> models = datas.stream().map(SettleFeeSheetExportModel::new)
-                        .collect(Collectors.toList());
-                builder.doWrite(models);
+    GetSettleFeeSheetBo result = new GetSettleFeeSheetBo(data);
 
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
-            }
-        } finally {
-            builder.finish();
-        }
-    }
+    return InvokeResultBuilder.success(result);
+  }
 
-    /**
-     * 根据ID查询
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:query')")
-    @GetMapping
-    public InvokeResult getById(@NotBlank(message = "供应商费用单ID不能为空！") String id) {
+  /**
+   * 创建供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:add')")
+  @PostMapping
+  public InvokeResult create(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
 
-        SettleFeeSheetFullDto data = settleFeeSheetService.getDetail(id);
+    vo.validate();
 
-        GetSettleFeeSheetBo result = new GetSettleFeeSheetBo(data);
+    String id = settleFeeSheetService.create(vo);
 
-        return InvokeResultBuilder.success(result);
-    }
+    return InvokeResultBuilder.success(id);
+  }
 
-    /**
-     * 创建供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:add')")
-    @PostMapping
-    public InvokeResult create(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
+  /**
+   * 修改供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:modify')")
+  @PutMapping
+  public InvokeResult update(@RequestBody @Valid UpdateSettleFeeSheetVo vo) {
 
-        vo.validate();
+    vo.validate();
 
-        String id = settleFeeSheetService.create(vo);
+    settleFeeSheetService.update(vo);
 
-        return InvokeResultBuilder.success(id);
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 修改供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:modify')")
-    @PutMapping
-    public InvokeResult update(@RequestBody @Valid UpdateSettleFeeSheetVo vo) {
+  /**
+   * 审核通过供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
+  @PatchMapping("/approve/pass")
+  public InvokeResult approvePass(@RequestBody @Valid ApprovePassSettleFeeSheetVo vo) {
 
-        vo.validate();
+    settleFeeSheetService.approvePass(vo);
 
-        settleFeeSheetService.update(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 批量审核通过供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
+  @PatchMapping("/approve/pass/batch")
+  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSettleFeeSheetVo vo) {
 
-    /**
-     * 审核通过供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
-    @PatchMapping("/approve/pass")
-    public InvokeResult approvePass(@RequestBody @Valid ApprovePassSettleFeeSheetVo vo) {
+    settleFeeSheetService.batchApprovePass(vo);
 
-        settleFeeSheetService.approvePass(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 直接审核通过供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
+  @PostMapping("/approve/pass/direct")
+  public InvokeResult directApprovePass(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
 
-    /**
-     * 批量审核通过供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSettleFeeSheetVo vo) {
+    settleFeeSheetService.directApprovePass(vo);
 
-        settleFeeSheetService.batchApprovePass(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 审核拒绝供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
+  @PatchMapping("/approve/refuse")
+  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSettleFeeSheetVo vo) {
 
-    /**
-     * 直接审核通过供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
-    @PostMapping("/approve/pass/direct")
-    public InvokeResult directApprovePass(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
+    settleFeeSheetService.approveRefuse(vo);
 
-        settleFeeSheetService.directApprovePass(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 批量审核拒绝供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
+  @PatchMapping("/approve/refuse/batch")
+  public InvokeResult batchApproveRefuse(
+      @RequestBody @Valid BatchApproveRefuseSettleFeeSheetVo vo) {
 
-    /**
-     * 审核拒绝供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
-    @PatchMapping("/approve/refuse")
-    public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSettleFeeSheetVo vo) {
+    settleFeeSheetService.batchApproveRefuse(vo);
 
-        settleFeeSheetService.approveRefuse(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 删除供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:delete')")
+  @DeleteMapping
+  public InvokeResult deleteById(@NotBlank(message = "供应商费用单ID不能为空！") String id) {
 
-    /**
-     * 批量审核拒绝供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSettleFeeSheetVo vo) {
+    settleFeeSheetService.deleteById(id);
 
-        settleFeeSheetService.batchApproveRefuse(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 批量删除供应商费用单
+   */
+  @PreAuthorize("@permission.valid('settle:fee-sheet:delete')")
+  @DeleteMapping("/batch")
+  public InvokeResult deleteByIds(
+      @RequestBody @NotEmpty(message = "请选择需要删除的供应商费用单！") List<String> ids) {
 
-    /**
-     * 删除供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:delete')")
-    @DeleteMapping
-    public InvokeResult deleteById(@NotBlank(message = "供应商费用单ID不能为空！") String id) {
+    settleFeeSheetService.deleteByIds(ids);
 
-        settleFeeSheetService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除供应商费用单
-     */
-    @PreAuthorize("@permission.valid('settle:fee-sheet:delete')")
-    @DeleteMapping("/batch")
-    public InvokeResult deleteByIds(@RequestBody @NotEmpty(message = "请选择需要删除的供应商费用单！") List<String> ids) {
-
-        settleFeeSheetService.deleteByIds(ids);
-
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 }

@@ -7,19 +7,19 @@ import org.springframework.context.ApplicationEvent;
  */
 public class DeleteTakeStockPlanEvent extends ApplicationEvent {
 
-    /**
-     * 盘点任务ID
-     */
-    private String id;
+  /**
+   * 盘点任务ID
+   */
+  private String id;
 
-    public DeleteTakeStockPlanEvent(Object source, String id) {
+  public DeleteTakeStockPlanEvent(Object source, String id) {
 
-        super(source);
+    super(source);
 
-        this.id = id;
-    }
+    this.id = id;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 }

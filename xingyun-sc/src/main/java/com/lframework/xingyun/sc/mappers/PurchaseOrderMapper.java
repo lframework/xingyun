@@ -8,13 +8,12 @@ import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -22,54 +21,61 @@ import java.util.List;
  */
 public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<PurchaseOrderDto> query(@Param("vo") QueryPurchaseOrderVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<PurchaseOrderDto> query(@Param("vo") QueryPurchaseOrderVo vo);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    PurchaseOrderDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  PurchaseOrderDto getById(String id);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    PurchaseOrderFullDto getDetail(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  PurchaseOrderFullDto getDetail(String id);
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<PurchaseOrderFullDto> queryFulls(@Param("vo") QueryPurchaseOrderVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<PurchaseOrderFullDto> queryFulls(@Param("vo") QueryPurchaseOrderVo vo);
 
-    /**
-     * 选择器
-     * @param vo
-     * @return
-     */
-    List<PurchaseOrderDto> selector(@Param("vo") PurchaseOrderSelectorVo vo);
+  /**
+   * 选择器
+   *
+   * @param vo
+   * @return
+   */
+  List<PurchaseOrderDto> selector(@Param("vo") PurchaseOrderSelectorVo vo);
 
-    /**
-     * 根据ID查询（收货业务）
-     * @param id
-     * @return
-     */
-    PurchaseOrderWithReceiveDto getWithReceive(@Param("id") String id,
-            @Param("requirePurchase") Boolean requirePurchase);
+  /**
+   * 根据ID查询（收货业务）
+   *
+   * @param id
+   * @return
+   */
+  PurchaseOrderWithReceiveDto getWithReceive(@Param("id") String id,
+      @Param("requirePurchase") Boolean requirePurchase);
 
-    /**
-     * 查询列表（收货业务）
-     * @param vo
-     * @return
-     */
-    List<PurchaseOrderDto> queryWithReceive(@Param("vo") QueryPurchaseOrderWithRecevieVo vo,
-            @Param("multipleRelate") boolean multipleRelate);
+  /**
+   * 查询列表（收货业务）
+   *
+   * @param vo
+   * @return
+   */
+  List<PurchaseOrderDto> queryWithReceive(@Param("vo") QueryPurchaseOrderWithRecevieVo vo,
+      @Param("multipleRelate") boolean multipleRelate);
 }

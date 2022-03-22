@@ -9,32 +9,32 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GetPurchaseConfigBo extends BaseBo<PurchaseConfigDto> {
 
-    /**
-     * 采购收货单是否关联采购订单
-     */
-    private Boolean receiveRequirePurchase;
+  /**
+   * 采购收货单是否关联采购订单
+   */
+  private Boolean receiveRequirePurchase;
 
-    /**
-     * 采购收货单是否多次关联采购订单
-     */
-    private Boolean receiveMultipleRelatePurchase;
+  /**
+   * 采购收货单是否多次关联采购订单
+   */
+  private Boolean receiveMultipleRelatePurchase;
 
-    /**
-     * 采购退货单是否关联采购收货单
-     */
-    private Boolean purchaseReturnRequireReceive;
+  /**
+   * 采购退货单是否关联采购收货单
+   */
+  private Boolean purchaseReturnRequireReceive;
 
-    /**
-     * 采购退货单是否多次关联采购收货单
-     */
-    private Boolean purchaseReturnMultipleRelateReceive;
+  /**
+   * 采购退货单是否多次关联采购收货单
+   */
+  private Boolean purchaseReturnMultipleRelateReceive;
 
-    public GetPurchaseConfigBo() {
+  public GetPurchaseConfigBo() {
 
-    }
+  }
 
-    public GetPurchaseConfigBo(PurchaseConfigDto dto) {
+  public GetPurchaseConfigBo(PurchaseConfigDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

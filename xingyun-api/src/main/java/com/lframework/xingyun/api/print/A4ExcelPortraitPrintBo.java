@@ -11,23 +11,24 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class A4ExcelPortraitPrintBo<T extends BasePrintDataBo<? extends BaseDto>> extends BasePrintBo<T> {
+public class A4ExcelPortraitPrintBo<T extends BasePrintDataBo<? extends BaseDto>> extends
+    BasePrintBo<T> {
 
-    public A4ExcelPortraitPrintBo(String templateName) {
-        this(templateName, null);
-    }
+  public A4ExcelPortraitPrintBo(String templateName) {
+    this(templateName, null);
+  }
 
-    public A4ExcelPortraitPrintBo(String templateName, T data) {
-        super(templateName, data);
+  public A4ExcelPortraitPrintBo(String templateName, T data) {
+    super(templateName, data);
 
-        this.setOrient(2);
-        this.setPageHeight(2970);
-        this.setPageWidth(2100);
-        this.setPageName("A4");
+    this.setOrient(2);
+    this.setPageHeight(2970);
+    this.setPageWidth(2100);
+    this.setPageName("A4");
 
-        this.setMarginTop(19.1D);
-        this.setMarginRight(17.8D);
-        this.setMarginBottom(19.1D);
-        this.setMarginLeft(17.8D);
-    }
+    this.setMarginTop(19.1D);
+    this.setMarginRight(17.8D);
+    this.setMarginBottom(19.1D);
+    this.setMarginLeft(17.8D);
+  }
 }

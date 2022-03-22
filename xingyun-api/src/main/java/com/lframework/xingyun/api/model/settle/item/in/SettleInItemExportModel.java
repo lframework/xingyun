@@ -11,35 +11,35 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class SettleInItemExportModel extends BaseBo<SettleInItemDto> implements ExcelModel {
 
-    @ExcelProperty("编号")
-    private String code;
+  @ExcelProperty("编号")
+  private String code;
 
-    @ExcelProperty("名称")
-    private String name;
+  @ExcelProperty("名称")
+  private String name;
 
-    @ExcelProperty("备注")
-    private String description;
+  @ExcelProperty("备注")
+  private String description;
 
-    public SettleInItemExportModel() {
+  public SettleInItemExportModel() {
 
-    }
+  }
 
-    public SettleInItemExportModel(SettleInItemDto dto) {
+  public SettleInItemExportModel(SettleInItemDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 
-    @Override
-    public <A> BaseBo<SettleInItemDto> convert(SettleInItemDto dto) {
+  @Override
+  public <A> BaseBo<SettleInItemDto> convert(SettleInItemDto dto) {
 
-        return this;
-    }
+    return this;
+  }
 
-    @Override
-    protected void afterInit(SettleInItemDto dto) {
+  @Override
+  protected void afterInit(SettleInItemDto dto) {
 
-        this.setCode(dto.getCode());
-        this.setName(dto.getName());
-        this.setDescription(dto.getDescription());
-    }
+    this.setCode(dto.getCode());
+    this.setName(dto.getName());
+    this.setDescription(dto.getDescription());
+  }
 }

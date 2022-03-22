@@ -16,73 +16,74 @@ import com.lframework.xingyun.sc.mappers.ProductLotMapper;
 import com.lframework.xingyun.sc.service.stock.IProductLotService;
 import com.lframework.xingyun.sc.vo.stock.lot.CreateProductLotVo;
 import com.lframework.xingyun.sc.vo.stock.lot.QueryProductLotVo;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 public class ProductLotServiceImpl implements IProductLotService {
 
-    @Autowired
-    private ProductLotMapper productLotMapper;
+  @Autowired
+  private ProductLotMapper productLotMapper;
 
-    @Override
-    public PageResult<ProductLotWithStockDto> query(Integer pageIndex, Integer pageSize, QueryProductLotVo vo) {
+  @Override
+  public PageResult<ProductLotWithStockDto> query(Integer pageIndex, Integer pageSize,
+      QueryProductLotVo vo) {
 
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
-        List<ProductLotWithStockDto> datas = this.query(vo);
+    PageHelperUtil.startPage(pageIndex, pageSize);
+    List<ProductLotWithStockDto> datas = this.query(vo);
 
-        return PageResultUtil.convert(new PageInfo<>(datas));
+    return PageResultUtil.convert(new PageInfo<>(datas));
+  }
+
+  @Override
+  public List<ProductLotWithStockDto> query(QueryProductLotVo vo) {
+
+    return productLotMapper.query(vo);
+  }
+
+  @Cacheable(value = ProductLotDto.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Override
+  public ProductLotDto getById(String id) {
+
+    return productLotMapper.getById(id);
+  }
+
+  @Transactional
+  @Override
+  public String create(CreateProductLotVo vo) {
+
+    ProductLot record = new ProductLot();
+    record.setId(IdUtil.getId());
+    record.setLotCode(vo.getLotCode());
+    record.setProductId(vo.getProductId());
+    record.setSupplierId(vo.getSupplierId());
+    record.setTaxRate(vo.getTaxRate());
+    record.setCreateTime(vo.getCreateTime());
+    if (!StringUtil.isBlank(vo.getBizId())) {
+      record.setBizId(vo.getBizId());
     }
-
-    @Override
-    public List<ProductLotWithStockDto> query(QueryProductLotVo vo) {
-
-        return productLotMapper.query(vo);
+    if (!StringUtil.isBlank(vo.getBizDetailId())) {
+      record.setBizDetailId(vo.getBizDetailId());
     }
-
-    @Cacheable(value = ProductLotDto.CACHE_NAME, key = "#id", unless = "#result == null")
-    @Override
-    public ProductLotDto getById(String id) {
-
-        return productLotMapper.getById(id);
+    if (!StringUtil.isBlank(vo.getBizCode())) {
+      record.setBizCode(vo.getBizCode());
     }
+    record.setBizType(EnumUtil.getByCode(ProductStockBizType.class, vo.getBizType()));
 
-    @Transactional
-    @Override
-    public String create(CreateProductLotVo vo) {
+    productLotMapper.insert(record);
 
-        ProductLot record = new ProductLot();
-        record.setId(IdUtil.getId());
-        record.setLotCode(vo.getLotCode());
-        record.setProductId(vo.getProductId());
-        record.setSupplierId(vo.getSupplierId());
-        record.setTaxRate(vo.getTaxRate());
-        record.setCreateTime(vo.getCreateTime());
-        if (!StringUtil.isBlank(vo.getBizId())) {
-            record.setBizId(vo.getBizId());
-        }
-        if (!StringUtil.isBlank(vo.getBizDetailId())) {
-            record.setBizDetailId(vo.getBizDetailId());
-        }
-        if (!StringUtil.isBlank(vo.getBizCode())) {
-            record.setBizCode(vo.getBizCode());
-        }
-        record.setBizType(EnumUtil.getByCode(ProductStockBizType.class, vo.getBizType()));
+    return record.getId();
+  }
 
-        productLotMapper.insert(record);
-
-        return record.getId();
-    }
-
-    @Override
-    public ProductLotWithStockDto getLastPurchaseLot(String productId, String scId, String supplierId) {
-        return productLotMapper.getLastPurchaseLot(productId, scId, supplierId);
-    }
+  @Override
+  public ProductLotWithStockDto getLastPurchaseLot(String productId, String scId,
+      String supplierId) {
+    return productLotMapper.getLastPurchaseLot(productId, scId, supplierId);
+  }
 }

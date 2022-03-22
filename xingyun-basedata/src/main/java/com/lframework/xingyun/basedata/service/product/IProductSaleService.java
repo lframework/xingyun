@@ -7,23 +7,26 @@ import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
 
 public interface IProductSaleService extends BaseService {
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    ProductSaleDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  ProductSaleDto getById(String id);
 
-    /**
-     * 创建
-     * @param vo
-     * @return
-     */
-    String create(CreateProductSaleVo vo);
+  /**
+   * 创建
+   *
+   * @param vo
+   * @return
+   */
+  String create(CreateProductSaleVo vo);
 
-    /**
-     * 修改
-     * @param vo
-     */
-    void update(UpdateProductSaleVo vo);
+  /**
+   * 修改
+   *
+   * @param vo
+   */
+  void update(UpdateProductSaleVo vo);
 }

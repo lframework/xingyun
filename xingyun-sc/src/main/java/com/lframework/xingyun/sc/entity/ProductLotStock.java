@@ -18,25 +18,25 @@ import lombok.EqualsAndHashCode;
 @TableName("tbl_product_lot_stock")
 public class ProductLotStock extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 仓库ID
-     */
-    private String scId;
+  /**
+   * 仓库ID
+   */
+  private String scId;
 
-    /**
-     * 批次ID
-     */
-    private String lotId;
+  /**
+   * 批次ID
+   */
+  private String lotId;
 
-    /**
-     * 库存数量
-     */
-    private Integer stockNum;
+  /**
+   * 库存数量
+   */
+  private Integer stockNum;
 }

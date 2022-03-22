@@ -18,35 +18,35 @@ import lombok.EqualsAndHashCode;
 @TableName("dic_city")
 public class DicCity extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 编号
-     */
-    private String code;
+  /**
+   * 编号
+   */
+  private String code;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 父级ID
-     */
-    private String parentId;
+  /**
+   * 父级ID
+   */
+  private String parentId;
 
-    /**
-     * 层级
-     */
-    private Integer level;
+  /**
+   * 层级
+   */
+  private Integer level;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 }

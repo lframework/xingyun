@@ -9,22 +9,22 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GetRetailConfigBo extends BaseBo<RetailConfigDto> {
 
-    /**
-     * 零售退货单是否关联零售出库单
-     */
-    private Boolean retailReturnRequireOutStock;
+  /**
+   * 零售退货单是否关联零售出库单
+   */
+  private Boolean retailReturnRequireOutStock;
 
-    /**
-     * 零售退货单是否多次关联零售出库单
-     */
-    private Boolean retailReturnMultipleRelateOutStock;
+  /**
+   * 零售退货单是否多次关联零售出库单
+   */
+  private Boolean retailReturnMultipleRelateOutStock;
 
-    public GetRetailConfigBo() {
+  public GetRetailConfigBo() {
 
-    }
+  }
 
-    public GetRetailConfigBo(RetailConfigDto dto) {
+  public GetRetailConfigBo(RetailConfigDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

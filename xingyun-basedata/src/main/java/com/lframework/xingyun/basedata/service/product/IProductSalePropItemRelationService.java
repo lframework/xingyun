@@ -5,9 +5,10 @@ import com.lframework.xingyun.basedata.vo.product.info.saleprop.CreateProductSal
 
 public interface IProductSalePropItemRelationService extends BaseService {
 
-    /**
-     * 创建
-     * @param vo
-     */
-    void create(CreateProductSalePropItemRelationVo vo);
+  /**
+   * 创建
+   *
+   * @param vo
+   */
+  void create(CreateProductSalePropItemRelationVo vo);
 }

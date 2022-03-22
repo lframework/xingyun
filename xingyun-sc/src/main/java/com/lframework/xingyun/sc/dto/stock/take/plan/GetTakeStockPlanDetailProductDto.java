@@ -1,9 +1,8 @@
 package com.lframework.xingyun.sc.dto.stock.take.plan;
 
 import com.lframework.starter.web.dto.BaseDto;
-import lombok.Data;
-
 import java.io.Serializable;
+import lombok.Data;
 
 /**
  * 查询盘点任务详情中的商品信息 Dto
@@ -11,20 +10,20 @@ import java.io.Serializable;
 @Data
 public class GetTakeStockPlanDetailProductDto implements BaseDto, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * 详情ID
-     */
-    private String id;
+  /**
+   * 详情ID
+   */
+  private String id;
 
-    /**
-     * 商品ID
-     */
-    private String productId;
+  /**
+   * 商品ID
+   */
+  private String productId;
 
-    /**
-     * 库存数量
-     */
-    private Integer stockNum;
+  /**
+   * 库存数量
+   */
+  private Integer stockNum;
 }

@@ -5,13 +5,12 @@ import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -19,24 +18,27 @@ import java.util.List;
  */
 public interface StoreCenterMapper extends BaseMapper<StoreCenter> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<StoreCenterDto> query(@Param("vo") QueryStoreCenterVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<StoreCenterDto> query(@Param("vo") QueryStoreCenterVo vo);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    StoreCenterDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  StoreCenterDto getById(String id);
 
-    /**
-     * 选择器
-     * @param vo
-     * @return
-     */
-    List<StoreCenterDto> selector(@Param("vo") QueryStoreCenterSelectorVo vo);
+  /**
+   * 选择器
+   *
+   * @param vo
+   * @return
+   */
+  List<StoreCenterDto> selector(@Param("vo") QueryStoreCenterSelectorVo vo);
 }

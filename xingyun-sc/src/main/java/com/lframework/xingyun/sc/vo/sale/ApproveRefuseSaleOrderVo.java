@@ -1,25 +1,24 @@
 package com.lframework.xingyun.sc.vo.sale;
 
 import com.lframework.starter.web.vo.BaseVo;
-import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 public class ApproveRefuseSaleOrderVo implements BaseVo, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * 订单ID
-     */
-    @NotBlank(message = "订单ID不能为空！")
-    private String id;
+  /**
+   * 订单ID
+   */
+  @NotBlank(message = "订单ID不能为空！")
+  private String id;
 
-    /**
-     * 拒绝理由
-     */
-    @NotBlank(message = "拒绝理由不能为空！")
-    private String refuseReason;
+  /**
+   * 拒绝理由
+   */
+  @NotBlank(message = "拒绝理由不能为空！")
+  private String refuseReason;
 }

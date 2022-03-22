@@ -5,13 +5,12 @@ import com.lframework.xingyun.basedata.dto.product.saleprop.ProductSalePropGroup
 import com.lframework.xingyun.basedata.entity.ProductSalePropGroup;
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -19,24 +18,27 @@ import java.util.List;
  */
 public interface ProductSalePropGroupMapper extends BaseMapper<ProductSalePropGroup> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<ProductSalePropGroupDto> query(@Param("vo") QueryProductSalePropGroupVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductSalePropGroupDto> query(@Param("vo") QueryProductSalePropGroupVo vo);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    ProductSalePropGroupDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  ProductSalePropGroupDto getById(String id);
 
-    /**
-     * 选择器
-     * @param vo
-     * @return
-     */
-    List<ProductSalePropGroupDto> selector(@Param("vo") QueryProductSalePropGroupSelectorVo vo);
+  /**
+   * 选择器
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductSalePropGroupDto> selector(@Param("vo") QueryProductSalePropGroupSelectorVo vo);
 }

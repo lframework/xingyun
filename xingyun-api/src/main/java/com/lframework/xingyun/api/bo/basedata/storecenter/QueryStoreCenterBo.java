@@ -7,79 +7,78 @@ import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class QueryStoreCenterBo extends BaseBo<StoreCenterDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 编号
-     */
-    private String code;
+  /**
+   * 编号
+   */
+  private String code;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    /**
-     * 创建人ID
-     */
-    private String createBy;
+  /**
+   * 创建人ID
+   */
+  private String createBy;
 
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime createTime;
+  /**
+   * 创建时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime createTime;
 
-    /**
-     * 修改人ID
-     */
-    private String updateBy;
+  /**
+   * 修改人ID
+   */
+  private String updateBy;
 
-    /**
-     * 修改时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime updateTime;
+  /**
+   * 修改时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime updateTime;
 
-    public QueryStoreCenterBo() {
+  public QueryStoreCenterBo() {
 
-    }
+  }
 
-    public QueryStoreCenterBo(StoreCenterDto dto) {
+  public QueryStoreCenterBo(StoreCenterDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 
-    @Override
-    protected void afterInit(StoreCenterDto dto) {
+  @Override
+  protected void afterInit(StoreCenterDto dto) {
 
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
+    IUserService userService = ApplicationUtil.getBean(IUserService.class);
 
-        UserDto createBy = userService.getById(this.getCreateBy());
-        UserDto updateBy = userService.getById(this.getUpdateBy());
-        this.setCreateBy(createBy.getName());
-        this.setUpdateBy(updateBy.getName());
-    }
+    UserDto createBy = userService.getById(this.getCreateBy());
+    UserDto updateBy = userService.getById(this.getUpdateBy());
+    this.setCreateBy(createBy.getName());
+    this.setUpdateBy(updateBy.getName());
+  }
 }

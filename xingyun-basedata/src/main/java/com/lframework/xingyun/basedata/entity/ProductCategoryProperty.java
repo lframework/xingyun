@@ -18,20 +18,20 @@ import lombok.EqualsAndHashCode;
 @TableName("base_data_product_category_property")
 public class ProductCategoryProperty extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 商品属性ID
-     */
-    private String propertyId;
+  /**
+   * 商品属性ID
+   */
+  private String propertyId;
 
-    /**
-     * 商品类目ID
-     */
-    private String categoryId;
+  /**
+   * 商品类目ID
+   */
+  private String categoryId;
 }

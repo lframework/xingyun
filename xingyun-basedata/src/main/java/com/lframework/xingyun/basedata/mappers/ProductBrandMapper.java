@@ -5,13 +5,12 @@ import com.lframework.xingyun.basedata.dto.product.brand.ProductBrandDto;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -19,24 +18,27 @@ import java.util.List;
  */
 public interface ProductBrandMapper extends BaseMapper<ProductBrand> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<ProductBrandDto> query(@Param("vo") QueryProductBrandVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductBrandDto> query(@Param("vo") QueryProductBrandVo vo);
 
-    /**
-     * 选择器
-     * @param vo
-     * @return
-     */
-    List<ProductBrandDto> selector(@Param("vo") QueryProductBrandSelectorVo vo);
+  /**
+   * 选择器
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductBrandDto> selector(@Param("vo") QueryProductBrandSelectorVo vo);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    ProductBrandDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  ProductBrandDto getById(String id);
 }

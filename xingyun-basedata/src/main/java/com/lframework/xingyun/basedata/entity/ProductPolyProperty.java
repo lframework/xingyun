@@ -18,32 +18,32 @@ import lombok.EqualsAndHashCode;
 @TableName("base_data_product_poly_property")
 public class ProductPolyProperty extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 商品聚合ID
-     */
-    private String polyId;
+  /**
+   * 商品聚合ID
+   */
+  private String polyId;
 
-    /**
-     * 商品属性ID
-     */
-    private String propertyId;
+  /**
+   * 商品属性ID
+   */
+  private String propertyId;
 
-    /**
-     * 属性值ID
-     */
-    private String propertyItemId;
+  /**
+   * 属性值ID
+   */
+  private String propertyItemId;
 
-    /**
-     * 商品属性值
-     */
-    private String propertyText;
+  /**
+   * 商品属性值
+   */
+  private String propertyText;
 
 
 }

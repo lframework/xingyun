@@ -6,7 +6,7 @@ import com.lframework.xingyun.basedata.entity.ProductPurchase;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -14,10 +14,11 @@ import com.lframework.xingyun.basedata.entity.ProductPurchase;
  */
 public interface ProductPurchaseMapper extends BaseMapper<ProductPurchase> {
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    ProductPurchaseDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  ProductPurchaseDto getById(String id);
 }

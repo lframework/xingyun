@@ -9,27 +9,27 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CitySelectorBo extends BaseBo<DicCityDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 父级ID
-     */
-    private String parentId;
+  /**
+   * 父级ID
+   */
+  private String parentId;
 
-    public CitySelectorBo() {
+  public CitySelectorBo() {
 
-    }
+  }
 
-    public CitySelectorBo(DicCityDto dto) {
+  public CitySelectorBo(DicCityDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

@@ -8,59 +8,64 @@ import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.StockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
-
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface IProductStockService extends BaseService {
 
-    /**
-     * 查询列表
-     * @param pageIndex
-     * @param pageSize
-     * @param vo
-     * @return
-     */
-    PageResult<ProductStockDto> query(Integer pageIndex, Integer pageSize, QueryProductStockVo vo);
+  /**
+   * 查询列表
+   *
+   * @param pageIndex
+   * @param pageSize
+   * @param vo
+   * @return
+   */
+  PageResult<ProductStockDto> query(Integer pageIndex, Integer pageSize, QueryProductStockVo vo);
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<ProductStockDto> query(QueryProductStockVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductStockDto> query(QueryProductStockVo vo);
 
-    /**
-     * 根据商品ID、仓库ID查询
-     * @param productId
-     * @param scId
-     * @return
-     */
-    ProductStockDto getByProductIdAndScId(String productId, String scId);
+  /**
+   * 根据商品ID、仓库ID查询
+   *
+   * @param productId
+   * @param scId
+   * @return
+   */
+  ProductStockDto getByProductIdAndScId(String productId, String scId);
 
-    /**
-     * 根据商品ID、仓库ID查询
-     * @param productIds
-     * @param scId
-     * @return
-     */
-    List<ProductStockDto> getByProductIdsAndScId(List<String> productIds, String scId);
+  /**
+   * 根据商品ID、仓库ID查询
+   *
+   * @param productIds
+   * @param scId
+   * @return
+   */
+  List<ProductStockDto> getByProductIdsAndScId(List<String> productIds, String scId);
 
-    /**
-     * 入库
-     * @param vo
-     */
-    ProductStockChangeDto addStock(AddProductStockVo vo);
+  /**
+   * 入库
+   *
+   * @param vo
+   */
+  ProductStockChangeDto addStock(AddProductStockVo vo);
 
-    /**
-     * 出库
-     * @param vo
-     */
-    ProductStockChangeDto subStock(SubProductStockVo vo);
+  /**
+   * 出库
+   *
+   * @param vo
+   */
+  ProductStockChangeDto subStock(SubProductStockVo vo);
 
-    /**
-     * 库存成本调整
-     * @param vo
-     */
-    void stockCostAdjust(StockCostAdjustVo vo);
+  /**
+   * 库存成本调整
+   *
+   * @param vo
+   */
+  void stockCostAdjust(StockCostAdjustVo vo);
 }

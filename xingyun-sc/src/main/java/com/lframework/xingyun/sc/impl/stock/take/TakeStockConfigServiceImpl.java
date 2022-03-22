@@ -21,47 +21,48 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TakeStockConfigServiceImpl implements ITakeStockConfigService {
 
-    @Autowired
-    private TakeStockConfigMapper takeStockConfigMapper;
+  @Autowired
+  private TakeStockConfigMapper takeStockConfigMapper;
 
-    @Cacheable(value = TakeStockConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
-    @Override
-    public TakeStockConfigDto get() {
+  @Cacheable(value = TakeStockConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Override
+  public TakeStockConfigDto get() {
 
-        return takeStockConfigMapper.get();
+    return takeStockConfigMapper.get();
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "修改盘点参数，ID：{}", params = {"#id"})
+  @Transactional
+  @Override
+  public void update(UpdateTakeStockConfigVo vo) {
+
+    TakeStockConfig data = takeStockConfigMapper.selectById(vo.getId());
+    if (ObjectUtil.isNull(data)) {
+      throw new DefaultClientException("盘点参数不存在！");
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改盘点参数，ID：{}", params = {"#id"})
-    @Transactional
-    @Override
-    public void update(UpdateTakeStockConfigVo vo) {
+    LambdaUpdateWrapper<TakeStockConfig> updateWrapper = Wrappers
+        .lambdaUpdate(TakeStockConfig.class)
+        .set(TakeStockConfig::getShowProduct, vo.getShowProduct())
+        .set(TakeStockConfig::getShowStock, vo.getShowStock())
+        .set(TakeStockConfig::getAutoChangeStock, vo.getAutoChangeStock())
+        .set(TakeStockConfig::getAllowChangeNum, vo.getAllowChangeNum())
+        .set(TakeStockConfig::getCancelHours, vo.getCancelHours())
+        .eq(TakeStockConfig::getId, vo.getId());
 
-        TakeStockConfig data = takeStockConfigMapper.selectById(vo.getId());
-        if (ObjectUtil.isNull(data)) {
-            throw new DefaultClientException("盘点参数不存在！");
-        }
+    takeStockConfigMapper.update(updateWrapper);
 
-        LambdaUpdateWrapper<TakeStockConfig> updateWrapper = Wrappers.lambdaUpdate(TakeStockConfig.class)
-                .set(TakeStockConfig::getShowProduct, vo.getShowProduct())
-                .set(TakeStockConfig::getShowStock, vo.getShowStock())
-                .set(TakeStockConfig::getAutoChangeStock, vo.getAutoChangeStock())
-                .set(TakeStockConfig::getAllowChangeNum, vo.getAllowChangeNum())
-                .set(TakeStockConfig::getCancelHours, vo.getCancelHours())
-                .eq(TakeStockConfig::getId, vo.getId());
+    OpLogUtil.setVariable("id", data.getId());
+    OpLogUtil.setExtra(vo);
 
-        takeStockConfigMapper.update(updateWrapper);
+    ITakeStockConfigService thisService = getThis(this.getClass());
+    thisService.cleanCacheByKey(data.getId());
 
-        OpLogUtil.setVariable("id", data.getId());
-        OpLogUtil.setExtra(vo);
+  }
 
-        ITakeStockConfigService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
+  @CacheEvict(value = TakeStockConfigDto.CACHE_NAME, key = "'config'")
+  @Override
+  public void cleanCacheByKey(String key) {
 
-    }
-
-    @CacheEvict(value = TakeStockConfigDto.CACHE_NAME, key = "'config'")
-    @Override
-    public void cleanCacheByKey(String key) {
-
-    }
+  }
 }

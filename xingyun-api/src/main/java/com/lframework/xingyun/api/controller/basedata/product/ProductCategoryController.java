@@ -11,16 +11,21 @@ import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
 import com.lframework.xingyun.basedata.service.product.IProductCategoryService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 类目管理
@@ -32,87 +37,89 @@ import java.util.stream.Collectors;
 @RequestMapping("/basedata/product/category")
 public class ProductCategoryController extends DefaultBaseController {
 
-    @Autowired
-    private IProductCategoryService productCategoryService;
+  @Autowired
+  private IProductCategoryService productCategoryService;
 
-    /**
-     * 类目列表
-     */
-    @PreAuthorize("@permission.valid('base-data:product:category:query','base-data:product:category:add','base-data:product:category:modify')")
-    @GetMapping("/query")
-    public InvokeResult query() {
+  /**
+   * 类目列表
+   */
+  @PreAuthorize("@permission.valid('base-data:product:category:query','base-data:product:category:add','base-data:product:category:modify')")
+  @GetMapping("/query")
+  public InvokeResult query() {
 
-        List<ProductCategoryDto> datas = productCategoryService.getAllProductCategories();
-        if (CollectionUtil.isEmpty(datas)) {
-            return InvokeResultBuilder.success();
-        }
-
-        List<ProductCategoryTreeBo> results = datas.stream().map(ProductCategoryTreeBo::new)
-                .collect(Collectors.toList());
-
-        return InvokeResultBuilder.success(results);
+    List<ProductCategoryDto> datas = productCategoryService.getAllProductCategories();
+    if (CollectionUtil.isEmpty(datas)) {
+      return InvokeResultBuilder.success();
     }
 
-    /**
-     * 查询类目
-     */
-    @PreAuthorize("@permission.valid('base-data:product:category:query','base-data:product:category:add','base-data:product:category:modify')")
-    @GetMapping
-    public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+    List<ProductCategoryTreeBo> results = datas.stream().map(ProductCategoryTreeBo::new)
+        .collect(Collectors.toList());
 
-        ProductCategoryDto data = productCategoryService.getById(id);
-        if (data == null) {
-            throw new DefaultClientException("类目不存在！");
-        }
+    return InvokeResultBuilder.success(results);
+  }
 
-        GetProductCategoryBo result = new GetProductCategoryBo(data);
+  /**
+   * 查询类目
+   */
+  @PreAuthorize("@permission.valid('base-data:product:category:query','base-data:product:category:add','base-data:product:category:modify')")
+  @GetMapping
+  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
 
-        return InvokeResultBuilder.success(result);
+    ProductCategoryDto data = productCategoryService.getById(id);
+    if (data == null) {
+      throw new DefaultClientException("类目不存在！");
     }
 
-    /**
-     * 批量停用类目
-     */
-    @PreAuthorize("@permission.valid('base-data:product:category:modify')")
-    @PatchMapping("/unable/batch")
-    public InvokeResult batchUnable(@NotEmpty(message = "请选择需要停用的类目！") @RequestBody List<String> ids) {
+    GetProductCategoryBo result = new GetProductCategoryBo(data);
 
-        productCategoryService.batchUnable(ids);
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success(result);
+  }
 
-    /**
-     * 批量启用类目
-     */
-    @PreAuthorize("@permission.valid('base-data:product:category:modify')")
-    @PatchMapping("/enable/batch")
-    public InvokeResult batchEnable(@NotEmpty(message = "请选择需要启用的类目！") @RequestBody List<String> ids) {
+  /**
+   * 批量停用类目
+   */
+  @PreAuthorize("@permission.valid('base-data:product:category:modify')")
+  @PatchMapping("/unable/batch")
+  public InvokeResult batchUnable(
+      @NotEmpty(message = "请选择需要停用的类目！") @RequestBody List<String> ids) {
 
-        productCategoryService.batchEnable(ids);
-        return InvokeResultBuilder.success();
-    }
+    productCategoryService.batchUnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 新增类目
-     */
-    @PreAuthorize("@permission.valid('base-data:product:category:add')")
-    @PostMapping
-    public InvokeResult create(@Valid CreateProductCategoryVo vo) {
+  /**
+   * 批量启用类目
+   */
+  @PreAuthorize("@permission.valid('base-data:product:category:modify')")
+  @PatchMapping("/enable/batch")
+  public InvokeResult batchEnable(
+      @NotEmpty(message = "请选择需要启用的类目！") @RequestBody List<String> ids) {
 
-        productCategoryService.create(vo);
+    productCategoryService.batchEnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 新增类目
+   */
+  @PreAuthorize("@permission.valid('base-data:product:category:add')")
+  @PostMapping
+  public InvokeResult create(@Valid CreateProductCategoryVo vo) {
 
-    /**
-     * 修改类目
-     */
-    @PreAuthorize("@permission.valid('base-data:product:category:modify')")
-    @PutMapping
-    public InvokeResult update(@Valid UpdateProductCategoryVo vo) {
+    productCategoryService.create(vo);
 
-        productCategoryService.update(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 修改类目
+   */
+  @PreAuthorize("@permission.valid('base-data:product:category:modify')")
+  @PutMapping
+  public InvokeResult update(@Valid UpdateProductCategoryVo vo) {
+
+    productCategoryService.update(vo);
+
+    return InvokeResultBuilder.success();
+  }
 }

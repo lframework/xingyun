@@ -1,43 +1,42 @@
 package com.lframework.xingyun.sc.vo.sale;
 
 import com.lframework.starter.web.vo.BaseVo;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
+import lombok.Data;
 
 @Data
 public class SaleProductVo implements BaseVo, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * 商品ID
-     */
-    private String productId;
+  /**
+   * 商品ID
+   */
+  private String productId;
 
-    /**
-     * 原价
-     */
-    private BigDecimal oriPrice;
+  /**
+   * 原价
+   */
+  private BigDecimal oriPrice;
 
-    /**
-     * 现价
-     */
-    private BigDecimal taxPrice;
+  /**
+   * 现价
+   */
+  private BigDecimal taxPrice;
 
-    /**
-     * 折扣（%）
-     */
-    private BigDecimal discountRate;
+  /**
+   * 折扣（%）
+   */
+  private BigDecimal discountRate;
 
-    /**
-     * 销售数量
-     */
-    private Integer orderNum;
+  /**
+   * 销售数量
+   */
+  private Integer orderNum;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 }

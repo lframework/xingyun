@@ -8,17 +8,17 @@ import org.springframework.context.ApplicationEvent;
  */
 public class SubStockEvent extends ApplicationEvent {
 
-    /**
-     * 变动记录
-     */
-    private ProductStockChangeDto change;
+  /**
+   * 变动记录
+   */
+  private ProductStockChangeDto change;
 
-    public SubStockEvent(Object source, ProductStockChangeDto change) {
-        super(source);
-        this.change = change;
-    }
+  public SubStockEvent(Object source, ProductStockChangeDto change) {
+    super(source);
+    this.change = change;
+  }
 
-    public ProductStockChangeDto getChange() {
-        return change;
-    }
+  public ProductStockChangeDto getChange() {
+    return change;
+  }
 }

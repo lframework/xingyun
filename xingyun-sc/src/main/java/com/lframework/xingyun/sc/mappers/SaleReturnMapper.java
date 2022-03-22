@@ -5,13 +5,12 @@ import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -19,31 +18,35 @@ import java.util.List;
  */
 public interface SaleReturnMapper extends BaseMapper<SaleReturn> {
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<SaleReturnDto> query(@Param("vo") QuerySaleReturnVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<SaleReturnDto> query(@Param("vo") QuerySaleReturnVo vo);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    SaleReturnDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  SaleReturnDto getById(String id);
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    SaleReturnFullDto getDetail(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  SaleReturnFullDto getDetail(String id);
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<SaleReturnFullDto> queryFulls(@Param("vo") QuerySaleReturnVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<SaleReturnFullDto> queryFulls(@Param("vo") QuerySaleReturnVo vo);
 }

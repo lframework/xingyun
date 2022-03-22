@@ -7,126 +7,126 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.product.info.SaleProductDto;
 import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
+import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SaleProductBo extends BaseBo<SaleProductDto> {
 
-    /**
-     * ID
-     */
-    private String productId;
+  /**
+   * ID
+   */
+  private String productId;
 
-    /**
-     * 编号
-     */
-    private String productCode;
+  /**
+   * 编号
+   */
+  private String productCode;
 
-    /**
-     * 名称
-     */
-    private String productName;
+  /**
+   * 名称
+   */
+  private String productName;
 
-    /**
-     * 类目名称
-     */
-    private String categoryName;
+  /**
+   * 类目名称
+   */
+  private String categoryName;
 
-    /**
-     * 品牌名称
-     */
-    private String brandName;
+  /**
+   * 品牌名称
+   */
+  private String brandName;
 
-    /**
-     * 是否多销售属性
-     */
-    private Boolean multiSaleProp;
+  /**
+   * 是否多销售属性
+   */
+  private Boolean multiSaleProp;
 
-    /**
-     * SKU
-     */
-    private String skuCode;
+  /**
+   * SKU
+   */
+  private String skuCode;
 
-    /**
-     * 外部编号
-     */
-    private String externalCode;
+  /**
+   * 外部编号
+   */
+  private String externalCode;
 
-    /**
-     * 规格
-     */
-    private String spec;
+  /**
+   * 规格
+   */
+  private String spec;
 
-    /**
-     * 单位
-     */
-    private String unit;
+  /**
+   * 单位
+   */
+  private String unit;
 
-    /**
-     * 销售价
-     */
-    private BigDecimal salePrice;
+  /**
+   * 销售价
+   */
+  private BigDecimal salePrice;
 
-    /**
-     * 库存数量
-     */
-    private Integer stockNum;
+  /**
+   * 库存数量
+   */
+  private Integer stockNum;
 
-    /**
-     * 税率（%）
-     */
-    private BigDecimal taxRate;
+  /**
+   * 税率（%）
+   */
+  private BigDecimal taxRate;
 
-    /**
-     * 销售属性1
-     */
-    private String salePropItemName1;
+  /**
+   * 销售属性1
+   */
+  private String salePropItemName1;
 
-    /**
-     * 销售属性2
-     */
-    private String salePropItemName2;
+  /**
+   * 销售属性2
+   */
+  private String salePropItemName2;
 
-    /**
-     * 仓库ID
-     */
-    @JsonIgnore
-    private String scId;
+  /**
+   * 仓库ID
+   */
+  @JsonIgnore
+  private String scId;
 
-    public SaleProductBo(String scId, SaleProductDto dto) {
+  public SaleProductBo(String scId, SaleProductDto dto) {
 
-        this.scId = scId;
+    this.scId = scId;
 
-        if (dto != null) {
-            this.convert(dto);
+    if (dto != null) {
+      this.convert(dto);
 
-            this.afterInit(dto);
-        }
+      this.afterInit(dto);
+    }
+  }
+
+  @Override
+  protected void afterInit(SaleProductDto dto) {
+
+    this.productId = dto.getId();
+    this.productCode = dto.getCode();
+    this.productName = dto.getName();
+
+    if (!CollectionUtil.isEmpty(dto.getSaleProps())) {
+      if (dto.getSaleProps().size() > 0) {
+        this.salePropItemName1 = dto.getSaleProps().get(0).getName();
+      }
+
+      if (dto.getSaleProps().size() > 1) {
+        this.salePropItemName2 = dto.getSaleProps().get(1).getName();
+      }
     }
 
-    @Override
-    protected void afterInit(SaleProductDto dto) {
-
-        this.productId = dto.getId();
-        this.productCode = dto.getCode();
-        this.productName = dto.getName();
-
-        if (!CollectionUtil.isEmpty(dto.getSaleProps())) {
-            if (dto.getSaleProps().size() > 0) {
-                this.salePropItemName1 = dto.getSaleProps().get(0).getName();
-            }
-
-            if (dto.getSaleProps().size() > 1) {
-                this.salePropItemName2 = dto.getSaleProps().get(1).getName();
-            }
-        }
-
-        IProductStockService productStockService = ApplicationUtil.getBean(IProductStockService.class);
-        ProductStockDto productStock = productStockService.getByProductIdAndScId(this.getProductId(), this.getScId());
-        this.stockNum = productStock == null ? 0 : productStock.getStockNum();
-    }
+    IProductStockService productStockService = ApplicationUtil.getBean(IProductStockService.class);
+    ProductStockDto productStock = productStockService
+        .getByProductIdAndScId(this.getProductId(), this.getScId());
+    this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+  }
 }

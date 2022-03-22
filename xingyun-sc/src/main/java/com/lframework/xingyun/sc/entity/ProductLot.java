@@ -5,11 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -24,56 +23,56 @@ import java.time.LocalDateTime;
 @TableName("tbl_product_lot")
 public class ProductLot extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 批次号
-     */
-    private String lotCode;
+  /**
+   * 批次号
+   */
+  private String lotCode;
 
-    /**
-     * 商品ID
-     */
-    private String productId;
+  /**
+   * 商品ID
+   */
+  private String productId;
 
-    /**
-     * 供应商ID
-     */
-    private String supplierId;
+  /**
+   * 供应商ID
+   */
+  private String supplierId;
 
-    /**
-     * 税率（%）
-     */
-    private BigDecimal taxRate;
+  /**
+   * 税率（%）
+   */
+  private BigDecimal taxRate;
 
-    /**
-     * 创建时间
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
+  /**
+   * 创建时间
+   */
+  @TableField(fill = FieldFill.INSERT)
+  private LocalDateTime createTime;
 
-    /**
-     * 业务单据ID
-     */
-    private String bizId;
+  /**
+   * 业务单据ID
+   */
+  private String bizId;
 
-    /**
-     * 业务单据明细ID
-     */
-    private String bizDetailId;
+  /**
+   * 业务单据明细ID
+   */
+  private String bizDetailId;
 
-    /**
-     * 业务单据号
-     */
-    private String bizCode;
+  /**
+   * 业务单据号
+   */
+  private String bizCode;
 
-    /**
-     * 业务类型
-     */
-    private ProductStockBizType bizType;
+  /**
+   * 业务类型
+   */
+  private ProductStockBizType bizType;
 }

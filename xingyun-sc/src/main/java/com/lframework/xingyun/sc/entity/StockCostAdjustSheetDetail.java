@@ -2,10 +2,9 @@ package com.lframework.xingyun.sc.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.math.BigDecimal;
 
 /**
  * <p>
@@ -19,56 +18,56 @@ import java.math.BigDecimal;
 @TableName("tbl_stock_cost_adjust_sheet_detail")
 public class StockCostAdjustSheetDetail extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 单据ID
-     */
-    private String sheetId;
+  /**
+   * 单据ID
+   */
+  private String sheetId;
 
-    /**
-     * 商品ID
-     */
-    private String productId;
+  /**
+   * 商品ID
+   */
+  private String productId;
 
-    /**
-     * 库存数量
-     */
-    private Integer stockNum;
+  /**
+   * 库存数量
+   */
+  private Integer stockNum;
 
-    /**
-     * 档案采购价
-     */
-    private BigDecimal purchasePrice;
+  /**
+   * 档案采购价
+   */
+  private BigDecimal purchasePrice;
 
-    /**
-     * 调整前成本价
-     */
-    private BigDecimal oriPrice;
+  /**
+   * 调整前成本价
+   */
+  private BigDecimal oriPrice;
 
-    /**
-     * 调整后成本价
-     */
-    private BigDecimal price;
+  /**
+   * 调整后成本价
+   */
+  private BigDecimal price;
 
-    /**
-     * 库存调价差额
-     */
-    private BigDecimal diffAmount;
+  /**
+   * 库存调价差额
+   */
+  private BigDecimal diffAmount;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    /**
-     * 排序
-     */
-    private Integer orderNo;
+  /**
+   * 排序
+   */
+  private Integer orderNo;
 
 }

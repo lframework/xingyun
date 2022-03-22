@@ -5,24 +5,48 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.*;
+import com.lframework.common.utils.Assert;
+import com.lframework.common.utils.CollectionUtil;
+import com.lframework.common.utils.IdUtil;
+import com.lframework.common.utils.ObjectUtil;
+import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.starter.security.enums.system.NodeType;
 import com.lframework.starter.security.service.system.IRecursionMappingService;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.dto.product.info.*;
+import com.lframework.xingyun.basedata.dto.product.info.GetProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.PreTakeStockProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.PurchaseProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.RetailProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.SaleProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.StockCostAdjustProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.TakeStockSheetProductDto;
 import com.lframework.xingyun.basedata.dto.product.poly.ProductPolyDto;
 import com.lframework.xingyun.basedata.dto.product.saleprop.item.SalePropItemByProductDto;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.mappers.ProductMapper;
-import com.lframework.xingyun.basedata.service.product.*;
-import com.lframework.xingyun.basedata.vo.product.info.*;
+import com.lframework.xingyun.basedata.service.product.IProductPolyService;
+import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
+import com.lframework.xingyun.basedata.service.product.IProductRetailService;
+import com.lframework.xingyun.basedata.service.product.IProductSalePropItemRelationService;
+import com.lframework.xingyun.basedata.service.product.IProductSalePropItemService;
+import com.lframework.xingyun.basedata.service.product.IProductSaleService;
+import com.lframework.xingyun.basedata.service.product.IProductService;
+import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryPreTakeStockProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryPurchaseProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryRetailProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.QuerySaleProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryStockCostAdjustProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryTakeStockSheetProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.UpdateProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.saleprop.CreateProductSalePropItemRelationVo;
 import com.lframework.xingyun.basedata.vo.product.purchase.CreateProductPurchaseVo;
 import com.lframework.xingyun.basedata.vo.product.purchase.UpdateProductPurchaseVo;
@@ -30,582 +54,611 @@ import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.retail.UpdateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
 import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class ProductServiceImpl implements IProductService {
 
-    @Autowired
-    private ProductMapper productMapper;
+  @Autowired
+  private ProductMapper productMapper;
 
-    @Autowired
-    private IProductPolyService productPolyService;
+  @Autowired
+  private IProductPolyService productPolyService;
 
-    @Autowired
-    private IProductPurchaseService productPurchaseService;
+  @Autowired
+  private IProductPurchaseService productPurchaseService;
 
-    @Autowired
-    private IProductSaleService productSaleService;
+  @Autowired
+  private IProductSaleService productSaleService;
 
-    @Autowired
-    private IProductRetailService productRetailService;
+  @Autowired
+  private IProductRetailService productRetailService;
 
-    @Autowired
-    private IProductSalePropItemRelationService productSalePropItemRelationService;
+  @Autowired
+  private IProductSalePropItemRelationService productSalePropItemRelationService;
 
-    @Autowired
-    private IProductSalePropItemService productSalePropItemService;
+  @Autowired
+  private IProductSalePropItemService productSalePropItemService;
 
-    @Autowired
-    private IRecursionMappingService recursionMappingService;
+  @Autowired
+  private IRecursionMappingService recursionMappingService;
 
-    @Override
-    public PageResult<ProductDto> query(Integer pageIndex, Integer pageSize, QueryProductVo vo) {
+  @Override
+  public PageResult<ProductDto> query(Integer pageIndex, Integer pageSize, QueryProductVo vo) {
 
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
-        List<ProductDto> datas = this.query(vo);
+    PageHelperUtil.startPage(pageIndex, pageSize);
+    List<ProductDto> datas = this.query(vo);
 
-        return PageResultUtil.convert(new PageInfo<>(datas));
+    return PageResultUtil.convert(new PageInfo<>(datas));
+  }
+
+  @Override
+  public List<ProductDto> query(QueryProductVo vo) {
+
+    List<ProductDto> datas = productMapper.query(vo);
+    if (!CollectionUtil.isEmpty(datas)) {
+      datas.forEach(this::convertDto);
     }
 
-    @Override
-    public List<ProductDto> query(QueryProductVo vo) {
+    return datas;
+  }
 
-        List<ProductDto> datas = productMapper.query(vo);
-        if (!CollectionUtil.isEmpty(datas)) {
-            datas.forEach(this::convertDto);
-        }
+  @Override
+  public Integer queryCount(QueryProductVo vo) {
+    return productMapper.queryCount(vo);
+  }
 
-        return datas;
+  @Cacheable(value = ProductDto.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Override
+  public ProductDto getById(String id) {
+
+    ProductDto data = productMapper.getById(id);
+    return this.convertDto(data);
+  }
+
+  @Override
+  public GetProductDto getDetailById(String id) {
+
+    return productMapper.getDetailById(id);
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "停用商品，ID：{}", params = "#ids", loopFormat = true)
+  @Transactional
+  @Override
+  public void batchUnable(Collection<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return;
     }
 
-    @Override
-    public Integer queryCount(QueryProductVo vo) {
-        return productMapper.queryCount(vo);
+    Wrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class)
+        .set(Product::getAvailable, Boolean.FALSE)
+        .in(Product::getId, ids);
+    productMapper.update(updateWrapper);
+
+    IProductService thisService = getThis(this.getClass());
+    for (String id : ids) {
+      thisService.cleanCacheByKey(id);
+    }
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "启用商品，ID：{}", params = "#ids", loopFormat = true)
+  @Transactional
+  @Override
+  public void batchEnable(Collection<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return;
     }
 
-    @Cacheable(value = ProductDto.CACHE_NAME, key = "#id", unless = "#result == null")
-    @Override
-    public ProductDto getById(String id) {
+    Wrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class)
+        .set(Product::getAvailable, Boolean.TRUE)
+        .in(Product::getId, ids);
+    productMapper.update(updateWrapper);
 
-        ProductDto data = productMapper.getById(id);
-        return this.convertDto(data);
+    IProductService thisService = getThis(this.getClass());
+    for (String id : ids) {
+      thisService.cleanCacheByKey(id);
+    }
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "新增商品，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @Transactional
+  @Override
+  public String create(CreateProductVo vo) {
+
+    Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class)
+        .eq(Product::getCode, vo.getCode());
+    if (productMapper.selectCount(checkWrapper) > 0) {
+      throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    @Override
-    public GetProductDto getDetailById(String id) {
-
-        return productMapper.getDetailById(id);
+    checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode());
+    if (productMapper.selectCount(checkWrapper) > 0) {
+      throw new DefaultClientException("商品SKU编号重复，请重新输入！");
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "停用商品，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
-    @Override
-    public void batchUnable(Collection<String> ids) {
-
-        if (CollectionUtil.isEmpty(ids)) {
-            return;
-        }
-
-        Wrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class).set(Product::getAvailable, Boolean.FALSE)
-                .in(Product::getId, ids);
-        productMapper.update(updateWrapper);
-
-        IProductService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
+    Product data = new Product();
+    data.setId(IdUtil.getId());
+    data.setCode(vo.getCode());
+    data.setName(vo.getName());
+    data.setPolyId(vo.getPolyId());
+    data.setSkuCode(vo.getSkuCode());
+    if (!StringUtil.isBlank(vo.getExternalCode())) {
+      data.setExternalCode(vo.getExternalCode());
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "启用商品，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
-    @Override
-    public void batchEnable(Collection<String> ids) {
-
-        if (CollectionUtil.isEmpty(ids)) {
-            return;
-        }
-
-        Wrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class).set(Product::getAvailable, Boolean.TRUE)
-                .in(Product::getId, ids);
-        productMapper.update(updateWrapper);
-
-        IProductService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
+    if (!StringUtil.isBlank(vo.getSpec())) {
+      data.setSpec(vo.getSpec());
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增商品，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
-    @Override
-    public String create(CreateProductVo vo) {
+    if (!StringUtil.isBlank(vo.getUnit())) {
+      data.setUnit(vo.getUnit());
+    }
+    data.setAvailable(Boolean.TRUE);
 
-        Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getCode, vo.getCode());
-        if (productMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("编号重复，请重新输入！");
-        }
+    productMapper.insert(data);
 
-        checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode());
-        if (productMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("商品SKU编号重复，请重新输入！");
-        }
-
-        Product data = new Product();
-        data.setId(IdUtil.getId());
-        data.setCode(vo.getCode());
-        data.setName(vo.getName());
-        data.setPolyId(vo.getPolyId());
-        data.setSkuCode(vo.getSkuCode());
-        if (!StringUtil.isBlank(vo.getExternalCode())) {
-            data.setExternalCode(vo.getExternalCode());
-        }
-
-        if (!StringUtil.isBlank(vo.getSpec())) {
-            data.setSpec(vo.getSpec());
-        }
-
-        if (!StringUtil.isBlank(vo.getUnit())) {
-            data.setUnit(vo.getUnit());
-        }
-        data.setAvailable(Boolean.TRUE);
-
-        productMapper.insert(data);
-
-        if (vo.getPurchasePrice() == null) {
-            throw new DefaultClientException("采购价不能为空！");
-        }
-
-        if (vo.getPurchasePrice().doubleValue() < 0D) {
-            throw new DefaultClientException("采购价不允许小于0！");
-        }
-
-        CreateProductPurchaseVo createProductPurchaseVo = new CreateProductPurchaseVo();
-        createProductPurchaseVo.setId(data.getId());
-        createProductPurchaseVo.setPrice(vo.getPurchasePrice());
-
-        productPurchaseService.create(createProductPurchaseVo);
-
-        if (vo.getSalePrice() == null) {
-            throw new DefaultClientException("销售价不能为空！");
-        }
-
-        if (vo.getSalePrice().doubleValue() < 0D) {
-            throw new DefaultClientException("销售价不允许小于0！");
-        }
-
-        CreateProductSaleVo createProductSaleVo = new CreateProductSaleVo();
-        createProductSaleVo.setId(data.getId());
-        createProductSaleVo.setPrice(vo.getSalePrice());
-
-        productSaleService.create(createProductSaleVo);
-
-        if (vo.getRetailPrice() == null) {
-            throw new DefaultClientException("零售价不能为空！");
-        }
-
-        if (vo.getRetailPrice().doubleValue() < 0D) {
-            throw new DefaultClientException("零售价不允许小于0！");
-        }
-
-        CreateProductRetailVo createProductRetailVo = new CreateProductRetailVo();
-        createProductRetailVo.setId(data.getId());
-        createProductRetailVo.setPrice(vo.getRetailPrice());
-
-        productRetailService.create(createProductRetailVo);
-
-        if (!CollectionUtil.isEmpty(vo.getSalePropItems())) {
-            CreateProductSalePropItemRelationVo createProductSalePropItemRelationVo = new CreateProductSalePropItemRelationVo();
-            createProductSalePropItemRelationVo.setProductId(data.getId());
-            createProductSalePropItemRelationVo.setSalePropItemIds(vo.getSalePropItems());
-
-            productSalePropItemRelationService.create(createProductSalePropItemRelationVo);
-        }
-
-        OpLogUtil.setVariable("id", data.getId());
-        OpLogUtil.setVariable("code", vo.getCode());
-        OpLogUtil.setExtra(vo);
-
-        return data.getId();
+    if (vo.getPurchasePrice() == null) {
+      throw new DefaultClientException("采购价不能为空！");
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改商品，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
-    @Override
-    public void update(UpdateProductVo vo) {
-
-        Product data = productMapper.selectById(vo.getId());
-        if (ObjectUtil.isNull(data)) {
-            throw new DefaultClientException("商品不存在！");
-        }
-
-        Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getCode, vo.getCode())
-                .ne(Product::getId, vo.getId());
-        if (productMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("编号重复，请重新输入！");
-        }
-
-        checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode())
-                .ne(Product::getId, vo.getId());
-        if (productMapper.selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("商品SKU编号重复，请重新输入！");
-        }
-
-        LambdaUpdateWrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class)
-                .set(Product::getCode, vo.getCode()).set(Product::getName, vo.getName())
-                .set(Product::getAvailable, vo.getAvailable()).set(Product::getSkuCode, vo.getSkuCode())
-                .set(Product::getExternalCode, StringUtil.isBlank(vo.getExternalCode()) ? null : vo.getExternalCode())
-                .set(Product::getSpec, StringUtil.isBlank(vo.getSpec()) ? null : vo.getSpec())
-                .set(Product::getUnit, StringUtil.isBlank(vo.getUnit()) ? null : vo.getUnit())
-                .eq(Product::getId, vo.getId());
-
-        productMapper.update(updateWrapper);
-
-        if (vo.getPurchasePrice() != null) {
-
-            UpdateProductPurchaseVo updateProductPurchaseVo = new UpdateProductPurchaseVo();
-            updateProductPurchaseVo.setId(data.getId());
-            updateProductPurchaseVo.setPrice(vo.getPurchasePrice());
-
-            productPurchaseService.update(updateProductPurchaseVo);
-        }
-
-        if (vo.getSalePrice() != null) {
-            UpdateProductSaleVo updateProductSaleVo = new UpdateProductSaleVo();
-            updateProductSaleVo.setId(data.getId());
-            updateProductSaleVo.setPrice(vo.getSalePrice());
-
-            productSaleService.update(updateProductSaleVo);
-        }
-
-        if (vo.getRetailPrice() != null) {
-            UpdateProductRetailVo updateProductRetailVo = new UpdateProductRetailVo();
-            updateProductRetailVo.setId(data.getId());
-            updateProductRetailVo.setPrice(vo.getRetailPrice());
-
-            productRetailService.update(updateProductRetailVo);
-        }
-
-        OpLogUtil.setVariable("id", data.getId());
-        OpLogUtil.setVariable("code", vo.getCode());
-        OpLogUtil.setExtra(vo);
-
-        IProductService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
+    if (vo.getPurchasePrice().doubleValue() < 0D) {
+      throw new DefaultClientException("采购价不允许小于0！");
     }
 
-    @Override
-    public PageResult<PurchaseProductDto> queryPurchaseByCondition(Integer pageIndex, Integer pageSize,
-                                                                   String condition) {
+    CreateProductPurchaseVo createProductPurchaseVo = new CreateProductPurchaseVo();
+    createProductPurchaseVo.setId(data.getId());
+    createProductPurchaseVo.setPrice(vo.getPurchasePrice());
 
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+    productPurchaseService.create(createProductPurchaseVo);
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
-
-        List<PurchaseProductDto> datas = productMapper.queryPurchaseByCondition(condition);
-        PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        if (!CollectionUtil.isEmpty(datas)) {
-            for (PurchaseProductDto data : datas) {
-                List<SalePropItemByProductDto> saleProps = productSalePropItemService.getByProductId(data.getId());
-                data.setSaleProps(saleProps);
-            }
-        }
-
-        return pageResult;
+    if (vo.getSalePrice() == null) {
+      throw new DefaultClientException("销售价不能为空！");
     }
 
-    @Override
-    public PageResult<PurchaseProductDto> queryPurchaseList(Integer pageIndex, Integer pageSize,
-                                                            QueryPurchaseProductVo vo) {
-
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
-
-        PageHelperUtil.startPage(pageIndex, pageSize);
-
-        List<PurchaseProductDto> datas = productMapper.queryPurchaseList(vo);
-        PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        if (!CollectionUtil.isEmpty(datas)) {
-            for (PurchaseProductDto data : datas) {
-                List<SalePropItemByProductDto> saleProps = productSalePropItemService.getByProductId(data.getId());
-                data.setSaleProps(saleProps);
-            }
-        }
-
-        return pageResult;
+    if (vo.getSalePrice().doubleValue() < 0D) {
+      throw new DefaultClientException("销售价不允许小于0！");
     }
 
-    @Override
-    public PurchaseProductDto getPurchaseById(String id) {
+    CreateProductSaleVo createProductSaleVo = new CreateProductSaleVo();
+    createProductSaleVo.setId(data.getId());
+    createProductSaleVo.setPrice(vo.getSalePrice());
 
-        PurchaseProductDto data = productMapper.getPurchaseById(id);
-        if (data != null) {
-            List<SalePropItemByProductDto> saleProps = productSalePropItemService.getByProductId(data.getId());
-            data.setSaleProps(saleProps);
-        }
+    productSaleService.create(createProductSaleVo);
 
-        return data;
+    if (vo.getRetailPrice() == null) {
+      throw new DefaultClientException("零售价不能为空！");
     }
 
-    @Override
-    public PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize, String condition) {
-
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
-
-        PageHelperUtil.startPage(pageIndex, pageSize);
-
-        List<SaleProductDto> datas = productMapper.querySaleByCondition(condition);
-        PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        if (!CollectionUtil.isEmpty(datas)) {
-            for (SaleProductDto data : datas) {
-                List<SalePropItemByProductDto> saleProps = productSalePropItemService.getByProductId(data.getId());
-                data.setSaleProps(saleProps);
-            }
-        }
-
-        return pageResult;
+    if (vo.getRetailPrice().doubleValue() < 0D) {
+      throw new DefaultClientException("零售价不允许小于0！");
     }
 
-    @Override
-    public PageResult<SaleProductDto> querySaleList(Integer pageIndex, Integer pageSize, QuerySaleProductVo vo) {
+    CreateProductRetailVo createProductRetailVo = new CreateProductRetailVo();
+    createProductRetailVo.setId(data.getId());
+    createProductRetailVo.setPrice(vo.getRetailPrice());
 
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+    productRetailService.create(createProductRetailVo);
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
+    if (!CollectionUtil.isEmpty(vo.getSalePropItems())) {
+      CreateProductSalePropItemRelationVo createProductSalePropItemRelationVo = new CreateProductSalePropItemRelationVo();
+      createProductSalePropItemRelationVo.setProductId(data.getId());
+      createProductSalePropItemRelationVo.setSalePropItemIds(vo.getSalePropItems());
 
-        List<SaleProductDto> datas = productMapper.querySaleList(vo);
-        PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        if (!CollectionUtil.isEmpty(datas)) {
-            for (SaleProductDto data : datas) {
-                List<SalePropItemByProductDto> saleProps = productSalePropItemService.getByProductId(data.getId());
-                data.setSaleProps(saleProps);
-            }
-        }
-
-        return pageResult;
+      productSalePropItemRelationService.create(createProductSalePropItemRelationVo);
     }
 
-    @Override
-    public SaleProductDto getSaleById(String id) {
+    OpLogUtil.setVariable("id", data.getId());
+    OpLogUtil.setVariable("code", vo.getCode());
+    OpLogUtil.setExtra(vo);
 
-        SaleProductDto data = productMapper.getSaleById(id);
-        if (data != null) {
-            List<SalePropItemByProductDto> saleProps = productSalePropItemService.getByProductId(data.getId());
-            data.setSaleProps(saleProps);
-        }
+    return data.getId();
+  }
 
-        return data;
+  @OpLog(type = OpLogType.OTHER, name = "修改商品，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @Transactional
+  @Override
+  public void update(UpdateProductVo vo) {
+
+    Product data = productMapper.selectById(vo.getId());
+    if (ObjectUtil.isNull(data)) {
+      throw new DefaultClientException("商品不存在！");
     }
 
-    @Override
-    public PageResult<RetailProductDto> queryRetailByCondition(Integer pageIndex, Integer pageSize, String condition) {
-
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
-
-        PageHelperUtil.startPage(pageIndex, pageSize);
-
-        List<RetailProductDto> datas = productMapper.queryRetailByCondition(condition);
-        PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        if (!CollectionUtil.isEmpty(datas)) {
-            for (RetailProductDto data : datas) {
-                List<SalePropItemByProductDto> retailProps = productSalePropItemService.getByProductId(data.getId());
-                data.setSaleProps(retailProps);
-            }
-        }
-
-        return pageResult;
+    Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class)
+        .eq(Product::getCode, vo.getCode())
+        .ne(Product::getId, vo.getId());
+    if (productMapper.selectCount(checkWrapper) > 0) {
+      throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    @Override
-    public PageResult<RetailProductDto> queryRetailList(Integer pageIndex, Integer pageSize, QueryRetailProductVo vo) {
-
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
-
-        PageHelperUtil.startPage(pageIndex, pageSize);
-
-        List<RetailProductDto> datas = productMapper.queryRetailList(vo);
-        PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        if (!CollectionUtil.isEmpty(datas)) {
-            for (RetailProductDto data : datas) {
-                List<SalePropItemByProductDto> retailProps = productSalePropItemService.getByProductId(data.getId());
-                data.setSaleProps(retailProps);
-            }
-        }
-
-        return pageResult;
+    checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode())
+        .ne(Product::getId, vo.getId());
+    if (productMapper.selectCount(checkWrapper) > 0) {
+      throw new DefaultClientException("商品SKU编号重复，请重新输入！");
     }
 
-    @Override
-    public RetailProductDto getRetailById(String id) {
+    LambdaUpdateWrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class)
+        .set(Product::getCode, vo.getCode()).set(Product::getName, vo.getName())
+        .set(Product::getAvailable, vo.getAvailable()).set(Product::getSkuCode, vo.getSkuCode())
+        .set(Product::getExternalCode,
+            StringUtil.isBlank(vo.getExternalCode()) ? null : vo.getExternalCode())
+        .set(Product::getSpec, StringUtil.isBlank(vo.getSpec()) ? null : vo.getSpec())
+        .set(Product::getUnit, StringUtil.isBlank(vo.getUnit()) ? null : vo.getUnit())
+        .eq(Product::getId, vo.getId());
 
-        RetailProductDto data = productMapper.getRetailById(id);
-        if (data != null) {
-            List<SalePropItemByProductDto> retailProps = productSalePropItemService.getByProductId(data.getId());
-            data.setSaleProps(retailProps);
-        }
+    productMapper.update(updateWrapper);
 
-        return data;
+    if (vo.getPurchasePrice() != null) {
+
+      UpdateProductPurchaseVo updateProductPurchaseVo = new UpdateProductPurchaseVo();
+      updateProductPurchaseVo.setId(data.getId());
+      updateProductPurchaseVo.setPrice(vo.getPurchasePrice());
+
+      productPurchaseService.update(updateProductPurchaseVo);
     }
 
-    @Override
-    public PageResult<PreTakeStockProductDto> queryPreTakeStockByCondition(Integer pageIndex, Integer pageSize, String condition) {
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+    if (vo.getSalePrice() != null) {
+      UpdateProductSaleVo updateProductSaleVo = new UpdateProductSaleVo();
+      updateProductSaleVo.setId(data.getId());
+      updateProductSaleVo.setPrice(vo.getSalePrice());
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
-
-        List<PreTakeStockProductDto> datas = productMapper.queryPreTakeStockByCondition(condition);
-        PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        return pageResult;
+      productSaleService.update(updateProductSaleVo);
     }
 
-    @Override
-    public PageResult<PreTakeStockProductDto> queryPreTakeStockList(Integer pageIndex, Integer pageSize, QueryPreTakeStockProductVo vo) {
+    if (vo.getRetailPrice() != null) {
+      UpdateProductRetailVo updateProductRetailVo = new UpdateProductRetailVo();
+      updateProductRetailVo.setId(data.getId());
+      updateProductRetailVo.setPrice(vo.getRetailPrice());
 
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
-
-        PageHelperUtil.startPage(pageIndex, pageSize);
-
-        List<PreTakeStockProductDto> datas = productMapper.queryPreTakeStockList(vo);
-        PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        return pageResult;
+      productRetailService.update(updateProductRetailVo);
     }
 
-    @Override
-    public List<ProductDto> getByCategoryIds(List<String> categoryIds) {
-        if (CollectionUtil.isEmpty(categoryIds)) {
-            return Collections.EMPTY_LIST;
-        }
+    OpLogUtil.setVariable("id", data.getId());
+    OpLogUtil.setVariable("code", vo.getCode());
+    OpLogUtil.setExtra(vo);
 
-        // 根据categoryIds查询所有叶子节点
-        List<String> children = new ArrayList<>();
-        for (String categoryId : categoryIds) {
-            children.addAll(recursionMappingService.getNodeChildIds(categoryId, ApplicationUtil.getBean(ProductCategoryNodeType.class)));
-        }
+    IProductService thisService = getThis(this.getClass());
+    thisService.cleanCacheByKey(data.getId());
+  }
 
-        children.addAll(categoryIds);
+  @Override
+  public PageResult<PurchaseProductDto> queryPurchaseByCondition(Integer pageIndex,
+      Integer pageSize,
+      String condition) {
 
-        children = children.stream().distinct().collect(Collectors.toList());
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
 
-        List<ProductDto> datas = productMapper.getByCategoryIds(children);
-        if (!CollectionUtil.isEmpty(datas)) {
-            datas.forEach(this::convertDto);
-        }
+    PageHelperUtil.startPage(pageIndex, pageSize);
 
-        return datas;
+    List<PurchaseProductDto> datas = productMapper.queryPurchaseByCondition(condition);
+    PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      for (PurchaseProductDto data : datas) {
+        List<SalePropItemByProductDto> saleProps = productSalePropItemService
+            .getByProductId(data.getId());
+        data.setSaleProps(saleProps);
+      }
     }
 
-    @Override
-    public List<ProductDto> getByBrandIds(List<String> brandIds) {
+    return pageResult;
+  }
 
-        if (CollectionUtil.isEmpty(brandIds)) {
-            return Collections.EMPTY_LIST;
-        }
+  @Override
+  public PageResult<PurchaseProductDto> queryPurchaseList(Integer pageIndex, Integer pageSize,
+      QueryPurchaseProductVo vo) {
 
-        List<ProductDto> datas = productMapper.getByBrandIds(brandIds);
-        if (!CollectionUtil.isEmpty(datas)) {
-            datas.forEach(this::convertDto);
-        }
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
 
-        return datas;
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<PurchaseProductDto> datas = productMapper.queryPurchaseList(vo);
+    PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      for (PurchaseProductDto data : datas) {
+        List<SalePropItemByProductDto> saleProps = productSalePropItemService
+            .getByProductId(data.getId());
+        data.setSaleProps(saleProps);
+      }
     }
 
-    @Override
-    public PageResult<TakeStockSheetProductDto> queryTakeStockByCondition(Integer pageIndex, Integer pageSize, String planId, String condition) {
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+    return pageResult;
+  }
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
+  @Override
+  public PurchaseProductDto getPurchaseById(String id) {
 
-        List<TakeStockSheetProductDto> datas = productMapper.queryTakeStockByCondition(planId, condition);
-        PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        return pageResult;
+    PurchaseProductDto data = productMapper.getPurchaseById(id);
+    if (data != null) {
+      List<SalePropItemByProductDto> saleProps = productSalePropItemService
+          .getByProductId(data.getId());
+      data.setSaleProps(saleProps);
     }
 
-    @Override
-    public PageResult<TakeStockSheetProductDto> queryTakeStockList(Integer pageIndex, Integer pageSize, QueryTakeStockSheetProductVo vo) {
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+    return data;
+  }
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
+  @Override
+  public PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize,
+      String condition) {
 
-        List<TakeStockSheetProductDto> datas = productMapper.queryTakeStockList(vo);
-        PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
 
-        return pageResult;
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<SaleProductDto> datas = productMapper.querySaleByCondition(condition);
+    PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      for (SaleProductDto data : datas) {
+        List<SalePropItemByProductDto> saleProps = productSalePropItemService
+            .getByProductId(data.getId());
+        data.setSaleProps(saleProps);
+      }
     }
 
-    @Override
-    public PageResult<StockCostAdjustProductDto> queryStockCostAdjustByCondition(Integer pageIndex, Integer pageSize, String scId, String condition) {
+    return pageResult;
+  }
 
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+  @Override
+  public PageResult<SaleProductDto> querySaleList(Integer pageIndex, Integer pageSize,
+      QuerySaleProductVo vo) {
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
 
-        List<StockCostAdjustProductDto> datas = productMapper.queryStockCostAdjustByCondition(scId, condition);
-        PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+    PageHelperUtil.startPage(pageIndex, pageSize);
 
-        return pageResult;
+    List<SaleProductDto> datas = productMapper.querySaleList(vo);
+    PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      for (SaleProductDto data : datas) {
+        List<SalePropItemByProductDto> saleProps = productSalePropItemService
+            .getByProductId(data.getId());
+        data.setSaleProps(saleProps);
+      }
     }
 
-    @Override
-    public PageResult<StockCostAdjustProductDto> queryStockCostAdjustList(Integer pageIndex, Integer pageSize, QueryStockCostAdjustProductVo vo) {
+    return pageResult;
+  }
 
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+  @Override
+  public SaleProductDto getSaleById(String id) {
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
-
-        List<StockCostAdjustProductDto> datas = productMapper.queryStockCostAdjustList(vo);
-        PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
-
-        return pageResult;
+    SaleProductDto data = productMapper.getSaleById(id);
+    if (data != null) {
+      List<SalePropItemByProductDto> saleProps = productSalePropItemService
+          .getByProductId(data.getId());
+      data.setSaleProps(saleProps);
     }
 
-    private ProductDto convertDto(ProductDto dto) {
+    return data;
+  }
 
-        if (dto == null) {
-            return dto;
-        }
+  @Override
+  public PageResult<RetailProductDto> queryRetailByCondition(Integer pageIndex, Integer pageSize,
+      String condition) {
 
-        ProductPolyDto poly = productPolyService.getById(dto.getPoly().getId());
-        dto.setPoly(poly);
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
 
-        return dto;
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<RetailProductDto> datas = productMapper.queryRetailByCondition(condition);
+    PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      for (RetailProductDto data : datas) {
+        List<SalePropItemByProductDto> retailProps = productSalePropItemService
+            .getByProductId(data.getId());
+        data.setSaleProps(retailProps);
+      }
     }
 
-    @CacheEvict(value = ProductDto.CACHE_NAME, key = "#key")
-    @Override
-    public void cleanCacheByKey(String key) {
+    return pageResult;
+  }
 
+  @Override
+  public PageResult<RetailProductDto> queryRetailList(Integer pageIndex, Integer pageSize,
+      QueryRetailProductVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<RetailProductDto> datas = productMapper.queryRetailList(vo);
+    PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      for (RetailProductDto data : datas) {
+        List<SalePropItemByProductDto> retailProps = productSalePropItemService
+            .getByProductId(data.getId());
+        data.setSaleProps(retailProps);
+      }
     }
+
+    return pageResult;
+  }
+
+  @Override
+  public RetailProductDto getRetailById(String id) {
+
+    RetailProductDto data = productMapper.getRetailById(id);
+    if (data != null) {
+      List<SalePropItemByProductDto> retailProps = productSalePropItemService
+          .getByProductId(data.getId());
+      data.setSaleProps(retailProps);
+    }
+
+    return data;
+  }
+
+  @Override
+  public PageResult<PreTakeStockProductDto> queryPreTakeStockByCondition(Integer pageIndex,
+      Integer pageSize, String condition) {
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<PreTakeStockProductDto> datas = productMapper.queryPreTakeStockByCondition(condition);
+    PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<PreTakeStockProductDto> queryPreTakeStockList(Integer pageIndex,
+      Integer pageSize, QueryPreTakeStockProductVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<PreTakeStockProductDto> datas = productMapper.queryPreTakeStockList(vo);
+    PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public List<ProductDto> getByCategoryIds(List<String> categoryIds) {
+    if (CollectionUtil.isEmpty(categoryIds)) {
+      return Collections.EMPTY_LIST;
+    }
+
+    // 根据categoryIds查询所有叶子节点
+    List<String> children = new ArrayList<>();
+    for (String categoryId : categoryIds) {
+      children.addAll(recursionMappingService
+          .getNodeChildIds(categoryId, ApplicationUtil.getBean(ProductCategoryNodeType.class)));
+    }
+
+    children.addAll(categoryIds);
+
+    children = children.stream().distinct().collect(Collectors.toList());
+
+    List<ProductDto> datas = productMapper.getByCategoryIds(children);
+    if (!CollectionUtil.isEmpty(datas)) {
+      datas.forEach(this::convertDto);
+    }
+
+    return datas;
+  }
+
+  @Override
+  public List<ProductDto> getByBrandIds(List<String> brandIds) {
+
+    if (CollectionUtil.isEmpty(brandIds)) {
+      return Collections.EMPTY_LIST;
+    }
+
+    List<ProductDto> datas = productMapper.getByBrandIds(brandIds);
+    if (!CollectionUtil.isEmpty(datas)) {
+      datas.forEach(this::convertDto);
+    }
+
+    return datas;
+  }
+
+  @Override
+  public PageResult<TakeStockSheetProductDto> queryTakeStockByCondition(Integer pageIndex,
+      Integer pageSize, String planId, String condition) {
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<TakeStockSheetProductDto> datas = productMapper
+        .queryTakeStockByCondition(planId, condition);
+    PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<TakeStockSheetProductDto> queryTakeStockList(Integer pageIndex,
+      Integer pageSize, QueryTakeStockSheetProductVo vo) {
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<TakeStockSheetProductDto> datas = productMapper.queryTakeStockList(vo);
+    PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<StockCostAdjustProductDto> queryStockCostAdjustByCondition(Integer pageIndex,
+      Integer pageSize, String scId, String condition) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<StockCostAdjustProductDto> datas = productMapper
+        .queryStockCostAdjustByCondition(scId, condition);
+    PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil
+        .convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<StockCostAdjustProductDto> queryStockCostAdjustList(Integer pageIndex,
+      Integer pageSize, QueryStockCostAdjustProductVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<StockCostAdjustProductDto> datas = productMapper.queryStockCostAdjustList(vo);
+    PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil
+        .convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  private ProductDto convertDto(ProductDto dto) {
+
+    if (dto == null) {
+      return dto;
+    }
+
+    ProductPolyDto poly = productPolyService.getById(dto.getPoly().getId());
+    dto.setPoly(poly);
+
+    return dto;
+  }
+
+  @CacheEvict(value = ProductDto.CACHE_NAME, key = "#key")
+  @Override
+  public void cleanCacheByKey(String key) {
+
+  }
 }

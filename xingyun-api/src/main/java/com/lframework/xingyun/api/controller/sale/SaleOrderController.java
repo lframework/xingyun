@@ -10,7 +10,12 @@ import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuil
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
-import com.lframework.xingyun.api.bo.sale.*;
+import com.lframework.xingyun.api.bo.sale.GetSaleOrderBo;
+import com.lframework.xingyun.api.bo.sale.PrintSaleOrderBo;
+import com.lframework.xingyun.api.bo.sale.QuerySaleOrderBo;
+import com.lframework.xingyun.api.bo.sale.QuerySaleOrderWithOutBo;
+import com.lframework.xingyun.api.bo.sale.SaleOrderWithOutBo;
+import com.lframework.xingyun.api.bo.sale.SaleProductBo;
 import com.lframework.xingyun.api.model.sale.SaleOrderExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.basedata.dto.product.info.SaleProductDto;
@@ -20,18 +25,31 @@ import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.service.sale.ISaleOrderService;
-import com.lframework.xingyun.sc.vo.sale.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import com.lframework.xingyun.sc.vo.sale.ApprovePassSaleOrderVo;
+import com.lframework.xingyun.sc.vo.sale.ApproveRefuseSaleOrderVo;
+import com.lframework.xingyun.sc.vo.sale.BatchApprovePassSaleOrderVo;
+import com.lframework.xingyun.sc.vo.sale.BatchApproveRefuseSaleOrderVo;
+import com.lframework.xingyun.sc.vo.sale.CreateSaleOrderVo;
+import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
+import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
+import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 销售订单管理
@@ -43,273 +61,283 @@ import java.util.stream.Collectors;
 @RequestMapping("/sale/order")
 public class SaleOrderController extends DefaultBaseController {
 
-    @Autowired
-    private ISaleOrderService saleOrderService;
+  @Autowired
+  private ISaleOrderService saleOrderService;
 
-    @Autowired
-    private IProductService productService;
+  @Autowired
+  private IProductService productService;
 
-    /**
-     * 打印
-     */
-    @PreAuthorize("@permission.valid('sale:order:query')")
-    @GetMapping("/print")
-    public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+  /**
+   * 打印
+   */
+  @PreAuthorize("@permission.valid('sale:order:query')")
+  @GetMapping("/print")
+  public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
 
-        SaleOrderFullDto data = saleOrderService.getDetail(id);
-        if (data == null) {
-            throw new DefaultClientException("订单不存在！");
-        }
-
-        PrintSaleOrderBo result = new PrintSaleOrderBo(data);
-
-        A4ExcelPortraitPrintBo<PrintSaleOrderBo> printResult = new A4ExcelPortraitPrintBo<>("print/sale-order.ftl", result);
-
-        return InvokeResultBuilder.success(printResult);
+    SaleOrderFullDto data = saleOrderService.getDetail(id);
+    if (data == null) {
+      throw new DefaultClientException("订单不存在！");
     }
 
-    /**
-     * 订单列表
-     */
-    @PreAuthorize("@permission.valid('sale:order:query')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QuerySaleOrderVo vo) {
+    PrintSaleOrderBo result = new PrintSaleOrderBo(data);
 
-        PageResult<SaleOrderDto> pageResult = saleOrderService.query(getPageIndex(vo), getPageSize(vo), vo);
+    A4ExcelPortraitPrintBo<PrintSaleOrderBo> printResult = new A4ExcelPortraitPrintBo<>(
+        "print/sale-order.ftl", result);
 
+    return InvokeResultBuilder.success(printResult);
+  }
+
+  /**
+   * 订单列表
+   */
+  @PreAuthorize("@permission.valid('sale:order:query')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QuerySaleOrderVo vo) {
+
+    PageResult<SaleOrderDto> pageResult = saleOrderService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
+
+    List<SaleOrderDto> datas = pageResult.getDatas();
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QuerySaleOrderBo> results = datas.stream().map(QuerySaleOrderBo::new)
+          .collect(Collectors.toList());
+
+      PageResultUtil.rebuild(pageResult, results);
+    }
+
+    return InvokeResultBuilder.success(pageResult);
+  }
+
+  @PreAuthorize("@permission.valid('sale:order:export')")
+  @PostMapping("/export")
+  public void export(@Valid QuerySaleOrderVo vo) {
+
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
+        .multipartExportXls("销售单信息", SaleOrderExportModel.class);
+
+    try {
+      int pageIndex = 1;
+      while (true) {
+        PageResult<SaleOrderDto> pageResult = saleOrderService
+            .query(pageIndex, getExportSize(), vo);
         List<SaleOrderDto> datas = pageResult.getDatas();
+        List<SaleOrderExportModel> models = datas.stream().map(SaleOrderExportModel::new)
+            .collect(Collectors.toList());
+        builder.doWrite(models);
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QuerySaleOrderBo> results = datas.stream().map(QuerySaleOrderBo::new).collect(Collectors.toList());
-
-            PageResultUtil.rebuild(pageResult, results);
+        if (!pageResult.isHasNext()) {
+          break;
         }
+        pageIndex++;
+      }
+    } finally {
+      builder.finish();
+    }
+  }
 
-        return InvokeResultBuilder.success(pageResult);
+  /**
+   * 根据关键字查询商品
+   */
+  @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
+  @GetMapping("/product/search")
+  public InvokeResult searchProducts(@NotBlank(message = "仓库ID不能为空！") String scId,
+      String condition) {
+
+    if (StringUtil.isBlank(condition)) {
+      return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
 
-    @PreAuthorize("@permission.valid('sale:order:export')")
-    @PostMapping("/export")
-    public void export(@Valid QuerySaleOrderVo vo) {
-
-        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售单信息", SaleOrderExportModel.class);
-
-        try {
-            int pageIndex = 1;
-            while (true) {
-                PageResult<SaleOrderDto> pageResult = saleOrderService.query(pageIndex, getExportSize(), vo);
-                List<SaleOrderDto> datas = pageResult.getDatas();
-                List<SaleOrderExportModel> models = datas.stream().map(SaleOrderExportModel::new)
-                        .collect(Collectors.toList());
-                builder.doWrite(models);
-
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
-            }
-        } finally {
-            builder.finish();
-        }
+    PageResult<SaleProductDto> pageResult = productService
+        .querySaleByCondition(getPageIndex(), getPageSize(), condition);
+    List<SaleProductBo> results = Collections.EMPTY_LIST;
+    List<SaleProductDto> datas = pageResult.getDatas();
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(t -> new SaleProductBo(scId, t)).collect(Collectors.toList());
     }
 
-    /**
-     * 根据关键字查询商品
-     */
-    @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
-    @GetMapping("/product/search")
-    public InvokeResult searchProducts(@NotBlank(message = "仓库ID不能为空！") String scId, String condition) {
+    return InvokeResultBuilder.success(results);
+  }
 
-        if (StringUtil.isBlank(condition)) {
-            return InvokeResultBuilder.success(Collections.EMPTY_LIST);
-        }
+  /**
+   * 查询商品列表
+   */
+  @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
+  @GetMapping("/product/list")
+  public InvokeResult queryProductList(@Valid QuerySaleProductVo vo) {
 
-        PageResult<SaleProductDto> pageResult = productService
-                .querySaleByCondition(getPageIndex(), getPageSize(), condition);
-        List<SaleProductBo> results = Collections.EMPTY_LIST;
-        List<SaleProductDto> datas = pageResult.getDatas();
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(t -> new SaleProductBo(scId, t)).collect(Collectors.toList());
-        }
+    PageResult<SaleProductDto> pageResult = productService
+        .querySaleList(getPageIndex(), getPageSize(), vo);
+    List<SaleProductBo> results = Collections.EMPTY_LIST;
+    List<SaleProductDto> datas = pageResult.getDatas();
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(t -> new SaleProductBo(vo.getScId(), t))
+          .collect(Collectors.toList());
 
-        return InvokeResultBuilder.success(results);
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 查询商品列表
-     */
-    @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
-    @GetMapping("/product/list")
-    public InvokeResult queryProductList(@Valid QuerySaleProductVo vo) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        PageResult<SaleProductDto> pageResult = productService.querySaleList(getPageIndex(), getPageSize(), vo);
-        List<SaleProductBo> results = Collections.EMPTY_LIST;
-        List<SaleProductDto> datas = pageResult.getDatas();
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(t -> new SaleProductBo(vo.getScId(), t)).collect(Collectors.toList());
+  /**
+   * 根据ID查询
+   */
+  @PreAuthorize("@permission.valid('sale:order:query')")
+  @GetMapping
+  public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
 
-            PageResultUtil.rebuild(pageResult, results);
-        }
+    SaleOrderFullDto data = saleOrderService.getDetail(id);
 
-        return InvokeResultBuilder.success(pageResult);
+    GetSaleOrderBo result = new GetSaleOrderBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 根据ID查询（出库业务）
+   */
+  @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
+  @GetMapping("/out")
+  public InvokeResult getWithOut(@NotBlank(message = "订单ID不能为空！") String id) {
+
+    SaleOrderWithOutDto data = saleOrderService.getWithOut(id);
+    SaleOrderWithOutBo result = new SaleOrderWithOutBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 查询列表（出库业务）
+   */
+  @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
+  @GetMapping("/query/out")
+  public InvokeResult getWithOut(@Valid QuerySaleOrderWithOutVo vo) {
+
+    PageResult<SaleOrderDto> pageResult = saleOrderService
+        .queryWithOut(getPageIndex(vo), getPageSize(vo), vo);
+    List<SaleOrderDto> datas = pageResult.getDatas();
+
+    List<QuerySaleOrderWithOutBo> results = Collections.EMPTY_LIST;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(QuerySaleOrderWithOutBo::new).collect(Collectors.toList());
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 根据ID查询
-     */
-    @PreAuthorize("@permission.valid('sale:order:query')")
-    @GetMapping
-    public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        SaleOrderFullDto data = saleOrderService.getDetail(id);
+  /**
+   * 创建订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:add')")
+  @PostMapping
+  public InvokeResult create(@RequestBody @Valid CreateSaleOrderVo vo) {
 
-        GetSaleOrderBo result = new GetSaleOrderBo(data);
+    vo.validate();
 
-        return InvokeResultBuilder.success(result);
-    }
+    String id = saleOrderService.create(vo);
 
-    /**
-     * 根据ID查询（出库业务）
-     */
-    @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
-    @GetMapping("/out")
-    public InvokeResult getWithOut(@NotBlank(message = "订单ID不能为空！") String id) {
+    return InvokeResultBuilder.success(id);
+  }
 
-        SaleOrderWithOutDto data = saleOrderService.getWithOut(id);
-        SaleOrderWithOutBo result = new SaleOrderWithOutBo(data);
+  /**
+   * 修改订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:modify')")
+  @PutMapping
+  public InvokeResult update(@RequestBody @Valid UpdateSaleOrderVo vo) {
 
-        return InvokeResultBuilder.success(result);
-    }
+    vo.validate();
 
-    /**
-     * 查询列表（出库业务）
-     */
-    @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
-    @GetMapping("/query/out")
-    public InvokeResult getWithOut(@Valid QuerySaleOrderWithOutVo vo) {
+    saleOrderService.update(vo);
 
-        PageResult<SaleOrderDto> pageResult = saleOrderService.queryWithOut(getPageIndex(vo), getPageSize(vo), vo);
-        List<SaleOrderDto> datas = pageResult.getDatas();
+    return InvokeResultBuilder.success();
+  }
 
-        List<QuerySaleOrderWithOutBo> results = Collections.EMPTY_LIST;
+  /**
+   * 审核通过订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:approve')")
+  @PatchMapping("/approve/pass")
+  public InvokeResult approvePass(@RequestBody @Valid ApprovePassSaleOrderVo vo) {
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(QuerySaleOrderWithOutBo::new).collect(Collectors.toList());
-            PageResultUtil.rebuild(pageResult, results);
-        }
+    saleOrderService.approvePass(vo);
 
-        return InvokeResultBuilder.success(pageResult);
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 创建订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:add')")
-    @PostMapping
-    public InvokeResult create(@RequestBody @Valid CreateSaleOrderVo vo) {
+  /**
+   * 批量审核通过订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:approve')")
+  @PatchMapping("/approve/pass/batch")
+  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSaleOrderVo vo) {
 
-        vo.validate();
+    saleOrderService.batchApprovePass(vo);
 
-        String id = saleOrderService.create(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success(id);
-    }
+  /**
+   * 直接审核通过订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:approve')")
+  @PostMapping("/approve/pass/direct")
+  public InvokeResult directApprovePass(@RequestBody @Valid CreateSaleOrderVo vo) {
 
-    /**
-     * 修改订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:modify')")
-    @PutMapping
-    public InvokeResult update(@RequestBody @Valid UpdateSaleOrderVo vo) {
+    saleOrderService.directApprovePass(vo);
 
-        vo.validate();
+    return InvokeResultBuilder.success();
+  }
 
-        saleOrderService.update(vo);
+  /**
+   * 审核拒绝订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:approve')")
+  @PatchMapping("/approve/refuse")
+  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSaleOrderVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    saleOrderService.approveRefuse(vo);
 
-    /**
-     * 审核通过订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:approve')")
-    @PatchMapping("/approve/pass")
-    public InvokeResult approvePass(@RequestBody @Valid ApprovePassSaleOrderVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        saleOrderService.approvePass(vo);
+  /**
+   * 批量审核拒绝订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:approve')")
+  @PatchMapping("/approve/refuse/batch")
+  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSaleOrderVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    saleOrderService.batchApproveRefuse(vo);
 
-    /**
-     * 批量审核通过订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:approve')")
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSaleOrderVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        saleOrderService.batchApprovePass(vo);
+  /**
+   * 删除订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:delete')")
+  @DeleteMapping
+  public InvokeResult deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
 
-        return InvokeResultBuilder.success();
-    }
+    saleOrderService.deleteById(id);
 
-    /**
-     * 直接审核通过订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:approve')")
-    @PostMapping("/approve/pass/direct")
-    public InvokeResult directApprovePass(@RequestBody @Valid CreateSaleOrderVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        saleOrderService.directApprovePass(vo);
+  /**
+   * 批量删除订单
+   */
+  @PreAuthorize("@permission.valid('sale:order:delete')")
+  @DeleteMapping("/batch")
+  public InvokeResult deleteByIds(
+      @RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
 
-        return InvokeResultBuilder.success();
-    }
+    saleOrderService.deleteByIds(ids);
 
-    /**
-     * 审核拒绝订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:approve')")
-    @PatchMapping("/approve/refuse")
-    public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSaleOrderVo vo) {
-
-        saleOrderService.approveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量审核拒绝订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:approve')")
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSaleOrderVo vo) {
-
-        saleOrderService.batchApproveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 删除订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:delete')")
-    @DeleteMapping
-    public InvokeResult deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
-
-        saleOrderService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除订单
-     */
-    @PreAuthorize("@permission.valid('sale:order:delete')")
-    @DeleteMapping("/batch")
-    public InvokeResult deleteByIds(@RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
-
-        saleOrderService.deleteByIds(ids);
-
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 }

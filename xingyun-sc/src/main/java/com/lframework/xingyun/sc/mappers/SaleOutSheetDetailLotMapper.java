@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author zmj
@@ -15,26 +15,29 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SaleOutSheetDetailLotMapper extends BaseMapper<SaleOutSheetDetailLot> {
 
-    /**
-     * 根据ID查询
-     * @param id
-     * @return
-     */
-    SaleOutSheetDetailLotDto getById(String id);
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  SaleOutSheetDetailLotDto getById(String id);
 
-    /**
-     * 增加退货数量
-     * @param id
-     * @param num
-     * @return
-     */
-    int addReturnNum(@Param("id") String id, @Param("num") Integer num);
+  /**
+   * 增加退货数量
+   *
+   * @param id
+   * @param num
+   * @return
+   */
+  int addReturnNum(@Param("id") String id, @Param("num") Integer num);
 
-    /**
-     * 减少退货数量
-     * @param id
-     * @param num
-     * @return
-     */
-    int subReturnNum(@Param("id") String id, @Param("num") Integer num);
+  /**
+   * 减少退货数量
+   *
+   * @param id
+   * @param num
+   * @return
+   */
+  int subReturnNum(@Param("id") String id, @Param("num") Integer num);
 }

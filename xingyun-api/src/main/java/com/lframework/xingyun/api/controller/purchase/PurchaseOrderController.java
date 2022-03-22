@@ -10,7 +10,12 @@ import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuil
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
-import com.lframework.xingyun.api.bo.purchase.*;
+import com.lframework.xingyun.api.bo.purchase.GetPurchaseOrderBo;
+import com.lframework.xingyun.api.bo.purchase.PrintPurchaseOrderBo;
+import com.lframework.xingyun.api.bo.purchase.PurchaseOrderWithReceiveBo;
+import com.lframework.xingyun.api.bo.purchase.PurchaseProductBo;
+import com.lframework.xingyun.api.bo.purchase.QueryPurchaseOrderBo;
+import com.lframework.xingyun.api.bo.purchase.QueryPurchaseOrderWithReceiveBo;
 import com.lframework.xingyun.api.model.purchase.PurchaseOrderExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.basedata.dto.product.info.PurchaseProductDto;
@@ -20,18 +25,31 @@ import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
-import com.lframework.xingyun.sc.vo.purchase.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
+import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
+import com.lframework.xingyun.sc.vo.purchase.BatchApprovePassPurchaseOrderVo;
+import com.lframework.xingyun.sc.vo.purchase.BatchApproveRefusePurchaseOrderVo;
+import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
+import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 采购订单管理
@@ -43,289 +61,299 @@ import java.util.stream.Collectors;
 @RequestMapping("/purchase/order")
 public class PurchaseOrderController extends DefaultBaseController {
 
-    @Autowired
-    private IPurchaseOrderService purchaseOrderService;
+  @Autowired
+  private IPurchaseOrderService purchaseOrderService;
 
-    @Autowired
-    private IProductService productService;
+  @Autowired
+  private IProductService productService;
 
-    /**
-     * 打印
-     * @param id
-     * @return
-     */
-    @PreAuthorize("@permission.valid('purchase:order:query')")
-    @GetMapping("/print")
-    public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
-        PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
-        if (data == null) {
-            throw new DefaultClientException("订单不存在！");
-        }
-
-        PrintPurchaseOrderBo result = new PrintPurchaseOrderBo(data);
-
-        A4ExcelPortraitPrintBo<PrintPurchaseOrderBo> printResult = new A4ExcelPortraitPrintBo<>("print/purchase-order.ftl", result);
-
-        return InvokeResultBuilder.success(printResult);
+  /**
+   * 打印
+   *
+   * @param id
+   * @return
+   */
+  @PreAuthorize("@permission.valid('purchase:order:query')")
+  @GetMapping("/print")
+  public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+    PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
+    if (data == null) {
+      throw new DefaultClientException("订单不存在！");
     }
 
-    /**
-     * 订单列表
-     */
-    @PreAuthorize("@permission.valid('purchase:order:query')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QueryPurchaseOrderVo vo) {
+    PrintPurchaseOrderBo result = new PrintPurchaseOrderBo(data);
 
-        PageResult<PurchaseOrderDto> pageResult = purchaseOrderService.query(getPageIndex(vo), getPageSize(vo), vo);
+    A4ExcelPortraitPrintBo<PrintPurchaseOrderBo> printResult = new A4ExcelPortraitPrintBo<>(
+        "print/purchase-order.ftl", result);
 
-        List<PurchaseOrderDto> datas = pageResult.getDatas();
+    return InvokeResultBuilder.success(printResult);
+  }
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QueryPurchaseOrderBo> results = datas.stream().map(QueryPurchaseOrderBo::new)
-                    .collect(Collectors.toList());
+  /**
+   * 订单列表
+   */
+  @PreAuthorize("@permission.valid('purchase:order:query')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QueryPurchaseOrderVo vo) {
 
-            PageResultUtil.rebuild(pageResult, results);
-        }
+    PageResult<PurchaseOrderDto> pageResult = purchaseOrderService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
-        return InvokeResultBuilder.success(pageResult);
+    List<PurchaseOrderDto> datas = pageResult.getDatas();
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QueryPurchaseOrderBo> results = datas.stream().map(QueryPurchaseOrderBo::new)
+          .collect(Collectors.toList());
+
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    @PreAuthorize("@permission.valid('purchase:order:export')")
-    @PostMapping("/export")
-    public void export(@Valid QueryPurchaseOrderVo vo) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-                .multipartExportXls("采购单信息", PurchaseOrderExportModel.class);
+  @PreAuthorize("@permission.valid('purchase:order:export')")
+  @PostMapping("/export")
+  public void export(@Valid QueryPurchaseOrderVo vo) {
 
-        try {
-            int pageIndex = 1;
-            while (true) {
-                PageResult<PurchaseOrderDto> pageResult = purchaseOrderService.query(pageIndex, getExportSize(), vo);
-                List<PurchaseOrderDto> datas = pageResult.getDatas();
-                List<PurchaseOrderExportModel> models = datas.stream().map(PurchaseOrderExportModel::new)
-                        .collect(Collectors.toList());
-                builder.doWrite(models);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
+        .multipartExportXls("采购单信息", PurchaseOrderExportModel.class);
 
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
-            }
-        } finally {
-            builder.finish();
-        }
-    }
-
-    /**
-     * 根据关键字查询商品
-     */
-    @PreAuthorize("@permission.valid('purchase:order:add', 'purchase:order:modify', 'purchase:receive:add', 'purchase:receive:modify', 'purchase:return:add', 'purchase:return:modify')")
-    @GetMapping("/product/search")
-    public InvokeResult searchProducts(@NotBlank(message = "仓库ID不能为空！") String scId, String condition) {
-
-        if (StringUtil.isBlank(condition)) {
-            return InvokeResultBuilder.success(Collections.EMPTY_LIST);
-        }
-
-        PageResult<PurchaseProductDto> pageResult = productService
-                .queryPurchaseByCondition(getPageIndex(), getPageSize(), condition);
-        List<PurchaseProductBo> results = Collections.EMPTY_LIST;
-        List<PurchaseProductDto> datas = pageResult.getDatas();
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(t -> new PurchaseProductBo(scId, t)).collect(Collectors.toList());
-        }
-
-        return InvokeResultBuilder.success(results);
-    }
-
-    /**
-     * 查询商品列表
-     */
-    @PreAuthorize("@permission.valid('purchase:order:add', 'purchase:order:modify', 'purchase:receive:add', 'purchase:receive:modify', 'purchase:return:add', 'purchase:return:modify')")
-    @GetMapping("/product/list")
-    public InvokeResult queryProductList(@Valid QueryPurchaseProductVo vo) {
-
-        PageResult<PurchaseProductDto> pageResult = productService.queryPurchaseList(getPageIndex(), getPageSize(), vo);
-        List<PurchaseProductBo> results = Collections.EMPTY_LIST;
-        List<PurchaseProductDto> datas = pageResult.getDatas();
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(t -> new PurchaseProductBo(vo.getScId(), t)).collect(Collectors.toList());
-
-            PageResultUtil.rebuild(pageResult, results);
-        }
-
-        return InvokeResultBuilder.success(pageResult);
-    }
-
-    /**
-     * 根据ID查询
-     */
-    @PreAuthorize("@permission.valid('purchase:order:query')")
-    @GetMapping
-    public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
-
-        PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
-
-        GetPurchaseOrderBo result = new GetPurchaseOrderBo(data);
-
-        return InvokeResultBuilder.success(result);
-    }
-
-    /**
-     * 根据ID查询（收货业务）
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
-    @GetMapping("/receive")
-    public InvokeResult getWithReceive(@NotBlank(message = "订单ID不能为空！") String id) {
-
-        PurchaseOrderWithReceiveDto data = purchaseOrderService.getWithReceive(id);
-        PurchaseOrderWithReceiveBo result = new PurchaseOrderWithReceiveBo(data);
-
-        return InvokeResultBuilder.success(result);
-    }
-
-    /**
-     * 查询列表（收货业务）
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
-    @GetMapping("/query/receive")
-    public InvokeResult getWithReceive(@Valid QueryPurchaseOrderWithRecevieVo vo) {
-
+    try {
+      int pageIndex = 1;
+      while (true) {
         PageResult<PurchaseOrderDto> pageResult = purchaseOrderService
-                .queryWithReceive(getPageIndex(vo), getPageSize(vo), vo);
+            .query(pageIndex, getExportSize(), vo);
         List<PurchaseOrderDto> datas = pageResult.getDatas();
+        List<PurchaseOrderExportModel> models = datas.stream().map(PurchaseOrderExportModel::new)
+            .collect(Collectors.toList());
+        builder.doWrite(models);
 
-        List<QueryPurchaseOrderWithReceiveBo> results = Collections.EMPTY_LIST;
-
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(QueryPurchaseOrderWithReceiveBo::new).collect(Collectors.toList());
-            PageResultUtil.rebuild(pageResult, results);
+        if (!pageResult.isHasNext()) {
+          break;
         }
+        pageIndex++;
+      }
+    } finally {
+      builder.finish();
+    }
+  }
 
-        return InvokeResultBuilder.success(pageResult);
+  /**
+   * 根据关键字查询商品
+   */
+  @PreAuthorize("@permission.valid('purchase:order:add', 'purchase:order:modify', 'purchase:receive:add', 'purchase:receive:modify', 'purchase:return:add', 'purchase:return:modify')")
+  @GetMapping("/product/search")
+  public InvokeResult searchProducts(@NotBlank(message = "仓库ID不能为空！") String scId,
+      String condition) {
+
+    if (StringUtil.isBlank(condition)) {
+      return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
 
-    /**
-     * 创建订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:add')")
-    @PostMapping
-    public InvokeResult create(@RequestBody @Valid CreatePurchaseOrderVo vo) {
-
-        vo.validate();
-
-        String id = purchaseOrderService.create(vo);
-
-        return InvokeResultBuilder.success(id);
+    PageResult<PurchaseProductDto> pageResult = productService
+        .queryPurchaseByCondition(getPageIndex(), getPageSize(), condition);
+    List<PurchaseProductBo> results = Collections.EMPTY_LIST;
+    List<PurchaseProductDto> datas = pageResult.getDatas();
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(t -> new PurchaseProductBo(scId, t))
+          .collect(Collectors.toList());
     }
 
-    /**
-     * 修改订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:modify')")
-    @PutMapping
-    public InvokeResult update(@RequestBody @Valid UpdatePurchaseOrderVo vo) {
+    return InvokeResultBuilder.success(results);
+  }
 
-        vo.validate();
+  /**
+   * 查询商品列表
+   */
+  @PreAuthorize("@permission.valid('purchase:order:add', 'purchase:order:modify', 'purchase:receive:add', 'purchase:receive:modify', 'purchase:return:add', 'purchase:return:modify')")
+  @GetMapping("/product/list")
+  public InvokeResult queryProductList(@Valid QueryPurchaseProductVo vo) {
 
-        purchaseOrderService.update(vo);
+    PageResult<PurchaseProductDto> pageResult = productService
+        .queryPurchaseList(getPageIndex(), getPageSize(), vo);
+    List<PurchaseProductBo> results = Collections.EMPTY_LIST;
+    List<PurchaseProductDto> datas = pageResult.getDatas();
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(t -> new PurchaseProductBo(vo.getScId(), t))
+          .collect(Collectors.toList());
 
-        return InvokeResultBuilder.success();
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 审核通过订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:approve')")
-    @PatchMapping("/approve/pass")
-    public InvokeResult approvePass(@RequestBody @Valid ApprovePassPurchaseOrderVo vo) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        purchaseOrderService.approvePass(vo);
+  /**
+   * 根据ID查询
+   */
+  @PreAuthorize("@permission.valid('purchase:order:query')")
+  @GetMapping
+  public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
 
-        return InvokeResultBuilder.success();
+    PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
+
+    GetPurchaseOrderBo result = new GetPurchaseOrderBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 根据ID查询（收货业务）
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
+  @GetMapping("/receive")
+  public InvokeResult getWithReceive(@NotBlank(message = "订单ID不能为空！") String id) {
+
+    PurchaseOrderWithReceiveDto data = purchaseOrderService.getWithReceive(id);
+    PurchaseOrderWithReceiveBo result = new PurchaseOrderWithReceiveBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 查询列表（收货业务）
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
+  @GetMapping("/query/receive")
+  public InvokeResult getWithReceive(@Valid QueryPurchaseOrderWithRecevieVo vo) {
+
+    PageResult<PurchaseOrderDto> pageResult = purchaseOrderService
+        .queryWithReceive(getPageIndex(vo), getPageSize(vo), vo);
+    List<PurchaseOrderDto> datas = pageResult.getDatas();
+
+    List<QueryPurchaseOrderWithReceiveBo> results = Collections.EMPTY_LIST;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(QueryPurchaseOrderWithReceiveBo::new)
+          .collect(Collectors.toList());
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 批量审核通过订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:approve')")
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassPurchaseOrderVo vo) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        purchaseOrderService.batchApprovePass(vo);
+  /**
+   * 创建订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:add')")
+  @PostMapping
+  public InvokeResult create(@RequestBody @Valid CreatePurchaseOrderVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    vo.validate();
 
-    /**
-     * 直接审核通过订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:approve')")
-    @PostMapping("/approve/pass/direct")
-    public InvokeResult directApprovePass(@RequestBody @Valid CreatePurchaseOrderVo vo) {
+    String id = purchaseOrderService.create(vo);
 
-        purchaseOrderService.directApprovePass(vo);
+    return InvokeResultBuilder.success(id);
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 修改订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:modify')")
+  @PutMapping
+  public InvokeResult update(@RequestBody @Valid UpdatePurchaseOrderVo vo) {
 
-    /**
-     * 审核拒绝订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:approve')")
-    @PatchMapping("/approve/refuse")
-    public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefusePurchaseOrderVo vo) {
+    vo.validate();
 
-        purchaseOrderService.approveRefuse(vo);
+    purchaseOrderService.update(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 批量审核拒绝订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:approve')")
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefusePurchaseOrderVo vo) {
+  /**
+   * 审核通过订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:approve')")
+  @PatchMapping("/approve/pass")
+  public InvokeResult approvePass(@RequestBody @Valid ApprovePassPurchaseOrderVo vo) {
 
-        purchaseOrderService.batchApproveRefuse(vo);
+    purchaseOrderService.approvePass(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 删除订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:delete')")
-    @DeleteMapping
-    public InvokeResult deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
+  /**
+   * 批量审核通过订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:approve')")
+  @PatchMapping("/approve/pass/batch")
+  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassPurchaseOrderVo vo) {
 
-        purchaseOrderService.deleteById(id);
+    purchaseOrderService.batchApprovePass(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 批量删除订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:delete')")
-    @DeleteMapping("/batch")
-    public InvokeResult deleteByIds(@RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
+  /**
+   * 直接审核通过订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:approve')")
+  @PostMapping("/approve/pass/direct")
+  public InvokeResult directApprovePass(@RequestBody @Valid CreatePurchaseOrderVo vo) {
 
-        purchaseOrderService.deleteByIds(ids);
+    purchaseOrderService.directApprovePass(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 取消审核订单
-     */
-    @PreAuthorize("@permission.valid('purchase:order:approve')")
-    @PatchMapping("/approve/cancel")
-    public InvokeResult cancelApprovePass(@NotBlank(message = "订单ID不能为空！") String id) {
+  /**
+   * 审核拒绝订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:approve')")
+  @PatchMapping("/approve/refuse")
+  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefusePurchaseOrderVo vo) {
 
-        purchaseOrderService.cancelApprovePass(id);
+    purchaseOrderService.approveRefuse(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 批量审核拒绝订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:approve')")
+  @PatchMapping("/approve/refuse/batch")
+  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefusePurchaseOrderVo vo) {
+
+    purchaseOrderService.batchApproveRefuse(vo);
+
+    return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 删除订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:delete')")
+  @DeleteMapping
+  public InvokeResult deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
+
+    purchaseOrderService.deleteById(id);
+
+    return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 批量删除订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:delete')")
+  @DeleteMapping("/batch")
+  public InvokeResult deleteByIds(
+      @RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
+
+    purchaseOrderService.deleteByIds(ids);
+
+    return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 取消审核订单
+   */
+  @PreAuthorize("@permission.valid('purchase:order:approve')")
+  @PatchMapping("/approve/cancel")
+  public InvokeResult cancelApprovePass(@NotBlank(message = "订单ID不能为空！") String id) {
+
+    purchaseOrderService.cancelApprovePass(id);
+
+    return InvokeResultBuilder.success();
+  }
 }

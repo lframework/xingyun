@@ -14,16 +14,21 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.vo.storecenter.CreateStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.UpdateStoreCenterVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 仓库管理
@@ -35,89 +40,93 @@ import java.util.stream.Collectors;
 @RequestMapping("/basedata/storecenter")
 public class StoreCenterController extends DefaultBaseController {
 
-    @Autowired
-    private IStoreCenterService storeCenterService;
+  @Autowired
+  private IStoreCenterService storeCenterService;
 
-    /**
-     * 仓库列表
-     */
-    @PreAuthorize("@permission.valid('base-data:store-center:query','base-data:store-center:add','base-data:store-center:modify')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QueryStoreCenterVo vo) {
+  /**
+   * 仓库列表
+   */
+  @PreAuthorize("@permission.valid('base-data:store-center:query','base-data:store-center:add','base-data:store-center:modify')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QueryStoreCenterVo vo) {
 
-        PageResult<StoreCenterDto> pageResult = storeCenterService.query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<StoreCenterDto> pageResult = storeCenterService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
 
-        List<StoreCenterDto> datas = pageResult.getDatas();
+    List<StoreCenterDto> datas = pageResult.getDatas();
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QueryStoreCenterBo> results = datas.stream().map(QueryStoreCenterBo::new).collect(Collectors.toList());
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QueryStoreCenterBo> results = datas.stream().map(QueryStoreCenterBo::new)
+          .collect(Collectors.toList());
 
-            PageResultUtil.rebuild(pageResult, results);
-        }
-
-        return InvokeResultBuilder.success(pageResult);
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 查询仓库
-     */
-    @PreAuthorize("@permission.valid('base-data:store-center:query','base-data:store-center:add','base-data:store-center:modify')")
-    @GetMapping
-    public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        StoreCenterDto data = storeCenterService.getById(id);
-        if (data == null) {
-            throw new DefaultClientException("仓库不存在！");
-        }
+  /**
+   * 查询仓库
+   */
+  @PreAuthorize("@permission.valid('base-data:store-center:query','base-data:store-center:add','base-data:store-center:modify')")
+  @GetMapping
+  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
 
-        GetStoreCenterBo result = new GetStoreCenterBo(data);
-
-        return InvokeResultBuilder.success(result);
+    StoreCenterDto data = storeCenterService.getById(id);
+    if (data == null) {
+      throw new DefaultClientException("仓库不存在！");
     }
 
-    /**
-     * 批量停用仓库
-     */
-    @PreAuthorize("@permission.valid('base-data:store-center:modify')")
-    @PatchMapping("/unable/batch")
-    public InvokeResult batchUnable(@NotEmpty(message = "请选择需要停用的仓库！") @RequestBody List<String> ids) {
+    GetStoreCenterBo result = new GetStoreCenterBo(data);
 
-        storeCenterService.batchUnable(ids);
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success(result);
+  }
 
-    /**
-     * 批量启用仓库
-     */
-    @PreAuthorize("@permission.valid('base-data:store-center:modify')")
-    @PatchMapping("/enable/batch")
-    public InvokeResult batchEnable(@NotEmpty(message = "请选择需要启用的仓库！") @RequestBody List<String> ids) {
+  /**
+   * 批量停用仓库
+   */
+  @PreAuthorize("@permission.valid('base-data:store-center:modify')")
+  @PatchMapping("/unable/batch")
+  public InvokeResult batchUnable(
+      @NotEmpty(message = "请选择需要停用的仓库！") @RequestBody List<String> ids) {
 
-        storeCenterService.batchEnable(ids);
-        return InvokeResultBuilder.success();
-    }
+    storeCenterService.batchUnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 新增仓库
-     */
-    @PreAuthorize("@permission.valid('base-data:store-center:add')")
-    @PostMapping
-    public InvokeResult create(@Valid CreateStoreCenterVo vo) {
+  /**
+   * 批量启用仓库
+   */
+  @PreAuthorize("@permission.valid('base-data:store-center:modify')")
+  @PatchMapping("/enable/batch")
+  public InvokeResult batchEnable(
+      @NotEmpty(message = "请选择需要启用的仓库！") @RequestBody List<String> ids) {
 
-        storeCenterService.create(vo);
+    storeCenterService.batchEnable(ids);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 新增仓库
+   */
+  @PreAuthorize("@permission.valid('base-data:store-center:add')")
+  @PostMapping
+  public InvokeResult create(@Valid CreateStoreCenterVo vo) {
 
-    /**
-     * 修改仓库
-     */
-    @PreAuthorize("@permission.valid('base-data:store-center:modify')")
-    @PutMapping
-    public InvokeResult update(@Valid UpdateStoreCenterVo vo) {
+    storeCenterService.create(vo);
 
-        storeCenterService.update(vo);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success();
-    }
+  /**
+   * 修改仓库
+   */
+  @PreAuthorize("@permission.valid('base-data:store-center:modify')")
+  @PutMapping
+  public InvokeResult update(@Valid UpdateStoreCenterVo vo) {
+
+    storeCenterService.update(vo);
+
+    return InvokeResultBuilder.success();
+  }
 }

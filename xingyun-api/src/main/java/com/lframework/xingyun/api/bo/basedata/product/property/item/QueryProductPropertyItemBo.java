@@ -9,37 +9,37 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class QueryProductPropertyItemBo extends BaseBo<ProductPropertyItemDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 编号
-     */
-    private String code;
+  /**
+   * 编号
+   */
+  private String code;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    public QueryProductPropertyItemBo() {
+  public QueryProductPropertyItemBo() {
 
-    }
+  }
 
-    public QueryProductPropertyItemBo(ProductPropertyItemDto dto) {
+  public QueryProductPropertyItemBo(ProductPropertyItemDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

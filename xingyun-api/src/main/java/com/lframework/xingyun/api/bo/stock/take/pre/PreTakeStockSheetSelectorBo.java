@@ -6,63 +6,62 @@ import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PreTakeStockSheetSelectorBo extends BaseBo<PreTakeStockSheetSelectorDto> {
-    /**
-     * ID
-     */
-    private String id;
 
-    /**
-     * 业务单据号
-     */
-    private String code;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 仓库编号
-     */
-    private String scCode;
+  /**
+   * 业务单据号
+   */
+  private String code;
 
-    /**
-     * 仓库名称
-     */
-    private String scName;
+  /**
+   * 仓库编号
+   */
+  private String scCode;
 
-    /**
-     * 盘点状态
-     */
-    private Integer takeStatus;
+  /**
+   * 仓库名称
+   */
+  private String scName;
 
-    /**
-     * 修改时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime updateTime;
+  /**
+   * 盘点状态
+   */
+  private Integer takeStatus;
 
-    public PreTakeStockSheetSelectorBo(PreTakeStockSheetSelectorDto dto) {
-        super(dto);
-    }
+  /**
+   * 修改时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime updateTime;
 
-    @Override
-    public <A> BaseBo<PreTakeStockSheetSelectorDto> convert(PreTakeStockSheetSelectorDto dto) {
-        return super.convert(dto, PreTakeStockSheetSelectorBo::getTakeStatus);
-    }
+  public PreTakeStockSheetSelectorBo(PreTakeStockSheetSelectorDto dto) {
+    super(dto);
+  }
 
-    @Override
-    protected void afterInit(PreTakeStockSheetSelectorDto dto) {
-        this.takeStatus = dto.getTakeStatus().getCode();
+  @Override
+  public <A> BaseBo<PreTakeStockSheetSelectorDto> convert(PreTakeStockSheetSelectorDto dto) {
+    return super.convert(dto, PreTakeStockSheetSelectorBo::getTakeStatus);
+  }
 
-        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-        StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-        this.scCode = sc.getCode();
-        this.scName = sc.getName();
-    }
+  @Override
+  protected void afterInit(PreTakeStockSheetSelectorDto dto) {
+    this.takeStatus = dto.getTakeStatus().getCode();
+
+    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
+    this.scCode = sc.getCode();
+    this.scName = sc.getName();
+  }
 }

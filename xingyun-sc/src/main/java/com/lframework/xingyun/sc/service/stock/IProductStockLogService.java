@@ -7,40 +7,43 @@ import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
-
 import java.util.List;
 
 public interface IProductStockLogService extends BaseService {
 
-    /**
-     * 查询列表
-     * @param pageIndex
-     * @param pageSize
-     * @param vo
-     * @return
-     */
-    PageResult<ProductStockLogDto> query(Integer pageIndex, Integer pageSize, QueryProductStockLogVo vo);
+  /**
+   * 查询列表
+   *
+   * @param pageIndex
+   * @param pageSize
+   * @param vo
+   * @return
+   */
+  PageResult<ProductStockLogDto> query(Integer pageIndex, Integer pageSize,
+      QueryProductStockLogVo vo);
 
-    /**
-     * 查询列表
-     * @param vo
-     * @return
-     */
-    List<ProductStockLogDto> query(QueryProductStockLogVo vo);
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductStockLogDto> query(QueryProductStockLogVo vo);
 
-    /**
-     * 添加入库记录
-     */
-    void addLogWithAddStock(AddLogWithAddStockVo vo);
+  /**
+   * 添加入库记录
+   */
+  void addLogWithAddStock(AddLogWithAddStockVo vo);
 
-    /**
-     * 添加出库记录
-     */
-    void addLogWithSubStock(AddLogWithSubStockVo vo);
+  /**
+   * 添加出库记录
+   */
+  void addLogWithSubStock(AddLogWithSubStockVo vo);
 
-    /**
-     * 添加库存成本调整记录
-     * @param vo
-     */
-    void addLogWithStockCostAdjust(AddLogWithStockCostAdjustVo vo);
+  /**
+   * 添加库存成本调整记录
+   *
+   * @param vo
+   */
+  void addLogWithStockCostAdjust(AddLogWithStockCostAdjustVo vo);
 }

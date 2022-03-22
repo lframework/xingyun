@@ -11,144 +11,144 @@ import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDto;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class QueryRetailOutSheetBo extends BaseBo<RetailOutSheetDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 单号
-     */
-    private String code;
+  /**
+   * 单号
+   */
+  private String code;
 
-    /**
-     * 仓库编号
-     */
-    private String scCode;
+  /**
+   * 仓库编号
+   */
+  private String scCode;
 
-    /**
-     * 仓库名称
-     */
-    private String scName;
+  /**
+   * 仓库名称
+   */
+  private String scName;
 
-    /**
-     * 会员编号
-     */
-    private String memberCode;
+  /**
+   * 会员编号
+   */
+  private String memberCode;
 
-    /**
-     * 会员名称
-     */
-    private String memberName;
+  /**
+   * 会员名称
+   */
+  private String memberName;
 
-    /**
-     * 销售员姓名
-     */
-    private String salerName;
+  /**
+   * 销售员姓名
+   */
+  private String salerName;
 
-    /**
-     * 销售数量
-     */
-    private Integer totalNum;
+  /**
+   * 销售数量
+   */
+  private Integer totalNum;
 
-    /**
-     * 赠品数量
-     */
-    private Integer totalGiftNum;
+  /**
+   * 赠品数量
+   */
+  private Integer totalGiftNum;
 
-    /**
-     * 销售金额
-     */
-    private BigDecimal totalAmount;
+  /**
+   * 销售金额
+   */
+  private BigDecimal totalAmount;
 
-    /**
-     * 备注
-     */
-    private String description;
+  /**
+   * 备注
+   */
+  private String description;
 
-    /**
-     * 创建人
-     */
-    private String createBy;
+  /**
+   * 创建人
+   */
+  private String createBy;
 
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime createTime;
+  /**
+   * 创建时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime createTime;
 
-    /**
-     * 审核人
-     */
-    private String approveBy;
+  /**
+   * 审核人
+   */
+  private String approveBy;
 
-    /**
-     * 审核时间
-     */
-    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-    private LocalDateTime approveTime;
+  /**
+   * 审核时间
+   */
+  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+  private LocalDateTime approveTime;
 
-    /**
-     * 状态
-     */
-    private Integer status;
+  /**
+   * 状态
+   */
+  private Integer status;
 
-    /**
-     * 拒绝原因
-     */
-    private String refuseReason;
+  /**
+   * 拒绝原因
+   */
+  private String refuseReason;
 
-    /**
-     * 结算状态
-     */
-    private Integer settleStatus;
+  /**
+   * 结算状态
+   */
+  private Integer settleStatus;
 
-    public QueryRetailOutSheetBo(RetailOutSheetDto dto) {
+  public QueryRetailOutSheetBo(RetailOutSheetDto dto) {
 
-        super(dto);
+    super(dto);
+  }
+
+  @Override
+  public BaseBo<RetailOutSheetDto> convert(RetailOutSheetDto dto) {
+
+    return super
+        .convert(dto, QueryRetailOutSheetBo::getStatus, QueryRetailOutSheetBo::getSettleStatus);
+  }
+
+  @Override
+  protected void afterInit(RetailOutSheetDto dto) {
+
+    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
+    this.scCode = sc.getCode();
+    this.scName = sc.getName();
+
+    IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
+    MemberDto member = memberService.getById(dto.getMemberId());
+    this.memberCode = member.getCode();
+    this.memberName = member.getName();
+
+    IUserService userService = ApplicationUtil.getBean(IUserService.class);
+    if (!StringUtil.isBlank(dto.getSalerId())) {
+      this.salerName = userService.getById(dto.getSalerId()).getName();
     }
 
-    @Override
-    public BaseBo<RetailOutSheetDto> convert(RetailOutSheetDto dto) {
+    this.createBy = userService.getById(dto.getCreateBy()).getName();
 
-        return super.convert(dto, QueryRetailOutSheetBo::getStatus, QueryRetailOutSheetBo::getSettleStatus);
+    if (!StringUtil.isBlank(dto.getApproveBy())) {
+      this.approveBy = userService.getById(dto.getApproveBy()).getName();
     }
 
-    @Override
-    protected void afterInit(RetailOutSheetDto dto) {
-
-        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-        StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-        this.scCode = sc.getCode();
-        this.scName = sc.getName();
-
-        IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
-        MemberDto member = memberService.getById(dto.getMemberId());
-        this.memberCode = member.getCode();
-        this.memberName = member.getName();
-
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        if (!StringUtil.isBlank(dto.getSalerId())) {
-            this.salerName = userService.getById(dto.getSalerId()).getName();
-        }
-
-        this.createBy = userService.getById(dto.getCreateBy()).getName();
-
-        if (!StringUtil.isBlank(dto.getApproveBy())) {
-            this.approveBy = userService.getById(dto.getApproveBy()).getName();
-        }
-
-        this.status = dto.getStatus().getCode();
-        this.settleStatus = dto.getSettleStatus().getCode();
-    }
+    this.status = dto.getStatus().getCode();
+    this.settleStatus = dto.getSettleStatus().getCode();
+  }
 }

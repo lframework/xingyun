@@ -9,22 +9,22 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GetEnableSalePropItemBo extends BaseBo<ProductSalePropItemDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    public GetEnableSalePropItemBo() {
+  public GetEnableSalePropItemBo() {
 
-    }
+  }
 
-    public GetEnableSalePropItemBo(ProductSalePropItemDto dto) {
+  public GetEnableSalePropItemBo(ProductSalePropItemDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

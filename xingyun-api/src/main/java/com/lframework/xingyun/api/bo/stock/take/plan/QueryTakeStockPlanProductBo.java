@@ -13,79 +13,81 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class QueryTakeStockPlanProductBo extends BaseBo<QueryTakeStockPlanProductDto> {
-    /**
-     * 商品ID
-     */
-    private String productId;
 
-    /**
-     * 商品编号
-     */
-    private String productCode;
+  /**
+   * 商品ID
+   */
+  private String productId;
 
-    /**
-     * 商品名称
-     */
-    private String productName;
+  /**
+   * 商品编号
+   */
+  private String productCode;
 
-    /**
-     * 类目名称
-     */
-    private String categoryName;
+  /**
+   * 商品名称
+   */
+  private String productName;
 
-    /**
-     * 品牌名称
-     */
-    private String brandName;
+  /**
+   * 类目名称
+   */
+  private String categoryName;
 
-    /**
-     * SKU
-     */
-    private String skuCode;
+  /**
+   * 品牌名称
+   */
+  private String brandName;
 
-    /**
-     * 外部编号
-     */
-    private String externalCode;
+  /**
+   * SKU
+   */
+  private String skuCode;
 
-    /**
-     * 规格
-     */
-    private String spec;
+  /**
+   * 外部编号
+   */
+  private String externalCode;
 
-    /**
-     * 单位
-     */
-    private String unit;
+  /**
+   * 规格
+   */
+  private String spec;
 
-    /**
-     * 初始库存
-     */
-    private Integer stockNum;
+  /**
+   * 单位
+   */
+  private String unit;
 
-    public QueryTakeStockPlanProductBo(QueryTakeStockPlanProductDto dto) {
-        super(dto);
+  /**
+   * 初始库存
+   */
+  private Integer stockNum;
+
+  public QueryTakeStockPlanProductBo(QueryTakeStockPlanProductDto dto) {
+    super(dto);
+  }
+
+  @Override
+  protected void afterInit(QueryTakeStockPlanProductDto dto) {
+
+    IProductService productService = ApplicationUtil.getBean(IProductService.class);
+    ProductDto product = productService.getById(dto.getProductId());
+
+    this.productCode = product.getCode();
+    this.productName = product.getName();
+    this.brandName = product.getPoly().getBrandName();
+    this.categoryName = product.getPoly().getCategoryName();
+    this.skuCode = product.getSkuCode();
+    this.externalCode = product.getExternalCode();
+    this.spec = product.getSpec();
+    this.unit = product.getUnit();
+
+    ITakeStockConfigService takeStockConfigService = ApplicationUtil
+        .getBean(ITakeStockConfigService.class);
+    TakeStockConfigDto config = takeStockConfigService.get();
+    if (!config.getShowStock()) {
+      this.stockNum = null;
     }
-
-    @Override
-    protected void afterInit(QueryTakeStockPlanProductDto dto) {
-
-        IProductService productService = ApplicationUtil.getBean(IProductService.class);
-        ProductDto product = productService.getById(dto.getProductId());
-
-        this.productCode = product.getCode();
-        this.productName = product.getName();
-        this.brandName = product.getPoly().getBrandName();
-        this.categoryName = product.getPoly().getCategoryName();
-        this.skuCode = product.getSkuCode();
-        this.externalCode = product.getExternalCode();
-        this.spec = product.getSpec();
-        this.unit = product.getUnit();
-
-        ITakeStockConfigService takeStockConfigService = ApplicationUtil.getBean(ITakeStockConfigService.class);
-        TakeStockConfigDto config = takeStockConfigService.get();
-        if (!config.getShowStock()) {
-            this.stockNum = null;
-        }
-    }
+  }
 }

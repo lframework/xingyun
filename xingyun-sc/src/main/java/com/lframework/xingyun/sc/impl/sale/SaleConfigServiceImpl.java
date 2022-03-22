@@ -18,48 +18,48 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SaleConfigServiceImpl implements ISaleConfigService {
 
-    @Autowired
-    private SaleConfigMapper saleConfigMapper;
+  @Autowired
+  private SaleConfigMapper saleConfigMapper;
 
-    @Cacheable(value = SaleConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
-    @Override
-    public SaleConfigDto get() {
+  @Cacheable(value = SaleConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Override
+  public SaleConfigDto get() {
 
-        SaleConfig config = saleConfigMapper.selectOne(Wrappers.query());
+    SaleConfig config = saleConfigMapper.selectOne(Wrappers.query());
 
-        SaleConfigDto result = new SaleConfigDto();
+    SaleConfigDto result = new SaleConfigDto();
 
-        result.setId(config.getId());
-        result.setOutStockRequireSale(config.getOutStockRequireSale());
-        result.setOutStockMultipleRelateSale(config.getOutStockMultipleRelateSale());
-        result.setSaleReturnRequireOutStock(config.getSaleReturnRequireOutStock());
-        result.setSaleReturnMultipleRelateOutStock(config.getSaleReturnMultipleRelateOutStock());
+    result.setId(config.getId());
+    result.setOutStockRequireSale(config.getOutStockRequireSale());
+    result.setOutStockMultipleRelateSale(config.getOutStockMultipleRelateSale());
+    result.setSaleReturnRequireOutStock(config.getSaleReturnRequireOutStock());
+    result.setSaleReturnMultipleRelateOutStock(config.getSaleReturnMultipleRelateOutStock());
 
-        return result;
-    }
+    return result;
+  }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改销售参数设置")
-    @Transactional
-    @Override
-    public void update(UpdateSaleConfigVo vo) {
+  @OpLog(type = OpLogType.OTHER, name = "修改销售参数设置")
+  @Transactional
+  @Override
+  public void update(UpdateSaleConfigVo vo) {
 
-        SaleConfig config = saleConfigMapper.selectOne(Wrappers.query());
-        config.setOutStockRequireSale(vo.getOutStockRequireSale());
-        config.setOutStockMultipleRelateSale(vo.getOutStockMultipleRelateSale());
-        config.setSaleReturnRequireOutStock(vo.getSaleReturnRequireOutStock());
-        config.setSaleReturnMultipleRelateOutStock(vo.getSaleReturnMultipleRelateOutStock());
+    SaleConfig config = saleConfigMapper.selectOne(Wrappers.query());
+    config.setOutStockRequireSale(vo.getOutStockRequireSale());
+    config.setOutStockMultipleRelateSale(vo.getOutStockMultipleRelateSale());
+    config.setSaleReturnRequireOutStock(vo.getSaleReturnRequireOutStock());
+    config.setSaleReturnMultipleRelateOutStock(vo.getSaleReturnMultipleRelateOutStock());
 
-        saleConfigMapper.updateById(config);
+    saleConfigMapper.updateById(config);
 
-        OpLogUtil.setExtra(vo);
+    OpLogUtil.setExtra(vo);
 
-        ISaleConfigService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(config.getId());
-    }
+    ISaleConfigService thisService = getThis(this.getClass());
+    thisService.cleanCacheByKey(config.getId());
+  }
 
-    @CacheEvict(value = SaleConfigDto.CACHE_NAME, key = "'config'")
-    @Override
-    public void cleanCacheByKey(String key) {
+  @CacheEvict(value = SaleConfigDto.CACHE_NAME, key = "'config'")
+  @Override
+  public void cleanCacheByKey(String key) {
 
-    }
+  }
 }

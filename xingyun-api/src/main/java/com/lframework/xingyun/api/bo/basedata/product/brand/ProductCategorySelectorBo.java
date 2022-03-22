@@ -9,32 +9,32 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ProductCategorySelectorBo extends BaseBo<ProductCategoryDto> {
 
-    /**
-     * ID
-     */
-    private String id;
+  /**
+   * ID
+   */
+  private String id;
 
-    /**
-     * 名称
-     */
-    private String name;
+  /**
+   * 名称
+   */
+  private String name;
 
-    /**
-     * 父级ID
-     */
-    private String parentId;
+  /**
+   * 父级ID
+   */
+  private String parentId;
 
-    /**
-     * 状态
-     */
-    private Boolean available;
+  /**
+   * 状态
+   */
+  private Boolean available;
 
-    public ProductCategorySelectorBo() {
+  public ProductCategorySelectorBo() {
 
-    }
+  }
 
-    public ProductCategorySelectorBo(ProductCategoryDto dto) {
+  public ProductCategorySelectorBo(ProductCategoryDto dto) {
 
-        super(dto);
-    }
+    super(dto);
+  }
 }

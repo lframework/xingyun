@@ -8,7 +8,12 @@ import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuil
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
-import com.lframework.xingyun.api.bo.purchase.receive.*;
+import com.lframework.xingyun.api.bo.purchase.receive.GetPaymentDateBo;
+import com.lframework.xingyun.api.bo.purchase.receive.GetReceiveSheetBo;
+import com.lframework.xingyun.api.bo.purchase.receive.PrintReceiveSheetBo;
+import com.lframework.xingyun.api.bo.purchase.receive.QueryReceiveSheetBo;
+import com.lframework.xingyun.api.bo.purchase.receive.QueryReceiveSheetWithReturnBo;
+import com.lframework.xingyun.api.bo.purchase.receive.ReceiveSheetWithReturnBo;
 import com.lframework.xingyun.api.model.purchase.receive.ReceiveSheetExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
@@ -16,18 +21,31 @@ import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
-import com.lframework.xingyun.sc.vo.purchase.receive.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import com.lframework.xingyun.sc.vo.purchase.receive.ApprovePassReceiveSheetVo;
+import com.lframework.xingyun.sc.vo.purchase.receive.ApproveRefuseReceiveSheetVo;
+import com.lframework.xingyun.sc.vo.purchase.receive.BatchApprovePassReceiveSheetVo;
+import com.lframework.xingyun.sc.vo.purchase.receive.BatchApproveRefuseReceiveSheetVo;
+import com.lframework.xingyun.sc.vo.purchase.receive.CreateReceiveSheetVo;
+import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetVo;
+import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetWithReturnVo;
+import com.lframework.xingyun.sc.vo.purchase.receive.UpdateReceiveSheetVo;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 采购收货单管理
@@ -39,243 +57,247 @@ import java.util.stream.Collectors;
 @RequestMapping("/purchase/receive/sheet")
 public class ReceiveSheetController extends DefaultBaseController {
 
-    @Autowired
-    private IReceiveSheetService receiveSheetService;
+  @Autowired
+  private IReceiveSheetService receiveSheetService;
 
-    /**
-     * 打印
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:query')")
-    @GetMapping("/print")
-    public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+  /**
+   * 打印
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:query')")
+  @GetMapping("/print")
+  public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
 
-        ReceiveSheetFullDto data = receiveSheetService.getDetail(id);
+    ReceiveSheetFullDto data = receiveSheetService.getDetail(id);
 
-        PrintReceiveSheetBo result = new PrintReceiveSheetBo(data);
+    PrintReceiveSheetBo result = new PrintReceiveSheetBo(data);
 
-        A4ExcelPortraitPrintBo<PrintReceiveSheetBo> printResult = new A4ExcelPortraitPrintBo<PrintReceiveSheetBo>("print/receive-sheet.ftl", result);
+    A4ExcelPortraitPrintBo<PrintReceiveSheetBo> printResult = new A4ExcelPortraitPrintBo<PrintReceiveSheetBo>(
+        "print/receive-sheet.ftl", result);
 
-        return InvokeResultBuilder.success(printResult);
+    return InvokeResultBuilder.success(printResult);
+  }
+
+  /**
+   * 订单列表
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:query')")
+  @GetMapping("/query")
+  public InvokeResult query(@Valid QueryReceiveSheetVo vo) {
+
+    PageResult<ReceiveSheetDto> pageResult = receiveSheetService
+        .query(getPageIndex(vo), getPageSize(vo), vo);
+
+    List<ReceiveSheetDto> datas = pageResult.getDatas();
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      List<QueryReceiveSheetBo> results = datas.stream().map(QueryReceiveSheetBo::new)
+          .collect(Collectors.toList());
+
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 订单列表
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:query')")
-    @GetMapping("/query")
-    public InvokeResult query(@Valid QueryReceiveSheetVo vo) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        PageResult<ReceiveSheetDto> pageResult = receiveSheetService.query(getPageIndex(vo), getPageSize(vo), vo);
+  @PreAuthorize("@permission.valid('purchase:receive:export')")
+  @PostMapping("/export")
+  public void export(@Valid QueryReceiveSheetVo vo) {
 
-        List<ReceiveSheetDto> datas = pageResult.getDatas();
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
+        .multipartExportXls("采购收货单信息", ReceiveSheetExportModel.class);
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            List<QueryReceiveSheetBo> results = datas.stream().map(QueryReceiveSheetBo::new)
-                    .collect(Collectors.toList());
-
-            PageResultUtil.rebuild(pageResult, results);
-        }
-
-        return InvokeResultBuilder.success(pageResult);
-    }
-
-    @PreAuthorize("@permission.valid('purchase:receive:export')")
-    @PostMapping("/export")
-    public void export(@Valid QueryReceiveSheetVo vo) {
-
-        ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-                .multipartExportXls("采购收货单信息", ReceiveSheetExportModel.class);
-
-        try {
-            int pageIndex = 1;
-            while (true) {
-                PageResult<ReceiveSheetDto> pageResult = receiveSheetService.query(pageIndex, getExportSize(), vo);
-                List<ReceiveSheetDto> datas = pageResult.getDatas();
-                List<ReceiveSheetExportModel> models = datas.stream().map(ReceiveSheetExportModel::new)
-                        .collect(Collectors.toList());
-                builder.doWrite(models);
-
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
-            }
-        } finally {
-            builder.finish();
-        }
-    }
-
-    /**
-     * 根据ID查询
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:query')")
-    @GetMapping
-    public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
-
-        ReceiveSheetFullDto data = receiveSheetService.getDetail(id);
-
-        GetReceiveSheetBo result = new GetReceiveSheetBo(data);
-
-        return InvokeResultBuilder.success(result);
-    }
-
-    /**
-     * 根据供应商ID查询默认付款日期
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
-    @GetMapping("/paymentdate")
-    public InvokeResult getPaymentDate(@NotBlank(message = "供应商ID不能为空！") String supplierId) {
-
-        GetPaymentDateDto data = receiveSheetService.getPaymentDate(supplierId);
-
-        GetPaymentDateBo result = new GetPaymentDateBo(data);
-
-        return InvokeResultBuilder.success(result);
-    }
-
-    /**
-     * 根据ID查询（采购退货业务）
-     */
-    @PreAuthorize("@permission.valid('purchase:return:add', 'purchase:return:modify')")
-    @GetMapping("/return")
-    public InvokeResult getWithReturn(@NotBlank(message = "收货单ID不能为空！") String id) {
-
-        ReceiveSheetWithReturnDto data = receiveSheetService.getWithReturn(id);
-        ReceiveSheetWithReturnBo result = new ReceiveSheetWithReturnBo(data);
-
-        return InvokeResultBuilder.success(result);
-    }
-
-    /**
-     * 查询列表（采购退货业务）
-     */
-    @PreAuthorize("@permission.valid('purchase:return:add', 'purchase:return:modify')")
-    @GetMapping("/query/return")
-    public InvokeResult queryWithReturn(@Valid QueryReceiveSheetWithReturnVo vo) {
-
+    try {
+      int pageIndex = 1;
+      while (true) {
         PageResult<ReceiveSheetDto> pageResult = receiveSheetService
-                .queryWithReturn(getPageIndex(vo), getPageSize(vo), vo);
+            .query(pageIndex, getExportSize(), vo);
         List<ReceiveSheetDto> datas = pageResult.getDatas();
+        List<ReceiveSheetExportModel> models = datas.stream().map(ReceiveSheetExportModel::new)
+            .collect(Collectors.toList());
+        builder.doWrite(models);
 
-        List<QueryReceiveSheetWithReturnBo> results = Collections.EMPTY_LIST;
-
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(QueryReceiveSheetWithReturnBo::new).collect(Collectors.toList());
-            PageResultUtil.rebuild(pageResult, results);
+        if (!pageResult.isHasNext()) {
+          break;
         }
+        pageIndex++;
+      }
+    } finally {
+      builder.finish();
+    }
+  }
 
-        return InvokeResultBuilder.success(pageResult);
+  /**
+   * 根据ID查询
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:query')")
+  @GetMapping
+  public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
+
+    ReceiveSheetFullDto data = receiveSheetService.getDetail(id);
+
+    GetReceiveSheetBo result = new GetReceiveSheetBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 根据供应商ID查询默认付款日期
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
+  @GetMapping("/paymentdate")
+  public InvokeResult getPaymentDate(@NotBlank(message = "供应商ID不能为空！") String supplierId) {
+
+    GetPaymentDateDto data = receiveSheetService.getPaymentDate(supplierId);
+
+    GetPaymentDateBo result = new GetPaymentDateBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 根据ID查询（采购退货业务）
+   */
+  @PreAuthorize("@permission.valid('purchase:return:add', 'purchase:return:modify')")
+  @GetMapping("/return")
+  public InvokeResult getWithReturn(@NotBlank(message = "收货单ID不能为空！") String id) {
+
+    ReceiveSheetWithReturnDto data = receiveSheetService.getWithReturn(id);
+    ReceiveSheetWithReturnBo result = new ReceiveSheetWithReturnBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 查询列表（采购退货业务）
+   */
+  @PreAuthorize("@permission.valid('purchase:return:add', 'purchase:return:modify')")
+  @GetMapping("/query/return")
+  public InvokeResult queryWithReturn(@Valid QueryReceiveSheetWithReturnVo vo) {
+
+    PageResult<ReceiveSheetDto> pageResult = receiveSheetService
+        .queryWithReturn(getPageIndex(vo), getPageSize(vo), vo);
+    List<ReceiveSheetDto> datas = pageResult.getDatas();
+
+    List<QueryReceiveSheetWithReturnBo> results = Collections.EMPTY_LIST;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(QueryReceiveSheetWithReturnBo::new).collect(Collectors.toList());
+      PageResultUtil.rebuild(pageResult, results);
     }
 
-    /**
-     * 创建
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:add')")
-    @PostMapping
-    public InvokeResult create(@RequestBody @Valid CreateReceiveSheetVo vo) {
+    return InvokeResultBuilder.success(pageResult);
+  }
 
-        vo.validate();
+  /**
+   * 创建
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:add')")
+  @PostMapping
+  public InvokeResult create(@RequestBody @Valid CreateReceiveSheetVo vo) {
 
-        String id = receiveSheetService.create(vo);
+    vo.validate();
 
-        return InvokeResultBuilder.success(id);
-    }
+    String id = receiveSheetService.create(vo);
 
-    /**
-     * 修改
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:modify')")
-    @PutMapping
-    public InvokeResult update(@RequestBody @Valid UpdateReceiveSheetVo vo) {
+    return InvokeResultBuilder.success(id);
+  }
 
-        vo.validate();
+  /**
+   * 修改
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:modify')")
+  @PutMapping
+  public InvokeResult update(@RequestBody @Valid UpdateReceiveSheetVo vo) {
 
-        receiveSheetService.update(vo);
+    vo.validate();
 
-        return InvokeResultBuilder.success();
-    }
+    receiveSheetService.update(vo);
 
-    /**
-     * 审核通过
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:approve')")
-    @PatchMapping("/approve/pass")
-    public InvokeResult approvePass(@RequestBody @Valid ApprovePassReceiveSheetVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        receiveSheetService.approvePass(vo);
+  /**
+   * 审核通过
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:approve')")
+  @PatchMapping("/approve/pass")
+  public InvokeResult approvePass(@RequestBody @Valid ApprovePassReceiveSheetVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    receiveSheetService.approvePass(vo);
 
-    /**
-     * 批量审核通过
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:approve')")
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassReceiveSheetVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        receiveSheetService.batchApprovePass(vo);
+  /**
+   * 批量审核通过
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:approve')")
+  @PatchMapping("/approve/pass/batch")
+  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassReceiveSheetVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    receiveSheetService.batchApprovePass(vo);
 
-    /**
-     * 直接审核通过
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:approve')")
-    @PostMapping("/approve/pass/direct")
-    public InvokeResult directApprovePass(@RequestBody @Valid CreateReceiveSheetVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        receiveSheetService.directApprovePass(vo);
+  /**
+   * 直接审核通过
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:approve')")
+  @PostMapping("/approve/pass/direct")
+  public InvokeResult directApprovePass(@RequestBody @Valid CreateReceiveSheetVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    receiveSheetService.directApprovePass(vo);
 
-    /**
-     * 审核拒绝
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:approve')")
-    @PatchMapping("/approve/refuse")
-    public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseReceiveSheetVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        receiveSheetService.approveRefuse(vo);
+  /**
+   * 审核拒绝
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:approve')")
+  @PatchMapping("/approve/refuse")
+  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseReceiveSheetVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    receiveSheetService.approveRefuse(vo);
 
-    /**
-     * 批量审核拒绝
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:approve')")
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseReceiveSheetVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        receiveSheetService.batchApproveRefuse(vo);
+  /**
+   * 批量审核拒绝
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:approve')")
+  @PatchMapping("/approve/refuse/batch")
+  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseReceiveSheetVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    receiveSheetService.batchApproveRefuse(vo);
 
-    /**
-     * 删除
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:delete')")
-    @DeleteMapping
-    public InvokeResult deleteById(@NotBlank(message = "采购收货单ID不能为空！") String id) {
+    return InvokeResultBuilder.success();
+  }
 
-        receiveSheetService.deleteById(id);
+  /**
+   * 删除
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:delete')")
+  @DeleteMapping
+  public InvokeResult deleteById(@NotBlank(message = "采购收货单ID不能为空！") String id) {
 
-        return InvokeResultBuilder.success();
-    }
+    receiveSheetService.deleteById(id);
 
-    /**
-     * 批量删除
-     */
-    @PreAuthorize("@permission.valid('purchase:receive:delete')")
-    @DeleteMapping("/batch")
-    public InvokeResult deleteByIds(@RequestBody @NotEmpty(message = "请选择需要删除的采购收货单！") List<String> ids) {
+    return InvokeResultBuilder.success();
+  }
 
-        receiveSheetService.deleteByIds(ids);
+  /**
+   * 批量删除
+   */
+  @PreAuthorize("@permission.valid('purchase:receive:delete')")
+  @DeleteMapping("/batch")
+  public InvokeResult deleteByIds(
+      @RequestBody @NotEmpty(message = "请选择需要删除的采购收货单！") List<String> ids) {
 
-        return InvokeResultBuilder.success();
-    }
+    receiveSheetService.deleteByIds(ids);
+
+    return InvokeResultBuilder.success();
+  }
 }

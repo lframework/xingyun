@@ -134,6 +134,10 @@ mail:
   pass: 123456
   # 使用SSL安全连接
   ssl-enable: true
+  # SMTP超时时间 单位：毫秒
+  #time-out: 30000
+  # 连接超时时间 单位：毫秒
+  #connect-time-out: 1000
 
 #短信配置
 #以下配置需要自行修改

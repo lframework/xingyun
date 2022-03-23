@@ -57,29 +57,29 @@ QQ交流群号： **717574596** ，目前项目刚发布不久，人数较少，
 
 ### 系统展示
 * 首页
-![输入图片说明](screenshots/1%E9%A6%96%E9%A1%B5.png)
+![输入图片说明](screenshots/1.jpg)
 * 系统管理
-![输入图片说明](screenshots/2%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86.jpeg)
+![输入图片说明](screenshots/2.jpg)
 * 基础信息管理
-![输入图片说明](screenshots/3%E5%9F%BA%E7%A1%80%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86.png)
+![输入图片说明](screenshots/3.jpg)
 * 商品中心
-![输入图片说明](screenshots/4%E5%95%86%E5%93%81%E4%B8%AD%E5%BF%83.png)
+![输入图片说明](screenshots/4.jpg)
 * 采购管理
-![输入图片说明](screenshots/5%E9%87%87%E8%B4%AD%E7%AE%A1%E7%90%86.png)
+![输入图片说明](screenshots/5.jpg)
 * 销售管理
-![输入图片说明](screenshots/6%E9%94%80%E5%94%AE%E7%AE%A1%E7%90%86.png)
+![输入图片说明](screenshots/6.jpg)
 * 零售管理
-![输入图片说明](screenshots/7%E9%9B%B6%E5%94%AE%E7%AE%A1%E7%90%86.png)
+![输入图片说明](screenshots/7.jpg)
 * 库存管理
-![输入图片说明](screenshots/8%E5%BA%93%E5%AD%98%E7%AE%A1%E7%90%86.png)
+![输入图片说明](screenshots/8.jpg)
 * 库存盘点
-![输入图片说明](screenshots/9%E5%BA%93%E5%AD%98%E7%9B%98%E7%82%B9.png)
+![输入图片说明](screenshots/9.jpg)
 * 库存调整
-![输入图片说明](screenshots/10%E5%BA%93%E5%AD%98%E8%B0%83%E6%95%B4.png)
+![输入图片说明](screenshots/10.jpg)
 * 结算管理
-![输入图片说明](screenshots/11%E7%BB%93%E7%AE%97%E7%AE%A1%E7%90%86.png)
+![输入图片说明](screenshots/11.jpg)
 * 开发管理
-![输入图片说明](screenshots/12%E5%BC%80%E5%8F%91%E7%AE%A1%E7%90%86.png)
+![输入图片说明](screenshots/12.jpg)
 
 ### 其他说明
 作者是两只热爱工作、热爱开源的程序猿、产品经理，欢迎大家提出批评、建议！

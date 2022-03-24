@@ -378,7 +378,6 @@
     <select id="getDetailById" resultMap="GetProductDto">
         <include refid="GetProductDto_sql"/>
         WHERE g.id = #{id}
-        GROUP BY propertyItem.id
         ORDER BY property.code, propertyItem.code
     </select>
 

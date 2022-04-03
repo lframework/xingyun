@@ -34,6 +34,7 @@
 后续还会开发更多功能。
 
 ### 主要技术框架
+
 * Springboot 2.2.2.RELEASE
 * MyBatis-plus 3.4.2
 * Spring-session-data-redis 2.2.0.RELEASE
@@ -41,12 +42,20 @@
 * Lombok 1.18.10
 * EasyExcel 2.2.10（内置了两种导出excel方式：一次性导出、分段导出（只支持简单表头））
 
+### 关于鉴权的说明
+
+现在已经支持Session、Jwt两种模式，在xingyun-core模块中的pom.xml写有依赖security-session-starter或security-jwt-starter。
+如果依赖security-session-starter，那么就会使用Session模式进行鉴权，如果依赖security-jwt-starter，那么就会使用Jwt模式进行鉴权。
+开发人员可以自由选择依赖包决定使用哪种方式。
+
 ### 开发环境
+
 * JDK 1.8
 * Mysql 5.7.18
 * Redis 4.0.8（版本可以根据自己的redis进行调整，项目本身依赖Redis的功能很简单，就是两部分：缓存、Session，不会出现大的兼容问题）
 
 ### 技术交流
+
 QQ交流群号： **717574596** ，目前项目刚发布不久，人数较少，希望大家不要嫌弃。
 
 ### 注意事项

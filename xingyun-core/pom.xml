@@ -10,11 +10,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xingyun-core</artifactId>
+    <name>【xingyun-core】基础依赖</name>
 
     <dependencies>
+        <!-- Session、Jwt 二选一 -->
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>security-starter</artifactId>
+            <artifactId>security-session-starter</artifactId>
         </dependency>
+        <!--<dependency>
+            <groupId>com.lframework</groupId>
+            <artifactId>security-jwt-starter</artifactId>
+        </dependency>-->
     </dependencies>
 </project>

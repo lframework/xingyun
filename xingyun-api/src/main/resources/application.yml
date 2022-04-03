@@ -45,6 +45,8 @@ session:
   maximum-sessions: 3
   #达到最多用户数后是否保持在线
   max-sessions-prevents-login: false
+  #Token Secret 正式使用时需要修改secret
+  token-secret: HtZvM7$uHXiTKyYM
 
 #默认配置
 default-setting:

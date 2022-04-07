@@ -131,8 +131,8 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
 
         if (!NumberUtil.equal(product.getOriPrice(), 0D)) {
           BigDecimal diffPrice = NumberUtil.sub(NumberUtil.getNumber(
-              NumberUtil
-                  .mul(product.getOriPrice(), NumberUtil.div(product.getDiscountRate(), 100D)), 2),
+                  NumberUtil
+                      .mul(product.getOriPrice(), NumberUtil.div(product.getDiscountRate(), 100D)), 2),
               product.getTaxPrice());
           if (!NumberUtil.le(diffPrice.abs(), 0.01D)) {
             throw new InputErrorException("第" + orderNo + "行商品折扣率不正确！");

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dstz.adaptor.org.xingyun.dao.RoleDao">
+  <resultMap id="Role" type="com.dstz.adaptor.org.xingyun.entity.Role">
+    <id property="id" column="id" jdbcType="VARCHAR"/>
+    <result property="name" column="name" jdbcType="VARCHAR"/>
+    <result property="code" column="code" jdbcType="VARCHAR"/>
+    <result property="available" column="available" jdbcType="NUMERIC"/>
+    <result property="description" column="description" jdbcType="VARCHAR"/>
+    <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+    <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <select id="get" parameterType="java.lang.String" resultMap="Role">
+    SELECT *
+    FROM sys_role
+    WHERE id = #{id}
+  </select>
+
+  <select id="getByAlias" parameterType="java.lang.String" resultMap="Role">
+    SELECT *
+    FROM sys_role
+    WHERE code = #{alias}
+  </select>
+
+  <select id="query" parameterType="java.util.Map" resultMap="Role">
+    SELECT * FROM sys_role
+    <where>
+      <if test="whereSql!=null">
+        ${whereSql}
+      </if>
+    </where>
+    <if test="orderBySql!=null">
+      ORDER BY ${orderBySql}
+    </if>
+    <if test="orderBySql==null">
+      ORDER BY code
+    </if>
+  </select>
+
+  <!-- 这里默认获取岗位职务角色为 该角色的用户  -->
+  <select id="getByUserId" parameterType="java.lang.String" resultMap="Role">
+    SELECT role.*
+    from sys_role role
+           left join sys_user_role ur on ur.role_id = role.id
+    where role.available = 1
+      and ur.user_id = #{userId}
+  </select>
+
+  <select id="isRoleExist" resultType="java.lang.Integer">
+    SELECT count(1) FROM sys_role where code=#{alias}
+    <if test="id!=null">
+      and id=#{id}
+    </if>
+  </select>
+</mapper>

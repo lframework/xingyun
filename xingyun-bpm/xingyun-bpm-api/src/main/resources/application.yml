@@ -1,0 +1,60 @@
+server:
+  servlet:
+    context-path: /
+  port: 8085
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/xingyun?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+    username: root
+    password: password
+    dbType: mysql
+  activemq:
+    broker-url: tcp://127.0.0.1:61616
+    in-memory: false
+    packages:
+      trust-all: true
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: password
+    #需要与星云系统保持一致
+    database: 0
+
+logging:
+  level:
+    root: DEBUG
+
+## security:
+##  ignored:  [/agilebpm-ui/** ,/css/**, /js/**,/images/**,/webjars/**,/**/favicon.ico]
+## /swagger-*,/v2/api-docs*,   swagger 免登陆
+
+ab:
+  jwt:
+    enabled: true
+    # 与星云系统中的TokenKey需保持一致
+    header: X-Auth-Token
+    # 与星云系统中的TokenSecret需保持一致
+    secret: HtZvM7$uHXiTKyYM
+    issuer: xingyun
+  security:
+    auth-ingores: /login.*,/agilebpm-ui*,/index.html,/swagger-*,/v2/api-docs*,
+    csrf-ingores: a.feg.cn,127.0.0.1,localhost
+  redis:
+    # 缓存是否使用redis
+    use-redis-cache: true
+  mail:
+    # 邮箱配置
+    mail-address: agileBpm@qq.com
+    nick-name: AgileBPM
+    password: fywouffpohiibdee
+    send-host: smtp.qq.com
+    send-port: 465
+  simple-mq:
+    message-queue-type: synchronous
+
+
+## 上传配置 db 存数据库 ，具体请看 IUploader 实现类
+uploader:
+  default: db

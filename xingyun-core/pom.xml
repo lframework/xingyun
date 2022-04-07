@@ -22,5 +22,11 @@
             <groupId>com.lframework</groupId>
             <artifactId>security-jwt-starter</artifactId>
         </dependency>-->
+
+        <!-- bpm starter 底层依赖security-jwt-starter 如果启用Bpm需要把session starter注释 -->
+        <!--<dependency>
+            <groupId>com.lframework</groupId>
+            <artifactId>bpm-starter</artifactId>
+        </dependency>-->
     </dependencies>
 </project>

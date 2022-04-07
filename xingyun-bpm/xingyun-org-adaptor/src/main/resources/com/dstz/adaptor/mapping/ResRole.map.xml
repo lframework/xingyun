@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dstz.adaptor.org.xingyun.dao.ResRoleDao">
+  <resultMap id="ResRole" type="com.dstz.adaptor.org.xingyun.entity.ResRole">
+    <id property="id" column="id_" jdbcType="VARCHAR"/>
+    <result property="systemId" column="system_id_" jdbcType="VARCHAR"/>
+    <result property="resId" column="res_id_" jdbcType="VARCHAR"/>
+    <result property="roleId" column="role_id_" jdbcType="VARCHAR"/>
+    <result property="roleAlias" column="roleAlias" jdbcType="VARCHAR"/>
+    <result property="url" column="url" jdbcType="VARCHAR"/>
+    <result property="resAlias" column="resAlias" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <insert id="create" parameterType="com.dstz.adaptor.org.xingyun.entity.ResRole">
+    INSERT INTO sys_res_role
+      (id_, system_id_, res_id_, role_id_)
+    VALUES (#{id,jdbcType=VARCHAR}, #{systemId,jdbcType=VARCHAR}, #{resId,jdbcType=VARCHAR},
+            #{roleId,jdbcType=VARCHAR})
+  </insert>
+
+  <select id="get" parameterType="java.lang.String" resultMap="ResRole">
+    SELECT *
+    FROM sys_res_role
+    WHERE id_ = #{id}
+  </select>
+
+  <select id="query" parameterType="java.util.Map" resultMap="ResRole">
+    SELECT * FROM sys_res_role
+    <where>
+      <if test="whereSql!=null">
+        ${whereSql}
+      </if>
+    </where>
+    <if test="orderBySql!=null">
+      ORDER BY ${orderBySql}
+    </if>
+    <if test="orderBySql==null">
+      ORDER BY id_ DESC
+    </if>
+  </select>
+
+  <update id="update" parameterType="com.dstz.adaptor.org.xingyun.entity.ResRole">
+    UPDATE sys_res_role
+    SET system_id_=#{systemId,jdbcType=VARCHAR},
+        res_id_=#{resId,jdbcType=VARCHAR},
+        role_id_=#{roleId,jdbcType=VARCHAR}
+    WHERE id_ = #{id}
+  </update>
+
+  <delete id="remove" parameterType="java.lang.String">
+    DELETE
+    FROM sys_res_role
+    WHERE id_ = #{id}
+  </delete>
+
+  <delete id="removeByRoleAndSystem" parameterType="java.util.Map">
+    DELETE
+    FROM sys_res_role
+    WHERE role_id_ = #{roleId}
+      AND system_id_ = #{systemId}
+  </delete>
+
+  <select id="getAllResRole" parameterType="java.lang.String" resultMap="ResRole">
+    select b.*, a.alias_ resAlias, c.code roleAlias, a.url_ url
+    from sys_resource a
+           left join sys_res_role b on a.id_ = b.res_id_
+           left join sys_role c on b.role_id_ = c.id
+    where c.available = TRUE
+      and a.enable_ = 1
+
+  </select>
+  <select id="getByRoleId" resultMap="ResRole">
+    select b.*, a.alias_ resAlias, c.code roleAlias, a.url_ url
+    from sys_resource a
+           left join sys_res_role b on a.id_ = b.res_id_
+           left join sys_role c on b.role_id_ = c.id
+    where c.id = #{roleId}
+      and c.available = TRUE
+      and a.enable_ = 1
+  </select>
+</mapper>

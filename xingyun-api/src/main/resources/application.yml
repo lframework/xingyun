@@ -150,3 +150,10 @@ sms:
     region: cn-beijing
     access-key-id: 123456789
     access-key-secret: 123456789abcdefg
+
+#BPM配置
+bpm:
+  #BPM Api接口baseUrl
+  api-url: http://localhost:8085
+  #跳转BPM url
+  jump-url: http://localhost:8085

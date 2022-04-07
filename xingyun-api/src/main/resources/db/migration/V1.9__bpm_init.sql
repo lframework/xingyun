@@ -1680,3 +1680,6 @@ UPDATE `sys_resource` SET `ENABLE_`='1' WHERE (`ID_`='1');
 -- 使用 angular 表单
 UPDATE `sys_resource` SET `ENABLE_`='1' WHERE (`ID_`='30');
 UPDATE `sys_resource` SET `ENABLE_`='0' WHERE (`ID_`='33');
+
+-- 新增菜单
+INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `component`, `parent_id`, `path`, `no_cache`, `display`, `hidden`, `permission`, `is_special`, `available`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('8900', '8900', 'Bpm', 'OA审批', '', '', '${bpm.jump-url}/index.html', 0, 0, 0, '', 1, 1, '', '1', '2021-07-05 01:21:35', '1', '2021-07-05 01:21:39');

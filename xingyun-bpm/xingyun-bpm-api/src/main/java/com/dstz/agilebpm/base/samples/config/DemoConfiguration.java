@@ -27,7 +27,8 @@ public class DemoConfiguration implements WebMvcConfigurer {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
         Object handler) throws Exception {
       String uri = request.getRequestURI();
-      if (uri.contains("sys/sysDataSource/") || uri.contains("sys/sysDataSourceDef")) {
+      if (uri.contains("sys/sysDataSource/") || uri.contains("sys/sysDataSourceDef")
+          || uri.contains("sys/sysProperties/")) {
         throw new BusinessMessage("【演示环境】不允许操作数据源！");
       }
       return true;

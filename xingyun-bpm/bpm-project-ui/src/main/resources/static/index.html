@@ -1,0 +1,20 @@
+<script src="./agilebpm-ui/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="./agilebpm-ui/assets/js/common/tools/util.js"></script>
+<script>
+  function getAllParameters() {
+    var result = ""
+    var parameters = unescape(window.location.search.substr(1)).split("&");
+    for (var i = 0; i < parameters.length; i++) {
+      var paramCell = parameters[i].split("=");
+      if (paramCell.length == 2) {
+        result += "&" + paramCell[0] + "=" + paramCell[1];
+      }
+    }
+    if (result != "") {
+      return "?" + result.substring(1);
+    }
+    return result;
+  }
+
+  location.href = '/agilebpm-ui/index.html' + getAllParameters();
+</script>

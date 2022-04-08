@@ -39,6 +39,7 @@ spring:
     locations:
       - classpath:db/migration
     check-location: false
+    placeholder-replacement: false
 #session配置
 session:
   #同一个用户最多同时在线数量

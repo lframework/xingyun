@@ -4,6 +4,7 @@ import com.dstz.base.core.jwt.JWTService;
 import com.dstz.org.api.context.ICurrentContext;
 import com.dstz.security.authentication.AccessDecisionManagerImpl;
 import com.dstz.security.authentication.FilterInvocationSecurityMetadataSourceImpl;
+import com.dstz.security.authentication.JWTAuthenticationFilter;
 import com.dstz.security.authentication.SecurityInterceptor;
 import com.dstz.security.filter.EncodingFilter;
 import com.dstz.security.filter.RefererCsrfFilter;
@@ -148,14 +149,14 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
 
 
   @Bean("abJWTAuthenticationFilter")
-  protected com.dstz.security.authentication.JWTAuthenticationFilter JWTAuthenticationFilter() {
-    com.dstz.security.authentication.JWTAuthenticationFilter abJWTAuthenticationFilter = new com.dstz.security.authentication.JWTAuthenticationFilter();
+  protected JWTAuthenticationFilter JWTAuthenticationFilter() {
+    JWTAuthenticationFilter abJWTAuthenticationFilter = new JWTAuthenticationFilter();
     return abJWTAuthenticationFilter;
   }
 
   @Bean("abJWTService")
   protected JWTService abJWTService() {
-    JWTService jWTService = new JWTService();
+    CustomJWTService jWTService = new CustomJWTService();
     return jWTService;
   }
 

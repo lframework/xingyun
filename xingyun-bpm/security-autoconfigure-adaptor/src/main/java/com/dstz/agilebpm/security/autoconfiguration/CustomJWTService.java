@@ -55,8 +55,8 @@ public class CustomJWTService extends JWTService {
 
         // 有效则放行，并更新剩余时间
         if (valid && authToken.equals(token)) {
-          icache.add2Region(JWT_CACHE_REGION,
-              String.format("jwt:%s:%s", claims.getAudience(), claims.getSubject()), token);
+          /*icache.add2Region(JWT_CACHE_REGION,
+              String.format("jwt:%s:%s", claims.getAudience(), claims.getSubject()), token);*/
           return claims.getSubject();
         } else if (!valid) {
           return claims.getSubject();

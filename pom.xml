@@ -73,4 +73,26 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- 指定仓库 -->
+    <repositories>
+        <repository>
+            <id>ali-public</id>
+            <name>阿里云public库</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <layout>default</layout>
+        </repository>
+
+        <repository>
+            <id>ali-central</id>
+            <name>阿里云central库</name>
+            <url>https://maven.aliyun.com/repository/central</url>
+        </repository>
+
+        <repository>
+            <id>ali-central-old</id>
+            <name>阿里云central库old</name>
+            <url>https://maven.aliyun.com/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
 </project>

@@ -301,8 +301,9 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
                 // 如果允许自动调整，那么盘点数量=盘点单的盘点数量 - 进项数量 + 出项数量，否则就等于盘点单的盘点数量
                 detail.setTakeNum(config.getAutoChangeStock() ? detail.getOriTakeNum() - detail.getTotalInNum() + detail.getTotalOutNum() : detail.getOriTakeNum());
             }
+            detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR : productVo.getDescription());
 
-            LambdaUpdateWrapper<TakeStockPlanDetail> updateDetailWrapper = Wrappers.lambdaUpdate(TakeStockPlanDetail.class).set(TakeStockPlanDetail::getTakeNum, detail.getTakeNum()).eq(TakeStockPlanDetail::getId, detail.getId());
+            LambdaUpdateWrapper<TakeStockPlanDetail> updateDetailWrapper = Wrappers.lambdaUpdate(TakeStockPlanDetail.class).set(TakeStockPlanDetail::getTakeNum, detail.getTakeNum()).set(TakeStockPlanDetail::getDescription, detail.getDescription()).eq(TakeStockPlanDetail::getId, detail.getId());
             takeStockPlanDetailMapper.update(updateDetailWrapper);
         }
 

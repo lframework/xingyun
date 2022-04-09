@@ -54,5 +54,10 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
          * 修改后盘点数量
          */
         private Integer takeNum;
+
+        /**
+         * 备注
+         */
+        private String description;
     }
 }

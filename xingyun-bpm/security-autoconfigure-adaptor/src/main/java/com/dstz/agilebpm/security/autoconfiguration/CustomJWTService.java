@@ -47,7 +47,8 @@ public class CustomJWTService extends JWTService {
       if (claims != null) {
         String token = icache.getByKey(JWT_CACHE_REGION,
             String.format("jwt:%s:%s", claims.getAudience(), claims.getSubject()));
-        if (StringUtil.isEmpty(token)) {
+        if (StringUtil.isEmpty(token) || claims.getExpiration() == null || DateUtil.date()
+            .isAfter(claims.getExpiration())) {
           logger.debug(
               "JWT token 校验失败，token 已过期,签发时间 " + DateUtil.formatDateTime(claims.getIssuedAt()));
           return null;
@@ -61,8 +62,7 @@ public class CustomJWTService extends JWTService {
         } else if (!valid) {
           return claims.getSubject();
         } else {
-          logger.info("JWT token 校验失败，服务器 token 与 被校验 token 不一致！ 同一签发对象的 token 不支持多地登录 {}",
-              claims);
+          logger.info("JWT token 校验失败，服务器 token 与 被校验 token 不一致！ 同一签发对象的 token 不支持多地登录 {}", claims);
         }
       }
 

@@ -288,7 +288,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
             throw new DefaultClientException("关联盘点任务的盘点状态已改变，不允许继续执行审核！");
         }
 
-        Wrapper<TakeStockSheet> updateWrapper = Wrappers.lambdaUpdate(TakeStockSheet.class).set(TakeStockSheet::getApproveBy, SecurityUtil.getCurrentUser().getId()).set(TakeStockSheet::getApproveTime, LocalDateTime.now()).set(TakeStockSheet::getStatus, TakeStockSheetStatus.APPROVE_REFUSE).eq(TakeStockSheet::getId, data.getId()).eq(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED);
+        Wrapper<TakeStockSheet> updateWrapper = Wrappers.lambdaUpdate(TakeStockSheet.class).set(TakeStockSheet::getApproveBy, SecurityUtil.getCurrentUser().getId()).set(TakeStockSheet::getApproveTime, LocalDateTime.now()).set(TakeStockSheet::getRefuseReason, StringUtil.isBlank(vo.getRefuseReason()) ? StringPool.EMPTY_STR : vo.getRefuseReason()).set(TakeStockSheet::getStatus, TakeStockSheetStatus.APPROVE_REFUSE).eq(TakeStockSheet::getId, data.getId()).eq(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED);
         if (takeStockSheetMapper.update(updateWrapper) != 1) {
             throw new DefaultClientException("盘点单信息已过期，请刷新重试！");
         }

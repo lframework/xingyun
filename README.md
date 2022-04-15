@@ -61,8 +61,6 @@ QQ交流群号： **717574596** ，目前项目刚发布不久，人数较少，
 项目依赖的底层框架全部封装成starter，关于这部分的代码详见：<a href="https://gitee.com/lframework/jugg" target="_blank">
 点此进入</a>
 
-使用BPM工作流时，项目必须使用security-jwt-starter进行鉴权。
-
 BPM工作流目前是整合AgileBPM工作流管理平台，由于AgileBPM的Licence是GPL，所以使用这部分功能需要遵守GPL许可证的限制条件，如果不使用此部分代码及功能，请忽略此条说明
 
 ### License

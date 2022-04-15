@@ -1,5 +1,6 @@
 package com.lframework.xingyun.settle.vo.check;
 
+import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ public class UpdateSettleCheckSheetVo extends CreateSettleCheckSheetVo {
   /**
    * ID
    */
+  @ApiModelProperty(value = "ID", required = true)
   @NotNull(message = "ID不能为空！")
   private String id;
 }

@@ -13,7 +13,8 @@ import com.lframework.xingyun.api.model.stock.ProductLotExportModel;
 import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.service.stock.IProductLotService;
 import com.lframework.xingyun.sc.vo.stock.lot.QueryProductLotVo;
-import java.util.Collections;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "商品批次")
 @Validated
 @RestController
 @RequestMapping("/stock/lot")
@@ -40,38 +42,38 @@ public class ProductLotController extends DefaultBaseController {
   /**
    * 查询商品库存
    */
+  @ApiOperation("查询商品库存")
   @PreAuthorize("@permission.valid('stock:lot:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryProductLotVo vo) {
+  public InvokeResult<PageResult<QueryProductLotBo>> query(@Valid QueryProductLotVo vo) {
 
-    PageResult<ProductLotWithStockDto> pageResult = productLotService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
-    List<QueryProductLotBo> results = Collections.EMPTY_LIST;
+    PageResult<ProductLotWithStockDto> pageResult = productLotService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
+    List<QueryProductLotBo> results = null;
     List<ProductLotWithStockDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(QueryProductLotBo::new).collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 导出商品库存
    */
+  @ApiOperation("导出商品库存")
   @PreAuthorize("@permission.valid('stock:lot:export')")
   @GetMapping("/export")
   public void export(@Valid QueryProductLotVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("商品批次信息", ProductLotExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("商品批次信息",
+        ProductLotExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<ProductLotWithStockDto> pageResult = productLotService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<ProductLotWithStockDto> pageResult = productLotService.query(pageIndex,
+            getExportSize(), vo);
         List<ProductLotWithStockDto> datas = pageResult.getDatas();
         List<ProductLotExportModel> models = datas.stream().map(ProductLotExportModel::new)
             .collect(Collectors.toList());

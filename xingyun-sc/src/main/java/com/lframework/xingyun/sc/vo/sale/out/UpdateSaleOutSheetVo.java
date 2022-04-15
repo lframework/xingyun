@@ -5,6 +5,7 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDto;
 import com.lframework.xingyun.sc.service.sale.ISaleOutSheetService;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class UpdateSaleOutSheetVo extends CreateSaleOutSheetVo implements BaseVo
   /**
    * 出库单ID
    */
+  @ApiModelProperty(value = "出库单ID", required = true)
   @NotBlank(message = "出库单ID不能为空！")
   private String id;
 

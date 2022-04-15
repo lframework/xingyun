@@ -10,6 +10,6 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>bpm-project-ui</artifactId>
-  <name>自定义UI</name>
+  <name>【${artifactId}】自定义UI</name>
 
 </project>

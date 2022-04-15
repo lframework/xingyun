@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xingyun-api</artifactId>
-    <name>【xingyun-api】Api接口层</name>
+    <name>【${artifactId}】Api接口层</name>
 
     <dependencies>
         <dependency>

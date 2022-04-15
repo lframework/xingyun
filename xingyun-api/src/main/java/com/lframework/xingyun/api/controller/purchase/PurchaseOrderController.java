@@ -33,6 +33,11 @@ import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,6 +61,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "采购订单管理")
 @Validated
 @RestController
 @RequestMapping("/purchase/order")
@@ -69,13 +75,13 @@ public class PurchaseOrderController extends DefaultBaseController {
 
   /**
    * 打印
-   *
-   * @param id
-   * @return
    */
+  @ApiOperation("打印")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:order:query')")
   @GetMapping("/print")
-  public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<A4ExcelPortraitPrintBo<PrintPurchaseOrderBo>> print(
+      @NotBlank(message = "订单ID不能为空！") String id) {
     PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
     if (data == null) {
       throw new DefaultClientException("订单不存在！");
@@ -92,37 +98,41 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 订单列表
    */
+  @ApiOperation("订单列表")
   @PreAuthorize("@permission.valid('purchase:order:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryPurchaseOrderVo vo) {
+  public InvokeResult<PageResult<QueryPurchaseOrderBo>> query(@Valid QueryPurchaseOrderVo vo) {
 
-    PageResult<PurchaseOrderDto> pageResult = purchaseOrderService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<PurchaseOrderDto> pageResult = purchaseOrderService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<PurchaseOrderDto> datas = pageResult.getDatas();
+    List<QueryPurchaseOrderBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryPurchaseOrderBo> results = datas.stream().map(QueryPurchaseOrderBo::new)
-          .collect(Collectors.toList());
 
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryPurchaseOrderBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('purchase:order:export')")
   @PostMapping("/export")
   public void export(@Valid QueryPurchaseOrderVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("采购单信息", PurchaseOrderExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("采购单信息",
+        PurchaseOrderExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<PurchaseOrderDto> pageResult = purchaseOrderService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<PurchaseOrderDto> pageResult = purchaseOrderService.query(pageIndex,
+            getExportSize(), vo);
         List<PurchaseOrderDto> datas = pageResult.getDatas();
         List<PurchaseOrderExportModel> models = datas.stream().map(PurchaseOrderExportModel::new)
             .collect(Collectors.toList());
@@ -141,17 +151,21 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 根据关键字查询商品
    */
+  @ApiOperation("根据关键字查询商品")
+  @ApiImplicitParams({
+      @ApiImplicitParam(value = "仓库ID", name = "scId", paramType = "query", required = true),
+      @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
   @PreAuthorize("@permission.valid('purchase:order:add', 'purchase:order:modify', 'purchase:receive:add', 'purchase:receive:modify', 'purchase:return:add', 'purchase:return:modify')")
   @GetMapping("/product/search")
-  public InvokeResult searchProducts(@NotBlank(message = "仓库ID不能为空！") String scId,
-      String condition) {
+  public InvokeResult<List<PurchaseProductBo>> searchProducts(
+      @NotBlank(message = "仓库ID不能为空！") String scId, String condition) {
 
     if (StringUtil.isBlank(condition)) {
       return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
 
-    PageResult<PurchaseProductDto> pageResult = productService
-        .queryPurchaseByCondition(getPageIndex(), getPageSize(), condition);
+    PageResult<PurchaseProductDto> pageResult = productService.queryPurchaseByCondition(
+        getPageIndex(), getPageSize(), condition);
     List<PurchaseProductBo> results = Collections.EMPTY_LIST;
     List<PurchaseProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
@@ -165,30 +179,33 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 查询商品列表
    */
+  @ApiOperation("查询商品列表")
   @PreAuthorize("@permission.valid('purchase:order:add', 'purchase:order:modify', 'purchase:receive:add', 'purchase:receive:modify', 'purchase:return:add', 'purchase:return:modify')")
   @GetMapping("/product/list")
-  public InvokeResult queryProductList(@Valid QueryPurchaseProductVo vo) {
+  public InvokeResult<PageResult<PurchaseProductBo>> queryProductList(
+      @Valid QueryPurchaseProductVo vo) {
 
-    PageResult<PurchaseProductDto> pageResult = productService
-        .queryPurchaseList(getPageIndex(), getPageSize(), vo);
-    List<PurchaseProductBo> results = Collections.EMPTY_LIST;
+    PageResult<PurchaseProductDto> pageResult = productService.queryPurchaseList(getPageIndex(),
+        getPageSize(), vo);
+    List<PurchaseProductBo> results = null;
     List<PurchaseProductDto> datas = pageResult.getDatas();
+
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(t -> new PurchaseProductBo(vo.getScId(), t))
           .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:order:query')")
   @GetMapping
-  public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<GetPurchaseOrderBo> getById(@NotBlank(message = "订单ID不能为空！") String id) {
 
     PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
 
@@ -200,9 +217,12 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 根据ID查询（收货业务）
    */
+  @ApiOperation("根据ID查询（收货业务）")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
   @GetMapping("/receive")
-  public InvokeResult getWithReceive(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<PurchaseOrderWithReceiveBo> getWithReceive(
+      @NotBlank(message = "订单ID不能为空！") String id) {
 
     PurchaseOrderWithReceiveDto data = purchaseOrderService.getWithReceive(id);
     PurchaseOrderWithReceiveBo result = new PurchaseOrderWithReceiveBo(data);
@@ -213,31 +233,33 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 查询列表（收货业务）
    */
+  @ApiOperation("查询列表（收货业务）")
   @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
   @GetMapping("/query/receive")
-  public InvokeResult getWithReceive(@Valid QueryPurchaseOrderWithRecevieVo vo) {
+  public InvokeResult<PageResult<QueryPurchaseOrderWithReceiveBo>> getWithReceive(
+      @Valid QueryPurchaseOrderWithRecevieVo vo) {
 
-    PageResult<PurchaseOrderDto> pageResult = purchaseOrderService
-        .queryWithReceive(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<PurchaseOrderDto> pageResult = purchaseOrderService.queryWithReceive(
+        getPageIndex(vo), getPageSize(vo), vo);
     List<PurchaseOrderDto> datas = pageResult.getDatas();
 
-    List<QueryPurchaseOrderWithReceiveBo> results = Collections.EMPTY_LIST;
+    List<QueryPurchaseOrderWithReceiveBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(QueryPurchaseOrderWithReceiveBo::new)
           .collect(Collectors.toList());
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 创建订单
    */
+  @ApiOperation("创建订单")
   @PreAuthorize("@permission.valid('purchase:order:add')")
   @PostMapping
-  public InvokeResult create(@RequestBody @Valid CreatePurchaseOrderVo vo) {
+  public InvokeResult<String> create(@RequestBody @Valid CreatePurchaseOrderVo vo) {
 
     vo.validate();
 
@@ -249,9 +271,10 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 修改订单
    */
+  @ApiOperation("修改订单")
   @PreAuthorize("@permission.valid('purchase:order:modify')")
   @PutMapping
-  public InvokeResult update(@RequestBody @Valid UpdatePurchaseOrderVo vo) {
+  public InvokeResult<Void> update(@RequestBody @Valid UpdatePurchaseOrderVo vo) {
 
     vo.validate();
 
@@ -263,9 +286,10 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 审核通过订单
    */
+  @ApiOperation("审核通过订单")
   @PreAuthorize("@permission.valid('purchase:order:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassPurchaseOrderVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassPurchaseOrderVo vo) {
 
     purchaseOrderService.approvePass(vo);
 
@@ -275,9 +299,11 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 批量审核通过订单
    */
+  @ApiOperation("批量审核通过订单")
   @PreAuthorize("@permission.valid('purchase:order:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassPurchaseOrderVo vo) {
+  public InvokeResult<Void> batchApprovePass(
+      @RequestBody @Valid BatchApprovePassPurchaseOrderVo vo) {
 
     purchaseOrderService.batchApprovePass(vo);
 
@@ -287,9 +313,10 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 直接审核通过订单
    */
+  @ApiOperation("直接审核通过订单")
   @PreAuthorize("@permission.valid('purchase:order:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreatePurchaseOrderVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreatePurchaseOrderVo vo) {
 
     purchaseOrderService.directApprovePass(vo);
 
@@ -299,9 +326,10 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 审核拒绝订单
    */
+  @ApiOperation("审核拒绝订单")
   @PreAuthorize("@permission.valid('purchase:order:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefusePurchaseOrderVo vo) {
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefusePurchaseOrderVo vo) {
 
     purchaseOrderService.approveRefuse(vo);
 
@@ -311,9 +339,11 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 批量审核拒绝订单
    */
+  @ApiOperation("批量审核拒绝订单")
   @PreAuthorize("@permission.valid('purchase:order:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefusePurchaseOrderVo vo) {
+  public InvokeResult<Void> batchApproveRefuse(
+      @RequestBody @Valid BatchApproveRefusePurchaseOrderVo vo) {
 
     purchaseOrderService.batchApproveRefuse(vo);
 
@@ -323,9 +353,11 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 删除订单
    */
+  @ApiOperation("删除订单")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:order:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
 
     purchaseOrderService.deleteById(id);
 
@@ -335,10 +367,11 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 批量删除订单
    */
+  @ApiOperation("批量删除订单")
   @PreAuthorize("@permission.valid('purchase:order:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
 
     purchaseOrderService.deleteByIds(ids);
 
@@ -348,9 +381,11 @@ public class PurchaseOrderController extends DefaultBaseController {
   /**
    * 取消审核订单
    */
+  @ApiOperation("取消审核订单")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:order:approve')")
   @PatchMapping("/approve/cancel")
-  public InvokeResult cancelApprovePass(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<Void> cancelApprovePass(@NotBlank(message = "订单ID不能为空！") String id) {
 
     purchaseOrderService.cancelApprovePass(id);
 

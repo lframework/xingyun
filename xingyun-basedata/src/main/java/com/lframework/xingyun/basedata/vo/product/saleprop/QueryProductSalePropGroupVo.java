@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.vo.product.saleprop;
 
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.starter.web.vo.PageVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,15 +16,18 @@ public class QueryProductSalePropGroupVo extends PageVo implements BaseVo, Seria
   /**
    * 编号
    */
+  @ApiModelProperty("编号")
   private String code;
 
   /**
    * 名称
    */
+  @ApiModelProperty("名称")
   private String name;
 
   /**
    * 状态
    */
+  @ApiModelProperty("状态")
   private Boolean available;
 }

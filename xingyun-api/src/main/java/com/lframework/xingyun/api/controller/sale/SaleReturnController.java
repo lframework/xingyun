@@ -24,6 +24,10 @@ import com.lframework.xingyun.sc.vo.sale.returned.BatchApproveRefuseSaleReturnVo
 import com.lframework.xingyun.sc.vo.sale.returned.CreateSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.UpdateSaleReturnVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -46,6 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "销售退单管理")
 @Validated
 @RestController
 @RequestMapping("/sale/return")
@@ -57,9 +62,12 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 打印
    */
+  @ApiOperation("打印")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:return:query')")
   @GetMapping("/print")
-  public InvokeResult print(@NotBlank(message = "退单ID不能为空！") String id) {
+  public InvokeResult<A4ExcelPortraitPrintBo<PrintSaleReturnBo>> print(
+      @NotBlank(message = "退单ID不能为空！") String id) {
 
     SaleReturnFullDto data = saleReturnService.getDetail(id);
 
@@ -78,37 +86,40 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 退单列表
    */
+  @ApiOperation("退单列表")
   @PreAuthorize("@permission.valid('sale:return:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QuerySaleReturnVo vo) {
+  public InvokeResult<PageResult<QuerySaleReturnBo>> query(@Valid QuerySaleReturnVo vo) {
 
-    PageResult<SaleReturnDto> pageResult = saleReturnService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SaleReturnDto> pageResult = saleReturnService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<SaleReturnDto> datas = pageResult.getDatas();
+    List<QuerySaleReturnBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QuerySaleReturnBo> results = datas.stream().map(QuerySaleReturnBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QuerySaleReturnBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('sale:return:export')")
   @PostMapping("/export")
   public void export(@Valid QuerySaleReturnVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("销售退货单信息", SaleReturnExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售退货单信息",
+        SaleReturnExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<SaleReturnDto> pageResult = saleReturnService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<SaleReturnDto> pageResult = saleReturnService.query(pageIndex, getExportSize(),
+            vo);
         List<SaleReturnDto> datas = pageResult.getDatas();
         List<SaleReturnExportModel> models = datas.stream().map(SaleReturnExportModel::new)
             .collect(Collectors.toList());
@@ -127,9 +138,11 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:return:query')")
   @GetMapping
-  public InvokeResult getById(@NotBlank(message = "退单ID不能为空！") String id) {
+  public InvokeResult<GetSaleReturnBo> getById(@NotBlank(message = "退单ID不能为空！") String id) {
 
     SaleReturnFullDto data = saleReturnService.getDetail(id);
 
@@ -141,9 +154,10 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 创建
    */
+  @ApiOperation("创建")
   @PreAuthorize("@permission.valid('sale:return:add')")
   @PostMapping
-  public InvokeResult create(@RequestBody @Valid CreateSaleReturnVo vo) {
+  public InvokeResult<String> create(@RequestBody @Valid CreateSaleReturnVo vo) {
 
     vo.validate();
 
@@ -155,9 +169,10 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 修改
    */
+  @ApiOperation("修改")
   @PreAuthorize("@permission.valid('sale:return:modify')")
   @PutMapping
-  public InvokeResult update(@RequestBody @Valid UpdateSaleReturnVo vo) {
+  public InvokeResult<Void> update(@RequestBody @Valid UpdateSaleReturnVo vo) {
 
     vo.validate();
 
@@ -169,9 +184,10 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 审核通过
    */
+  @ApiOperation("审核通过")
   @PreAuthorize("@permission.valid('sale:return:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassSaleReturnVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleReturnVo vo) {
 
     saleReturnService.approvePass(vo);
 
@@ -181,9 +197,10 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 批量审核通过
    */
+  @ApiOperation("批量审核通过")
   @PreAuthorize("@permission.valid('sale:return:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSaleReturnVo vo) {
+  public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassSaleReturnVo vo) {
 
     saleReturnService.batchApprovePass(vo);
 
@@ -193,9 +210,10 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
+  @ApiOperation("直接审核通过")
   @PreAuthorize("@permission.valid('sale:return:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreateSaleReturnVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSaleReturnVo vo) {
 
     saleReturnService.directApprovePass(vo);
 
@@ -205,9 +223,10 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
+  @ApiOperation("审核拒绝")
   @PreAuthorize("@permission.valid('sale:return:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSaleReturnVo vo) {
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleReturnVo vo) {
 
     saleReturnService.approveRefuse(vo);
 
@@ -217,9 +236,11 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 批量审核拒绝
    */
+  @ApiOperation("批量审核拒绝")
   @PreAuthorize("@permission.valid('sale:return:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSaleReturnVo vo) {
+  public InvokeResult<Void> batchApproveRefuse(
+      @RequestBody @Valid BatchApproveRefuseSaleReturnVo vo) {
 
     saleReturnService.batchApproveRefuse(vo);
 
@@ -229,9 +250,11 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 删除
    */
+  @ApiOperation("删除")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:return:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "销售退货单ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "销售退货单ID不能为空！") String id) {
 
     saleReturnService.deleteById(id);
 
@@ -241,10 +264,11 @@ public class SaleReturnController extends DefaultBaseController {
   /**
    * 批量删除
    */
+  @ApiOperation("批量删除")
   @PreAuthorize("@permission.valid('sale:return:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的销售退货单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的销售退货单！") List<String> ids) {
 
     saleReturnService.deleteByIds(ids);
 

@@ -1,6 +1,7 @@
 package com.lframework.xingyun.basedata.vo.product.retail;
 
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.validation.constraints.Digits;
@@ -16,11 +17,13 @@ public class CreateProductRetailVo implements BaseVo, Serializable {
   /**
    * 商品ID
    */
+  @ApiModelProperty("商品ID")
   private String id;
 
   /**
    * 零售价
    */
+  @ApiModelProperty(value = "零售价", required = true)
   @NotNull(message = "请输入零售价！")
   @Positive(message = "零售价必须大于0！")
   @Digits(integer = 20, fraction = 2, message = "零售价最多允许2位小数！")

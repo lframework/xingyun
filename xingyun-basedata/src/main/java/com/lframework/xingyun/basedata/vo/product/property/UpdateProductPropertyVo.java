@@ -5,6 +5,7 @@ import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.basedata.enums.ColumnDataType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
 import com.lframework.xingyun.basedata.enums.PropertyType;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
@@ -19,30 +20,35 @@ public class UpdateProductPropertyVo implements BaseVo, Serializable {
   /**
    * ID
    */
+  @ApiModelProperty(value = "ID", required = false)
   @NotBlank(message = "ID不能为空！")
   private String id;
 
   /**
    * 编号
    */
+  @ApiModelProperty(value = "编号", required = true)
   @NotBlank(message = "请输入编号！")
   private String code;
 
   /**
    * 名称
    */
+  @ApiModelProperty(value = "名称", required = true)
   @NotBlank(message = "请输入名称！")
   private String name;
 
   /**
    * 是否必填
    */
+  @ApiModelProperty(value = "是否必填", required = true)
   @NotNull(message = "请选择是否必填！")
   private Boolean isRequired;
 
   /**
    * 录入类型
    */
+  @ApiModelProperty(value = "录入类型", required = true)
   @NotNull(message = "请选择录入类型！")
   @IsEnum(enumClass = ColumnType.class, message = "请选择录入类型！")
   private Integer columnType;
@@ -50,12 +56,14 @@ public class UpdateProductPropertyVo implements BaseVo, Serializable {
   /**
    * 数据类型
    */
+  @ApiModelProperty("数据类型")
   @IsEnum(enumClass = ColumnDataType.class, message = "请选择数据类型！")
   private Integer columnDataType;
 
   /**
    * 属性类别
    */
+  @ApiModelProperty(value = "属性类别", required = true)
   @NotNull(message = "请选择属性类别！")
   @IsEnum(enumClass = PropertyType.class, message = "请选择属性类别！")
   private Integer propertyType;
@@ -63,16 +71,19 @@ public class UpdateProductPropertyVo implements BaseVo, Serializable {
   /**
    * 类目ID
    */
+  @ApiModelProperty("类目ID")
   private List<String> categoryIds;
 
   /**
    * 状态
    */
+  @ApiModelProperty(value = "状态", required = true)
   @NotNull(message = "请选择状态！")
   private Boolean available;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 }

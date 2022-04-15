@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>xingyun-org-adaptor</artifactId>
-  <name>组织结构适配器</name>
+  <name>【${artifactId}】组织结构适配器</name>
 
   <dependencies>
     <dependency>

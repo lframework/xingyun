@@ -1,6 +1,7 @@
 package com.lframework.xingyun.sc.vo.retail.config;
 
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
@@ -13,12 +14,14 @@ public class UpdateRetailConfigVo implements BaseVo, Serializable {
   /**
    * 零售退货单是否关联零售出库单
    */
+  @ApiModelProperty(value = "零售退货单是否关联零售出库单", required = true)
   @NotNull(message = "零售退货单是否关联零售出库单不能为空！")
   private Boolean retailReturnRequireOutStock;
 
   /**
    * 零售退货单是否多次关联零售出库单
    */
+  @ApiModelProperty(value = "零售退货单是否多次关联零售出库单", required = true)
   @NotNull(message = "零售退货单是否多次关联零售出库单不能为空！")
   private Boolean retailReturnMultipleRelateOutStock;
 }

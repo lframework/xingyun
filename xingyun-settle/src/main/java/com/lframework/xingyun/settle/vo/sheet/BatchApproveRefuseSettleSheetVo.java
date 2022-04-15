@@ -1,6 +1,7 @@
 package com.lframework.xingyun.settle.vo.sheet;
 
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
@@ -15,12 +16,14 @@ public class BatchApproveRefuseSettleSheetVo implements BaseVo, Serializable {
   /**
    * ID
    */
+  @ApiModelProperty(value = "ID", required = true)
   @NotNull(message = "ID不能为空！")
   private List<String> ids;
 
   /**
    * 拒绝理由
    */
+  @ApiModelProperty(value = "拒绝理由", required = true)
   @NotBlank(message = "拒绝理由不能为空！")
   private String refuseReason;
 }

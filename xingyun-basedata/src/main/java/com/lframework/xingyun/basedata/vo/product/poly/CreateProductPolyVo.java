@@ -3,6 +3,7 @@ package com.lframework.xingyun.basedata.vo.product.poly;
 import com.lframework.common.exceptions.impl.InputErrorException;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,41 +23,48 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   /**
    * 商品货号
    */
+  @ApiModelProperty(value = "商品货号", required = true)
   @NotBlank(message = "商品货号不能为空！")
   private String code;
 
   /**
    * 商品名称
    */
+  @ApiModelProperty(value = "商品名称", required = true)
   @NotBlank(message = "商品名称不能为空！")
   private String name;
 
   /**
    * 商品简称
    */
+  @ApiModelProperty("商品简称")
   private String shortName;
 
   /**
    * 类目ID
    */
+  @ApiModelProperty(value = "类目ID", required = true)
   @NotBlank(message = "请选择商品类目！")
   private String categoryId;
 
   /**
    * 品牌ID
    */
+  @ApiModelProperty(value = "品牌ID", required = true)
   @NotBlank(message = "请选择商品品牌！")
   private String brandId;
 
   /**
    * 是否多销售属性
    */
+  @ApiModelProperty(value = "是否多销售属性", required = true)
   @NotNull(message = "请选择是否多销售属性！")
   private Boolean multipleSaleProp;
 
   /**
    * 进项税率（%）
    */
+  @ApiModelProperty(value = "进项税率（%）", required = true)
   @NotNull(message = "进项税率（%）不能为空！")
   @Min(value = 0, message = "进项税率（%）不允许小于0！")
   @Digits(integer = 10, fraction = 0, message = "进项税率（%）必须为整数！")
@@ -65,6 +73,7 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   /**
    * 销项税率（%）
    */
+  @ApiModelProperty(value = "销项税率（%）", required = true)
   @NotNull(message = "销项税率（%）不能为空！")
   @Min(value = 0, message = "销项税率（%）不允许小于0！")
   @Digits(integer = 10, fraction = 0, message = "销项税率（%）必须为整数！")
@@ -73,6 +82,7 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   /**
    * 商品属性
    */
+  @ApiModelProperty(value = "商品属性", required = true)
   @Valid
   @NotEmpty
   private List<PropertyVo> properties;
@@ -80,6 +90,7 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   /**
    * 商品信息
    */
+  @ApiModelProperty(value = "商品信息", required = true)
   @Valid
   @NotEmpty
   private List<ProductVo> products;

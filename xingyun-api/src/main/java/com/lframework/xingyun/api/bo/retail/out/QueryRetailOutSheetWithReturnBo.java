@@ -10,6 +10,7 @@ import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDto;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,41 +22,49 @@ public class QueryRetailOutSheetWithReturnBo extends BaseBo<RetailOutSheetDto> {
   /**
    * ID
    */
+  @ApiModelProperty("ID")
   private String id;
 
   /**
    * 单号
    */
+  @ApiModelProperty("单号")
   private String code;
 
   /**
    * 仓库编号
    */
+  @ApiModelProperty("仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
+  @ApiModelProperty("仓库名称")
   private String scName;
 
   /**
    * 会员编号
    */
+  @ApiModelProperty("会员编号")
   private String memberCode;
 
   /**
    * 会员名称
    */
+  @ApiModelProperty("会员名称")
   private String memberName;
 
   /**
    * 创建人
    */
+  @ApiModelProperty("创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
+  @ApiModelProperty("创建时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime createTime;
 

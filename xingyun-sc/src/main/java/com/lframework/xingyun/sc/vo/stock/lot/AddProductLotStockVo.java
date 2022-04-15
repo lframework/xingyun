@@ -1,6 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.lot;
 
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -15,18 +16,21 @@ public class AddProductLotStockVo implements BaseVo, Serializable {
   /**
    * 批次ID
    */
+  @ApiModelProperty(value = "批次ID", required = true)
   @NotBlank(message = "批次ID不能为空！")
   private String lotId;
 
   /**
    * 仓库ID
    */
+  @ApiModelProperty(value = "仓库ID", required = true)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 入库数量
    */
+  @ApiModelProperty(value = "入库数量", required = true)
   @NotNull(message = "入库数量不能为空！")
   @Min(message = "入库数量必须大于0！", value = 1)
   private Integer stockNum;

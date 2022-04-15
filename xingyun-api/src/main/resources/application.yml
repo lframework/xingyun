@@ -6,6 +6,8 @@ server:
       #SESSION过期时间
       timeout: 120m
 spring:
+  application:
+    name: xingyun-api
   profiles:
     active: dev
   servlet:
@@ -40,28 +42,48 @@ spring:
       - classpath:db/migration
     check-location: false
     placeholder-replacement: false
-#session配置
-session:
-  #同一个用户最多同时在线数量
-  maximum-sessions: 3
-  #达到最多用户数后是否保持在线
-  max-sessions-prevents-login: false
-  #Token Secret 正式使用时需要修改secret
-  token-secret: HtZvM7$uHXiTKyYM
-  #Token发行人
-  issuer: xingyun
+
+knife4j:
+  enable: true
+  setting:
+    language: zh-CN
+    # 是否显示界面中SwaggerModel功能
+    enableSwaggerModels: false
+    # 是否显示界面中"文档管理"功能
+    enableDocumentManage: true
+    # 是否默认显示底部Footer
+    enableFooter: false
+    # 是否自定义Footer
+    enableFooterCustom: true
+    # 自定义Footer内容(支持Markdown语法)
+    footerCustomContent: GNU Lesser General Public License v3.0 | Copyright  2019-[星云ERP](https://gitee.com/lframework/xingyun)
+    # 是否开启调试
+    enableDebug: true
+    # 是否显示OpenAPI原始结构的Tab框，默认显示
+    enableOpenApi: false
+  # 是否生产环境
+  production: false
+
+# Sa-Token配置
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: ${session.token-key}
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
+
 
 #默认配置
 default-setting:
-  #是否加载默认Security配置
-  security:
-    enabled: true
-  #是否加载默认controller
-  controller:
-    enabled: true
-  #是否加载默认系统功能
-  sys-function:
-    enabled: true
   #默认单号生成类型 FLOW：流水号 SNOW_FLAKE：雪花算法，如果不配置，默认是SNOW_FLAKE
   generator-type: SNOW_FLAKE
   #默认的用户ID，用于写入数据库时的createBy和updateBy的自动赋值，如果有登录人则取登录人ID，如果没有则取默认用户ID，如果不配置，默认是1
@@ -160,3 +182,7 @@ bpm:
   api-url: http://localhost:8085
   #跳转BPM url
   jump-url: http://localhost:8085
+
+#会话配置
+session:
+  token-key: X-Auth-Token

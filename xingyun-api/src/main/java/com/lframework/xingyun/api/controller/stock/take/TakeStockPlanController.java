@@ -28,6 +28,9 @@ import com.lframework.xingyun.sc.vo.stock.take.plan.CreateTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.HandleTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "盘点任务")
 @Validated
 @RestController
 @RequestMapping("/stock/take/plan")
@@ -65,40 +69,40 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 查询列表
    */
+  @ApiOperation("查询列表")
   @PreAuthorize("@permission.valid('stock:take:plan:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryTakeStockPlanVo vo) {
+  public InvokeResult<PageResult<QueryTakeStockPlanBo>> query(@Valid QueryTakeStockPlanVo vo) {
 
-    PageResult<TakeStockPlanDto> pageResult = takeStockPlanService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<TakeStockPlanDto> pageResult = takeStockPlanService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<TakeStockPlanDto> datas = pageResult.getDatas();
+    List<QueryTakeStockPlanBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryTakeStockPlanBo> results = datas.stream().map(QueryTakeStockPlanBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryTakeStockPlanBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 导出列表
    */
+  @ApiOperation("导出列表")
   @PreAuthorize("@permission.valid('stock:take:plan:export')")
   @PostMapping("/export")
   public void export(@Valid QueryTakeStockPlanVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("盘点任务信息", TakeStockPlanExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("盘点任务信息",
+        TakeStockPlanExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<TakeStockPlanDto> pageResult = takeStockPlanService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<TakeStockPlanDto> pageResult = takeStockPlanService.query(pageIndex,
+            getExportSize(), vo);
         List<TakeStockPlanDto> datas = pageResult.getDatas();
         List<TakeStockPlanExportModel> models = datas.stream().map(TakeStockPlanExportModel::new)
             .collect(Collectors.toList());
@@ -117,9 +121,11 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:take:plan:query', 'stock:take:sheet:add', 'stock:take:sheet:modify')")
   @GetMapping
-  public InvokeResult get(@NotBlank(message = "id不能为空！") String id) {
+  public InvokeResult<GetTakeStockPlanBo> get(@NotBlank(message = "id不能为空！") String id) {
 
     TakeStockPlanDto data = takeStockPlanService.getById(id);
     if (data == null) {
@@ -134,9 +140,11 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询详情")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:take:plan:query', 'stock:take:sheet:add', 'stock:take:sheet:modify')")
   @GetMapping("/detail")
-  public InvokeResult getDetail(@NotBlank(message = "id不能为空！") String id) {
+  public InvokeResult<TakeStockPlanFullBo> getDetail(@NotBlank(message = "id不能为空！") String id) {
 
     TakeStockPlanFullDto data = takeStockPlanService.getDetail(id);
     if (data == null) {
@@ -151,9 +159,12 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 根据盘点任务ID查询商品信息
    */
+  @ApiOperation("根据盘点任务ID查询商品信息")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:take:sheet:add', 'stock:take:sheet:modify')")
   @GetMapping("/products")
-  public InvokeResult getProducts(@NotBlank(message = "id不能为空！") String id) {
+  public InvokeResult<List<QueryTakeStockPlanProductBo>> getProducts(
+      @NotBlank(message = "id不能为空！") String id) {
 
     TakeStockConfigDto config = takeStockConfigService.get();
     if (!config.getShowProduct()) {
@@ -175,9 +186,10 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 新增
    */
+  @ApiOperation("新增")
   @PreAuthorize("@permission.valid('stock:take:plan:add')")
   @PostMapping
-  public InvokeResult create(@Valid @RequestBody CreateTakeStockPlanVo vo) {
+  public InvokeResult<Void> create(@Valid @RequestBody CreateTakeStockPlanVo vo) {
 
     vo.validate();
 
@@ -196,9 +208,10 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 修改
    */
+  @ApiOperation("修改")
   @PreAuthorize("@permission.valid('stock:take:plan:modify')")
   @PutMapping
-  public InvokeResult update(@Valid UpdateTakeStockPlanVo vo) {
+  public InvokeResult<Void> update(@Valid UpdateTakeStockPlanVo vo) {
 
     takeStockPlanService.update(vo);
 
@@ -208,9 +221,11 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 差异生成
    */
+  @ApiOperation("差异生成")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:take:plan:create-diff')")
   @PatchMapping("/diff")
-  public InvokeResult createDiff(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<Void> createDiff(@NotBlank(message = "ID不能为空！") String id) {
 
     takeStockPlanService.createDiff(id);
 
@@ -220,9 +235,10 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 差异处理
    */
+  @ApiOperation("差异处理")
   @PreAuthorize("@permission.valid('stock:take:plan:handle-diff')")
   @PatchMapping("/handle")
-  public InvokeResult handleDiff(@Valid @RequestBody HandleTakeStockPlanVo vo) {
+  public InvokeResult<Void> handleDiff(@Valid @RequestBody HandleTakeStockPlanVo vo) {
 
     takeStockPlanService.handleDiff(vo);
 
@@ -232,9 +248,10 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 作废
    */
+  @ApiOperation("作废")
   @PreAuthorize("@permission.valid('stock:take:plan:cancel')")
   @PatchMapping("/cancel")
-  public InvokeResult cancel(@Valid CancelTakeStockPlanVo vo) {
+  public InvokeResult<Void> cancel(@Valid CancelTakeStockPlanVo vo) {
 
     takeStockPlanService.cancel(vo);
 
@@ -244,9 +261,11 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 删除
    */
+  @ApiOperation("删除")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:take:plan:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "ID不能为空！") String id) {
 
     takeStockPlanService.deleteById(id);
 

@@ -27,6 +27,11 @@ import com.lframework.xingyun.sc.vo.stock.adjust.BatchApproveRefuseStockCostAdju
 import com.lframework.xingyun.sc.vo.stock.adjust.CreateStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.UpdateStockCostAdjustSheetVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "库存成本调整单")
 @Validated
 @RestController
 @RequestMapping("/stock/adjust/cost")
@@ -64,31 +70,34 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 查询列表
    */
+  @ApiOperation("查询列表")
   @PreAuthorize("@permission.valid('stock:adjust:cost:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryStockCostAdjustSheetVo vo) {
+  public InvokeResult<PageResult<QueryStockCostAdjustSheetBo>> query(
+      @Valid QueryStockCostAdjustSheetVo vo) {
 
-    PageResult<StockCostAdjustSheetDto> pageResult = stockCostAdjustSheetService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<StockCostAdjustSheetDto> pageResult = stockCostAdjustSheetService.query(
+        getPageIndex(vo), getPageSize(vo), vo);
 
     List<StockCostAdjustSheetDto> datas = pageResult.getDatas();
+    List<QueryStockCostAdjustSheetBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryStockCostAdjustSheetBo> results = datas.stream()
-          .map(QueryStockCostAdjustSheetBo::new).collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryStockCostAdjustSheetBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:adjust:cost:query')")
   @GetMapping("/detail")
-  public InvokeResult getDetail(@NotBlank(message = "id不能为空！") String id) {
+  public InvokeResult<StockCostAdjustSheetFullBo> getDetail(
+      @NotBlank(message = "id不能为空！") String id) {
 
     StockCostAdjustSheetFullDto data = stockCostAdjustSheetService.getDetail(id);
     if (data == null) {
@@ -100,22 +109,25 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
     return InvokeResultBuilder.success(result);
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('stock:adjust:cost:export')")
   @PostMapping("/export")
   public void export(@Valid QueryStockCostAdjustSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("库存成本调整单信息", StockCostAdjustSheetExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("库存成本调整单信息",
+        StockCostAdjustSheetExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<StockCostAdjustSheetDto> pageResult = stockCostAdjustSheetService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<StockCostAdjustSheetDto> pageResult = stockCostAdjustSheetService.query(
+            pageIndex, getExportSize(), vo);
         List<StockCostAdjustSheetDto> datas = pageResult.getDatas();
         List<StockCostAdjustSheetExportModel> models = datas.stream()
-            .map(StockCostAdjustSheetExportModel::new)
-            .collect(Collectors.toList());
+            .map(StockCostAdjustSheetExportModel::new).collect(Collectors.toList());
         builder.doWrite(models);
 
         if (!pageResult.isHasNext()) {
@@ -131,15 +143,19 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 根据关键字查询商品列表
    */
+  @ApiOperation("根据关键字查询商品列表")
+  @ApiImplicitParams({
+      @ApiImplicitParam(value = "仓库ID", name = "scId", paramType = "query", required = true),
+      @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
   @PreAuthorize("@permission.valid('stock:adjust:cost:add', 'stock:adjust:cost:modify')")
   @GetMapping("/product/search")
-  public InvokeResult searchProducts(@NotBlank(message = "仓库ID不能为空！") String scId,
-      String condition) {
+  public InvokeResult<List<StockCostAdjustProductBo>> searchProducts(
+      @NotBlank(message = "仓库ID不能为空！") String scId, String condition) {
     if (StringUtil.isBlank(condition)) {
       return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
-    PageResult<StockCostAdjustProductDto> pageResult = productService
-        .queryStockCostAdjustByCondition(getPageIndex(), getPageSize(), scId, condition);
+    PageResult<StockCostAdjustProductDto> pageResult = productService.queryStockCostAdjustByCondition(
+        getPageIndex(), getPageSize(), scId, condition);
     List<StockCostAdjustProductBo> results = Collections.EMPTY_LIST;
     List<StockCostAdjustProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
@@ -152,29 +168,31 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 查询商品列表
    */
+  @ApiOperation("查询商品列表")
   @PreAuthorize("@permission.valid('stock:adjust:cost:add', 'stock:adjust:cost:modify')")
   @GetMapping("/product/list")
-  public InvokeResult queryProductList(@Valid QueryStockCostAdjustProductVo vo) {
+  public InvokeResult<PageResult<StockCostAdjustProductBo>> queryProductList(
+      @Valid QueryStockCostAdjustProductVo vo) {
 
-    PageResult<StockCostAdjustProductDto> pageResult = productService
-        .queryStockCostAdjustList(getPageIndex(), getPageSize(), vo);
-    List<StockCostAdjustProductBo> results = Collections.EMPTY_LIST;
+    PageResult<StockCostAdjustProductDto> pageResult = productService.queryStockCostAdjustList(
+        getPageIndex(), getPageSize(), vo);
+    List<StockCostAdjustProductBo> results = null;
     List<StockCostAdjustProductDto> datas = pageResult.getDatas();
+
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(StockCostAdjustProductBo::new).collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 新增
    */
+  @ApiOperation("新增")
   @PreAuthorize("@permission.valid('stock:adjust:cost:add')")
   @PostMapping
-  public InvokeResult create(@Valid @RequestBody CreateStockCostAdjustSheetVo vo) {
+  public InvokeResult<Void> create(@Valid @RequestBody CreateStockCostAdjustSheetVo vo) {
 
     vo.validate();
 
@@ -186,9 +204,10 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 修改
    */
+  @ApiOperation("修改")
   @PreAuthorize("@permission.valid('stock:adjust:cost:modify')")
   @PutMapping
-  public InvokeResult update(@Valid @RequestBody UpdateStockCostAdjustSheetVo vo) {
+  public InvokeResult<Void> update(@Valid @RequestBody UpdateStockCostAdjustSheetVo vo) {
 
     vo.validate();
 
@@ -200,9 +219,11 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
+  @ApiOperation("根据ID删除")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:adjust:cost:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "id不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "id不能为空！") String id) {
 
     stockCostAdjustSheetService.deleteById(id);
 
@@ -212,10 +233,11 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 批量删除
    */
+  @ApiOperation("批量删除")
   @PreAuthorize("@permission.valid('stock:adjust:cost:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的库存成本调整单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的库存成本调整单！") List<String> ids) {
 
     stockCostAdjustSheetService.deleteByIds(ids);
 
@@ -225,9 +247,10 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 审核通过
    */
+  @ApiOperation("审核通过")
   @PreAuthorize("@permission.valid('stock:adjust:cost:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassStockCostAdjustSheetVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassStockCostAdjustSheetVo vo) {
 
     stockCostAdjustSheetService.approvePass(vo);
 
@@ -237,9 +260,10 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 批量审核通过
    */
+  @ApiOperation("批量审核通过")
   @PreAuthorize("@permission.valid('stock:adjust:cost:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(
+  public InvokeResult<Void> batchApprovePass(
       @RequestBody @Valid BatchApprovePassStockCostAdjustSheetVo vo) {
 
     stockCostAdjustSheetService.batchApprovePass(vo);
@@ -250,9 +274,10 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
+  @ApiOperation("直接审核通过")
   @PreAuthorize("@permission.valid('stock:adjust:cost:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreateStockCostAdjustSheetVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateStockCostAdjustSheetVo vo) {
 
     stockCostAdjustSheetService.directApprovePass(vo);
 
@@ -262,9 +287,11 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
+  @ApiOperation("审核拒绝")
   @PreAuthorize("@permission.valid('stock:adjust:cost:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseStockCostAdjustSheetVo vo) {
+  public InvokeResult<Void> approveRefuse(
+      @RequestBody @Valid ApproveRefuseStockCostAdjustSheetVo vo) {
 
     stockCostAdjustSheetService.approveRefuse(vo);
 
@@ -274,9 +301,10 @@ public class StockCostAdjustSheetController extends DefaultBaseController {
   /**
    * 批量审核拒绝
    */
+  @ApiOperation("批量审核拒绝")
   @PreAuthorize("@permission.valid('stock:adjust:cost:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(
+  public InvokeResult<Void> batchApproveRefuse(
       @RequestBody @Valid BatchApproveRefuseStockCostAdjustSheetVo vo) {
 
     stockCostAdjustSheetService.batchApproveRefuse(vo);

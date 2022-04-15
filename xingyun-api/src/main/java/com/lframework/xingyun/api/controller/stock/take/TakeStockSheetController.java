@@ -30,6 +30,11 @@ import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApproveRefuseTakeStock
 import com.lframework.xingyun.sc.vo.stock.take.sheet.CreateTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.UpdateTakeStockSheetVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +58,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "盘点单")
 @Validated
 @RestController
 @RequestMapping("/stock/take/sheet")
@@ -70,40 +76,40 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 查询列表
    */
+  @ApiOperation("查询列表")
   @PreAuthorize("@permission.valid('stock:take:sheet:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryTakeStockSheetVo vo) {
+  public InvokeResult<PageResult<QueryTakeStockSheetBo>> query(@Valid QueryTakeStockSheetVo vo) {
 
-    PageResult<TakeStockSheetDto> pageResult = takeStockSheetService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<TakeStockSheetDto> pageResult = takeStockSheetService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<TakeStockSheetDto> datas = pageResult.getDatas();
+    List<QueryTakeStockSheetBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryTakeStockSheetBo> results = datas.stream().map(QueryTakeStockSheetBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryTakeStockSheetBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 导出列表
    */
+  @ApiOperation("导出列表")
   @PreAuthorize("@permission.valid('stock:take:sheet:export')")
   @PostMapping("/export")
   public void export(@Valid QueryTakeStockSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("库存盘点单信息", TakeStockSheetExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("库存盘点单信息",
+        TakeStockSheetExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<TakeStockSheetDto> pageResult = takeStockSheetService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<TakeStockSheetDto> pageResult = takeStockSheetService.query(pageIndex,
+            getExportSize(), vo);
         List<TakeStockSheetDto> datas = pageResult.getDatas();
         List<TakeStockSheetExportModel> models = datas.stream().map(TakeStockSheetExportModel::new)
             .collect(Collectors.toList());
@@ -122,9 +128,11 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:take:sheet:query')")
   @GetMapping("/detail")
-  public InvokeResult getDetail(@NotBlank(message = "id不能为空！") String id) {
+  public InvokeResult<TakeStockSheetFullBo> getDetail(@NotBlank(message = "id不能为空！") String id) {
 
     TakeStockSheetFullDto data = takeStockSheetService.getDetail(id);
     if (data == null) {
@@ -139,10 +147,14 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 根据关键字查询商品列表
    */
+  @ApiOperation("根据关键字查询商品列表")
+  @ApiImplicitParams({
+      @ApiImplicitParam(value = "盘点任务ID", name = "planId", paramType = "query", required = true),
+      @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
   @PreAuthorize("@permission.valid('stock:take:sheet:add', 'stock:take:sheet:modify')")
   @GetMapping("/product/search")
-  public InvokeResult searchProducts(@NotBlank(message = "盘点任务ID不能为空！") String planId,
-      String condition) {
+  public InvokeResult<List<TakeStockSheetProductBo>> searchProducts(
+      @NotBlank(message = "盘点任务ID不能为空！") String planId, String condition) {
     if (StringUtil.isBlank(condition)) {
       return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
@@ -151,8 +163,8 @@ public class TakeStockSheetController extends DefaultBaseController {
     if (takeStockPlan.getTakeType() == TakeStockPlanType.SIMPLE) {
       planId = null;
     }
-    PageResult<TakeStockSheetProductDto> pageResult = productService
-        .queryTakeStockByCondition(getPageIndex(), getPageSize(), planId, condition);
+    PageResult<TakeStockSheetProductDto> pageResult = productService.queryTakeStockByCondition(
+        getPageIndex(), getPageSize(), planId, condition);
     List<TakeStockSheetProductBo> results = Collections.EMPTY_LIST;
     List<TakeStockSheetProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
@@ -168,36 +180,38 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 查询商品列表
    */
+  @ApiOperation("查询商品列表")
   @PreAuthorize("@permission.valid('stock:take:sheet:add', 'stock:take:sheet:modify')")
   @GetMapping("/product/list")
-  public InvokeResult queryProductList(@Valid QueryTakeStockSheetProductVo vo) {
+  public InvokeResult<PageResult<TakeStockSheetProductBo>> queryProductList(
+      @Valid QueryTakeStockSheetProductVo vo) {
 
     TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(vo.getPlanId());
     if (takeStockPlan.getTakeType() == TakeStockPlanType.SIMPLE) {
       vo.setPlanId(null);
     }
 
-    PageResult<TakeStockSheetProductDto> pageResult = productService
-        .queryTakeStockList(getPageIndex(), getPageSize(), vo);
-    List<TakeStockSheetProductBo> results = Collections.EMPTY_LIST;
+    PageResult<TakeStockSheetProductDto> pageResult = productService.queryTakeStockList(
+        getPageIndex(), getPageSize(), vo);
+    List<TakeStockSheetProductBo> results = null;
     List<TakeStockSheetProductDto> datas = pageResult.getDatas();
+
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream()
           .map(t -> new TakeStockSheetProductBo(t, vo.getPlanId(), takeStockPlan.getScId()))
           .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 新增
    */
+  @ApiOperation("新增")
   @PreAuthorize("@permission.valid('stock:take:sheet:add')")
   @PostMapping
-  public InvokeResult create(@Valid @RequestBody CreateTakeStockSheetVo vo) {
+  public InvokeResult<Void> create(@Valid @RequestBody CreateTakeStockSheetVo vo) {
 
     takeStockSheetService.create(vo);
 
@@ -207,9 +221,10 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 修改
    */
+  @ApiOperation("修改")
   @PreAuthorize("@permission.valid('stock:take:sheet:modify')")
   @PutMapping
-  public InvokeResult update(@Valid @RequestBody UpdateTakeStockSheetVo vo) {
+  public InvokeResult<Void> update(@Valid @RequestBody UpdateTakeStockSheetVo vo) {
 
     takeStockSheetService.update(vo);
 
@@ -219,9 +234,10 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
+  @ApiOperation("直接审核通过")
   @PreAuthorize("@permission.valid('stock:take:sheet:approve')")
   @PostMapping("/approve/direct")
-  public InvokeResult directApprovePass(@Valid @RequestBody CreateTakeStockSheetVo vo) {
+  public InvokeResult<Void> directApprovePass(@Valid @RequestBody CreateTakeStockSheetVo vo) {
 
     takeStockSheetService.directApprovePass(vo);
 
@@ -231,9 +247,10 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 审核通过
    */
+  @ApiOperation("审核通过")
   @PreAuthorize("@permission.valid('stock:take:sheet:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@Valid ApprovePassTakeStockSheetVo vo) {
+  public InvokeResult<Void> approvePass(@Valid ApprovePassTakeStockSheetVo vo) {
 
     takeStockSheetService.approvePass(vo);
 
@@ -243,9 +260,11 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 批量审核通过
    */
+  @ApiOperation("批量审核通过")
   @PreAuthorize("@permission.valid('stock:take:sheet:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@Valid @RequestBody BatchApprovePassTakeStockSheetVo vo) {
+  public InvokeResult<Void> batchApprovePass(
+      @Valid @RequestBody BatchApprovePassTakeStockSheetVo vo) {
 
     takeStockSheetService.batchApprovePass(vo);
 
@@ -255,9 +274,10 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
+  @ApiOperation("审核拒绝")
   @PreAuthorize("@permission.valid('stock:take:sheet:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@Valid ApproveRefuseTakeStockSheetVo vo) {
+  public InvokeResult<Void> approveRefuse(@Valid ApproveRefuseTakeStockSheetVo vo) {
 
     takeStockSheetService.approveRefuse(vo);
 
@@ -267,9 +287,11 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 批量审核拒绝
    */
+  @ApiOperation("批量审核拒绝")
   @PreAuthorize("@permission.valid('stock:take:sheet:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApprovePass(@Valid @RequestBody BatchApproveRefuseTakeStockSheetVo vo) {
+  public InvokeResult<Void> batchApprovePass(
+      @Valid @RequestBody BatchApproveRefuseTakeStockSheetVo vo) {
 
     takeStockSheetService.batchApproveRefuse(vo);
 
@@ -279,9 +301,11 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 取消审核
    */
+  @ApiOperation("取消审核")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:take:sheet:cancel-approve')")
   @PatchMapping("/approve/cancel")
-  public InvokeResult cancelApprovePass(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<Void> cancelApprovePass(@NotBlank(message = "ID不能为空！") String id) {
 
     takeStockSheetService.cancelApprovePass(id);
 
@@ -291,9 +315,11 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 删除
    */
+  @ApiOperation("删除")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('stock:take:sheet:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "ID不能为空！") String id) {
 
     takeStockSheetService.deleteById(id);
 
@@ -303,10 +329,11 @@ public class TakeStockSheetController extends DefaultBaseController {
   /**
    * 删除
    */
+  @ApiOperation("删除")
   @PreAuthorize("@permission.valid('stock:take:sheet:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult batchDelete(
-      @NotEmpty(message = "请选择要执行操作的库存盘点单！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchDelete(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择要执行操作的库存盘点单！") @RequestBody List<String> ids) {
 
     takeStockSheetService.batchDelete(ids);
 

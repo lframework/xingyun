@@ -1,6 +1,7 @@
 package com.lframework.xingyun.sc.vo.purchase.receive;
 
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
@@ -14,6 +15,7 @@ public class BatchApprovePassReceiveSheetVo implements BaseVo, Serializable {
   /**
    * 收货单ID
    */
+  @ApiModelProperty(value = "收货单ID", required = true)
   @NotEmpty(message = "收货单ID不能为空！")
   private List<String> ids;
 }

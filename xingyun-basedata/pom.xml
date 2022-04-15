@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xingyun-basedata</artifactId>
-    <name>【xingyun-basedata】基础数据服务层</name>
+    <name>【${artifactId}】基础数据服务层</name>
 
     <dependencies>
         <dependency>

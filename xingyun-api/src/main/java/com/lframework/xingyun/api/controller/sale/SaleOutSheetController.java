@@ -30,7 +30,10 @@ import com.lframework.xingyun.sc.vo.sale.out.CreateSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.sale.out.UpdateSaleOutSheetVo;
-import java.util.Collections;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -53,6 +56,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "销售出库单管理")
 @Validated
 @RestController
 @RequestMapping("/sale/out/sheet")
@@ -64,9 +68,12 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 打印
    */
+  @ApiOperation("打印")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:out:query')")
   @GetMapping("/print")
-  public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<A4ExcelPortraitPrintBo<PrintSaleOutSheetBo>> print(
+      @NotBlank(message = "订单ID不能为空！") String id) {
 
     SaleOutSheetFullDto data = saleOutSheetService.getDetail(id);
     if (data == null) {
@@ -84,37 +91,40 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 订单列表
    */
+  @ApiOperation("订单列表")
   @PreAuthorize("@permission.valid('sale:out:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QuerySaleOutSheetVo vo) {
+  public InvokeResult<PageResult<QuerySaleOutSheetBo>> query(@Valid QuerySaleOutSheetVo vo) {
 
-    PageResult<SaleOutSheetDto> pageResult = saleOutSheetService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SaleOutSheetDto> pageResult = saleOutSheetService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<SaleOutSheetDto> datas = pageResult.getDatas();
+    List<QuerySaleOutSheetBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QuerySaleOutSheetBo> results = datas.stream().map(QuerySaleOutSheetBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QuerySaleOutSheetBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('sale:out:export')")
   @PostMapping("/export")
   public void export(@Valid QuerySaleOutSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("销售出库单信息", SaleOutSheetExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售出库单信息",
+        SaleOutSheetExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<SaleOutSheetDto> pageResult = saleOutSheetService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<SaleOutSheetDto> pageResult = saleOutSheetService.query(pageIndex,
+            getExportSize(), vo);
         List<SaleOutSheetDto> datas = pageResult.getDatas();
         List<SaleOutSheetExportModel> models = datas.stream().map(SaleOutSheetExportModel::new)
             .collect(Collectors.toList());
@@ -133,9 +143,11 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:out:query')")
   @GetMapping
-  public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<GetSaleOutSheetBo> getById(@NotBlank(message = "订单ID不能为空！") String id) {
 
     SaleOutSheetFullDto data = saleOutSheetService.getDetail(id);
 
@@ -147,9 +159,12 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 根据客户ID查询默认付款日期
    */
+  @ApiOperation("根据客户ID查询默认付款日期")
+  @ApiImplicitParam(value = "客户ID", name = "customerId", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
   @GetMapping("/paymentdate")
-  public InvokeResult getPaymentDate(@NotBlank(message = "客户ID不能为空！") String customerId) {
+  public InvokeResult<GetPaymentDateBo> getPaymentDate(
+      @NotBlank(message = "客户ID不能为空！") String customerId) {
 
     GetPaymentDateDto data = saleOutSheetService.getPaymentDate(customerId);
 
@@ -161,9 +176,12 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 根据ID查询（销售退货业务）
    */
+  @ApiOperation("根据ID查询（销售退货业务）")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:return:add', 'sale:return:modify')")
   @GetMapping("/return")
-  public InvokeResult getWithReturn(@NotBlank(message = "出库单ID不能为空！") String id) {
+  public InvokeResult<SaleOutSheetWithReturnBo> getWithReturn(
+      @NotBlank(message = "出库单ID不能为空！") String id) {
 
     SaleOutSheetWithReturnDto data = saleOutSheetService.getWithReturn(id);
     SaleOutSheetWithReturnBo result = new SaleOutSheetWithReturnBo(data);
@@ -174,30 +192,32 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 查询列表（销售退货业务）
    */
+  @ApiOperation("查询列表（销售退货业务）")
   @PreAuthorize("@permission.valid('sale:return:add', 'sale:return:modify')")
   @GetMapping("/query/return")
-  public InvokeResult queryWithReturn(@Valid QuerySaleOutSheetWithReturnVo vo) {
+  public InvokeResult<PageResult<QuerySaleOutSheetWithReturnBo>> queryWithReturn(
+      @Valid QuerySaleOutSheetWithReturnVo vo) {
 
-    PageResult<SaleOutSheetDto> pageResult = saleOutSheetService
-        .queryWithReturn(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SaleOutSheetDto> pageResult = saleOutSheetService.queryWithReturn(getPageIndex(vo),
+        getPageSize(vo), vo);
     List<SaleOutSheetDto> datas = pageResult.getDatas();
 
-    List<QuerySaleOutSheetWithReturnBo> results = Collections.EMPTY_LIST;
+    List<QuerySaleOutSheetWithReturnBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(QuerySaleOutSheetWithReturnBo::new).collect(Collectors.toList());
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 创建
    */
+  @ApiOperation("创建")
   @PreAuthorize("@permission.valid('sale:out:add')")
   @PostMapping
-  public InvokeResult create(@RequestBody @Valid CreateSaleOutSheetVo vo) {
+  public InvokeResult<String> create(@RequestBody @Valid CreateSaleOutSheetVo vo) {
 
     vo.validate();
 
@@ -209,9 +229,10 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 修改
    */
+  @ApiOperation("修改")
   @PreAuthorize("@permission.valid('sale:out:modify')")
   @PutMapping
-  public InvokeResult update(@RequestBody @Valid UpdateSaleOutSheetVo vo) {
+  public InvokeResult<Void> update(@RequestBody @Valid UpdateSaleOutSheetVo vo) {
 
     vo.validate();
 
@@ -223,9 +244,10 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 审核通过
    */
+  @ApiOperation("审核通过")
   @PreAuthorize("@permission.valid('sale:out:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassSaleOutSheetVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleOutSheetVo vo) {
 
     saleOutSheetService.approvePass(vo);
 
@@ -235,9 +257,11 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 批量审核通过
    */
+  @ApiOperation("批量审核通过")
   @PreAuthorize("@permission.valid('sale:out:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSaleOutSheetVo vo) {
+  public InvokeResult<Void> batchApprovePass(
+      @RequestBody @Valid BatchApprovePassSaleOutSheetVo vo) {
 
     saleOutSheetService.batchApprovePass(vo);
 
@@ -247,9 +271,10 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
+  @ApiOperation("直接审核通过")
   @PreAuthorize("@permission.valid('sale:out:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreateSaleOutSheetVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSaleOutSheetVo vo) {
 
     saleOutSheetService.directApprovePass(vo);
 
@@ -259,9 +284,10 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
+  @ApiOperation("审核拒绝")
   @PreAuthorize("@permission.valid('sale:out:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSaleOutSheetVo vo) {
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleOutSheetVo vo) {
 
     saleOutSheetService.approveRefuse(vo);
 
@@ -271,9 +297,11 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 批量审核拒绝
    */
+  @ApiOperation("批量审核拒绝")
   @PreAuthorize("@permission.valid('sale:out:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSaleOutSheetVo vo) {
+  public InvokeResult<Void> batchApproveRefuse(
+      @RequestBody @Valid BatchApproveRefuseSaleOutSheetVo vo) {
 
     saleOutSheetService.batchApproveRefuse(vo);
 
@@ -283,9 +311,11 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 删除
    */
+  @ApiOperation("删除")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:out:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "销售出库单ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "销售出库单ID不能为空！") String id) {
 
     saleOutSheetService.deleteById(id);
 
@@ -295,10 +325,11 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 批量删除
    */
+  @ApiOperation("批量删除")
   @PreAuthorize("@permission.valid('sale:out:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的销售出库单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的销售出库单！") List<String> ids) {
 
     saleOutSheetService.deleteByIds(ids);
 

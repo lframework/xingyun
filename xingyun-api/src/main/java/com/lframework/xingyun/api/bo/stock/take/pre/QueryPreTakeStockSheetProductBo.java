@@ -11,6 +11,7 @@ import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProduc
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -21,62 +22,74 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
   /**
    * 仓库ID
    */
+  @ApiModelProperty(value = "仓库ID", hidden = true)
   @JsonIgnore
   private String scId;
 
   /**
    * 商品ID
    */
+  @ApiModelProperty("商品ID")
   private String productId;
 
   /**
    * 商品编号
    */
+  @ApiModelProperty("商品编号")
   private String productCode;
 
   /**
    * 商品名称
    */
+  @ApiModelProperty("商品名称")
   private String productName;
 
   /**
    * 类目名称
    */
+  @ApiModelProperty("类目名称")
   private String categoryName;
 
   /**
    * 品牌名称
    */
+  @ApiModelProperty("品牌名称")
   private String brandName;
 
   /**
    * SKU
    */
+  @ApiModelProperty("SKU")
   private String skuCode;
 
   /**
    * 外部编号
    */
+  @ApiModelProperty("外部编号")
   private String externalCode;
 
   /**
    * 规格
    */
+  @ApiModelProperty("规格")
   private String spec;
 
   /**
    * 单位
    */
+  @ApiModelProperty("单位")
   private String unit;
 
   /**
    * 库存数量
    */
+  @ApiModelProperty("库存数量")
   private Integer stockNum;
 
   /**
    * 盘点数量
    */
+  @ApiModelProperty("盘点数量")
   private Integer takeNum;
 
   public QueryPreTakeStockSheetProductBo(QueryPreTakeStockSheetProductDto dto, String scId) {

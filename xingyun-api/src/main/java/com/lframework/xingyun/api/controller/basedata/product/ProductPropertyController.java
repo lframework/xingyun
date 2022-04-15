@@ -16,6 +16,10 @@ import com.lframework.xingyun.basedata.service.product.IProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.UpdateProductPropertyVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "属性管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/property")
@@ -49,31 +54,33 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 属性列表
    */
+  @ApiOperation("属性列表")
   @PreAuthorize("@permission.valid('base-data:product:property:query','base-data:product:property:add','base-data:product:property:modify')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryProductPropertyVo vo) {
+  public InvokeResult<PageResult<QueryProductPropertyBo>> query(@Valid QueryProductPropertyVo vo) {
 
-    PageResult<ProductPropertyDto> pageResult = productPropertyService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<ProductPropertyDto> pageResult = productPropertyService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<ProductPropertyDto> datas = pageResult.getDatas();
+    List<QueryProductPropertyBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryProductPropertyBo> results = datas.stream().map(QueryProductPropertyBo::new)
-          .collect(Collectors.toList());
 
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryProductPropertyBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 查询属性
    */
+  @ApiOperation("查询属性")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('base-data:product:property:query','base-data:product:property:add','base-data:product:property:modify')")
   @GetMapping
-  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<GetProductPropertyBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
     ProductPropertyDto data = productPropertyService.getById(id);
     if (data == null) {
@@ -88,10 +95,11 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 批量停用属性
    */
+  @ApiOperation("批量停用属性")
   @PreAuthorize("@permission.valid('base-data:product:property:modify')")
   @PatchMapping("/unable/batch")
-  public InvokeResult batchUnable(
-      @NotEmpty(message = "请选择需要停用的属性！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的属性！") @RequestBody List<String> ids) {
 
     productPropertyService.batchUnable(ids);
     return InvokeResultBuilder.success();
@@ -100,10 +108,11 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 批量启用属性
    */
+  @ApiOperation("批量启用属性")
   @PreAuthorize("@permission.valid('base-data:product:property:modify')")
   @PatchMapping("/enable/batch")
-  public InvokeResult batchEnable(
-      @NotEmpty(message = "请选择需要启用的属性！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的属性！") @RequestBody List<String> ids) {
 
     productPropertyService.batchEnable(ids);
     return InvokeResultBuilder.success();
@@ -112,9 +121,10 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 新增属性
    */
+  @ApiOperation("新增属性")
   @PreAuthorize("@permission.valid('base-data:product:property:add')")
   @PostMapping
-  public InvokeResult create(@Valid CreateProductPropertyVo vo) {
+  public InvokeResult<Void> create(@Valid CreateProductPropertyVo vo) {
 
     productPropertyService.create(vo);
 
@@ -124,9 +134,10 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 修改属性
    */
+  @ApiOperation("修改属性")
   @PreAuthorize("@permission.valid('base-data:product:property:modify')")
   @PutMapping
-  public InvokeResult update(@Valid UpdateProductPropertyVo vo) {
+  public InvokeResult<Void> update(@Valid UpdateProductPropertyVo vo) {
 
     productPropertyService.update(vo);
 
@@ -136,11 +147,14 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 属性模型
    */
+  @ApiOperation("属性模型")
+  @ApiImplicitParam(value = "类目ID", name = "categoryId", paramType = "query", required = true)
   @GetMapping("/modelor/category")
-  public InvokeResult getModelorByCategory(@NotBlank(message = "类目ID不能为空！") String categoryId) {
+  public InvokeResult<List<ProductPropertyModelorBo>> getModelorByCategory(
+      @NotBlank(message = "类目ID不能为空！") String categoryId) {
 
-    List<ProductPropertyModelorDto> datas = productPropertyService
-        .getModelorByCategoryId(categoryId);
+    List<ProductPropertyModelorDto> datas = productPropertyService.getModelorByCategoryId(
+        categoryId);
 
     List<ProductPropertyModelorBo> results = Collections.EMPTY_LIST;
     if (!CollectionUtil.isEmpty(datas)) {

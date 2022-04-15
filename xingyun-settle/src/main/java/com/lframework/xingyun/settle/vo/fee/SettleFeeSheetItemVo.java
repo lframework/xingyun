@@ -1,6 +1,7 @@
 package com.lframework.xingyun.settle.vo.fee;
 
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -13,10 +14,12 @@ public class SettleFeeSheetItemVo implements BaseVo, Serializable {
   /**
    * 项目ID
    */
+  @ApiModelProperty("项目ID")
   private String id;
 
   /**
    * 金额
    */
+  @ApiModelProperty("金额")
   private BigDecimal amount;
 }

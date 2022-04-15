@@ -4,6 +4,7 @@ import com.lframework.common.exceptions.impl.InputErrorException;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,23 +21,27 @@ public class CreateSaleOrderVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
+  @ApiModelProperty(value = "仓库ID", required = true)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 客户ID
    */
+  @ApiModelProperty(value = "客户ID", required = true)
   @NotBlank(message = "客户ID不能为空！")
   private String customerId;
 
   /**
    * 销售员ID
    */
+  @ApiModelProperty("销售员ID")
   private String salerId;
 
   /**
    * 商品信息
    */
+  @ApiModelProperty(value = "商品信息", required = true)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<SaleProductVo> products;
@@ -44,6 +49,7 @@ public class CreateSaleOrderVo implements BaseVo, Serializable {
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   @Override

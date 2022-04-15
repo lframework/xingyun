@@ -29,7 +29,10 @@ import com.lframework.xingyun.sc.vo.purchase.receive.CreateReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.UpdateReceiveSheetVo;
-import java.util.Collections;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -52,6 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "采购收货单管理")
 @Validated
 @RestController
 @RequestMapping("/purchase/receive/sheet")
@@ -63,9 +67,12 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 打印
    */
+  @ApiOperation("打印")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:receive:query')")
   @GetMapping("/print")
-  public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<A4ExcelPortraitPrintBo<PrintReceiveSheetBo>> print(
+      @NotBlank(message = "订单ID不能为空！") String id) {
 
     ReceiveSheetFullDto data = receiveSheetService.getDetail(id);
 
@@ -80,37 +87,40 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 订单列表
    */
+  @ApiOperation("订单列表")
   @PreAuthorize("@permission.valid('purchase:receive:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryReceiveSheetVo vo) {
+  public InvokeResult<PageResult<QueryReceiveSheetBo>> query(@Valid QueryReceiveSheetVo vo) {
 
-    PageResult<ReceiveSheetDto> pageResult = receiveSheetService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<ReceiveSheetDto> pageResult = receiveSheetService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<ReceiveSheetDto> datas = pageResult.getDatas();
+    List<QueryReceiveSheetBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryReceiveSheetBo> results = datas.stream().map(QueryReceiveSheetBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryReceiveSheetBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('purchase:receive:export')")
   @PostMapping("/export")
   public void export(@Valid QueryReceiveSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("采购收货单信息", ReceiveSheetExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("采购收货单信息",
+        ReceiveSheetExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<ReceiveSheetDto> pageResult = receiveSheetService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<ReceiveSheetDto> pageResult = receiveSheetService.query(pageIndex,
+            getExportSize(), vo);
         List<ReceiveSheetDto> datas = pageResult.getDatas();
         List<ReceiveSheetExportModel> models = datas.stream().map(ReceiveSheetExportModel::new)
             .collect(Collectors.toList());
@@ -129,9 +139,11 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:receive:query')")
   @GetMapping
-  public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<GetReceiveSheetBo> getById(@NotBlank(message = "订单ID不能为空！") String id) {
 
     ReceiveSheetFullDto data = receiveSheetService.getDetail(id);
 
@@ -143,9 +155,12 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 根据供应商ID查询默认付款日期
    */
+  @ApiOperation("根据供应商ID查询默认付款日期")
+  @ApiImplicitParam(value = "供应商ID", name = "supplierId", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:receive:add', 'purchase:receive:modify')")
   @GetMapping("/paymentdate")
-  public InvokeResult getPaymentDate(@NotBlank(message = "供应商ID不能为空！") String supplierId) {
+  public InvokeResult<GetPaymentDateBo> getPaymentDate(
+      @NotBlank(message = "供应商ID不能为空！") String supplierId) {
 
     GetPaymentDateDto data = receiveSheetService.getPaymentDate(supplierId);
 
@@ -157,9 +172,12 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 根据ID查询（采购退货业务）
    */
+  @ApiOperation("根据ID查询（采购退货业务）")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:return:add', 'purchase:return:modify')")
   @GetMapping("/return")
-  public InvokeResult getWithReturn(@NotBlank(message = "收货单ID不能为空！") String id) {
+  public InvokeResult<ReceiveSheetWithReturnBo> getWithReturn(
+      @NotBlank(message = "收货单ID不能为空！") String id) {
 
     ReceiveSheetWithReturnDto data = receiveSheetService.getWithReturn(id);
     ReceiveSheetWithReturnBo result = new ReceiveSheetWithReturnBo(data);
@@ -170,30 +188,32 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 查询列表（采购退货业务）
    */
+  @ApiOperation("查询列表（采购退货业务）")
   @PreAuthorize("@permission.valid('purchase:return:add', 'purchase:return:modify')")
   @GetMapping("/query/return")
-  public InvokeResult queryWithReturn(@Valid QueryReceiveSheetWithReturnVo vo) {
+  public InvokeResult<PageResult<QueryReceiveSheetWithReturnBo>> queryWithReturn(
+      @Valid QueryReceiveSheetWithReturnVo vo) {
 
-    PageResult<ReceiveSheetDto> pageResult = receiveSheetService
-        .queryWithReturn(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<ReceiveSheetDto> pageResult = receiveSheetService.queryWithReturn(getPageIndex(vo),
+        getPageSize(vo), vo);
     List<ReceiveSheetDto> datas = pageResult.getDatas();
 
-    List<QueryReceiveSheetWithReturnBo> results = Collections.EMPTY_LIST;
+    List<QueryReceiveSheetWithReturnBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(QueryReceiveSheetWithReturnBo::new).collect(Collectors.toList());
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 创建
    */
+  @ApiOperation("创建")
   @PreAuthorize("@permission.valid('purchase:receive:add')")
   @PostMapping
-  public InvokeResult create(@RequestBody @Valid CreateReceiveSheetVo vo) {
+  public InvokeResult<String> create(@RequestBody @Valid CreateReceiveSheetVo vo) {
 
     vo.validate();
 
@@ -205,9 +225,10 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 修改
    */
+  @ApiOperation("修改")
   @PreAuthorize("@permission.valid('purchase:receive:modify')")
   @PutMapping
-  public InvokeResult update(@RequestBody @Valid UpdateReceiveSheetVo vo) {
+  public InvokeResult<Void> update(@RequestBody @Valid UpdateReceiveSheetVo vo) {
 
     vo.validate();
 
@@ -219,9 +240,10 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 审核通过
    */
+  @ApiOperation("审核通过")
   @PreAuthorize("@permission.valid('purchase:receive:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassReceiveSheetVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassReceiveSheetVo vo) {
 
     receiveSheetService.approvePass(vo);
 
@@ -231,9 +253,11 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 批量审核通过
    */
+  @ApiOperation("批量审核通过")
   @PreAuthorize("@permission.valid('purchase:receive:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassReceiveSheetVo vo) {
+  public InvokeResult<Void> batchApprovePass(
+      @RequestBody @Valid BatchApprovePassReceiveSheetVo vo) {
 
     receiveSheetService.batchApprovePass(vo);
 
@@ -243,9 +267,10 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
+  @ApiOperation("直接审核通过")
   @PreAuthorize("@permission.valid('purchase:receive:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreateReceiveSheetVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateReceiveSheetVo vo) {
 
     receiveSheetService.directApprovePass(vo);
 
@@ -255,9 +280,10 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
+  @ApiOperation("审核拒绝")
   @PreAuthorize("@permission.valid('purchase:receive:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseReceiveSheetVo vo) {
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseReceiveSheetVo vo) {
 
     receiveSheetService.approveRefuse(vo);
 
@@ -267,9 +293,11 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 批量审核拒绝
    */
+  @ApiOperation("批量审核拒绝")
   @PreAuthorize("@permission.valid('purchase:receive:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseReceiveSheetVo vo) {
+  public InvokeResult<Void> batchApproveRefuse(
+      @RequestBody @Valid BatchApproveRefuseReceiveSheetVo vo) {
 
     receiveSheetService.batchApproveRefuse(vo);
 
@@ -279,9 +307,11 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 删除
    */
+  @ApiOperation("删除")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('purchase:receive:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "采购收货单ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "采购收货单ID不能为空！") String id) {
 
     receiveSheetService.deleteById(id);
 
@@ -291,10 +321,11 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 批量删除
    */
+  @ApiOperation("批量删除")
   @PreAuthorize("@permission.valid('purchase:receive:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的采购收货单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的采购收货单！") List<String> ids) {
 
     receiveSheetService.deleteByIds(ids);
 

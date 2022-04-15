@@ -10,6 +10,7 @@ import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.config.RetailConfigDto;
 import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,33 +28,39 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
+  @ApiModelProperty(value = "仓库ID", required = true)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 会员ID
    */
+  @ApiModelProperty(value = "会员ID", required = true)
   @NotBlank(message = "会员ID不能为空！")
   private String memberId;
 
   /**
    * 采购员ID
    */
+  @ApiModelProperty("采购员ID")
   private String salerId;
 
   /**
    * 付款日期
    */
+  @ApiModelProperty("付款日期")
   private LocalDate paymentDate;
 
   /**
    * 收货单ID
    */
+  @ApiModelProperty("收货单ID")
   private String outSheetId;
 
   /**
    * 商品信息
    */
+  @ApiModelProperty(value = "商品信息", required = true)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<RetailReturnProductVo> products;
@@ -61,11 +68,13 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   /**
    * 是否关联零售出库单
    */
+  @ApiModelProperty("是否关联零售出库单")
   private Boolean required;
 
   @Override

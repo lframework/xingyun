@@ -5,6 +5,8 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.xingyun.basedata.service.product.IProductPolyService;
 import com.lframework.xingyun.basedata.vo.product.poly.CreateProductPolyVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "商品聚合管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/poly")
@@ -28,8 +31,9 @@ public class ProductPolyController extends DefaultBaseController {
   /**
    * 新增商品聚合
    */
+  @ApiOperation("新增商品聚合")
   @PostMapping
-  public InvokeResult create(@RequestBody CreateProductPolyVo vo) {
+  public InvokeResult<Void> create(@RequestBody CreateProductPolyVo vo) {
 
     vo.validate();
 

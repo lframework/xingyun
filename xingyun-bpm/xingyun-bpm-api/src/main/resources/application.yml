@@ -19,8 +19,7 @@ spring:
     host: 127.0.0.1
     port: 6379
     password: password
-    #需要与星云系统保持一致
-    database: 0
+    database: 9
 
 logging:
   level:
@@ -30,14 +29,17 @@ logging:
 ##  ignored:  [/agilebpm-ui/** ,/css/**, /js/**,/images/**,/webjars/**,/**/favicon.ico]
 ## /swagger-*,/v2/api-docs*,   swagger 免登陆
 
+# 登录入口Url，此处配星云系统的登录页Url
+login-url: http://localhost:9527
+
 ab:
   jwt:
+    # enabled需要是true，不要修改
     enabled: true
     # 与星云系统中的TokenKey需保持一致
     header: X-Auth-Token
-    # 与星云系统中的TokenSecret需保持一致
-    secret: HtZvM7$uHXiTKyYM
-    issuer: xingyun
+    # tokenHead需要是空，不要修改
+    tokenHead:
   security:
     auth-ingores: /login.*,/agilebpm-ui*,/index.html,/swagger-*,/v2/api-docs*,
     csrf-ingores: a.feg.cn,127.0.0.1,localhost
@@ -58,3 +60,32 @@ ab:
 ## 上传配置 db 存数据库 ，具体请看 IUploader 实现类
 uploader:
   default: db
+
+# Sa-Token配置 与星云系统中的配置保持一致
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: X-Auth-Token
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
+  # 配置 Sa-Token 单独使用的 Redis 连接，将业务和鉴权独立
+  alone-redis:
+    # Redis数据库索引（默认为0），最好与业务数据的redis隔离
+    database: 1
+    # Redis服务器地址
+    host: 127.0.0.1
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: password
+    # 连接超时时间
+    timeout: 10s

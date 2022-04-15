@@ -17,6 +17,7 @@ import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,61 +31,73 @@ public class PrintSaleOrderBo extends BasePrintDataBo<SaleOrderFullDto> {
   /**
    * 单号
    */
+  @ApiModelProperty("单号")
   private String code;
 
   /**
    * 仓库编号
    */
+  @ApiModelProperty("仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
+  @ApiModelProperty("仓库名称")
   private String scName;
 
   /**
    * 客户编号
    */
+  @ApiModelProperty("客户编号")
   private String customerCode;
 
   /**
    * 客户名称
    */
+  @ApiModelProperty("客户名称")
   private String customerName;
 
   /**
    * 销售员姓名
    */
+  @ApiModelProperty("销售员姓名")
   private String salerName;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   /**
    * 创建人
    */
+  @ApiModelProperty("创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
+  @ApiModelProperty("创建时间")
   private String createTime;
 
   /**
    * 审核人
    */
+  @ApiModelProperty("审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
+  @ApiModelProperty("审核时间")
   private String approveTime;
 
   /**
    * 订单明细
    */
+  @ApiModelProperty("订单明细")
   private List<OrderDetailBo> details;
 
   public PrintSaleOrderBo() {
@@ -147,36 +160,43 @@ public class PrintSaleOrderBo extends BasePrintDataBo<SaleOrderFullDto> {
     /**
      * 商品编号
      */
+    @ApiModelProperty("商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
+    @ApiModelProperty("商品名称")
     private String productName;
 
     /**
      * SKU编号
      */
+    @ApiModelProperty("SKU编号")
     private String skuCode;
 
     /**
      * 外部编号
      */
+    @ApiModelProperty("外部编号")
     private String externalCode;
 
     /**
      * 销售数量
      */
+    @ApiModelProperty("销售数量")
     private Integer orderNum;
 
     /**
      * 现价
      */
+    @ApiModelProperty("现价")
     private BigDecimal taxPrice;
 
     /**
      * 销售金额
      */
+    @ApiModelProperty("销售金额")
     private BigDecimal orderAmount;
 
     public OrderDetailBo(SaleOrderFullDto.OrderDetailDto dto) {

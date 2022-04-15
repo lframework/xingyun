@@ -13,6 +13,7 @@ import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,109 +27,130 @@ public class QueryReceiveSheetBo extends BaseBo<ReceiveSheetDto> {
   /**
    * ID
    */
+  @ApiModelProperty("ID")
   private String id;
 
   /**
    * 单号
    */
+  @ApiModelProperty("单号")
   private String code;
 
   /**
    * 仓库编号
    */
+  @ApiModelProperty("仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
+  @ApiModelProperty("仓库名称")
   private String scName;
 
   /**
    * 供应商编号
    */
+  @ApiModelProperty("供应商编号")
   private String supplierCode;
 
   /**
    * 供应商名称
    */
+  @ApiModelProperty("供应商名称")
   private String supplierName;
 
   /**
    * 采购员姓名
    */
+  @ApiModelProperty("采购员姓名")
   private String purchaserName;
 
   /**
    * 到货日期
    */
+  @ApiModelProperty("到货日期")
   @JsonFormat(pattern = StringPool.DATE_PATTERN)
   private LocalDate receiveDate;
 
   /**
    * 采购订单ID
    */
+  @ApiModelProperty("采购订单ID")
   private String purchaseOrderId;
 
   /**
    * 采购订单号
    */
+  @ApiModelProperty("采购订单号")
   private String purchaseOrderCode;
 
   /**
    * 采购数量
    */
+  @ApiModelProperty("采购数量")
   private Integer totalNum;
 
   /**
    * 赠品数量
    */
+  @ApiModelProperty("赠品数量")
   private Integer totalGiftNum;
 
   /**
    * 采购金额
    */
+  @ApiModelProperty("采购金额")
   private BigDecimal totalAmount;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   /**
    * 创建人
    */
+  @ApiModelProperty("创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
+  @ApiModelProperty("创建时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime createTime;
 
   /**
    * 审核人
    */
+  @ApiModelProperty("审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
+  @ApiModelProperty("审核时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime approveTime;
 
   /**
    * 状态
    */
+  @ApiModelProperty("状态")
   private Integer status;
 
   /**
    * 拒绝原因
    */
+  @ApiModelProperty("拒绝原因")
   private String refuseReason;
 
   /**
    * 结算状态
    */
+  @ApiModelProperty("结算状态")
   private Integer settleStatus;
 
   public QueryReceiveSheetBo(ReceiveSheetDto dto) {

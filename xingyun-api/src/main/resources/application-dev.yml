@@ -25,7 +25,7 @@ spring:
       pool-prepared-statements: true
       max-pool-prepared-statement-per-connection-size: 20
       filters: stat
-  #redis配置
+  #redis配置，这个redis用来缓存业务数据
   redis:
     #地址
     host: 127.0.0.1
@@ -47,6 +47,20 @@ spring:
         max-active: 8
         #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+
+sa-token:
+  # 配置 Sa-Token 单独使用的 Redis 连接，将业务和鉴权独立
+  alone-redis:
+    # Redis数据库索引（默认为0），最好与业务数据的redis隔离
+    database: 1
+    # Redis服务器地址
+    host: 127.0.0.1
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: password
+    # 连接超时时间
+    timeout: 10s
 
 upload:
   #下载时的baseUrl，与domain的区别：会在url后面拼接/**作为静态资源的url，而domain是后端系统的具体域名，下载时的完整url例如：upload.domain + upload.url/xxx.jpg

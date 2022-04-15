@@ -7,6 +7,7 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.IDicCityService;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -19,56 +20,67 @@ public class GetStoreCenterBo extends BaseBo<StoreCenterDto> {
   /**
    * ID
    */
+  @ApiModelProperty("ID")
   private String id;
 
   /**
    * 编号
    */
+  @ApiModelProperty("编号")
   private String code;
 
   /**
    * 名称
    */
+  @ApiModelProperty("名称")
   private String name;
 
   /**
    * 联系人
    */
+  @ApiModelProperty("联系人")
   private String contact;
 
   /**
    * 联系人手机号码
    */
+  @ApiModelProperty("联系人手机号码")
   private String telephone;
 
   /**
    * 地区ID
    */
+  @ApiModelProperty("地区ID")
   private List<String> city;
 
   /**
    * 地区名称
    */
+  @ApiModelProperty("地区名称")
   private String cityName;
 
   /**
    * 地址
    */
+  @ApiModelProperty("地址")
   private String address;
 
   /**
    * 仓库人数
    */
+  @ApiModelProperty("仓库人数")
   private Integer peopleNum;
 
   /**
    * 状态
    */
+  @ApiModelProperty("状态")
   private Boolean available;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   public GetStoreCenterBo() {

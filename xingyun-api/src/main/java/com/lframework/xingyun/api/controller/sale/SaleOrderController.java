@@ -33,6 +33,11 @@ import com.lframework.xingyun.sc.vo.sale.CreateSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,6 +61,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "销售订单管理")
 @Validated
 @RestController
 @RequestMapping("/sale/order")
@@ -70,9 +76,12 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 打印
    */
+  @ApiOperation("打印")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:order:query')")
   @GetMapping("/print")
-  public InvokeResult print(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<A4ExcelPortraitPrintBo<PrintSaleOrderBo>> print(
+      @NotBlank(message = "订单ID不能为空！") String id) {
 
     SaleOrderFullDto data = saleOrderService.getDetail(id);
     if (data == null) {
@@ -90,37 +99,40 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 订单列表
    */
+  @ApiOperation("订单列表")
   @PreAuthorize("@permission.valid('sale:order:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QuerySaleOrderVo vo) {
+  public InvokeResult<PageResult<QuerySaleOrderBo>> query(@Valid QuerySaleOrderVo vo) {
 
-    PageResult<SaleOrderDto> pageResult = saleOrderService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SaleOrderDto> pageResult = saleOrderService.query(getPageIndex(vo), getPageSize(vo),
+        vo);
 
     List<SaleOrderDto> datas = pageResult.getDatas();
+    List<QuerySaleOrderBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QuerySaleOrderBo> results = datas.stream().map(QuerySaleOrderBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QuerySaleOrderBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('sale:order:export')")
   @PostMapping("/export")
   public void export(@Valid QuerySaleOrderVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("销售单信息", SaleOrderExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售单信息",
+        SaleOrderExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<SaleOrderDto> pageResult = saleOrderService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<SaleOrderDto> pageResult = saleOrderService.query(pageIndex, getExportSize(),
+            vo);
         List<SaleOrderDto> datas = pageResult.getDatas();
         List<SaleOrderExportModel> models = datas.stream().map(SaleOrderExportModel::new)
             .collect(Collectors.toList());
@@ -139,17 +151,21 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 根据关键字查询商品
    */
+  @ApiOperation("根据关键字查询商品")
+  @ApiImplicitParams({
+      @ApiImplicitParam(value = "仓库ID", name = "scId", paramType = "query", required = true),
+      @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
   @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
   @GetMapping("/product/search")
-  public InvokeResult searchProducts(@NotBlank(message = "仓库ID不能为空！") String scId,
-      String condition) {
+  public InvokeResult<List<SaleProductBo>> searchProducts(
+      @NotBlank(message = "仓库ID不能为空！") String scId, String condition) {
 
     if (StringUtil.isBlank(condition)) {
       return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
 
-    PageResult<SaleProductDto> pageResult = productService
-        .querySaleByCondition(getPageIndex(), getPageSize(), condition);
+    PageResult<SaleProductDto> pageResult = productService.querySaleByCondition(getPageIndex(),
+        getPageSize(), condition);
     List<SaleProductBo> results = Collections.EMPTY_LIST;
     List<SaleProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
@@ -162,30 +178,31 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 查询商品列表
    */
+  @ApiOperation("查询商品列表")
   @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
   @GetMapping("/product/list")
-  public InvokeResult queryProductList(@Valid QuerySaleProductVo vo) {
+  public InvokeResult<PageResult<SaleProductBo>> queryProductList(@Valid QuerySaleProductVo vo) {
 
-    PageResult<SaleProductDto> pageResult = productService
-        .querySaleList(getPageIndex(), getPageSize(), vo);
-    List<SaleProductBo> results = Collections.EMPTY_LIST;
+    PageResult<SaleProductDto> pageResult = productService.querySaleList(getPageIndex(),
+        getPageSize(), vo);
+    List<SaleProductBo> results = null;
     List<SaleProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(t -> new SaleProductBo(vo.getScId(), t))
           .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:order:query')")
   @GetMapping
-  public InvokeResult getById(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<GetSaleOrderBo> getById(@NotBlank(message = "订单ID不能为空！") String id) {
 
     SaleOrderFullDto data = saleOrderService.getDetail(id);
 
@@ -197,9 +214,11 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 根据ID查询（出库业务）
    */
+  @ApiOperation("根据ID查询（出库业务）")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
   @GetMapping("/out")
-  public InvokeResult getWithOut(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<SaleOrderWithOutBo> getWithOut(@NotBlank(message = "订单ID不能为空！") String id) {
 
     SaleOrderWithOutDto data = saleOrderService.getWithOut(id);
     SaleOrderWithOutBo result = new SaleOrderWithOutBo(data);
@@ -210,30 +229,32 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 查询列表（出库业务）
    */
+  @ApiOperation("查询列表（出库业务）")
   @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
   @GetMapping("/query/out")
-  public InvokeResult getWithOut(@Valid QuerySaleOrderWithOutVo vo) {
+  public InvokeResult<PageResult<QuerySaleOrderWithOutBo>> getWithOut(
+      @Valid QuerySaleOrderWithOutVo vo) {
 
-    PageResult<SaleOrderDto> pageResult = saleOrderService
-        .queryWithOut(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SaleOrderDto> pageResult = saleOrderService.queryWithOut(getPageIndex(vo),
+        getPageSize(vo), vo);
     List<SaleOrderDto> datas = pageResult.getDatas();
 
-    List<QuerySaleOrderWithOutBo> results = Collections.EMPTY_LIST;
+    List<QuerySaleOrderWithOutBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(QuerySaleOrderWithOutBo::new).collect(Collectors.toList());
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 创建订单
    */
+  @ApiOperation("创建订单")
   @PreAuthorize("@permission.valid('sale:order:add')")
   @PostMapping
-  public InvokeResult create(@RequestBody @Valid CreateSaleOrderVo vo) {
+  public InvokeResult<String> create(@RequestBody @Valid CreateSaleOrderVo vo) {
 
     vo.validate();
 
@@ -245,9 +266,10 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 修改订单
    */
+  @ApiOperation("修改订单")
   @PreAuthorize("@permission.valid('sale:order:modify')")
   @PutMapping
-  public InvokeResult update(@RequestBody @Valid UpdateSaleOrderVo vo) {
+  public InvokeResult<Void> update(@RequestBody @Valid UpdateSaleOrderVo vo) {
 
     vo.validate();
 
@@ -259,9 +281,10 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 审核通过订单
    */
+  @ApiOperation("审核通过订单")
   @PreAuthorize("@permission.valid('sale:order:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassSaleOrderVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleOrderVo vo) {
 
     saleOrderService.approvePass(vo);
 
@@ -271,9 +294,10 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 批量审核通过订单
    */
+  @ApiOperation("批量审核通过订单")
   @PreAuthorize("@permission.valid('sale:order:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSaleOrderVo vo) {
+  public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassSaleOrderVo vo) {
 
     saleOrderService.batchApprovePass(vo);
 
@@ -283,9 +307,10 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 直接审核通过订单
    */
+  @ApiOperation("直接审核通过订单")
   @PreAuthorize("@permission.valid('sale:order:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreateSaleOrderVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSaleOrderVo vo) {
 
     saleOrderService.directApprovePass(vo);
 
@@ -295,9 +320,10 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 审核拒绝订单
    */
+  @ApiOperation("审核拒绝订单")
   @PreAuthorize("@permission.valid('sale:order:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSaleOrderVo vo) {
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleOrderVo vo) {
 
     saleOrderService.approveRefuse(vo);
 
@@ -307,9 +333,11 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 批量审核拒绝订单
    */
+  @ApiOperation("批量审核拒绝订单")
   @PreAuthorize("@permission.valid('sale:order:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSaleOrderVo vo) {
+  public InvokeResult<Void> batchApproveRefuse(
+      @RequestBody @Valid BatchApproveRefuseSaleOrderVo vo) {
 
     saleOrderService.batchApproveRefuse(vo);
 
@@ -319,9 +347,11 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 删除订单
    */
+  @ApiOperation("删除订单")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('sale:order:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
 
     saleOrderService.deleteById(id);
 
@@ -331,10 +361,11 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 批量删除订单
    */
+  @ApiOperation("批量删除订单")
   @PreAuthorize("@permission.valid('sale:order:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
 
     saleOrderService.deleteByIds(ids);
 

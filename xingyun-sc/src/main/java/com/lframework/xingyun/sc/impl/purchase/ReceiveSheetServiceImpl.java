@@ -22,7 +22,7 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.service.IUserService;
-import com.lframework.starter.web.utils.SecurityUtil;
+import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.dto.supplier.SupplierDto;

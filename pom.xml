@@ -2,19 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <parent>
-        <groupId>com.lframework</groupId>
-        <artifactId>parent</artifactId>
-        <version>2.1.1</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.2.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>com.lframework</groupId>
     <artifactId>xingyun</artifactId>
-    <name>星云ERP</name>
+    <name>【${artifactId}】星云ERP</name>
     <version>1.0.0-SNAPSHOT</version>
 
     <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
 
     <modules>
         <module>xingyun-core</module>
@@ -24,16 +25,23 @@
         <module>xingyun-chart</module>
         <module>xingyun-settle</module>
     </modules>
-    <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <xingyun.version>1.0.0-SNAPSHOT</xingyun.version>
+        <jugg.version>2.1.1</jugg.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.lframework</groupId>
+                <artifactId>parent</artifactId>
+                <version>${jugg.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>com.lframework</groupId>
                 <artifactId>xingyun-basedata</artifactId>

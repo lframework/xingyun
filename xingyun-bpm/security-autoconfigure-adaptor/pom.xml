@@ -10,9 +10,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>security-autoconfigure-adaptor</artifactId>
-  <name>Security自动配置适配器</name>
+  <name>【${artifactId}】Security自动配置适配器</name>
 
   <dependencies>
+    <dependency>
+      <groupId>com.lframework</groupId>
+      <artifactId>web-common</artifactId>
+      <version>${jugg.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>

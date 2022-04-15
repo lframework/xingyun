@@ -14,6 +14,10 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.vo.storecenter.CreateStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.UpdateStoreCenterVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "仓库管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/storecenter")
@@ -46,31 +51,32 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 仓库列表
    */
+  @ApiOperation("仓库列表")
   @PreAuthorize("@permission.valid('base-data:store-center:query','base-data:store-center:add','base-data:store-center:modify')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryStoreCenterVo vo) {
+  public InvokeResult<PageResult<QueryStoreCenterBo>> query(@Valid QueryStoreCenterVo vo) {
 
-    PageResult<StoreCenterDto> pageResult = storeCenterService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<StoreCenterDto> pageResult = storeCenterService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<StoreCenterDto> datas = pageResult.getDatas();
+    List<QueryStoreCenterBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryStoreCenterBo> results = datas.stream().map(QueryStoreCenterBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryStoreCenterBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 查询仓库
    */
+  @ApiOperation("查询仓库")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('base-data:store-center:query','base-data:store-center:add','base-data:store-center:modify')")
   @GetMapping
-  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<GetStoreCenterBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
     StoreCenterDto data = storeCenterService.getById(id);
     if (data == null) {
@@ -85,10 +91,11 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 批量停用仓库
    */
+  @ApiOperation("批量停用仓库")
   @PreAuthorize("@permission.valid('base-data:store-center:modify')")
   @PatchMapping("/unable/batch")
-  public InvokeResult batchUnable(
-      @NotEmpty(message = "请选择需要停用的仓库！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的仓库！") @RequestBody List<String> ids) {
 
     storeCenterService.batchUnable(ids);
     return InvokeResultBuilder.success();
@@ -97,10 +104,11 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 批量启用仓库
    */
+  @ApiOperation("批量启用仓库")
   @PreAuthorize("@permission.valid('base-data:store-center:modify')")
   @PatchMapping("/enable/batch")
-  public InvokeResult batchEnable(
-      @NotEmpty(message = "请选择需要启用的仓库！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的仓库！") @RequestBody List<String> ids) {
 
     storeCenterService.batchEnable(ids);
     return InvokeResultBuilder.success();
@@ -109,9 +117,10 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 新增仓库
    */
+  @ApiOperation("新增仓库")
   @PreAuthorize("@permission.valid('base-data:store-center:add')")
   @PostMapping
-  public InvokeResult create(@Valid CreateStoreCenterVo vo) {
+  public InvokeResult<Void> create(@Valid CreateStoreCenterVo vo) {
 
     storeCenterService.create(vo);
 
@@ -121,9 +130,10 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 修改仓库
    */
+  @ApiOperation("修改仓库")
   @PreAuthorize("@permission.valid('base-data:store-center:modify')")
   @PutMapping
-  public InvokeResult update(@Valid UpdateStoreCenterVo vo) {
+  public InvokeResult<Void> update(@Valid UpdateStoreCenterVo vo) {
 
     storeCenterService.update(vo);
 

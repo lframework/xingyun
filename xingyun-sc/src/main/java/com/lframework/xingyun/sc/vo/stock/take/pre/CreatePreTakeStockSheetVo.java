@@ -6,6 +6,7 @@ import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -24,12 +25,14 @@ public class CreatePreTakeStockSheetVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
+  @ApiModelProperty(value = "仓库ID", required = true)
   @NotBlank(message = "请选择仓库！")
   private String scId;
 
   /**
    * 预先盘点状态
    */
+  @ApiModelProperty(value = "预先盘点状态", required = true)
   @NotNull(message = "请选择预先盘点状态！")
   @IsEnum(message = "预先盘点状态格式错误！", enumClass = PreTakeStockSheetStatus.class)
   @TypeMismatch(message = "预先盘点状态格式错误！")
@@ -38,11 +41,13 @@ public class CreatePreTakeStockSheetVo implements BaseVo, Serializable {
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   /**
    * 商品
    */
+  @ApiModelProperty(value = "商品", required = true)
   @Valid
   @NotEmpty(message = "请录入商品！")
   private List<PreTakeStockProductVo> products;
@@ -51,8 +56,8 @@ public class CreatePreTakeStockSheetVo implements BaseVo, Serializable {
   public void validate() {
 
     Set<String> checkSet = new HashSet<>();
-    PreTakeStockSheetStatus takeStatus = EnumUtil
-        .getByCode(PreTakeStockSheetStatus.class, this.getTakeStatus());
+    PreTakeStockSheetStatus takeStatus = EnumUtil.getByCode(PreTakeStockSheetStatus.class,
+        this.getTakeStatus());
     for (int i = 0; i < this.getProducts().size(); i++) {
       PreTakeStockProductVo product = this.getProducts().get(i);
       if (checkSet.contains(product.getProductId())) {

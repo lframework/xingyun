@@ -4,6 +4,7 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnDto;
 import com.lframework.xingyun.sc.service.sale.ISaleReturnService;
+import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class UpdateSaleReturnVo extends CreateSaleReturnVo {
   /**
    * 退单ID
    */
+  @ApiModelProperty(value = "退单ID", required = true)
   @NotBlank(message = "退单ID不能为空！")
   private String id;
 

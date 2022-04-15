@@ -17,6 +17,10 @@ import com.lframework.xingyun.settle.service.ISettleInItemService;
 import com.lframework.xingyun.settle.vo.item.in.CreateSettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.QuerySettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.UpdateSettleInItemVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -38,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "收入项目")
 @Validated
 @RestController
 @RequestMapping("/settle/item/in")
@@ -49,31 +54,32 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 收入项目列表
    */
+  @ApiOperation("收入项目列表")
   @PreAuthorize("@permission.valid('settle:in-item:query','settle:in-item:add','settle:in-item:modify')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QuerySettleInItemVo vo) {
+  public InvokeResult<PageResult<QuerySettleInItemBo>> query(@Valid QuerySettleInItemVo vo) {
 
-    PageResult<SettleInItemDto> pageResult = settleInItemService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SettleInItemDto> pageResult = settleInItemService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<SettleInItemDto> datas = pageResult.getDatas();
+    List<QuerySettleInItemBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QuerySettleInItemBo> results = datas.stream().map(QuerySettleInItemBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QuerySettleInItemBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 查询收入项目
    */
+  @ApiOperation("查询收入项目")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('settle:in-item:query','settle:in-item:add','settle:in-item:modify')")
   @GetMapping
-  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<GetSettleInItemBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
     SettleInItemDto data = settleInItemService.getById(id);
     if (data == null) {
@@ -88,18 +94,19 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 导出收入项目
    */
+  @ApiOperation("导出收入项目")
   @PreAuthorize("@permission.valid('settle:in-item:export')")
   @PostMapping("/export")
   public void export(@Valid QuerySettleInItemVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("收入项目信息", SettleInItemExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("收入项目信息",
+        SettleInItemExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<SettleInItemDto> pageResult = settleInItemService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<SettleInItemDto> pageResult = settleInItemService.query(pageIndex,
+            getExportSize(), vo);
         List<SettleInItemDto> datas = pageResult.getDatas();
         List<SettleInItemExportModel> models = datas.stream().map(SettleInItemExportModel::new)
             .collect(Collectors.toList());
@@ -118,10 +125,11 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 批量停用收入项目
    */
+  @ApiOperation("批量停用收入项目")
   @PreAuthorize("@permission.valid('settle:in-item:modify')")
   @PatchMapping("/unable/batch")
-  public InvokeResult batchUnable(
-      @NotEmpty(message = "请选择需要停用的收入项目！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的收入项目！") @RequestBody List<String> ids) {
 
     settleInItemService.batchUnable(ids);
     return InvokeResultBuilder.success();
@@ -130,10 +138,11 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 批量启用收入项目
    */
+  @ApiOperation("批量启用收入项目")
   @PreAuthorize("@permission.valid('settle:in-item:modify')")
   @PatchMapping("/enable/batch")
-  public InvokeResult batchEnable(
-      @NotEmpty(message = "请选择需要启用的收入项目！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的收入项目！") @RequestBody List<String> ids) {
 
     settleInItemService.batchEnable(ids);
     return InvokeResultBuilder.success();
@@ -142,9 +151,10 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 新增收入项目
    */
+  @ApiOperation("新增收入项目")
   @PreAuthorize("@permission.valid('settle:in-item:add')")
   @PostMapping
-  public InvokeResult create(@Valid CreateSettleInItemVo vo) {
+  public InvokeResult<Void> create(@Valid CreateSettleInItemVo vo) {
 
     settleInItemService.create(vo);
 
@@ -154,9 +164,10 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 修改收入项目
    */
+  @ApiOperation("修改收入项目")
   @PreAuthorize("@permission.valid('settle:in-item:modify')")
   @PutMapping
-  public InvokeResult update(@Valid UpdateSettleInItemVo vo) {
+  public InvokeResult<Void> update(@Valid UpdateSettleInItemVo vo) {
 
     settleInItemService.update(vo);
 

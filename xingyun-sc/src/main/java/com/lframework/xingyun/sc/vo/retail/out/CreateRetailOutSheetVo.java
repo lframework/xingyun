@@ -7,6 +7,7 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,28 +25,33 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
+  @ApiModelProperty(value = "仓库ID", required = true)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 会员ID
    */
+  @ApiModelProperty(value = "会员ID", required = true)
   @NotBlank(message = "会员ID不能为空！")
   private String memberId;
 
   /**
    * 销售员ID
    */
+  @ApiModelProperty("销售员ID")
   private String salerId;
 
   /**
    * 付款日期
    */
+  @ApiModelProperty("付款日期")
   private LocalDate paymentDate;
 
   /**
    * 商品信息
    */
+  @ApiModelProperty(value = "商品信息", required = true)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<RetailOutProductVo> products;
@@ -53,6 +59,7 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   @Override

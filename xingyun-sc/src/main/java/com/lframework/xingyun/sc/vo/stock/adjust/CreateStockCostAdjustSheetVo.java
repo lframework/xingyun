@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.vo.stock.adjust;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,17 +20,20 @@ public class CreateStockCostAdjustSheetVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
+  @ApiModelProperty(value = "仓库ID", required = true)
   @NotBlank(message = "请输入仓库ID！")
   private String scId;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   /**
    * 商品信息
    */
+  @ApiModelProperty(value = "商品信息", required = true)
   @Valid
   @NotEmpty(message = "请录入商品！")
   private List<StockCostAdjustProductVo> products;

@@ -24,6 +24,10 @@ import com.lframework.xingyun.sc.vo.retail.returned.BatchApproveRefuseRetailRetu
 import com.lframework.xingyun.sc.vo.retail.returned.CreateRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.QueryRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.UpdateRetailReturnVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -46,6 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "零售退单管理")
 @Validated
 @RestController
 @RequestMapping("/retail/return")
@@ -57,9 +62,12 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 打印
    */
+  @ApiOperation("打印")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('retail:return:query')")
   @GetMapping("/print")
-  public InvokeResult print(@NotBlank(message = "退单ID不能为空！") String id) {
+  public InvokeResult<A4ExcelPortraitPrintBo<PrintRetailReturnBo>> print(
+      @NotBlank(message = "退单ID不能为空！") String id) {
 
     RetailReturnFullDto data = retailReturnService.getDetail(id);
     if (data == null) {
@@ -77,37 +85,40 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 退单列表
    */
+  @ApiOperation("退单列表")
   @PreAuthorize("@permission.valid('retail:return:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryRetailReturnVo vo) {
+  public InvokeResult<PageResult<QueryRetailReturnBo>> query(@Valid QueryRetailReturnVo vo) {
 
-    PageResult<RetailReturnDto> pageResult = retailReturnService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<RetailReturnDto> pageResult = retailReturnService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<RetailReturnDto> datas = pageResult.getDatas();
+    List<QueryRetailReturnBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryRetailReturnBo> results = datas.stream().map(QueryRetailReturnBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryRetailReturnBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('retail:return:export')")
   @PostMapping("/export")
   public void export(@Valid QueryRetailReturnVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("零售退货单信息", RetailReturnExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("零售退货单信息",
+        RetailReturnExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<RetailReturnDto> pageResult = retailReturnService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<RetailReturnDto> pageResult = retailReturnService.query(pageIndex,
+            getExportSize(), vo);
         List<RetailReturnDto> datas = pageResult.getDatas();
         List<RetailReturnExportModel> models = datas.stream().map(RetailReturnExportModel::new)
             .collect(Collectors.toList());
@@ -126,9 +137,11 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('retail:return:query')")
   @GetMapping
-  public InvokeResult getById(@NotBlank(message = "退单ID不能为空！") String id) {
+  public InvokeResult<GetRetailReturnBo> getById(@NotBlank(message = "退单ID不能为空！") String id) {
 
     RetailReturnFullDto data = retailReturnService.getDetail(id);
 
@@ -140,9 +153,10 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 创建
    */
+  @ApiOperation("创建")
   @PreAuthorize("@permission.valid('retail:return:add')")
   @PostMapping
-  public InvokeResult create(@RequestBody @Valid CreateRetailReturnVo vo) {
+  public InvokeResult<String> create(@RequestBody @Valid CreateRetailReturnVo vo) {
 
     vo.validate();
 
@@ -154,9 +168,10 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 修改
    */
+  @ApiOperation("修改")
   @PreAuthorize("@permission.valid('retail:return:modify')")
   @PutMapping
-  public InvokeResult update(@RequestBody @Valid UpdateRetailReturnVo vo) {
+  public InvokeResult<Void> update(@RequestBody @Valid UpdateRetailReturnVo vo) {
 
     vo.validate();
 
@@ -168,9 +183,10 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 审核通过
    */
+  @ApiOperation("审核通过")
   @PreAuthorize("@permission.valid('retail:return:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassRetailReturnVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassRetailReturnVo vo) {
 
     retailReturnService.approvePass(vo);
 
@@ -180,9 +196,11 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 批量审核通过
    */
+  @ApiOperation("批量审核通过")
   @PreAuthorize("@permission.valid('retail:return:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassRetailReturnVo vo) {
+  public InvokeResult<Void> batchApprovePass(
+      @RequestBody @Valid BatchApprovePassRetailReturnVo vo) {
 
     retailReturnService.batchApprovePass(vo);
 
@@ -192,9 +210,10 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
+  @ApiOperation("直接审核通过")
   @PreAuthorize("@permission.valid('retail:return:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreateRetailReturnVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateRetailReturnVo vo) {
 
     retailReturnService.directApprovePass(vo);
 
@@ -204,9 +223,10 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
+  @ApiOperation("审核拒绝")
   @PreAuthorize("@permission.valid('retail:return:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseRetailReturnVo vo) {
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseRetailReturnVo vo) {
 
     retailReturnService.approveRefuse(vo);
 
@@ -216,9 +236,11 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 批量审核拒绝
    */
+  @ApiOperation("批量审核拒绝")
   @PreAuthorize("@permission.valid('retail:return:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseRetailReturnVo vo) {
+  public InvokeResult<Void> batchApproveRefuse(
+      @RequestBody @Valid BatchApproveRefuseRetailReturnVo vo) {
 
     retailReturnService.batchApproveRefuse(vo);
 
@@ -228,9 +250,11 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 删除
    */
+  @ApiOperation("删除")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('retail:return:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "零售退货单ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "零售退货单ID不能为空！") String id) {
 
     retailReturnService.deleteById(id);
 
@@ -240,10 +264,11 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 批量删除
    */
+  @ApiOperation("批量删除")
   @PreAuthorize("@permission.valid('retail:return:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的零售退货单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的零售退货单！") List<String> ids) {
 
     retailReturnService.deleteByIds(ids);
 

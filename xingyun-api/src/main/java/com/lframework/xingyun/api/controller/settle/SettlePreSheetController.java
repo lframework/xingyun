@@ -21,6 +21,10 @@ import com.lframework.xingyun.settle.vo.pre.BatchApproveRefuseSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.CreateSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.QuerySettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.UpdateSettlePreSheetVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -43,6 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "供应商预付款单")
 @Validated
 @RestController
 @RequestMapping("/settle/presheet")
@@ -54,37 +59,40 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 供应商预付款单列表
    */
+  @ApiOperation("供应商预付款单列表")
   @PreAuthorize("@permission.valid('settle:pre-sheet:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QuerySettlePreSheetVo vo) {
+  public InvokeResult<PageResult<QuerySettlePreSheetBo>> query(@Valid QuerySettlePreSheetVo vo) {
 
-    PageResult<SettlePreSheetDto> pageResult = settlePreSheetService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SettlePreSheetDto> pageResult = settlePreSheetService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<SettlePreSheetDto> datas = pageResult.getDatas();
+    List<QuerySettlePreSheetBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QuerySettlePreSheetBo> results = datas.stream().map(QuerySettlePreSheetBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QuerySettlePreSheetBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('settle:pre-sheet:export')")
   @PostMapping("/export")
   public void export(@Valid QuerySettlePreSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("供应商预付款单信息", SettlePreSheetExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("供应商预付款单信息",
+        SettlePreSheetExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<SettlePreSheetDto> pageResult = settlePreSheetService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<SettlePreSheetDto> pageResult = settlePreSheetService.query(pageIndex,
+            getExportSize(), vo);
         List<SettlePreSheetDto> datas = pageResult.getDatas();
         List<SettlePreSheetExportModel> models = datas.stream().map(SettlePreSheetExportModel::new)
             .collect(Collectors.toList());
@@ -103,9 +111,12 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('settle:pre-sheet:query')")
   @GetMapping
-  public InvokeResult getById(@NotBlank(message = "供应商预付款单ID不能为空！") String id) {
+  public InvokeResult<GetSettlePreSheetBo> getById(
+      @NotBlank(message = "供应商预付款单ID不能为空！") String id) {
 
     SettlePreSheetFullDto data = settlePreSheetService.getDetail(id);
 
@@ -117,9 +128,10 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 创建供应商预付款单
    */
+  @ApiOperation("创建供应商预付款单")
   @PreAuthorize("@permission.valid('settle:pre-sheet:add')")
   @PostMapping
-  public InvokeResult create(@RequestBody @Valid CreateSettlePreSheetVo vo) {
+  public InvokeResult<String> create(@RequestBody @Valid CreateSettlePreSheetVo vo) {
 
     vo.validate();
 
@@ -131,9 +143,10 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 修改供应商预付款单
    */
+  @ApiOperation("修改供应商预付款单")
   @PreAuthorize("@permission.valid('settle:pre-sheet:modify')")
   @PutMapping
-  public InvokeResult update(@RequestBody @Valid UpdateSettlePreSheetVo vo) {
+  public InvokeResult<Void> update(@RequestBody @Valid UpdateSettlePreSheetVo vo) {
 
     vo.validate();
 
@@ -145,9 +158,10 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 审核通过供应商预付款单
    */
+  @ApiOperation("审核通过供应商预付款单")
   @PreAuthorize("@permission.valid('settle:pre-sheet:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassSettlePreSheetVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSettlePreSheetVo vo) {
 
     settlePreSheetService.approvePass(vo);
 
@@ -157,9 +171,11 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 批量审核通过供应商预付款单
    */
+  @ApiOperation("批量审核通过供应商预付款单")
   @PreAuthorize("@permission.valid('settle:pre-sheet:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSettlePreSheetVo vo) {
+  public InvokeResult<Void> batchApprovePass(
+      @RequestBody @Valid BatchApprovePassSettlePreSheetVo vo) {
 
     settlePreSheetService.batchApprovePass(vo);
 
@@ -169,9 +185,10 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 直接审核通过供应商预付款单
    */
+  @ApiOperation("直接审核通过供应商预付款单")
   @PreAuthorize("@permission.valid('settle:pre-sheet:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreateSettlePreSheetVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSettlePreSheetVo vo) {
 
     settlePreSheetService.directApprovePass(vo);
 
@@ -181,9 +198,10 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 审核拒绝供应商预付款单
    */
+  @ApiOperation("审核拒绝供应商预付款单")
   @PreAuthorize("@permission.valid('settle:pre-sheet:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSettlePreSheetVo vo) {
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSettlePreSheetVo vo) {
 
     settlePreSheetService.approveRefuse(vo);
 
@@ -193,9 +211,10 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 批量审核拒绝供应商预付款单
    */
+  @ApiOperation("批量审核拒绝供应商预付款单")
   @PreAuthorize("@permission.valid('settle:pre-sheet:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(
+  public InvokeResult<Void> batchApproveRefuse(
       @RequestBody @Valid BatchApproveRefuseSettlePreSheetVo vo) {
 
     settlePreSheetService.batchApproveRefuse(vo);
@@ -206,9 +225,11 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 删除供应商预付款单
    */
+  @ApiOperation("删除供应商预付款单")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('settle:pre-sheet:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "供应商预付款单ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "供应商预付款单ID不能为空！") String id) {
 
     settlePreSheetService.deleteById(id);
 
@@ -218,10 +239,11 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 批量删除供应商预付款单
    */
+  @ApiOperation("批量删除供应商预付款单")
   @PreAuthorize("@permission.valid('settle:pre-sheet:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的供应商预付款单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的供应商预付款单！") List<String> ids) {
 
     settlePreSheetService.deleteByIds(ids);
 

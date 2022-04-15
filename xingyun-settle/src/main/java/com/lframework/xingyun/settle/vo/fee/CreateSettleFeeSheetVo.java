@@ -6,6 +6,7 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.settle.enums.SettleFeeSheetType;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
@@ -20,12 +21,14 @@ public class CreateSettleFeeSheetVo implements BaseVo, Serializable {
   /**
    * 供应商ID
    */
+  @ApiModelProperty(value = "供应商ID", required = true)
   @NotNull(message = "供应商ID不能为空！")
   private String supplierId;
 
   /**
    * 收支方式
    */
+  @ApiModelProperty(value = "收支方式", required = true)
   @NotNull(message = "收支方式不能为空！")
   @IsEnum(message = "收支方式不能为空！", enumClass = SettleFeeSheetType.class)
   private Integer sheetType;
@@ -33,12 +36,14 @@ public class CreateSettleFeeSheetVo implements BaseVo, Serializable {
   /**
    * 项目
    */
+  @ApiModelProperty(value = "项目", required = true)
   @NotEmpty(message = "项目不能为空！")
   private List<SettleFeeSheetItemVo> items;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   @Override

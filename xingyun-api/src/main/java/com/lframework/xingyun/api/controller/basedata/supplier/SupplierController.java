@@ -14,6 +14,10 @@ import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.basedata.vo.supplier.CreateSupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.UpdateSupplierVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "供应商管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/supplier")
@@ -46,31 +51,33 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 供应商列表
    */
+  @ApiOperation("供应商列表")
   @PreAuthorize("@permission.valid('base-data:supplier:query','base-data:supplier:add','base-data:supplier:modify')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QuerySupplierVo vo) {
+  public InvokeResult<PageResult<QuerySupplierBo>> query(@Valid QuerySupplierVo vo) {
 
-    PageResult<SupplierDto> pageResult = supplierService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SupplierDto> pageResult = supplierService.query(getPageIndex(vo), getPageSize(vo),
+        vo);
 
     List<SupplierDto> datas = pageResult.getDatas();
+    List<QuerySupplierBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QuerySupplierBo> results = datas.stream().map(QuerySupplierBo::new)
-          .collect(Collectors.toList());
 
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QuerySupplierBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 查询供应商
    */
+  @ApiOperation("查询供应商")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('base-data:supplier:query','base-data:supplier:add','base-data:supplier:modify')")
   @GetMapping
-  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<GetSupplierBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
     SupplierDto data = supplierService.getById(id);
     if (data == null) {
@@ -85,10 +92,11 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 批量停用供应商
    */
+  @ApiOperation("批量停用供应商")
   @PreAuthorize("@permission.valid('base-data:supplier:modify')")
   @PatchMapping("/unable/batch")
-  public InvokeResult batchUnable(
-      @NotEmpty(message = "请选择需要停用的供应商！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的供应商！") @RequestBody List<String> ids) {
 
     supplierService.batchUnable(ids);
     return InvokeResultBuilder.success();
@@ -97,10 +105,11 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 批量启用供应商
    */
+  @ApiOperation("批量启用供应商")
   @PreAuthorize("@permission.valid('base-data:supplier:modify')")
   @PatchMapping("/enable/batch")
-  public InvokeResult batchEnable(
-      @NotEmpty(message = "请选择需要启用的供应商！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的供应商！") @RequestBody List<String> ids) {
 
     supplierService.batchEnable(ids);
     return InvokeResultBuilder.success();
@@ -109,9 +118,10 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 新增供应商
    */
+  @ApiOperation("新增供应商")
   @PreAuthorize("@permission.valid('base-data:supplier:add')")
   @PostMapping
-  public InvokeResult create(@Valid CreateSupplierVo vo) {
+  public InvokeResult<Void> create(@Valid CreateSupplierVo vo) {
 
     supplierService.create(vo);
 
@@ -121,9 +131,10 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 修改供应商
    */
+  @ApiOperation("修改供应商")
   @PreAuthorize("@permission.valid('base-data:supplier:modify')")
   @PutMapping
-  public InvokeResult update(@Valid UpdateSupplierVo vo) {
+  public InvokeResult<Void> update(@Valid UpdateSupplierVo vo) {
 
     supplierService.update(vo);
 

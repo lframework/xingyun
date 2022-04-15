@@ -21,6 +21,10 @@ import com.lframework.xingyun.settle.vo.fee.BatchApproveRefuseSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.CreateSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.QuerySettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.UpdateSettleFeeSheetVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -43,6 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "供应商费用单")
 @Validated
 @RestController
 @RequestMapping("/settle/feesheet")
@@ -54,37 +59,40 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 供应商费用单列表
    */
+  @ApiOperation("供应商费用单列表")
   @PreAuthorize("@permission.valid('settle:fee-sheet:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QuerySettleFeeSheetVo vo) {
+  public InvokeResult<PageResult<QuerySettleFeeSheetBo>> query(@Valid QuerySettleFeeSheetVo vo) {
 
-    PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<SettleFeeSheetDto> datas = pageResult.getDatas();
+    List<QuerySettleFeeSheetBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QuerySettleFeeSheetBo> results = datas.stream().map(QuerySettleFeeSheetBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QuerySettleFeeSheetBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
   @PreAuthorize("@permission.valid('settle:fee-sheet:export')")
   @PostMapping("/export")
   public void export(@Valid QuerySettleFeeSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("供应商费用单信息", SettleFeeSheetExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("供应商费用单信息",
+        SettleFeeSheetExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<SettleFeeSheetDto> pageResult = settleFeeSheetService.query(pageIndex,
+            getExportSize(), vo);
         List<SettleFeeSheetDto> datas = pageResult.getDatas();
         List<SettleFeeSheetExportModel> models = datas.stream().map(SettleFeeSheetExportModel::new)
             .collect(Collectors.toList());
@@ -103,9 +111,11 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('settle:fee-sheet:query')")
   @GetMapping
-  public InvokeResult getById(@NotBlank(message = "供应商费用单ID不能为空！") String id) {
+  public InvokeResult<GetSettleFeeSheetBo> getById(@NotBlank(message = "供应商费用单ID不能为空！") String id) {
 
     SettleFeeSheetFullDto data = settleFeeSheetService.getDetail(id);
 
@@ -117,9 +127,10 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 创建供应商费用单
    */
+  @ApiOperation("创建供应商费用单")
   @PreAuthorize("@permission.valid('settle:fee-sheet:add')")
   @PostMapping
-  public InvokeResult create(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
+  public InvokeResult<String> create(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
 
     vo.validate();
 
@@ -131,9 +142,10 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 修改供应商费用单
    */
+  @ApiOperation("修改供应商费用单")
   @PreAuthorize("@permission.valid('settle:fee-sheet:modify')")
   @PutMapping
-  public InvokeResult update(@RequestBody @Valid UpdateSettleFeeSheetVo vo) {
+  public InvokeResult<Void> update(@RequestBody @Valid UpdateSettleFeeSheetVo vo) {
 
     vo.validate();
 
@@ -145,9 +157,10 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 审核通过供应商费用单
    */
+  @ApiOperation("审核通过供应商费用单")
   @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
   @PatchMapping("/approve/pass")
-  public InvokeResult approvePass(@RequestBody @Valid ApprovePassSettleFeeSheetVo vo) {
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSettleFeeSheetVo vo) {
 
     settleFeeSheetService.approvePass(vo);
 
@@ -157,9 +170,11 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 批量审核通过供应商费用单
    */
+  @ApiOperation("批量审核通过供应商费用单")
   @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
   @PatchMapping("/approve/pass/batch")
-  public InvokeResult batchApprovePass(@RequestBody @Valid BatchApprovePassSettleFeeSheetVo vo) {
+  public InvokeResult<Void> batchApprovePass(
+      @RequestBody @Valid BatchApprovePassSettleFeeSheetVo vo) {
 
     settleFeeSheetService.batchApprovePass(vo);
 
@@ -169,9 +184,10 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 直接审核通过供应商费用单
    */
+  @ApiOperation("直接审核通过供应商费用单")
   @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
   @PostMapping("/approve/pass/direct")
-  public InvokeResult directApprovePass(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
 
     settleFeeSheetService.directApprovePass(vo);
 
@@ -181,9 +197,10 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 审核拒绝供应商费用单
    */
+  @ApiOperation("审核拒绝供应商费用单")
   @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
   @PatchMapping("/approve/refuse")
-  public InvokeResult approveRefuse(@RequestBody @Valid ApproveRefuseSettleFeeSheetVo vo) {
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSettleFeeSheetVo vo) {
 
     settleFeeSheetService.approveRefuse(vo);
 
@@ -193,9 +210,10 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 批量审核拒绝供应商费用单
    */
+  @ApiOperation("批量审核拒绝供应商费用单")
   @PreAuthorize("@permission.valid('settle:fee-sheet:approve')")
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult batchApproveRefuse(
+  public InvokeResult<Void> batchApproveRefuse(
       @RequestBody @Valid BatchApproveRefuseSettleFeeSheetVo vo) {
 
     settleFeeSheetService.batchApproveRefuse(vo);
@@ -206,9 +224,11 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 删除供应商费用单
    */
+  @ApiOperation("删除供应商费用单")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('settle:fee-sheet:delete')")
   @DeleteMapping
-  public InvokeResult deleteById(@NotBlank(message = "供应商费用单ID不能为空！") String id) {
+  public InvokeResult<Void> deleteById(@NotBlank(message = "供应商费用单ID不能为空！") String id) {
 
     settleFeeSheetService.deleteById(id);
 
@@ -218,10 +238,11 @@ public class SettleFeeSheetController extends DefaultBaseController {
   /**
    * 批量删除供应商费用单
    */
+  @ApiOperation("批量删除供应商费用单")
   @PreAuthorize("@permission.valid('settle:fee-sheet:delete')")
   @DeleteMapping("/batch")
-  public InvokeResult deleteByIds(
-      @RequestBody @NotEmpty(message = "请选择需要删除的供应商费用单！") List<String> ids) {
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的供应商费用单！") List<String> ids) {
 
     settleFeeSheetService.deleteByIds(ids);
 

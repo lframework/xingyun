@@ -14,6 +14,10 @@ import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
 import com.lframework.xingyun.basedata.vo.member.UpdateMemberVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "会员管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/member")
@@ -46,30 +51,31 @@ public class MemberController extends DefaultBaseController {
   /**
    * 会员列表
    */
+  @ApiOperation("会员列表")
   @PreAuthorize("@permission.valid('base-data:member:query','base-data:member:add','base-data:member:modify')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryMemberVo vo) {
+  public InvokeResult<PageResult<QueryMemberBo>> query(@Valid QueryMemberVo vo) {
 
     PageResult<MemberDto> pageResult = memberService.query(getPageIndex(vo), getPageSize(vo), vo);
 
     List<MemberDto> datas = pageResult.getDatas();
+    List<QueryMemberBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryMemberBo> results = datas.stream().map(QueryMemberBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryMemberBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 查询会员
    */
+  @ApiOperation("查询会员")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('base-data:member:query','base-data:member:add','base-data:member:modify')")
   @GetMapping
-  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<GetMemberBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
     MemberDto data = memberService.getById(id);
     if (data == null) {
@@ -84,10 +90,11 @@ public class MemberController extends DefaultBaseController {
   /**
    * 批量停用会员
    */
+  @ApiOperation("批量停用会员")
   @PreAuthorize("@permission.valid('base-data:member:modify')")
   @PatchMapping("/unable/batch")
-  public InvokeResult batchUnable(
-      @NotEmpty(message = "请选择需要停用的会员！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的会员！") @RequestBody List<String> ids) {
 
     memberService.batchUnable(ids);
     return InvokeResultBuilder.success();
@@ -96,10 +103,11 @@ public class MemberController extends DefaultBaseController {
   /**
    * 批量启用会员
    */
+  @ApiOperation("批量启用会员")
   @PreAuthorize("@permission.valid('base-data:member:modify')")
   @PatchMapping("/enable/batch")
-  public InvokeResult batchEnable(
-      @NotEmpty(message = "请选择需要启用的会员！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的会员！") @RequestBody List<String> ids) {
 
     memberService.batchEnable(ids);
     return InvokeResultBuilder.success();
@@ -108,9 +116,10 @@ public class MemberController extends DefaultBaseController {
   /**
    * 新增会员
    */
+  @ApiOperation("新增会员")
   @PreAuthorize("@permission.valid('base-data:member:add')")
   @PostMapping
-  public InvokeResult create(@Valid CreateMemberVo vo) {
+  public InvokeResult<Void> create(@Valid CreateMemberVo vo) {
 
     memberService.create(vo);
 
@@ -120,9 +129,10 @@ public class MemberController extends DefaultBaseController {
   /**
    * 修改会员
    */
+  @ApiOperation("修改会员")
   @PreAuthorize("@permission.valid('base-data:member:modify')")
   @PutMapping
-  public InvokeResult update(@Valid UpdateMemberVo vo) {
+  public InvokeResult<Void> update(@Valid UpdateMemberVo vo) {
 
     memberService.update(vo);
 

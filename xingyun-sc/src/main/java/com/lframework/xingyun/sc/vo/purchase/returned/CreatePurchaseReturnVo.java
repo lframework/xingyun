@@ -10,6 +10,7 @@ import com.lframework.xingyun.sc.dto.purchase.config.PurchaseConfigDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,33 +27,39 @@ public class CreatePurchaseReturnVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
+  @ApiModelProperty(value = "仓库ID", required = true)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 供应商ID
    */
+  @ApiModelProperty(value = "供应商ID", required = true)
   @NotBlank(message = "供应商ID不能为空！")
   private String supplierId;
 
   /**
    * 采购员ID
    */
+  @ApiModelProperty("采购员ID")
   private String purchaserId;
 
   /**
    * 付款日期
    */
+  @ApiModelProperty("付款日期")
   private LocalDate paymentDate;
 
   /**
    * 收货单ID
    */
+  @ApiModelProperty("收货单ID")
   private String receiveSheetId;
 
   /**
    * 商品信息
    */
+  @ApiModelProperty(value = "商品信息", required = true)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<ReturnProductVo> products;
@@ -60,11 +67,13 @@ public class CreatePurchaseReturnVo implements BaseVo, Serializable {
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   /**
    * 是否关联采购收货单
    */
+  @ApiModelProperty("是否关联采购收货单")
   private Boolean required;
 
   @Override

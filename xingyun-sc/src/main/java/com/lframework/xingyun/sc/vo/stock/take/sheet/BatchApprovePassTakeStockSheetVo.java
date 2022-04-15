@@ -1,6 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.take.sheet;
 
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
@@ -14,6 +15,7 @@ public class BatchApprovePassTakeStockSheetVo implements BaseVo, Serializable {
   /**
    * ID
    */
+  @ApiModelProperty(value = "ID", required = true)
   @NotEmpty(message = "ID不能为空！")
   private List<String> ids;
 }

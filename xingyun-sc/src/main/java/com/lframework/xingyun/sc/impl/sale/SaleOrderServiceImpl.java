@@ -23,7 +23,7 @@ import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.SecurityUtil;
+import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;

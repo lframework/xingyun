@@ -14,6 +14,10 @@ import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.UpdateCustomerVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "客户管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/customer")
@@ -46,31 +51,32 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 客户列表
    */
+  @ApiOperation("客户列表")
   @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryCustomerVo vo) {
+  public InvokeResult<PageResult<QueryCustomerBo>> query(@Valid QueryCustomerVo vo) {
 
-    PageResult<CustomerDto> pageResult = customerService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<CustomerDto> pageResult = customerService.query(getPageIndex(vo), getPageSize(vo),
+        vo);
 
     List<CustomerDto> datas = pageResult.getDatas();
+    List<QueryCustomerBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
-      List<QueryCustomerBo> results = datas.stream().map(QueryCustomerBo::new)
-          .collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
+      results = datas.stream().map(QueryCustomerBo::new).collect(Collectors.toList());
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 查询客户
    */
+  @ApiOperation("查询客户")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
   @GetMapping
-  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<GetCustomerBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
     CustomerDto data = customerService.getById(id);
     if (data == null) {
@@ -85,10 +91,11 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 批量停用客户
    */
+  @ApiOperation("批量停用客户")
   @PreAuthorize("@permission.valid('base-data:customer:modify')")
   @PatchMapping("/unable/batch")
-  public InvokeResult batchUnable(
-      @NotEmpty(message = "请选择需要停用的客户！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的客户！") @RequestBody List<String> ids) {
 
     customerService.batchUnable(ids);
     return InvokeResultBuilder.success();
@@ -97,10 +104,11 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 批量启用客户
    */
+  @ApiOperation("批量启用客户")
   @PreAuthorize("@permission.valid('base-data:customer:modify')")
   @PatchMapping("/enable/batch")
-  public InvokeResult batchEnable(
-      @NotEmpty(message = "请选择需要启用的客户！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的客户！") @RequestBody List<String> ids) {
 
     customerService.batchEnable(ids);
     return InvokeResultBuilder.success();
@@ -109,9 +117,10 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 新增客户
    */
+  @ApiOperation("新增客户")
   @PreAuthorize("@permission.valid('base-data:customer:add')")
   @PostMapping
-  public InvokeResult create(@Valid CreateCustomerVo vo) {
+  public InvokeResult<Void> create(@Valid CreateCustomerVo vo) {
 
     customerService.create(vo);
 
@@ -121,9 +130,10 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 修改客户
    */
+  @ApiOperation("修改客户")
   @PreAuthorize("@permission.valid('base-data:customer:modify')")
   @PutMapping
-  public InvokeResult update(@Valid UpdateCustomerVo vo) {
+  public InvokeResult<Void> update(@Valid UpdateCustomerVo vo) {
 
     customerService.update(vo);
 

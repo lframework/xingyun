@@ -11,6 +11,7 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,67 +30,80 @@ public class QueryTakeStockSheetBo extends BaseBo<TakeStockSheetDto> {
   /**
    * ID
    */
+  @ApiModelProperty("ID")
   private String id;
 
   /**
    * 业务单据号
    */
+  @ApiModelProperty("业务单据号")
   private String code;
 
   /**
    * 盘点任务号
    */
+  @ApiModelProperty("盘点任务号")
   private String planCode;
 
   /**
    * 仓库编号
    */
+  @ApiModelProperty("仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
+  @ApiModelProperty("仓库名称")
   private String scName;
 
   /**
    * 盘点任务-盘点类别
    */
+  @ApiModelProperty("盘点任务-盘点类别")
   private Integer takeType;
 
   /**
    * 盘点任务-盘点状态
    */
+  @ApiModelProperty("盘点任务-盘点状态")
   private Integer takeStatus;
 
   /**
    * 状态
    */
+  @ApiModelProperty("状态")
   private Integer status;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   /**
    * 修改人
    */
+  @ApiModelProperty("修改人")
   private String updateBy;
 
   /**
    * 修改时间
    */
+  @ApiModelProperty("修改时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime updateTime;
 
   /**
    * 审核人
    */
+  @ApiModelProperty("审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
+  @ApiModelProperty("审核时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime approveTime;
 

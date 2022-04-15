@@ -11,6 +11,11 @@ import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
 import com.lframework.xingyun.basedata.service.product.IProductCategoryService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -32,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "类目管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/category")
@@ -43,13 +49,14 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 类目列表
    */
+  @ApiOperation("类目列表")
   @PreAuthorize("@permission.valid('base-data:product:category:query','base-data:product:category:add','base-data:product:category:modify')")
   @GetMapping("/query")
-  public InvokeResult query() {
+  public InvokeResult<List<ProductCategoryTreeBo>> query() {
 
     List<ProductCategoryDto> datas = productCategoryService.getAllProductCategories();
     if (CollectionUtil.isEmpty(datas)) {
-      return InvokeResultBuilder.success();
+      return InvokeResultBuilder.success(Collections.EMPTY_LIST);
     }
 
     List<ProductCategoryTreeBo> results = datas.stream().map(ProductCategoryTreeBo::new)
@@ -61,9 +68,11 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 查询类目
    */
+  @ApiOperation("查询类目")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @PreAuthorize("@permission.valid('base-data:product:category:query','base-data:product:category:add','base-data:product:category:modify')")
   @GetMapping
-  public InvokeResult get(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<GetProductCategoryBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
     ProductCategoryDto data = productCategoryService.getById(id);
     if (data == null) {
@@ -78,10 +87,11 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 批量停用类目
    */
+  @ApiOperation("批量停用类目")
   @PreAuthorize("@permission.valid('base-data:product:category:modify')")
   @PatchMapping("/unable/batch")
-  public InvokeResult batchUnable(
-      @NotEmpty(message = "请选择需要停用的类目！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的类目！") @RequestBody List<String> ids) {
 
     productCategoryService.batchUnable(ids);
     return InvokeResultBuilder.success();
@@ -90,10 +100,11 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 批量启用类目
    */
+  @ApiOperation("批量启用类目")
   @PreAuthorize("@permission.valid('base-data:product:category:modify')")
   @PatchMapping("/enable/batch")
-  public InvokeResult batchEnable(
-      @NotEmpty(message = "请选择需要启用的类目！") @RequestBody List<String> ids) {
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的类目！") @RequestBody List<String> ids) {
 
     productCategoryService.batchEnable(ids);
     return InvokeResultBuilder.success();
@@ -102,9 +113,10 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 新增类目
    */
+  @ApiOperation("新增类目")
   @PreAuthorize("@permission.valid('base-data:product:category:add')")
   @PostMapping
-  public InvokeResult create(@Valid CreateProductCategoryVo vo) {
+  public InvokeResult<Void> create(@Valid CreateProductCategoryVo vo) {
 
     productCategoryService.create(vo);
 
@@ -114,9 +126,10 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 修改类目
    */
+  @ApiOperation("修改类目")
   @PreAuthorize("@permission.valid('base-data:product:category:modify')")
   @PutMapping
-  public InvokeResult update(@Valid UpdateProductCategoryVo vo) {
+  public InvokeResult<Void> update(@Valid UpdateProductCategoryVo vo) {
 
     productCategoryService.update(vo);
 

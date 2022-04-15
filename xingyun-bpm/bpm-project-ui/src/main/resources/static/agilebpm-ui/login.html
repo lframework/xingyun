@@ -18,11 +18,12 @@
         var app = angular.module('app', ['baseDirective']);
         app.controller("ctrl", ['$scope', 'baseService', function ($scope, baseService) {
 
-            $scope.user = {password: "admin", account: "admin"};
-            $scope.login = function () {
-                var post = baseService.postForm(__ctx + "/org/login/valid", $scope.user);
-                $.getResultData(post, function () {
-                    window.location = "index.html";
+            $scope.toLogin = function () {
+                var get = baseService.get(__ctx + "/org/auth/url");
+                get.then(function(data){
+                    window.location = data.url;
+                },function(code){
+                    $.Toast.error("网络请求失败，请稍后重试！");
                 })
             }
 
@@ -66,16 +67,12 @@
             </div>
         </div>
         <div class="col-sm-5">
-            <!--<form ng-submit="login()">
+            <form ng-submit="toLogin()">
                 <h4 class="no-margins">登录：</h4>
                 <p class="m-t-md">星云ERP-AgileBPM 流程管理平台</p>
-                <input type="text" class="form-control uname" ng-model="user.account"
-                       placeholder="用户名"/>
-                <input type="password" class="form-control pword m-b" ng-model="user.password"
-                       placeholder="密码"/>
-                <span class="btn btn-success btn-block" ng-click="login()">登录</span>
+                <span class="btn btn-success btn-block" ng-click="toLogin()">去登录</span>
                 <input type="submit" style="display: none;">
-            </form>-->
+            </form>
         </div>
     </div>
     <div class="signup-footer">

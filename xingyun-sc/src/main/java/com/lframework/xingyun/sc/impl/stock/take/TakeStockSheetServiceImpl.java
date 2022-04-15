@@ -19,7 +19,7 @@ import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.utils.SecurityUtil;
+import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;

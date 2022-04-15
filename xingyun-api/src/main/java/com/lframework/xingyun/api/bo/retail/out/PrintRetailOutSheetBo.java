@@ -17,6 +17,7 @@ import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,66 +31,79 @@ public class PrintRetailOutSheetBo extends BasePrintDataBo<RetailOutSheetFullDto
   /**
    * 单号
    */
+  @ApiModelProperty("单号")
   private String code;
 
   /**
    * 仓库编号
    */
+  @ApiModelProperty("仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
+  @ApiModelProperty("仓库名称")
   private String scName;
 
   /**
    * 会员编号
    */
+  @ApiModelProperty("会员编号")
   private String memberCode;
 
   /**
    * 会员名称
    */
+  @ApiModelProperty("会员名称")
   private String memberName;
 
   /**
    * 销售员姓名
    */
+  @ApiModelProperty("销售员姓名")
   private String salerName;
 
   /**
    * 付款日期
    */
+  @ApiModelProperty("付款日期")
   private String paymentDate;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   /**
    * 创建人
    */
+  @ApiModelProperty("创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
+  @ApiModelProperty("创建时间")
   private String createTime;
 
   /**
    * 审核人
    */
+  @ApiModelProperty("审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
+  @ApiModelProperty("审核时间")
   private String approveTime;
 
   /**
    * 订单明细
    */
+  @ApiModelProperty("订单明细")
   private List<OrderDetailBo> details;
 
   public PrintRetailOutSheetBo() {
@@ -157,36 +171,43 @@ public class PrintRetailOutSheetBo extends BasePrintDataBo<RetailOutSheetFullDto
     /**
      * 商品编号
      */
+    @ApiModelProperty("商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
+    @ApiModelProperty("商品名称")
     private String productName;
 
     /**
      * SKU编号
      */
+    @ApiModelProperty("SKU编号")
     private String skuCode;
 
     /**
      * 外部编号
      */
+    @ApiModelProperty("外部编号")
     private String externalCode;
 
     /**
      * 出库数量
      */
+    @ApiModelProperty("出库数量")
     private Integer outNum;
 
     /**
      * 价格
      */
+    @ApiModelProperty("价格")
     private BigDecimal taxPrice;
 
     /**
      * 出库金额
      */
+    @ApiModelProperty("出库金额")
     private BigDecimal outAmount;
 
     public OrderDetailBo(RetailOutSheetFullDto.SheetDetailDto dto) {

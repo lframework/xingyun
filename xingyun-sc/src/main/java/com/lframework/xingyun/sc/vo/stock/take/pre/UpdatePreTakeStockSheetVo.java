@@ -1,5 +1,6 @@
 package com.lframework.xingyun.sc.vo.stock.take.pre;
 
+import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ public class UpdatePreTakeStockSheetVo extends CreatePreTakeStockSheetVo {
   /**
    * ID
    */
+  @ApiModelProperty(value = "ID", required = true)
   @NotBlank(message = "id不能为空！")
   private String id;
 }

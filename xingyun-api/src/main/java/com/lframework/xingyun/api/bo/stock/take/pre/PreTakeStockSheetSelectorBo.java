@@ -7,6 +7,7 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,31 +19,37 @@ public class PreTakeStockSheetSelectorBo extends BaseBo<PreTakeStockSheetSelecto
   /**
    * ID
    */
+  @ApiModelProperty("ID")
   private String id;
 
   /**
    * 业务单据号
    */
+  @ApiModelProperty("业务单据号")
   private String code;
 
   /**
    * 仓库编号
    */
+  @ApiModelProperty("仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
+  @ApiModelProperty("仓库名称")
   private String scName;
 
   /**
    * 盘点状态
    */
+  @ApiModelProperty("盘点状态")
   private Integer takeStatus;
 
   /**
    * 修改时间
    */
+  @ApiModelProperty("修改时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime updateTime;
 

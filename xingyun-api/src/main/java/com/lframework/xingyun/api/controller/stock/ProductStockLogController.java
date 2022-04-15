@@ -13,7 +13,8 @@ import com.lframework.xingyun.api.model.stock.ProductStockLogExportModel;
 import com.lframework.xingyun.sc.dto.stock.ProductStockLogDto;
 import com.lframework.xingyun.sc.service.stock.IProductStockLogService;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
-import java.util.Collections;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
+@Api(tags = "商品库存变动记录")
 @Validated
 @RestController
 @RequestMapping("/stock/product/log")
@@ -40,42 +42,42 @@ public class ProductStockLogController extends DefaultBaseController {
   /**
    * 查询商品库存变动记录
    */
+  @ApiOperation("查询商品库存变动记录")
   @PreAuthorize("@permission.valid('stock:product-log:query')")
   @GetMapping("/query")
-  public InvokeResult query(@Valid QueryProductStockLogVo vo) {
+  public InvokeResult<PageResult<QueryProductStockLogBo>> query(@Valid QueryProductStockLogVo vo) {
 
-    PageResult<ProductStockLogDto> pageResult = productStockLogService
-        .query(getPageIndex(vo), getPageSize(vo), vo);
-    List<QueryProductStockLogBo> results = Collections.EMPTY_LIST;
+    PageResult<ProductStockLogDto> pageResult = productStockLogService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
+    List<QueryProductStockLogBo> results = null;
     List<ProductStockLogDto> datas = pageResult.getDatas();
+
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(QueryProductStockLogBo::new).collect(Collectors.toList());
-
-      PageResultUtil.rebuild(pageResult, results);
     }
 
-    return InvokeResultBuilder.success(pageResult);
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**
    * 导出商品库存变动记录
    */
+  @ApiOperation("导出商品库存变动记录")
   @PreAuthorize("@permission.valid('stock:product-log:export')")
   @GetMapping("/export")
   public void export(@Valid QueryProductStockLogVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil
-        .multipartExportXls("商品库存变动记录信息", ProductStockLogExportModel.class);
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("商品库存变动记录信息",
+        ProductStockLogExportModel.class);
 
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<ProductStockLogDto> pageResult = productStockLogService
-            .query(pageIndex, getExportSize(), vo);
+        PageResult<ProductStockLogDto> pageResult = productStockLogService.query(pageIndex,
+            getExportSize(), vo);
         List<ProductStockLogDto> datas = pageResult.getDatas();
         List<ProductStockLogExportModel> models = datas.stream()
-            .map(ProductStockLogExportModel::new)
-            .collect(Collectors.toList());
+            .map(ProductStockLogExportModel::new).collect(Collectors.toList());
         builder.doWrite(models);
 
         if (!pageResult.isHasNext()) {

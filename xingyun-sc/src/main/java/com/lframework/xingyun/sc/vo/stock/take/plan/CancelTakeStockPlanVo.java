@@ -1,6 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.take.plan;
 
 import com.lframework.starter.web.vo.BaseVo;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
@@ -13,6 +14,7 @@ public class CancelTakeStockPlanVo implements BaseVo, Serializable {
   /**
    * ID
    */
+  @ApiModelProperty(value = "ID", required = true)
   @NotBlank(message = "ID不能为空！")
   private String id;
 }

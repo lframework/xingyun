@@ -8,6 +8,7 @@ import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyDto;
 import com.lframework.xingyun.basedata.enums.PropertyType;
 import com.lframework.xingyun.basedata.service.product.IProductCategoryPropertyService;
 import com.lframework.xingyun.basedata.service.product.IProductCategoryService;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -20,51 +21,61 @@ public class GetProductPropertyBo extends BaseBo<ProductPropertyDto> {
   /**
    * ID
    */
+  @ApiModelProperty("ID")
   private String id;
 
   /**
    * 编号
    */
+  @ApiModelProperty("编号")
   private String code;
 
   /**
    * 名称
    */
+  @ApiModelProperty("名称")
   private String name;
 
   /**
    * 是否必填
    */
+  @ApiModelProperty("是否必填")
   private Boolean isRequired;
 
   /**
    * 录入类型
    */
+  @ApiModelProperty("录入类型")
   private Integer columnType;
 
   /**
    * 数据类型
    */
+  @ApiModelProperty("数据类型")
   private Integer columnDataType;
 
   /**
    * 属性类别
    */
+  @ApiModelProperty("属性类别")
   private Integer propertyType;
 
   /**
    * 类目
    */
+  @ApiModelProperty("类目")
   private List<CategoryBo> categories;
 
   /**
    * 状态
    */
+  @ApiModelProperty("状态")
   private Boolean available;
 
   /**
    * 备注
    */
+  @ApiModelProperty("备注")
   private String description;
 
   @Data
@@ -74,11 +85,13 @@ public class GetProductPropertyBo extends BaseBo<ProductPropertyDto> {
     /**
      * 类目ID
      */
+    @ApiModelProperty("类目ID")
     private String id;
 
     /**
      * 类目名称
      */
+    @ApiModelProperty("类目名称")
     private String name;
 
     public CategoryBo() {

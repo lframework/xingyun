@@ -7,6 +7,7 @@ import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,51 +18,61 @@ public class QueryTakeStockPlanProductBo extends BaseBo<QueryTakeStockPlanProduc
   /**
    * 商品ID
    */
+  @ApiModelProperty("商品ID")
   private String productId;
 
   /**
    * 商品编号
    */
+  @ApiModelProperty("商品编号")
   private String productCode;
 
   /**
    * 商品名称
    */
+  @ApiModelProperty("商品名称")
   private String productName;
 
   /**
    * 类目名称
    */
+  @ApiModelProperty("类目名称")
   private String categoryName;
 
   /**
    * 品牌名称
    */
+  @ApiModelProperty("品牌名称")
   private String brandName;
 
   /**
    * SKU
    */
+  @ApiModelProperty("SKU")
   private String skuCode;
 
   /**
    * 外部编号
    */
+  @ApiModelProperty("外部编号")
   private String externalCode;
 
   /**
    * 规格
    */
+  @ApiModelProperty("规格")
   private String spec;
 
   /**
    * 单位
    */
+  @ApiModelProperty("单位")
   private String unit;
 
   /**
    * 初始库存
    */
+  @ApiModelProperty("初始库存")
   private Integer stockNum;
 
   public QueryTakeStockPlanProductBo(QueryTakeStockPlanProductDto dto) {

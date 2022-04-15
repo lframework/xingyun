@@ -13,20 +13,14 @@
     <name>【${artifactId}】基础依赖</name>
 
     <dependencies>
-        <!-- Session、Jwt 二选一 -->
         <dependency>
             <groupId>com.lframework</groupId>
             <artifactId>security-starter</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>com.lframework</groupId>
-            <artifactId>security-jwt-starter</artifactId>
-        </dependency>-->
 
-        <!-- bpm starter 底层依赖security-jwt-starter 如果启用Bpm需要把session starter注释 -->
-        <!--<dependency>
+        <dependency>
             <groupId>com.lframework</groupId>
             <artifactId>bpm-starter</artifactId>
-        </dependency>-->
+        </dependency>
     </dependencies>
 </project>

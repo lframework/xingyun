@@ -44,9 +44,7 @@
 * EasyExcel 2.2.10（内置了两种导出excel方式：一次性导出、分段导出（只支持简单表头））
 
 ### 关于鉴权的说明
-现在已经支持Session、Jwt两种模式，在xingyun-core模块中的pom.xml写有依赖security-session-starter或security-jwt-starter。
-如果依赖security-session-starter，那么就会使用Session模式进行鉴权，如果依赖security-jwt-starter，那么就会使用Jwt模式进行鉴权。
-开发人员可以自由选择依赖包决定使用哪种方式。
+整合sa-token进行鉴权
 
 ### 开发环境
 

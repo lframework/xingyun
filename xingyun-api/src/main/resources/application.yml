@@ -178,6 +178,8 @@ sms:
 
 #BPM配置
 bpm:
+  #是否启用BPM，默认关闭
+  enabled: false
   #BPM Api接口baseUrl
   api-url: http://localhost:8085
   #跳转BPM url

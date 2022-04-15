@@ -1,10 +1,6 @@
 server:
   #端口
   port: 8080
-  servlet:
-    session:
-      #SESSION过期时间
-      timeout: 120m
 spring:
   application:
     name: xingyun-api

@@ -8,7 +8,7 @@
 前端项目码源：https://gitee.com/lframework/xingyun-front   <a href="https://gitee.com/lframework/xingyun-front" target="_blank">点此进入</a>
 
 ### 使用说明文档
-星云ERP说明文档：https://gitee.com/lframework/xingyun-doc   <a href="https://gitee.com/lframework/xingyun-doc" target="_blank">点此进入</a>
+星云ERP说明文档：https://www.lframework.com   <a href="https://www.lframework.com" target="_blank">点此进入</a>
 
 ### 系统功能
 | 系统功能   | 功能描述                          |

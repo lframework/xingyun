@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.impl.stock;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.NumberUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.dto.stock.ProductLotDto;
@@ -19,10 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductLotStockServiceImpl implements IProductLotStockService {
-
-  @Autowired
-  private ProductLotStockMapper productLotStockMapper;
+public class ProductLotStockServiceImpl extends
+    BaseMpServiceImpl<ProductLotStockMapper, ProductLotStock> implements IProductLotStockService {
 
   @Autowired
   private IProductService productService;
@@ -34,7 +33,7 @@ public class ProductLotStockServiceImpl implements IProductLotStockService {
   public List<ProductLotStockDto> getWithSubStock(String productId, String scId, String supplierId,
       Integer num) {
 
-    List<ProductLotStockDto> datas = productLotStockMapper.getFifoList(productId, scId, supplierId);
+    List<ProductLotStockDto> datas = getBaseMapper().getFifoList(productId, scId, supplierId);
     int totalNum = 0;
 
     List<ProductLotStockDto> results = new ArrayList<>();
@@ -58,7 +57,7 @@ public class ProductLotStockServiceImpl implements IProductLotStockService {
   @Override
   public void subStockById(String id, Integer num) {
 
-    ProductLotStock lotStock = productLotStockMapper.selectById(id);
+    ProductLotStock lotStock = getBaseMapper().selectById(id);
     ProductLotDto lot = productLotService.getById(lotStock.getLotId());
 
     if (NumberUtil.lt(lotStock.getStockNum(), num)) {
@@ -67,7 +66,7 @@ public class ProductLotStockServiceImpl implements IProductLotStockService {
           "商品（" + product.getCode() + "）" + product.getName() + "当前库存不足，无法出库！");
     }
 
-    int count = productLotStockMapper.subStockById(id, num);
+    int count = getBaseMapper().subStockById(id, num);
     if (count != 1) {
       ProductDto product = productService.getById(lot.getProductId());
       throw new DefaultClientException(
@@ -78,13 +77,13 @@ public class ProductLotStockServiceImpl implements IProductLotStockService {
   @Override
   public ProductLotStockDto getById(String id) {
 
-    return productLotStockMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public ProductLotStockDto getByScIdAndLotId(String scId, String lotId) {
 
-    return productLotStockMapper.getByScIdAndLotId(scId, lotId);
+    return getBaseMapper().getByScIdAndLotId(scId, lotId);
   }
 
   @Transactional
@@ -97,13 +96,13 @@ public class ProductLotStockServiceImpl implements IProductLotStockService {
     record.setScId(vo.getScId());
     record.setStockNum(vo.getStockNum());
 
-    productLotStockMapper.insert(record);
+    getBaseMapper().insert(record);
 
     return record.getId();
   }
 
   @Override
   public List<ProductLotStockDto> getAllHasStockLots(String productId, String scId) {
-    return productLotStockMapper.getAllHasStockLots(productId, scId);
+    return getBaseMapper().getAllHasStockLots(productId, scId);
   }
 }

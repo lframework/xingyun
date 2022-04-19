@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
@@ -17,16 +18,13 @@ import com.lframework.xingyun.sc.service.stock.IProductLotService;
 import com.lframework.xingyun.sc.vo.stock.lot.CreateProductLotVo;
 import com.lframework.xingyun.sc.vo.stock.lot.QueryProductLotVo;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductLotServiceImpl implements IProductLotService {
-
-  @Autowired
-  private ProductLotMapper productLotMapper;
+public class ProductLotServiceImpl extends
+    BaseMpServiceImpl<ProductLotMapper, ProductLot> implements IProductLotService {
 
   @Override
   public PageResult<ProductLotWithStockDto> query(Integer pageIndex, Integer pageSize,
@@ -44,14 +42,14 @@ public class ProductLotServiceImpl implements IProductLotService {
   @Override
   public List<ProductLotWithStockDto> query(QueryProductLotVo vo) {
 
-    return productLotMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Cacheable(value = ProductLotDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public ProductLotDto getById(String id) {
 
-    return productLotMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Transactional
@@ -76,7 +74,7 @@ public class ProductLotServiceImpl implements IProductLotService {
     }
     record.setBizType(EnumUtil.getByCode(ProductStockBizType.class, vo.getBizType()));
 
-    productLotMapper.insert(record);
+    getBaseMapper().insert(record);
 
     return record.getId();
   }
@@ -84,6 +82,6 @@ public class ProductLotServiceImpl implements IProductLotService {
   @Override
   public ProductLotWithStockDto getLastPurchaseLot(String productId, String scId,
       String supplierId) {
-    return productLotMapper.getLastPurchaseLot(productId, scId, supplierId);
+    return getBaseMapper().getLastPurchaseLot(productId, scId, supplierId);
   }
 }

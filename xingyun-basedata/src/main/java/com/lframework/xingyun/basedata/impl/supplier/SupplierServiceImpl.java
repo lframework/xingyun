@@ -13,6 +13,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -39,10 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SupplierServiceImpl implements ISupplierService {
-
-  @Autowired
-  private SupplierMapper supplierMapper;
+public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Supplier> implements
+    ISupplierService {
 
   @Autowired
   private IDicCityService dicCityService;
@@ -62,14 +61,14 @@ public class SupplierServiceImpl implements ISupplierService {
   @Override
   public List<SupplierDto> query(QuerySupplierVo vo) {
 
-    return supplierMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Cacheable(value = SupplierDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public SupplierDto getById(String id) {
 
-    return supplierMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用供应商，ID：{}", params = "#ids", loopFormat = true)
@@ -83,7 +82,7 @@ public class SupplierServiceImpl implements ISupplierService {
 
     Wrapper<Supplier> updateWrapper = Wrappers.lambdaUpdate(Supplier.class)
         .set(Supplier::getAvailable, Boolean.FALSE).in(Supplier::getId, ids);
-    supplierMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     ISupplierService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -102,7 +101,7 @@ public class SupplierServiceImpl implements ISupplierService {
 
     Wrapper<Supplier> updateWrapper = Wrappers.lambdaUpdate(Supplier.class)
         .set(Supplier::getAvailable, Boolean.TRUE).in(Supplier::getId, ids);
-    supplierMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     ISupplierService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -117,7 +116,7 @@ public class SupplierServiceImpl implements ISupplierService {
 
     Wrapper<Supplier> checkWrapper = Wrappers.lambdaQuery(Supplier.class)
         .eq(Supplier::getCode, vo.getCode());
-    if (supplierMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -181,7 +180,7 @@ public class SupplierServiceImpl implements ISupplierService {
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    supplierMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -195,7 +194,7 @@ public class SupplierServiceImpl implements ISupplierService {
   @Override
   public void update(UpdateSupplierVo vo) {
 
-    Supplier data = supplierMapper.selectById(vo.getId());
+    Supplier data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("供应商不存在！");
     }
@@ -203,7 +202,7 @@ public class SupplierServiceImpl implements ISupplierService {
     Wrapper<Supplier> checkWrapper = Wrappers.lambdaQuery(Supplier.class)
         .eq(Supplier::getCode, vo.getCode())
         .ne(Supplier::getId, vo.getId());
-    if (supplierMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -245,7 +244,7 @@ public class SupplierServiceImpl implements ISupplierService {
       updateWrapper.set(Supplier::getCityId, null);
     }
 
-    supplierMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -263,7 +262,7 @@ public class SupplierServiceImpl implements ISupplierService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SupplierDto> datas = supplierMapper.selector(vo);
+    List<SupplierDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }

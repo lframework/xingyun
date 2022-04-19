@@ -1,15 +1,16 @@
 package com.lframework.xingyun.sc.service.stock;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.ProductStockLogDto;
+import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
 import java.util.List;
 
-public interface IProductStockLogService extends BaseService {
+public interface IProductStockLogService extends BaseMpService<ProductStockLog> {
 
   /**
    * 查询列表

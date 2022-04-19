@@ -5,26 +5,24 @@ import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.retail.ProductRetailDto;
 import com.lframework.xingyun.basedata.entity.ProductRetail;
 import com.lframework.xingyun.basedata.mappers.ProductRetailMapper;
 import com.lframework.xingyun.basedata.service.product.IProductRetailService;
 import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.retail.UpdateProductRetailVo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductRetailServiceImpl implements IProductRetailService {
-
-  @Autowired
-  private ProductRetailMapper productRetailMapper;
+public class ProductRetailServiceImpl extends
+    BaseMpServiceImpl<ProductRetailMapper, ProductRetail> implements IProductRetailService {
 
   @Override
   public ProductRetailDto getById(String id) {
 
-    return productRetailMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "设置商品零售价，ID：{}, 零售价：{}", params = {"#vo.id", "#vo.price"})
@@ -40,7 +38,7 @@ public class ProductRetailServiceImpl implements IProductRetailService {
 
     data.setPrice(vo.getPrice());
 
-    productRetailMapper.insert(data);
+    getBaseMapper().insert(data);
 
     return data.getId();
   }
@@ -58,7 +56,7 @@ public class ProductRetailServiceImpl implements IProductRetailService {
       throw new InputErrorException("零售价必须大于0！");
     }
 
-    productRetailMapper.deleteById(vo.getId());
+    getBaseMapper().deleteById(vo.getId());
 
     CreateProductRetailVo createVo = new CreateProductRetailVo();
     createVo.setId(vo.getId());

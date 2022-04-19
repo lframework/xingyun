@@ -1,15 +1,16 @@
 package com.lframework.xingyun.chart.service;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.chart.dto.OrderChartSameMonthDto;
 import com.lframework.xingyun.chart.dto.OrderChartSumDto;
 import com.lframework.xingyun.chart.dto.OrderChartTodayDto;
+import com.lframework.xingyun.chart.entity.OrderChart;
 import com.lframework.xingyun.chart.vo.CreateOrderChartVo;
 import com.lframework.xingyun.chart.vo.GetOrderChartVo;
 import com.lframework.xingyun.chart.vo.QueryOrderChartVo;
 import java.util.List;
 
-public interface IOrderChartService extends BaseService {
+public interface IOrderChartService extends BaseMpService<OrderChart> {
 
   /**
    * 创建

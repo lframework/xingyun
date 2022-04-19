@@ -7,6 +7,7 @@ import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
 import com.lframework.xingyun.basedata.dto.product.poly.ProductPolyPropertyDto;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyDto;
@@ -30,10 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyService {
-
-  @Autowired
-  private ProductPolyPropertyMapper productPolyPropertyMapper;
+public class ProductPolyPropertyServiceImpl extends
+    BaseMpServiceImpl<ProductPolyPropertyMapper, ProductPolyProperty> implements
+    IProductPolyPropertyService {
 
   @Autowired
   private IProductPropertyService productPropertyService;
@@ -51,14 +51,14 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
   @Override
   public List<ProductPolyPropertyDto> getByPolyId(String polyId) {
 
-    return productPolyPropertyMapper.getByPolyId(polyId);
+    return getBaseMapper().getByPolyId(polyId);
   }
 
   @Transactional
   @Override
   public void setMultipleToSimple(String propertyId) {
 
-    List<ProductPolyPropertyDto> datas = productPolyPropertyMapper.getByPropertyId(propertyId);
+    List<ProductPolyPropertyDto> datas = getBaseMapper().getByPropertyId(propertyId);
     if (!CollectionUtil.isEmpty(datas)) {
 
       Set<ProductPolyPropertyDto> checkSet = new HashSet<>();
@@ -66,7 +66,7 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
         if (checkSet.stream()
             .anyMatch(t -> t.getPolyId().equals(data.getPolyId()) && t.getPropertyId()
                 .equals(data.getPropertyId()))) {
-          productPolyPropertyMapper.deleteById(data.getId());
+          getBaseMapper().deleteById(data.getId());
         } else {
           checkSet.add(data);
         }
@@ -87,11 +87,11 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
     List<ProductCategoryPropertyDto> categoryList = productCategoryPropertyService
         .getByPropertyId(propertyId);
     for (ProductCategoryPropertyDto productCategoryPropertyDto : categoryList) {
-      productPolyPropertyMapper
+      getBaseMapper()
           .setCommonToAppoint(propertyId, productCategoryPropertyDto.getCategoryId());
     }
 
-    List<ProductPolyPropertyDto> datas = productPolyPropertyMapper.getByPropertyId(propertyId);
+    List<ProductPolyPropertyDto> datas = getBaseMapper().getByPropertyId(propertyId);
 
     IProductPolyPropertyService thisService = getThis(this.getClass());
     for (ProductPolyPropertyDto data : datas) {
@@ -117,12 +117,12 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
           data.setPropertyId(propertyItem.getPropertyId());
           data.setPropertyItemId(propertyItem.getId());
 
-          productPolyPropertyMapper.insert(data);
+          getBaseMapper().insert(data);
         }
       }
     }
 
-    List<ProductPolyPropertyDto> datas = productPolyPropertyMapper.getByPropertyId(propertyId);
+    List<ProductPolyPropertyDto> datas = getBaseMapper().getByPropertyId(propertyId);
 
     IProductPolyPropertyService thisService = getThis(this.getClass());
     for (ProductPolyPropertyDto data : datas) {
@@ -141,7 +141,7 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
 
       Wrapper<ProductPolyProperty> deleteWrapper = Wrappers.lambdaQuery(ProductPolyProperty.class)
           .eq(ProductPolyProperty::getPropertyId, propertyId);
-      productPolyPropertyMapper.delete(deleteWrapper);
+      getBaseMapper().delete(deleteWrapper);
 
       ProductPropertyDto productProperty = productPropertyService.getById(propertyId);
 
@@ -158,13 +158,13 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
             data.setPropertyId(propertyItem.getPropertyId());
             data.setPropertyItemId(propertyItem.getId());
 
-            productPolyPropertyMapper.insert(data);
+            getBaseMapper().insert(data);
           }
         }
       }
     }
 
-    List<ProductPolyPropertyDto> datas = productPolyPropertyMapper.getByPropertyId(propertyId);
+    List<ProductPolyPropertyDto> datas = getBaseMapper().getByPropertyId(propertyId);
 
     IProductPolyPropertyService thisService = getThis(this.getClass());
     for (ProductPolyPropertyDto data : datas) {
@@ -205,7 +205,7 @@ public class ProductPolyPropertyServiceImpl implements IProductPolyPropertyServi
       data.setPropertyText(vo.getPropertyText());
     }
 
-    productPolyPropertyMapper.insert(data);
+    getBaseMapper().insert(data);
 
     return data.getId();
   }

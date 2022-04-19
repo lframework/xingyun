@@ -1,9 +1,10 @@
 package com.lframework.xingyun.sc.service.stock.take;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
+import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApprovePassTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApproveRefuseTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApprovePassTakeStockSheetVo;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @author zmj
  */
-public interface ITakeStockSheetService extends BaseService {
+public interface ITakeStockSheetService extends BaseMpService<TakeStockSheet> {
 
   /**
    * 查询列表

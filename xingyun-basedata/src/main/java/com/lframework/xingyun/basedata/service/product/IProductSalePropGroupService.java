@@ -1,8 +1,9 @@
 package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.product.saleprop.ProductSalePropGroupDto;
+import com.lframework.xingyun.basedata.entity.ProductSalePropGroup;
 import com.lframework.xingyun.basedata.vo.product.saleprop.CreateProductSalePropGroupVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupVo;
@@ -10,7 +11,7 @@ import com.lframework.xingyun.basedata.vo.product.saleprop.UpdateProductSaleProp
 import java.util.Collection;
 import java.util.List;
 
-public interface IProductSalePropGroupService extends BaseService {
+public interface IProductSalePropGroupService extends BaseMpService<ProductSalePropGroup> {
 
   /**
    * 查询列表

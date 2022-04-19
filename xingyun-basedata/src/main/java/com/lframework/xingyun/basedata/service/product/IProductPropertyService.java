@@ -1,16 +1,17 @@
 package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyDto;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
+import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.UpdateProductPropertyVo;
 import java.util.Collection;
 import java.util.List;
 
-public interface IProductPropertyService extends BaseService {
+public interface IProductPropertyService extends BaseMpService<ProductProperty> {
 
   /**
    * 查询列表

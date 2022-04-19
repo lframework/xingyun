@@ -1,9 +1,10 @@
 package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
+import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.vo.sale.returned.ApprovePassSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.ApproveRefuseSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.BatchApprovePassSaleReturnVo;
@@ -13,7 +14,7 @@ import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.UpdateSaleReturnVo;
 import java.util.List;
 
-public interface ISaleReturnService extends BaseService {
+public interface ISaleReturnService extends BaseMpService<SaleReturn> {
 
   /**
    * 查询列表

@@ -15,13 +15,14 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
+import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.member.MemberDto;
@@ -47,12 +48,12 @@ import com.lframework.xingyun.sc.entity.RetailReturnDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
-import com.lframework.xingyun.sc.mappers.RetailReturnDetailMapper;
 import com.lframework.xingyun.sc.mappers.RetailReturnMapper;
 import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailService;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
+import com.lframework.xingyun.sc.service.retail.IRetailReturnDetailService;
 import com.lframework.xingyun.sc.service.retail.IRetailReturnService;
 import com.lframework.xingyun.sc.service.stock.IProductLotService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
@@ -74,13 +75,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RetailReturnServiceImpl implements IRetailReturnService {
+public class RetailReturnServiceImpl extends
+    BaseMpServiceImpl<RetailReturnMapper, RetailReturn> implements IRetailReturnService {
 
   @Autowired
-  private RetailReturnMapper retailReturnMapper;
-
-  @Autowired
-  private RetailReturnDetailMapper retailReturnDetailMapper;
+  private IRetailReturnDetailService retailReturnDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -134,19 +133,19 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
   @Override
   public List<RetailReturnDto> query(QueryRetailReturnVo vo) {
 
-    return retailReturnMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public RetailReturnDto getById(String id) {
 
-    return retailReturnMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public RetailReturnFullDto getDetail(String id) {
 
-    return retailReturnMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建零售退货单，单号：{}", params = "#code")
@@ -164,7 +163,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
 
     retailReturn.setStatus(RetailReturnStatus.CREATED);
 
-    retailReturnMapper.insert(retailReturn);
+    getBaseMapper().insert(retailReturn);
 
     OpLogUtil.setVariable("code", retailReturn.getCode());
     OpLogUtil.setExtra(vo);
@@ -177,7 +176,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
   @Override
   public void update(UpdateRetailReturnVo vo) {
 
-    RetailReturn retailReturn = retailReturnMapper.selectById(vo.getId());
+    RetailReturn retailReturn = getBaseMapper().selectById(vo.getId());
     if (retailReturn == null) {
       throw new InputErrorException("零售退货单不存在！");
     }
@@ -196,15 +195,14 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
 
     if (requireOut) {
       //查询零售退货单明细
-      Wrapper<RetailReturnDetail> queryDetailWrapper = Wrappers
-          .lambdaQuery(RetailReturnDetail.class)
-          .eq(RetailReturnDetail::getReturnId, retailReturn.getId());
-      List<RetailReturnDetail> details = retailReturnDetailMapper.selectList(queryDetailWrapper);
+      Wrapper<RetailReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+          RetailReturnDetail.class).eq(RetailReturnDetail::getReturnId, retailReturn.getId());
+      List<RetailReturnDetail> details = retailReturnDetailService.list(queryDetailWrapper);
       for (RetailReturnDetail detail : details) {
         if (!StringUtil.isBlank(detail.getOutSheetDetailId())) {
           //先恢复已退货数量
-          retailOutSheetDetailLotService
-              .subReturnNum(detail.getOutSheetDetailId(), detail.getReturnNum());
+          retailOutSheetDetailLotService.subReturnNum(detail.getOutSheetDetailId(),
+              detail.getReturnNum());
         }
       }
     }
@@ -212,7 +210,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
     // 删除零售退货单明细
     Wrapper<RetailReturnDetail> deleteDetailWrapper = Wrappers.lambdaQuery(RetailReturnDetail.class)
         .eq(RetailReturnDetail::getReturnId, retailReturn.getId());
-    retailReturnDetailMapper.delete(deleteDetailWrapper);
+    retailReturnDetailService.remove(deleteDetailWrapper);
 
     this.create(retailReturn, vo, requireOut);
 
@@ -225,9 +223,8 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
     Wrapper<RetailReturn> updateOrderWrapper = Wrappers.lambdaUpdate(RetailReturn.class)
         .set(RetailReturn::getApproveBy, null).set(RetailReturn::getApproveTime, null)
         .set(RetailReturn::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(RetailReturn::getId, retailReturn.getId())
-        .in(RetailReturn::getStatus, statusList);
-    if (retailReturnMapper.update(retailReturn, updateOrderWrapper) != 1) {
+        .eq(RetailReturn::getId, retailReturn.getId()).in(RetailReturn::getStatus, statusList);
+    if (getBaseMapper().update(retailReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("零售退货单信息已过期，请刷新重试！");
     }
 
@@ -240,7 +237,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
   @Override
   public void approvePass(ApprovePassRetailReturnVo vo) {
 
-    RetailReturn retailReturn = retailReturnMapper.selectById(vo.getId());
+    RetailReturn retailReturn = getBaseMapper().selectById(vo.getId());
     if (retailReturn == null) {
       throw new InputErrorException("零售退货单不存在！");
     }
@@ -261,9 +258,9 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
       Wrapper<RetailReturn> checkWrapper = Wrappers.lambdaQuery(RetailReturn.class)
           .eq(RetailReturn::getOutSheetId, retailReturn.getOutSheetId())
           .ne(RetailReturn::getId, retailReturn.getId());
-      if (retailReturnMapper.selectCount(checkWrapper) > 0) {
-        RetailOutSheetDto retailOutSheet = retailOutSheetService
-            .getById(retailReturn.getOutSheetId());
+      if (getBaseMapper().selectCount(checkWrapper) > 0) {
+        RetailOutSheetDto retailOutSheet = retailOutSheetService.getById(
+            retailReturn.getOutSheetId());
         throw new DefaultClientException(
             "零售出库单号：" + retailOutSheet.getCode() + "，已关联其他零售退货单，不允许关联多个零售退货单！");
       }
@@ -278,19 +275,18 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
     LambdaUpdateWrapper<RetailReturn> updateOrderWrapper = Wrappers.lambdaUpdate(RetailReturn.class)
         .set(RetailReturn::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(RetailReturn::getApproveTime, LocalDateTime.now())
-        .eq(RetailReturn::getId, retailReturn.getId())
-        .in(RetailReturn::getStatus, statusList);
+        .eq(RetailReturn::getId, retailReturn.getId()).in(RetailReturn::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(RetailReturn::getDescription, vo.getDescription());
     }
-    if (retailReturnMapper.update(retailReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(retailReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("零售退货单信息已过期，请刷新重试！");
     }
 
     Wrapper<RetailReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(RetailReturnDetail.class)
         .eq(RetailReturnDetail::getReturnId, retailReturn.getId())
         .orderByAsc(RetailReturnDetail::getOrderNo);
-    List<RetailReturnDetail> details = retailReturnDetailMapper.selectList(queryDetailWrapper);
+    List<RetailReturnDetail> details = retailReturnDetailService.list(queryDetailWrapper);
     for (RetailReturnDetail detail : details) {
       ProductPurchaseDto productPurchase = productPurchaseService.getById(detail.getProductId());
       AddProductStockVo addProductStockVo = new AddProductStockVo();
@@ -298,8 +294,8 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
       addProductStockVo.setScId(retailReturn.getScId());
       addProductStockVo.setSupplierId(detail.getSupplierId());
       addProductStockVo.setStockNum(detail.getReturnNum());
-      addProductStockVo
-          .setDefaultTaxAmount(NumberUtil.mul(productPurchase.getPrice(), detail.getReturnNum()));
+      addProductStockVo.setDefaultTaxAmount(
+          NumberUtil.mul(productPurchase.getPrice(), detail.getReturnNum()));
       addProductStockVo.setTaxRate(detail.getTaxRate());
       addProductStockVo.setBizId(retailReturn.getId());
       addProductStockVo.setBizDetailId(detail.getId());
@@ -355,7 +351,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
   @Override
   public void approveRefuse(ApproveRefuseRetailReturnVo vo) {
 
-    RetailReturn retailReturn = retailReturnMapper.selectById(vo.getId());
+    RetailReturn retailReturn = getBaseMapper().selectById(vo.getId());
     if (retailReturn == null) {
       throw new InputErrorException("零售退货单不存在！");
     }
@@ -381,7 +377,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
         .set(RetailReturn::getRefuseReason, vo.getRefuseReason())
         .eq(RetailReturn::getId, retailReturn.getId())
         .eq(RetailReturn::getStatus, RetailReturnStatus.CREATED);
-    if (retailReturnMapper.update(retailReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(retailReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("零售退货单信息已过期，请刷新重试！");
     }
 
@@ -416,7 +412,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    RetailReturn retailReturn = retailReturnMapper.selectById(id);
+    RetailReturn retailReturn = getBaseMapper().selectById(id);
     if (retailReturn == null) {
       throw new InputErrorException("零售退货单不存在！");
     }
@@ -433,15 +429,14 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
 
     if (!StringUtil.isBlank(retailReturn.getOutSheetId())) {
       //查询零售退货单明细
-      Wrapper<RetailReturnDetail> queryDetailWrapper = Wrappers
-          .lambdaQuery(RetailReturnDetail.class)
-          .eq(RetailReturnDetail::getReturnId, retailReturn.getId());
-      List<RetailReturnDetail> details = retailReturnDetailMapper.selectList(queryDetailWrapper);
+      Wrapper<RetailReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+          RetailReturnDetail.class).eq(RetailReturnDetail::getReturnId, retailReturn.getId());
+      List<RetailReturnDetail> details = retailReturnDetailService.list(queryDetailWrapper);
       for (RetailReturnDetail detail : details) {
         if (!StringUtil.isBlank(detail.getOutSheetDetailId())) {
           //恢复已退货数量
-          retailOutSheetDetailLotService
-              .subReturnNum(detail.getOutSheetDetailId(), detail.getReturnNum());
+          retailOutSheetDetailLotService.subReturnNum(detail.getOutSheetDetailId(),
+              detail.getReturnNum());
         }
       }
     }
@@ -449,10 +444,10 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
     // 删除退货单明细
     Wrapper<RetailReturnDetail> deleteDetailWrapper = Wrappers.lambdaQuery(RetailReturnDetail.class)
         .eq(RetailReturnDetail::getReturnId, retailReturn.getId());
-    retailReturnDetailMapper.delete(deleteDetailWrapper);
+    retailReturnDetailService.remove(deleteDetailWrapper);
 
     // 删除退货单
-    retailReturnMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", retailReturn.getCode());
   }
@@ -523,7 +518,7 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
         Wrapper<RetailReturn> checkWrapper = Wrappers.lambdaQuery(RetailReturn.class)
             .eq(RetailReturn::getOutSheetId, retailOutSheet.getId())
             .ne(RetailReturn::getId, retailReturn.getId());
-        if (retailReturnMapper.selectCount(checkWrapper) > 0) {
+        if (getBaseMapper().selectCount(checkWrapper) > 0) {
           throw new DefaultClientException(
               "零售出库单号：" + retailOutSheet.getCode() + "，已关联其他零售退货单，不允许关联多个零售退货单！");
         }
@@ -537,10 +532,10 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
     for (RetailReturnProductVo productVo : vo.getProducts()) {
       if (requireOut) {
         if (!StringUtil.isBlank(productVo.getOutSheetDetailId())) {
-          RetailOutSheetDetailLotDto detailLot = retailOutSheetDetailLotService
-              .getById(productVo.getOutSheetDetailId());
-          RetailOutSheetDetailDto detail = retailOutSheetDetailService
-              .getById(detailLot.getDetailId());
+          RetailOutSheetDetailLotDto detailLot = retailOutSheetDetailLotService.getById(
+              productVo.getOutSheetDetailId());
+          RetailOutSheetDetailDto detail = retailOutSheetDetailService.getById(
+              detailLot.getDetailId());
           ProductLotDto lot = productLotService.getById(detailLot.getLotId());
           productVo.setOriPrice(detail.getOriPrice());
           productVo.setTaxPrice(detail.getTaxPrice());
@@ -568,8 +563,8 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
         returnNum += productVo.getReturnNum();
       }
 
-      totalAmount = NumberUtil
-          .add(totalAmount, NumberUtil.mul(productVo.getTaxPrice(), productVo.getReturnNum()));
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.mul(productVo.getTaxPrice(), productVo.getReturnNum()));
 
       RetailReturnDetail detail = new RetailReturnDetail();
       detail.setId(IdUtil.getId());
@@ -592,26 +587,24 @@ public class RetailReturnServiceImpl implements IRetailReturnService {
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getPoly().getTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       detail.setSettleStatus(this.getInitSettleStatus(member));
       if (requireOut && !StringUtil.isBlank(productVo.getOutSheetDetailId())) {
         detail.setOutSheetDetailId(productVo.getOutSheetDetailId());
-        retailOutSheetDetailLotService
-            .addReturnNum(productVo.getOutSheetDetailId(), detail.getReturnNum());
+        retailOutSheetDetailLotService.addReturnNum(productVo.getOutSheetDetailId(),
+            detail.getReturnNum());
       }
 
-      retailReturnDetailMapper.insert(detail);
+      retailReturnDetailService.save(detail);
       orderNo++;
     }
     retailReturn.setTotalNum(returnNum);
     retailReturn.setTotalGiftNum(giftNum);
     retailReturn.setTotalAmount(totalAmount);
-    retailReturn
-        .setDescription(
-            StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+    retailReturn.setDescription(
+        StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     retailReturn.setSettleStatus(this.getInitSettleStatus(member));
   }
 

@@ -15,13 +15,14 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
+import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
@@ -39,9 +40,9 @@ import com.lframework.xingyun.sc.dto.sale.config.SaleConfigDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
-import com.lframework.xingyun.sc.mappers.SaleOrderDetailMapper;
 import com.lframework.xingyun.sc.mappers.SaleOrderMapper;
 import com.lframework.xingyun.sc.service.sale.ISaleConfigService;
+import com.lframework.xingyun.sc.service.sale.ISaleOrderDetailService;
 import com.lframework.xingyun.sc.service.sale.ISaleOrderService;
 import com.lframework.xingyun.sc.vo.sale.ApprovePassSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.ApproveRefuseSaleOrderVo;
@@ -62,13 +63,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleOrderServiceImpl implements ISaleOrderService {
+public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, SaleOrder> implements
+    ISaleOrderService {
 
   @Autowired
-  private SaleOrderMapper saleOrderMapper;
-
-  @Autowired
-  private SaleOrderDetailMapper saleOrderDetailMapper;
+  private ISaleOrderDetailService saleOrderDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -103,7 +102,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
   @Override
   public List<SaleOrderDto> query(QuerySaleOrderVo vo) {
 
-    return saleOrderMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -114,7 +113,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOrderDto> datas = saleOrderMapper.selector(vo);
+    List<SaleOrderDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -122,13 +121,13 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
   @Override
   public SaleOrderDto getById(String id) {
 
-    return saleOrderMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public SaleOrderFullDto getDetail(String id) {
 
-    SaleOrderFullDto order = saleOrderMapper.getDetail(id);
+    SaleOrderFullDto order = getBaseMapper().getDetail(id);
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -141,7 +140,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
 
     SaleConfigDto saleConfig = saleConfigService.get();
 
-    SaleOrderWithOutDto order = saleOrderMapper.getWithOut(id, saleConfig.getOutStockRequireSale());
+    SaleOrderWithOutDto order = getBaseMapper().getWithOut(id, saleConfig.getOutStockRequireSale());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -158,7 +157,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
     SaleConfigDto saleConfig = saleConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOrderDto> datas = saleOrderMapper
+    List<SaleOrderDto> datas = getBaseMapper()
         .queryWithOut(vo, saleConfig.getOutStockMultipleRelateSale());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -177,7 +176,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
 
     order.setStatus(SaleOrderStatus.CREATED);
 
-    saleOrderMapper.insert(order);
+    getBaseMapper().insert(order);
 
     OpLogUtil.setVariable("code", order.getCode());
     OpLogUtil.setExtra(vo);
@@ -190,7 +189,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
   @Override
   public void update(UpdateSaleOrderVo vo) {
 
-    SaleOrder order = saleOrderMapper.selectById(vo.getId());
+    SaleOrder order = getBaseMapper().selectById(vo.getId());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -208,7 +207,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
     // 删除订单明细
     Wrapper<SaleOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(SaleOrderDetail.class)
         .eq(SaleOrderDetail::getOrderId, order.getId());
-    saleOrderDetailMapper.delete(deleteDetailWrapper);
+    saleOrderDetailService.remove(deleteDetailWrapper);
 
     this.create(order, vo);
 
@@ -222,7 +221,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
         .set(SaleOrder::getApproveBy, null).set(SaleOrder::getApproveTime, null)
         .set(SaleOrder::getRefuseReason, StringPool.EMPTY_STR).eq(SaleOrder::getId, order.getId())
         .in(SaleOrder::getStatus, statusList);
-    if (saleOrderMapper.update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -235,7 +234,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
   @Override
   public void approvePass(ApprovePassSaleOrderVo vo) {
 
-    SaleOrder order = saleOrderMapper.selectById(vo.getId());
+    SaleOrder order = getBaseMapper().selectById(vo.getId());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -263,7 +262,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(SaleOrder::getDescription, vo.getDescription());
     }
-    if (saleOrderMapper.update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -313,7 +312,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
   @Override
   public void approveRefuse(ApproveRefuseSaleOrderVo vo) {
 
-    SaleOrder order = saleOrderMapper.selectById(vo.getId());
+    SaleOrder order = getBaseMapper().selectById(vo.getId());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -338,7 +337,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
         .set(SaleOrder::getApproveTime, LocalDateTime.now())
         .set(SaleOrder::getRefuseReason, vo.getRefuseReason()).eq(SaleOrder::getId, order.getId())
         .eq(SaleOrder::getStatus, SaleOrderStatus.CREATED);
-    if (saleOrderMapper.update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -373,7 +372,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    SaleOrder order = saleOrderMapper.selectById(id);
+    SaleOrder order = getBaseMapper().selectById(id);
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -391,10 +390,10 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
     // 删除订单明细
     Wrapper<SaleOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(SaleOrderDetail.class)
         .eq(SaleOrderDetail::getOrderId, order.getId());
-    saleOrderDetailMapper.delete(deleteDetailWrapper);
+    saleOrderDetailService.remove(deleteDetailWrapper);
 
     // 删除订单
-    saleOrderMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", order.getCode());
   }
@@ -485,7 +484,7 @@ public class SaleOrderServiceImpl implements ISaleOrderService {
               : productVo.getDescription());
       orderDetail.setOrderNo(orderNo);
 
-      saleOrderDetailMapper.insert(orderDetail);
+      saleOrderDetailService.save(orderDetail);
       orderNo++;
     }
     order.setTotalNum(totalNum);

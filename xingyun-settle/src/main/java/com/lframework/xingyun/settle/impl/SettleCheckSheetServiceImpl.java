@@ -15,6 +15,7 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -40,8 +41,8 @@ import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetCalcType;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetStatus;
 import com.lframework.xingyun.settle.enums.SettleFeeSheetType;
-import com.lframework.xingyun.settle.mappers.SettleCheckSheetDetailMapper;
 import com.lframework.xingyun.settle.mappers.SettleCheckSheetMapper;
+import com.lframework.xingyun.settle.service.ISettleCheckSheetDetailService;
 import com.lframework.xingyun.settle.service.ISettleCheckSheetService;
 import com.lframework.xingyun.settle.service.ISettleFeeSheetService;
 import com.lframework.xingyun.settle.service.ISettlePreSheetService;
@@ -63,13 +64,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
+public class SettleCheckSheetServiceImpl extends
+    BaseMpServiceImpl<SettleCheckSheetMapper, SettleCheckSheet> implements
+    ISettleCheckSheetService {
 
   @Autowired
-  private SettleCheckSheetMapper settleCheckSheetMapper;
-
-  @Autowired
-  private SettleCheckSheetDetailMapper settleCheckSheetDetailMapper;
+  private ISettleCheckSheetDetailService settleCheckSheetDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -102,19 +102,19 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
   @Override
   public List<SettleCheckSheetDto> query(QuerySettleCheckSheetVo vo) {
 
-    return settleCheckSheetMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public SettleCheckSheetDto getById(String id) {
 
-    return settleCheckSheetMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public SettleCheckSheetFullDto getDetail(String id) {
 
-    return settleCheckSheetMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建供应商对账单，单号：{}", params = "#code")
@@ -134,7 +134,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
 
-    settleCheckSheetMapper.insert(sheet);
+    getBaseMapper().insert(sheet);
 
     return sheet.getId();
   }
@@ -144,7 +144,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
   @Override
   public void update(UpdateSettleCheckSheetVo vo) {
 
-    SettleCheckSheet sheet = settleCheckSheetMapper.selectById(vo.getId());
+    SettleCheckSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商对账单不存在！");
     }
@@ -159,21 +159,19 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
     }
 
     //将所有的单据的结算状态更新
-    Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(SettleCheckSheetDetail.class)
-        .eq(SettleCheckSheetDetail::getSheetId, sheet.getId())
+    Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            SettleCheckSheetDetail.class).eq(SettleCheckSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(SettleCheckSheetDetail::getOrderNo);
-    List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailMapper
-        .selectList(queryDetailWrapper);
+    List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailService.list(
+        queryDetailWrapper);
     for (SettleCheckSheetDetail sheetDetail : sheetDetails) {
       this.setBizItemUnSettle(sheetDetail.getBizId(), sheetDetail.getBizType());
     }
 
     // 删除明细
-    Wrapper<SettleCheckSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(SettleCheckSheetDetail.class)
-        .eq(SettleCheckSheetDetail::getSheetId, sheet.getId());
-    settleCheckSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<SettleCheckSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        SettleCheckSheetDetail.class).eq(SettleCheckSheetDetail::getSheetId, sheet.getId());
+    settleCheckSheetDetailService.remove(deleteDetailWrapper);
 
     this.create(sheet, vo);
 
@@ -186,9 +184,8 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
     Wrapper<SettleCheckSheet> updateWrapper = Wrappers.lambdaUpdate(SettleCheckSheet.class)
         .set(SettleCheckSheet::getApproveBy, null).set(SettleCheckSheet::getApproveTime, null)
         .set(SettleCheckSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(SettleCheckSheet::getId, sheet.getId())
-        .in(SettleCheckSheet::getStatus, statusList);
-    if (settleCheckSheetMapper.update(sheet, updateWrapper) != 1) {
+        .eq(SettleCheckSheet::getId, sheet.getId()).in(SettleCheckSheet::getStatus, statusList);
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商对账单信息已过期，请刷新重试！");
     }
 
@@ -201,7 +198,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
   @Override
   public void approvePass(ApprovePassSettleCheckSheetVo vo) {
 
-    SettleCheckSheet sheet = settleCheckSheetMapper.selectById(vo.getId());
+    SettleCheckSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商对账单不存在！");
     }
@@ -227,7 +224,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
     Wrapper<SettleCheckSheet> updateWrapper = Wrappers.lambdaUpdate(SettleCheckSheet.class)
         .eq(SettleCheckSheet::getId, sheet.getId()).in(SettleCheckSheet::getStatus, statusList);
-    if (settleCheckSheetMapper.update(sheet, updateWrapper) != 1) {
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商对账单信息已过期，请刷新重试！");
     }
 
@@ -254,7 +251,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
   @Override
   public void approveRefuse(ApproveRefuseSettleCheckSheetVo vo) {
 
-    SettleCheckSheet sheet = settleCheckSheetMapper.selectById(vo.getId());
+    SettleCheckSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商对账单不存在！");
     }
@@ -279,9 +276,8 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
     statusList.add(SettleCheckSheetStatus.APPROVE_REFUSE);
 
     Wrapper<SettleCheckSheet> updateWrapper = Wrappers.lambdaUpdate(SettleCheckSheet.class)
-        .eq(SettleCheckSheet::getId, sheet.getId())
-        .in(SettleCheckSheet::getStatus, statusList);
-    if (settleCheckSheetMapper.update(sheet, updateWrapper) != 1) {
+        .eq(SettleCheckSheet::getId, sheet.getId()).in(SettleCheckSheet::getStatus, statusList);
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商对账单信息已过期，请刷新重试！");
     }
 
@@ -333,7 +329,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    SettleCheckSheet sheet = settleCheckSheetMapper.selectById(id);
+    SettleCheckSheet sheet = getBaseMapper().selectById(id);
     if (sheet == null) {
       throw new InputErrorException("供应商对账单不存在！");
     }
@@ -349,24 +345,22 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
     }
 
     //将所有的单据的结算状态更新
-    Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(SettleCheckSheetDetail.class)
-        .eq(SettleCheckSheetDetail::getSheetId, sheet.getId())
+    Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            SettleCheckSheetDetail.class).eq(SettleCheckSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(SettleCheckSheetDetail::getOrderNo);
-    List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailMapper
-        .selectList(queryDetailWrapper);
+    List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailService.list(
+        queryDetailWrapper);
     for (SettleCheckSheetDetail sheetDetail : sheetDetails) {
       this.setBizItemUnSettle(sheetDetail.getBizId(), sheetDetail.getBizType());
     }
 
     // 删除明细
-    Wrapper<SettleCheckSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(SettleCheckSheetDetail.class)
-        .eq(SettleCheckSheetDetail::getSheetId, sheet.getId());
-    settleCheckSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<SettleCheckSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        SettleCheckSheetDetail.class).eq(SettleCheckSheetDetail::getSheetId, sheet.getId());
+    settleCheckSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除单据
-    settleCheckSheetMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
   }
@@ -424,9 +418,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         result.setCode(feeSheet.getCode());
         result.setTotalAmount(feeSheet.getTotalAmount());
         result.setApproveTime(feeSheet.getApproveTime());
-        result.setCalcType(feeSheet.getSheetType() == SettleFeeSheetType.PAY ?
-            SettleCheckSheetCalcType.ADD :
-            SettleCheckSheetCalcType.SUB);
+        result.setCalcType(
+            feeSheet.getSheetType() == SettleFeeSheetType.PAY ? SettleCheckSheetCalcType.ADD
+                : SettleCheckSheetCalcType.SUB);
         break;
       }
       case SETTLE_PRE_SHEET: {
@@ -592,21 +586,17 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
 
     List<SettleCheckBizItemDto> results = new ArrayList<>();
 
-    List<ReceiveSheetDto> receiveSheetList = receiveSheetService
-        .getApprovedList(vo.getSupplierId(), vo.getStartTime(), vo.getEndTime(),
-            SettleStatus.UN_SETTLE);
+    List<ReceiveSheetDto> receiveSheetList = receiveSheetService.getApprovedList(vo.getSupplierId(),
+        vo.getStartTime(), vo.getEndTime(), SettleStatus.UN_SETTLE);
 
-    List<PurchaseReturnDto> purchaseReturnList = purchaseReturnService
-        .getApprovedList(vo.getSupplierId(), vo.getStartTime(), vo.getEndTime(),
-            SettleStatus.UN_SETTLE);
+    List<PurchaseReturnDto> purchaseReturnList = purchaseReturnService.getApprovedList(
+        vo.getSupplierId(), vo.getStartTime(), vo.getEndTime(), SettleStatus.UN_SETTLE);
 
-    List<SettleFeeSheetDto> feeSheetList = settleFeeSheetService
-        .getApprovedList(vo.getSupplierId(), vo.getStartTime(), vo.getEndTime(),
-            SettleStatus.UN_SETTLE);
+    List<SettleFeeSheetDto> feeSheetList = settleFeeSheetService.getApprovedList(vo.getSupplierId(),
+        vo.getStartTime(), vo.getEndTime(), SettleStatus.UN_SETTLE);
 
-    List<SettlePreSheetDto> preSheetList = settlePreSheetService
-        .getApprovedList(vo.getSupplierId(), vo.getStartTime(), vo.getEndTime(),
-            SettleStatus.UN_SETTLE);
+    List<SettlePreSheetDto> preSheetList = settlePreSheetService.getApprovedList(vo.getSupplierId(),
+        vo.getStartTime(), vo.getEndTime(), SettleStatus.UN_SETTLE);
 
     if (!CollectionUtil.isEmpty(receiveSheetList)) {
       for (ReceiveSheetDto item : receiveSheetList) {
@@ -644,9 +634,9 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         result.setTotalAmount(item.getTotalAmount());
         result.setApproveTime(item.getApproveTime());
         result.setBizType(SettleCheckSheetBizType.SETTLE_FEE_SHEET);
-        result.setCalcType(item.getSheetType() == SettleFeeSheetType.PAY ?
-            SettleCheckSheetCalcType.ADD :
-            SettleCheckSheetCalcType.SUB);
+        result.setCalcType(
+            item.getSheetType() == SettleFeeSheetType.PAY ? SettleCheckSheetCalcType.ADD
+                : SettleCheckSheetCalcType.SUB);
 
         results.add(result);
       }
@@ -680,7 +670,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         .set(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE)
         .eq(SettleCheckSheet::getId, id)
         .eq(SettleCheckSheet::getSettleStatus, SettleStatus.PART_SETTLE);
-    int count = settleCheckSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     return count;
   }
@@ -693,7 +683,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         .set(SettleCheckSheet::getSettleStatus, SettleStatus.PART_SETTLE)
         .eq(SettleCheckSheet::getId, id)
         .in(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = settleCheckSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     return count;
   }
@@ -706,14 +696,14 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         .set(SettleCheckSheet::getSettleStatus, SettleStatus.SETTLED)
         .eq(SettleCheckSheet::getId, id)
         .in(SettleCheckSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = settleCheckSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     //将所有的单据的结算状态更新
-    Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(SettleCheckSheetDetail.class)
-        .eq(SettleCheckSheetDetail::getSheetId, id).orderByAsc(SettleCheckSheetDetail::getOrderNo);
-    List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailMapper
-        .selectList(queryDetailWrapper);
+    Wrapper<SettleCheckSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            SettleCheckSheetDetail.class).eq(SettleCheckSheetDetail::getSheetId, id)
+        .orderByAsc(SettleCheckSheetDetail::getOrderNo);
+    List<SettleCheckSheetDetail> sheetDetails = settleCheckSheetDetailService.list(
+        queryDetailWrapper);
     for (SettleCheckSheetDetail sheetDetail : sheetDetails) {
       this.setBizItemSettled(sheetDetail.getBizId(), sheetDetail.getBizType());
     }
@@ -725,7 +715,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
   public List<SettleCheckSheetDto> getApprovedList(String supplierId, LocalDateTime startTime,
       LocalDateTime endTime) {
 
-    return settleCheckSheetMapper.getApprovedList(supplierId, startTime, endTime);
+    return getBaseMapper().getApprovedList(supplierId, startTime, endTime);
   }
 
   @Transactional
@@ -733,25 +723,24 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
   public void setSettleAmount(String id, BigDecimal totalPayedAmount,
       BigDecimal totalDiscountAmount) {
 
-    SettleCheckSheet checkSheet = settleCheckSheetMapper.selectById(id);
-    BigDecimal remainTotalPayAmount = NumberUtil
-        .sub(checkSheet.getTotalPayAmount(), checkSheet.getTotalPayedAmount(),
-            checkSheet.getTotalDiscountAmount(), totalPayedAmount, totalDiscountAmount);
-    BigDecimal totalPayAmount = NumberUtil
-        .sub(checkSheet.getTotalPayAmount(), checkSheet.getTotalPayedAmount(),
-            checkSheet.getTotalDiscountAmount());
+    SettleCheckSheet checkSheet = getBaseMapper().selectById(id);
+    BigDecimal remainTotalPayAmount = NumberUtil.sub(checkSheet.getTotalPayAmount(),
+        checkSheet.getTotalPayedAmount(), checkSheet.getTotalDiscountAmount(), totalPayedAmount,
+        totalDiscountAmount);
+    BigDecimal totalPayAmount = NumberUtil.sub(checkSheet.getTotalPayAmount(),
+        checkSheet.getTotalPayedAmount(), checkSheet.getTotalDiscountAmount());
     if (NumberUtil.lt(checkSheet.getTotalPayAmount(), 0)) {
       if (NumberUtil.gt(remainTotalPayAmount, 0)) {
         throw new DefaultClientException(
-            "对账单：" + checkSheet.getCode() + "，剩余付款金额为" + totalPayAmount + "元，本次付款金额为" + NumberUtil
-                .add(totalPayedAmount, totalDiscountAmount) + "元，无法结算！");
+            "对账单：" + checkSheet.getCode() + "，剩余付款金额为" + totalPayAmount + "元，本次付款金额为"
+                + NumberUtil.add(totalPayedAmount, totalDiscountAmount) + "元，无法结算！");
       }
     }
     if (NumberUtil.gt(checkSheet.getTotalPayAmount(), 0)) {
       if (NumberUtil.lt(remainTotalPayAmount, 0)) {
         throw new DefaultClientException(
-            "对账单：" + checkSheet.getCode() + "，剩余付款金额为" + totalPayAmount + "元，本次付款金额为" + NumberUtil
-                .add(totalPayedAmount, totalDiscountAmount) + "元，无法结算！");
+            "对账单：" + checkSheet.getCode() + "，剩余付款金额为" + totalPayAmount + "元，本次付款金额为"
+                + NumberUtil.add(totalPayedAmount, totalDiscountAmount) + "元，无法结算！");
       }
     }
     Wrapper<SettleCheckSheet> updateWrapper = Wrappers.lambdaUpdate(SettleCheckSheet.class)
@@ -762,7 +751,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
         .eq(SettleCheckSheet::getId, id)
         .eq(SettleCheckSheet::getTotalPayedAmount, checkSheet.getTotalPayedAmount())
         .eq(SettleCheckSheet::getTotalDiscountAmount, checkSheet.getTotalDiscountAmount());
-    if (settleCheckSheetMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("结账单：" + checkSheet.getCode() + "，信息已过期，请刷新重试！");
     }
 
@@ -779,9 +768,8 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
     int orderNo = 0;
     for (SettleCheckSheetItemVo itemVo : vo.getItems()) {
       orderNo++;
-      SettleCheckBizItemDto item = this
-          .getBizItem(itemVo.getId(),
-              EnumUtil.getByCode(SettleCheckSheetBizType.class, itemVo.getBizType()));
+      SettleCheckBizItemDto item = this.getBizItem(itemVo.getId(),
+          EnumUtil.getByCode(SettleCheckSheetBizType.class, itemVo.getBizType()));
       if (item == null) {
         throw new DefaultClientException("第" + orderNo + "行业务单据不存在！");
       }
@@ -805,7 +793,7 @@ public class SettleCheckSheetServiceImpl implements ISettleCheckSheetService {
       detail.setDescription(itemVo.getDescription());
       detail.setOrderNo(orderNo);
 
-      settleCheckSheetDetailMapper.insert(detail);
+      settleCheckSheetDetailService.save(detail);
 
       totalAmount = NumberUtil.add(totalAmount, item.getTotalAmount());
       totalPayAmount = NumberUtil.add(totalPayAmount, itemVo.getPayAmount());

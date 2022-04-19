@@ -15,13 +15,14 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
+import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.member.MemberDto;
@@ -45,10 +46,10 @@ import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
-import com.lframework.xingyun.sc.mappers.RetailOutSheetDetailLotMapper;
-import com.lframework.xingyun.sc.mappers.RetailOutSheetDetailMapper;
 import com.lframework.xingyun.sc.mappers.RetailOutSheetMapper;
 import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
+import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailLotService;
+import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailService;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.vo.retail.out.ApprovePassRetailOutSheetVo;
@@ -72,16 +73,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
+public class RetailOutSheetServiceImpl extends
+    BaseMpServiceImpl<RetailOutSheetMapper, RetailOutSheet> implements IRetailOutSheetService {
 
   @Autowired
-  private RetailOutSheetMapper retailOutSheetMapper;
+  private IRetailOutSheetDetailService retailOutSheetDetailService;
 
   @Autowired
-  private RetailOutSheetDetailMapper retailOutSheetDetailMapper;
-
-  @Autowired
-  private RetailOutSheetDetailLotMapper retailOutSheetDetailLotMapper;
+  private IRetailOutSheetDetailLotService retailOutSheetDetailLotService;
 
   @Autowired
   private IStoreCenterService storeCenterService;
@@ -120,7 +119,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
   @Override
   public List<RetailOutSheetDto> query(QueryRetailOutSheetVo vo) {
 
-    return retailOutSheetMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -131,7 +130,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<RetailOutSheetDto> datas = retailOutSheetMapper.selector(vo);
+    List<RetailOutSheetDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -139,7 +138,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
   @Override
   public RetailOutSheetDto getById(String id) {
 
-    return retailOutSheetMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -155,7 +154,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
   @Override
   public RetailOutSheetFullDto getDetail(String id) {
 
-    return retailOutSheetMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @Override
@@ -163,8 +162,8 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
 
     RetailConfigDto retailConfig = retailConfigService.get();
 
-    RetailOutSheetWithReturnDto sheet = retailOutSheetMapper
-        .getWithReturn(id, retailConfig.getRetailReturnRequireOutStock());
+    RetailOutSheetWithReturnDto sheet = getBaseMapper().getWithReturn(id,
+        retailConfig.getRetailReturnRequireOutStock());
     if (sheet == null) {
       throw new InputErrorException("销售出库单不存在！");
     }
@@ -182,8 +181,8 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
     RetailConfigDto retailConfig = retailConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<RetailOutSheetDto> datas = retailOutSheetMapper
-        .queryWithReturn(vo, retailConfig.getRetailReturnMultipleRelateOutStock());
+    List<RetailOutSheetDto> datas = getBaseMapper().queryWithReturn(vo,
+        retailConfig.getRetailReturnMultipleRelateOutStock());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -203,7 +202,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
 
     sheet.setStatus(RetailOutSheetStatus.CREATED);
 
-    retailOutSheetMapper.insert(sheet);
+    getBaseMapper().insert(sheet);
 
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
@@ -216,7 +215,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
   @Override
   public void update(UpdateRetailOutSheetVo vo) {
 
-    RetailOutSheet sheet = retailOutSheetMapper.selectById(vo.getId());
+    RetailOutSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new InputErrorException("销售出库单不存在！");
     }
@@ -232,10 +231,9 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
     }
 
     // 删除出库单明细
-    Wrapper<RetailOutSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(RetailOutSheetDetail.class)
-        .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
-    retailOutSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<RetailOutSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId());
+    retailOutSheetDetailService.remove(deleteDetailWrapper);
 
     this.create(sheet, vo);
 
@@ -248,9 +246,8 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
     Wrapper<RetailOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(RetailOutSheet.class)
         .set(RetailOutSheet::getApproveBy, null).set(RetailOutSheet::getApproveTime, null)
         .set(RetailOutSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(RetailOutSheet::getId, sheet.getId())
-        .in(RetailOutSheet::getStatus, statusList);
-    if (retailOutSheetMapper.update(sheet, updateOrderWrapper) != 1) {
+        .eq(RetailOutSheet::getId, sheet.getId()).in(RetailOutSheet::getStatus, statusList);
+    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
 
@@ -263,7 +260,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
   @Override
   public void approvePass(ApprovePassRetailOutSheetVo vo) {
 
-    RetailOutSheet sheet = retailOutSheetMapper.selectById(vo.getId());
+    RetailOutSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new InputErrorException("销售出库单不存在！");
     }
@@ -286,24 +283,22 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
     statusList.add(RetailOutSheetStatus.CREATED);
     statusList.add(RetailOutSheetStatus.APPROVE_REFUSE);
 
-    LambdaUpdateWrapper<RetailOutSheet> updateOrderWrapper = Wrappers
-        .lambdaUpdate(RetailOutSheet.class)
+    LambdaUpdateWrapper<RetailOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(
+            RetailOutSheet.class)
         .set(RetailOutSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(RetailOutSheet::getApproveTime, LocalDateTime.now())
-        .eq(RetailOutSheet::getId, sheet.getId())
-        .in(RetailOutSheet::getStatus, statusList);
+        .eq(RetailOutSheet::getId, sheet.getId()).in(RetailOutSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(RetailOutSheet::getDescription, vo.getDescription());
     }
-    if (retailOutSheetMapper.update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
 
-    Wrapper<RetailOutSheetDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(RetailOutSheetDetail.class)
-        .eq(RetailOutSheetDetail::getSheetId, sheet.getId())
+    Wrapper<RetailOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(RetailOutSheetDetail::getOrderNo);
-    List<RetailOutSheetDetail> details = retailOutSheetDetailMapper.selectList(queryDetailWrapper);
+    List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
     for (RetailOutSheetDetail detail : details) {
       SubProductStockVo subProductStockVo = new SubProductStockVo();
       subProductStockVo.setProductId(detail.getProductId());
@@ -328,12 +323,12 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
         detailLot.setCostUnTaxAmount(lotChange.getUnTaxAmount());
         detailLot.setSettleStatus(detail.getSettleStatus());
         detailLot.setOrderNo(orderNo);
-        retailOutSheetDetailLotMapper.insert(detailLot);
+        retailOutSheetDetailLotService.save(detailLot);
 
         orderNo++;
       }
 
-      retailOutSheetDetailMapper.updateById(detail);
+      retailOutSheetDetailService.updateById(detail);
     }
 
     OpLogUtil.setVariable("code", sheet.getCode());
@@ -380,7 +375,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
   @Override
   public void approveRefuse(ApproveRefuseRetailOutSheetVo vo) {
 
-    RetailOutSheet sheet = retailOutSheetMapper.selectById(vo.getId());
+    RetailOutSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new InputErrorException("销售出库单不存在！");
     }
@@ -400,14 +395,14 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
 
     sheet.setStatus(RetailOutSheetStatus.APPROVE_REFUSE);
 
-    LambdaUpdateWrapper<RetailOutSheet> updateOrderWrapper = Wrappers
-        .lambdaUpdate(RetailOutSheet.class)
+    LambdaUpdateWrapper<RetailOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(
+            RetailOutSheet.class)
         .set(RetailOutSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(RetailOutSheet::getApproveTime, LocalDateTime.now())
         .set(RetailOutSheet::getRefuseReason, vo.getRefuseReason())
         .eq(RetailOutSheet::getId, sheet.getId())
         .eq(RetailOutSheet::getStatus, RetailOutSheetStatus.CREATED);
-    if (retailOutSheetMapper.update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
 
@@ -442,7 +437,7 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    RetailOutSheet sheet = retailOutSheetMapper.selectById(id);
+    RetailOutSheet sheet = getBaseMapper().selectById(id);
     if (sheet == null) {
       throw new InputErrorException("销售出库单不存在！");
     }
@@ -458,13 +453,12 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
     }
 
     // 删除订单明细
-    Wrapper<RetailOutSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(RetailOutSheetDetail.class)
-        .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
-    retailOutSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<RetailOutSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId());
+    retailOutSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除订单
-    retailOutSheetMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
   }
@@ -533,8 +527,8 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
         purchaseNum += productVo.getOrderNum();
       }
 
-      totalAmount = NumberUtil
-          .add(totalAmount, NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()));
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()));
 
       RetailOutSheetDetail detail = new RetailOutSheetDetail();
       detail.setId(IdUtil.getId());
@@ -556,13 +550,12 @@ public class RetailOutSheetServiceImpl implements IRetailOutSheetService {
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getPoly().getTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       detail.setSettleStatus(this.getInitSettleStatus(member));
 
-      retailOutSheetDetailMapper.insert(detail);
+      retailOutSheetDetailService.save(detail);
       orderNo++;
     }
     sheet.setTotalNum(purchaseNum);

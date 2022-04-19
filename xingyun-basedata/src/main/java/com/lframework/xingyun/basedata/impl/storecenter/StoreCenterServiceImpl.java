@@ -14,6 +14,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -37,10 +38,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class StoreCenterServiceImpl implements IStoreCenterService {
-
-  @Autowired
-  private StoreCenterMapper storeCenterMapper;
+public class StoreCenterServiceImpl extends
+    BaseMpServiceImpl<StoreCenterMapper, StoreCenter> implements IStoreCenterService {
 
   @Autowired
   private IDicCityService dicCityService;
@@ -53,7 +52,7 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<StoreCenterDto> datas = storeCenterMapper.query(vo);
+    List<StoreCenterDto> datas = getBaseMapper().query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -62,7 +61,7 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
   @Override
   public StoreCenterDto getById(String id) {
 
-    return storeCenterMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用仓库，ID：{}", params = "#ids", loopFormat = true)
@@ -76,7 +75,7 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
 
     Wrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
         .set(StoreCenter::getAvailable, Boolean.FALSE).in(StoreCenter::getId, ids);
-    storeCenterMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IStoreCenterService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -95,7 +94,7 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
 
     Wrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
         .set(StoreCenter::getAvailable, Boolean.TRUE).in(StoreCenter::getId, ids);
-    storeCenterMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IStoreCenterService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -110,7 +109,7 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
 
     Wrapper<StoreCenter> checkWrapper = Wrappers.lambdaQuery(StoreCenter.class)
         .eq(StoreCenter::getCode, vo.getCode());
-    if (storeCenterMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -146,7 +145,7 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    storeCenterMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -160,14 +159,14 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
   @Override
   public void update(UpdateStoreCenterVo vo) {
 
-    StoreCenter data = storeCenterMapper.selectById(vo.getId());
+    StoreCenter data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("仓库不存在！");
     }
 
     Wrapper<StoreCenter> checkWrapper = Wrappers.lambdaQuery(StoreCenter.class)
         .eq(StoreCenter::getCode, vo.getCode()).ne(StoreCenter::getId, vo.getId());
-    if (storeCenterMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -200,7 +199,7 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
       updateWrapper.set(StoreCenter::getPeopleNum, null);
     }
 
-    storeCenterMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -218,7 +217,7 @@ public class StoreCenterServiceImpl implements IStoreCenterService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<StoreCenterDto> datas = storeCenterMapper.selector(vo);
+    List<StoreCenterDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }

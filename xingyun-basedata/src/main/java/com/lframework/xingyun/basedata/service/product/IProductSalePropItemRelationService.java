@@ -1,9 +1,11 @@
 package com.lframework.xingyun.basedata.service.product;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.xingyun.basedata.entity.ProductSalePropItemRelation;
 import com.lframework.xingyun.basedata.vo.product.info.saleprop.CreateProductSalePropItemRelationVo;
 
-public interface IProductSalePropItemRelationService extends BaseService {
+public interface IProductSalePropItemRelationService extends
+    BaseMpService<ProductSalePropItemRelation> {
 
   /**
    * 创建

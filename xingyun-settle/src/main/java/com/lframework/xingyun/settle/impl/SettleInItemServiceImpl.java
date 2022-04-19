@@ -13,6 +13,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -27,17 +28,14 @@ import com.lframework.xingyun.settle.vo.item.in.SettleInItemSelectorVo;
 import com.lframework.xingyun.settle.vo.item.in.UpdateSettleInItemVo;
 import java.util.Collection;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SettleInItemServiceImpl implements ISettleInItemService {
-
-  @Autowired
-  private SettleInItemMapper settleInItemMapper;
+public class SettleInItemServiceImpl extends
+    BaseMpServiceImpl<SettleInItemMapper, SettleInItem> implements ISettleInItemService {
 
   @Override
   public PageResult<SettleInItemDto> query(Integer pageIndex, Integer pageSize,
@@ -55,7 +53,7 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
   @Override
   public List<SettleInItemDto> query(QuerySettleInItemVo vo) {
 
-    return settleInItemMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -66,7 +64,7 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SettleInItemDto> datas = settleInItemMapper.selector(vo);
+    List<SettleInItemDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -75,7 +73,7 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
   @Override
   public SettleInItemDto getById(String id) {
 
-    return settleInItemMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用收入项目，ID：{}", params = "#ids", loopFormat = true)
@@ -89,7 +87,7 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
 
     Wrapper<SettleInItem> updateWrapper = Wrappers.lambdaUpdate(SettleInItem.class)
         .set(SettleInItem::getAvailable, Boolean.FALSE).in(SettleInItem::getId, ids);
-    settleInItemMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     ISettleInItemService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -108,7 +106,7 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
 
     Wrapper<SettleInItem> updateWrapper = Wrappers.lambdaUpdate(SettleInItem.class)
         .set(SettleInItem::getAvailable, Boolean.TRUE).in(SettleInItem::getId, ids);
-    settleInItemMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     ISettleInItemService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -123,7 +121,7 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
 
     Wrapper<SettleInItem> checkWrapper = Wrappers.lambdaQuery(SettleInItem.class)
         .eq(SettleInItem::getCode, vo.getCode());
-    if (settleInItemMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -135,7 +133,7 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    settleInItemMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -149,14 +147,14 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
   @Override
   public void update(UpdateSettleInItemVo vo) {
 
-    SettleInItem data = settleInItemMapper.selectById(vo.getId());
+    SettleInItem data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("收入项目不存在！");
     }
 
     Wrapper<SettleInItem> checkWrapper = Wrappers.lambdaQuery(SettleInItem.class)
         .eq(SettleInItem::getCode, vo.getCode()).ne(SettleInItem::getId, vo.getId());
-    if (settleInItemMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -166,7 +164,7 @@ public class SettleInItemServiceImpl implements ISettleInItemService {
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .eq(SettleInItem::getId, vo.getId());
 
-    settleInItemMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());

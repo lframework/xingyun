@@ -13,6 +13,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -38,10 +39,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CustomerServiceImpl implements ICustomerService {
-
-  @Autowired
-  private CustomerMapper customerMapper;
+public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Customer> implements
+    ICustomerService {
 
   @Autowired
   private IDicCityService dicCityService;
@@ -61,14 +60,14 @@ public class CustomerServiceImpl implements ICustomerService {
   @Override
   public List<CustomerDto> query(QueryCustomerVo vo) {
 
-    return customerMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Cacheable(value = CustomerDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public CustomerDto getById(String id) {
 
-    return customerMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -80,7 +79,7 @@ public class CustomerServiceImpl implements ICustomerService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<CustomerDto> datas = customerMapper.selector(vo);
+    List<CustomerDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -96,7 +95,7 @@ public class CustomerServiceImpl implements ICustomerService {
 
     Wrapper<Customer> updateWrapper = Wrappers.lambdaUpdate(Customer.class)
         .set(Customer::getAvailable, Boolean.FALSE).in(Customer::getId, ids);
-    customerMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     ICustomerService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -115,7 +114,7 @@ public class CustomerServiceImpl implements ICustomerService {
 
     Wrapper<Customer> updateWrapper = Wrappers.lambdaUpdate(Customer.class)
         .set(Customer::getAvailable, Boolean.TRUE).in(Customer::getId, ids);
-    customerMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     ICustomerService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -130,7 +129,7 @@ public class CustomerServiceImpl implements ICustomerService {
 
     Wrapper<Customer> checkWrapper = Wrappers.lambdaQuery(Customer.class)
         .eq(Customer::getCode, vo.getCode());
-    if (customerMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -194,7 +193,7 @@ public class CustomerServiceImpl implements ICustomerService {
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    customerMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -208,7 +207,7 @@ public class CustomerServiceImpl implements ICustomerService {
   @Override
   public void update(UpdateCustomerVo vo) {
 
-    Customer data = customerMapper.selectById(vo.getId());
+    Customer data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("客户不存在！");
     }
@@ -216,7 +215,7 @@ public class CustomerServiceImpl implements ICustomerService {
     Wrapper<Customer> checkWrapper = Wrappers.lambdaQuery(Customer.class)
         .eq(Customer::getCode, vo.getCode())
         .ne(Customer::getId, vo.getId());
-    if (customerMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -260,7 +259,7 @@ public class CustomerServiceImpl implements ICustomerService {
       updateWrapper.set(Customer::getCityId, null);
     }
 
-    customerMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());

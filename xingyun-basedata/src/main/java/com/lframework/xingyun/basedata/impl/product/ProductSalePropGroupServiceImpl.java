@@ -13,6 +13,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -27,17 +28,15 @@ import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropG
 import com.lframework.xingyun.basedata.vo.product.saleprop.UpdateProductSalePropGroupVo;
 import java.util.Collection;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupService {
-
-  @Autowired
-  private ProductSalePropGroupMapper productSalePropGroupMapper;
+public class ProductSalePropGroupServiceImpl extends
+    BaseMpServiceImpl<ProductSalePropGroupMapper, ProductSalePropGroup> implements
+    IProductSalePropGroupService {
 
   @Override
   public PageResult<ProductSalePropGroupDto> query(Integer pageIndex, Integer pageSize,
@@ -55,7 +54,7 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
   @Override
   public List<ProductSalePropGroupDto> query(QueryProductSalePropGroupVo vo) {
 
-    return productSalePropGroupMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -66,7 +65,7 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ProductSalePropGroupDto> datas = productSalePropGroupMapper.selector(vo);
+    List<ProductSalePropGroupDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -75,7 +74,7 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
   @Override
   public ProductSalePropGroupDto getById(String id) {
 
-    return productSalePropGroupMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用商品销售属性，ID：{}", params = "#ids", loopFormat = true)
@@ -90,7 +89,7 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
     Wrapper<ProductSalePropGroup> updateWrapper = Wrappers.lambdaUpdate(ProductSalePropGroup.class)
         .set(ProductSalePropGroup::getAvailable, Boolean.FALSE)
         .in(ProductSalePropGroup::getId, ids);
-    productSalePropGroupMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductSalePropGroupService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -109,7 +108,7 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
 
     Wrapper<ProductSalePropGroup> updateWrapper = Wrappers.lambdaUpdate(ProductSalePropGroup.class)
         .set(ProductSalePropGroup::getAvailable, Boolean.TRUE).in(ProductSalePropGroup::getId, ids);
-    productSalePropGroupMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductSalePropGroupService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -124,13 +123,13 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
 
     Wrapper<ProductSalePropGroup> checkWrapper = Wrappers.lambdaQuery(ProductSalePropGroup.class)
         .eq(ProductSalePropGroup::getCode, vo.getCode());
-    if (productSalePropGroupMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     checkWrapper = Wrappers.lambdaQuery(ProductSalePropGroup.class)
         .eq(ProductSalePropGroup::getName, vo.getName());
-    if (productSalePropGroupMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -142,7 +141,7 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    productSalePropGroupMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -156,7 +155,7 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
   @Override
   public void update(UpdateProductSalePropGroupVo vo) {
 
-    ProductSalePropGroup data = productSalePropGroupMapper.selectById(vo.getId());
+    ProductSalePropGroup data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("销售属性组不存在！");
     }
@@ -164,14 +163,14 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
     Wrapper<ProductSalePropGroup> checkWrapper = Wrappers.lambdaQuery(ProductSalePropGroup.class)
         .eq(ProductSalePropGroup::getCode, vo.getCode())
         .ne(ProductSalePropGroup::getId, vo.getId());
-    if (productSalePropGroupMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     checkWrapper = Wrappers.lambdaQuery(ProductSalePropGroup.class)
         .eq(ProductSalePropGroup::getName, vo.getName())
         .ne(ProductSalePropGroup::getId, vo.getId());
-    if (productSalePropGroupMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -184,7 +183,7 @@ public class ProductSalePropGroupServiceImpl implements IProductSalePropGroupSer
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .eq(ProductSalePropGroup::getId, vo.getId());
 
-    productSalePropGroupMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());

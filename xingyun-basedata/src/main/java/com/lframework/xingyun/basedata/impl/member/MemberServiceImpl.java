@@ -14,6 +14,7 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.Gender;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -29,17 +30,14 @@ import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
 import com.lframework.xingyun.basedata.vo.member.UpdateMemberVo;
 import java.util.Collection;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MemberServiceImpl implements IMemberService {
-
-  @Autowired
-  private MemberMapper memberMapper;
+public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> implements
+    IMemberService {
 
   @Override
   public PageResult<MemberDto> query(Integer pageIndex, Integer pageSize, QueryMemberVo vo) {
@@ -56,14 +54,14 @@ public class MemberServiceImpl implements IMemberService {
   @Override
   public List<MemberDto> query(QueryMemberVo vo) {
 
-    return memberMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Cacheable(value = MemberDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public MemberDto getById(String id) {
 
-    return memberMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用会员，ID：{}", params = "#ids", loopFormat = true)
@@ -78,7 +76,7 @@ public class MemberServiceImpl implements IMemberService {
     Wrapper<Member> updateWrapper = Wrappers.lambdaUpdate(Member.class)
         .set(Member::getAvailable, Boolean.FALSE)
         .in(Member::getId, ids);
-    memberMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IMemberService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -98,7 +96,7 @@ public class MemberServiceImpl implements IMemberService {
     Wrapper<Member> updateWrapper = Wrappers.lambdaUpdate(Member.class)
         .set(Member::getAvailable, Boolean.TRUE)
         .in(Member::getId, ids);
-    memberMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IMemberService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -113,7 +111,7 @@ public class MemberServiceImpl implements IMemberService {
 
     Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class)
         .eq(Member::getCode, vo.getCode());
-    if (memberMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -138,7 +136,7 @@ public class MemberServiceImpl implements IMemberService {
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    memberMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -152,7 +150,7 @@ public class MemberServiceImpl implements IMemberService {
   @Override
   public void update(UpdateMemberVo vo) {
 
-    Member data = memberMapper.selectById(vo.getId());
+    Member data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("会员不存在！");
     }
@@ -160,7 +158,7 @@ public class MemberServiceImpl implements IMemberService {
     Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class)
         .eq(Member::getCode, vo.getCode())
         .ne(Member::getId, vo.getId());
-    if (memberMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -176,7 +174,7 @@ public class MemberServiceImpl implements IMemberService {
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .eq(Member::getId, vo.getId());
 
-    memberMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -193,7 +191,7 @@ public class MemberServiceImpl implements IMemberService {
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
-    List<MemberDto> datas = memberMapper.selector(vo);
+    List<MemberDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }

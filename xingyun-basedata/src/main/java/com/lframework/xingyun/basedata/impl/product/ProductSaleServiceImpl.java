@@ -5,26 +5,24 @@ import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.sale.ProductSaleDto;
 import com.lframework.xingyun.basedata.entity.ProductSale;
 import com.lframework.xingyun.basedata.mappers.ProductSaleMapper;
 import com.lframework.xingyun.basedata.service.product.IProductSaleService;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
 import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductSaleServiceImpl implements IProductSaleService {
-
-  @Autowired
-  private ProductSaleMapper productSaleMapper;
+public class ProductSaleServiceImpl extends
+    BaseMpServiceImpl<ProductSaleMapper, ProductSale> implements IProductSaleService {
 
   @Override
   public ProductSaleDto getById(String id) {
 
-    return productSaleMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
@@ -40,7 +38,7 @@ public class ProductSaleServiceImpl implements IProductSaleService {
 
     data.setPrice(vo.getPrice());
 
-    productSaleMapper.insert(data);
+    getBaseMapper().insert(data);
 
     return data.getId();
   }
@@ -58,7 +56,7 @@ public class ProductSaleServiceImpl implements IProductSaleService {
       throw new InputErrorException("销售价必须大于0！");
     }
 
-    productSaleMapper.deleteById(vo.getId());
+    getBaseMapper().deleteById(vo.getId());
 
     CreateProductSaleVo createVo = new CreateProductSaleVo();
     createVo.setId(vo.getId());

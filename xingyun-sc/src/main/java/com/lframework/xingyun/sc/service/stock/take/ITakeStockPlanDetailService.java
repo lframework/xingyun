@@ -1,11 +1,12 @@
 package com.lframework.xingyun.sc.service.stock.take;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDetailDto;
+import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
 import java.util.List;
 
-public interface ITakeStockPlanDetailService extends BaseService {
+public interface ITakeStockPlanDetailService extends BaseMpService<TakeStockPlanDetail> {
 
   /**
    * 根据盘点任务ID、商品ID查询

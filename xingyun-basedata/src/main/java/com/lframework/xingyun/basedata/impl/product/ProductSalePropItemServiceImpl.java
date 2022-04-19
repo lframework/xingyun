@@ -13,6 +13,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -35,10 +36,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductSalePropItemServiceImpl implements IProductSalePropItemService {
-
-  @Autowired
-  private ProductSalePropItemMapper productSalePropItemMapper;
+public class ProductSalePropItemServiceImpl extends
+    BaseMpServiceImpl<ProductSalePropItemMapper, ProductSalePropItem> implements
+    IProductSalePropItemService {
 
   @Autowired
   private IProductSalePropGroupService productSalePropGroupService;
@@ -59,14 +59,14 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
   @Override
   public List<ProductSalePropItemDto> query(QueryProductSalePropItemVo vo) {
 
-    return productSalePropItemMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Cacheable(value = ProductSalePropItemDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public ProductSalePropItemDto getById(String id) {
 
-    return productSalePropItemMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增商品销售属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -77,14 +77,14 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
     Wrapper<ProductSalePropItem> checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
         .eq(ProductSalePropItem::getGroupId, vo.getGroupId())
         .eq(ProductSalePropItem::getCode, vo.getCode());
-    if (productSalePropItemMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
         .eq(ProductSalePropItem::getGroupId, vo.getGroupId())
         .eq(ProductSalePropItem::getName, vo.getName());
-    if (productSalePropItemMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -103,7 +103,7 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    productSalePropItemMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -117,7 +117,7 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
   @Override
   public void update(UpdateProductSalePropItemVo vo) {
 
-    ProductSalePropItem data = productSalePropItemMapper.selectById(vo.getId());
+    ProductSalePropItem data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("销售属性值不存在！");
     }
@@ -126,7 +126,7 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
         .eq(ProductSalePropItem::getGroupId, data.getGroupId())
         .eq(ProductSalePropItem::getCode, vo.getCode())
         .ne(ProductSalePropItem::getId, vo.getId());
-    if (productSalePropItemMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
@@ -134,7 +134,7 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
         .eq(ProductSalePropItem::getGroupId, data.getGroupId())
         .eq(ProductSalePropItem::getName, vo.getName())
         .ne(ProductSalePropItem::getId, vo.getId());
-    if (productSalePropItemMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -147,7 +147,7 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .eq(ProductSalePropItem::getId, vo.getId());
 
-    productSalePropItemMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -156,7 +156,7 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
     IProductSalePropItemService thisService = getThis(this.getClass());
     thisService.cleanCacheByKey(data.getId());
 
-    List<String> productIdList = productSalePropItemMapper.getProductIdById(data.getId());
+    List<String> productIdList = getBaseMapper().getProductIdById(data.getId());
     if (!CollectionUtil.isEmpty(productIdList)) {
       for (String productId : productIdList) {
         thisService.cleanCacheByKey(productId);
@@ -167,14 +167,14 @@ public class ProductSalePropItemServiceImpl implements IProductSalePropItemServi
   @Override
   public List<ProductSalePropItemDto> getEnablesByGroupId(String groupId) {
 
-    return productSalePropItemMapper.getEnablesByGroupId(groupId);
+    return getBaseMapper().getEnablesByGroupId(groupId);
   }
 
   @Cacheable(value = ProductSalePropItemDto.CACHE_NAME_BY_PRODUCT_ID, key = "#productId", unless = "#result == null || #result.size() == 0")
   @Override
   public List<SalePropItemByProductDto> getByProductId(String productId) {
 
-    return productSalePropItemMapper.getByProductId(productId);
+    return getBaseMapper().getByProductId(productId);
   }
 
   @CacheEvict(value = {ProductSalePropItemDto.CACHE_NAME,

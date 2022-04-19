@@ -1,8 +1,9 @@
 package com.lframework.xingyun.basedata.service.customer;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
+import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
@@ -10,7 +11,7 @@ import com.lframework.xingyun.basedata.vo.customer.UpdateCustomerVo;
 import java.util.Collection;
 import java.util.List;
 
-public interface ICustomerService extends BaseService {
+public interface ICustomerService extends BaseMpService<Customer> {
 
   /**
    * 查询列表

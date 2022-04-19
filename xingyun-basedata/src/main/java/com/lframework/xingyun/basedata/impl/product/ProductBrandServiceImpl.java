@@ -13,6 +13,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -27,17 +28,14 @@ import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandVo;
 import com.lframework.xingyun.basedata.vo.product.brand.UpdateProductBrandVo;
 import java.util.Collection;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductBrandServiceImpl implements IProductBrandService {
-
-  @Autowired
-  private ProductBrandMapper productBrandMapper;
+public class ProductBrandServiceImpl extends
+    BaseMpServiceImpl<ProductBrandMapper, ProductBrand> implements IProductBrandService {
 
   @Override
   public PageResult<ProductBrandDto> query(Integer pageIndex, Integer pageSize,
@@ -55,7 +53,7 @@ public class ProductBrandServiceImpl implements IProductBrandService {
   @Override
   public List<ProductBrandDto> query(QueryProductBrandVo vo) {
 
-    return productBrandMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -66,7 +64,7 @@ public class ProductBrandServiceImpl implements IProductBrandService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ProductBrandDto> datas = productBrandMapper.selector(vo);
+    List<ProductBrandDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -75,7 +73,7 @@ public class ProductBrandServiceImpl implements IProductBrandService {
   @Override
   public ProductBrandDto getById(String id) {
 
-    return productBrandMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用商品品牌，ID：{}", params = "#ids", loopFormat = true)
@@ -89,7 +87,7 @@ public class ProductBrandServiceImpl implements IProductBrandService {
 
     Wrapper<ProductBrand> updateWrapper = Wrappers.lambdaUpdate(ProductBrand.class)
         .set(ProductBrand::getAvailable, Boolean.FALSE).in(ProductBrand::getId, ids);
-    productBrandMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductBrandService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -108,7 +106,7 @@ public class ProductBrandServiceImpl implements IProductBrandService {
 
     Wrapper<ProductBrand> updateWrapper = Wrappers.lambdaUpdate(ProductBrand.class)
         .set(ProductBrand::getAvailable, Boolean.TRUE).in(ProductBrand::getId, ids);
-    productBrandMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductBrandService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -123,13 +121,13 @@ public class ProductBrandServiceImpl implements IProductBrandService {
 
     Wrapper<ProductBrand> checkCodeWrapper = Wrappers.lambdaQuery(ProductBrand.class)
         .eq(ProductBrand::getCode, vo.getCode());
-    if (productBrandMapper.selectCount(checkCodeWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkCodeWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     Wrapper<ProductBrand> checkNameWrapper = Wrappers.lambdaQuery(ProductBrand.class)
         .eq(ProductBrand::getName, vo.getName());
-    if (productBrandMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -148,7 +146,7 @@ public class ProductBrandServiceImpl implements IProductBrandService {
       data.setLogo(vo.getLogo());
     }
 
-    productBrandMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -162,20 +160,20 @@ public class ProductBrandServiceImpl implements IProductBrandService {
   @Override
   public void update(UpdateProductBrandVo vo) {
 
-    ProductBrand data = productBrandMapper.selectById(vo.getId());
+    ProductBrand data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("品牌不存在！");
     }
 
     Wrapper<ProductBrand> checkWrapper = Wrappers.lambdaQuery(ProductBrand.class)
         .eq(ProductBrand::getCode, vo.getCode()).ne(ProductBrand::getId, vo.getId());
-    if (productBrandMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     Wrapper<ProductBrand> checkNameWrapper = Wrappers.lambdaQuery(ProductBrand.class)
         .eq(ProductBrand::getName, vo.getName()).ne(ProductBrand::getId, vo.getId());
-    if (productBrandMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -190,7 +188,7 @@ public class ProductBrandServiceImpl implements IProductBrandService {
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .eq(ProductBrand::getId, vo.getId());
 
-    productBrandMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());

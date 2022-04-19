@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.IdUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDetailDto;
@@ -19,10 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class TakeStockPlanDetailServiceImpl implements ITakeStockPlanDetailService {
-
-  @Autowired
-  private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
+public class TakeStockPlanDetailServiceImpl extends
+    BaseMpServiceImpl<TakeStockPlanDetailMapper, TakeStockPlanDetail> implements
+    ITakeStockPlanDetailService {
 
   @Autowired
   private IProductStockService productStockService;
@@ -33,7 +33,7 @@ public class TakeStockPlanDetailServiceImpl implements ITakeStockPlanDetailServi
   @Override
   public GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(String planId, String productId) {
 
-    return takeStockPlanDetailMapper.getByPlanIdAndProductId(planId, productId);
+    return getBaseMapper().getByPlanIdAndProductId(planId, productId);
   }
 
   @Transactional
@@ -41,12 +41,11 @@ public class TakeStockPlanDetailServiceImpl implements ITakeStockPlanDetailServi
   public void savePlanDetailBySimple(String planId, List<String> productIds) {
 
     TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(planId);
-    Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(TakeStockPlanDetail.class).eq(TakeStockPlanDetail::getPlanId, planId)
+    Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockPlanDetail.class).eq(TakeStockPlanDetail::getPlanId, planId)
         .orderByAsc(TakeStockPlanDetail::getOrderNo);
 
-    List<TakeStockPlanDetail> planDetails = takeStockPlanDetailMapper
-        .selectList(queryDetailWrapper);
+    List<TakeStockPlanDetail> planDetails = getBaseMapper().selectList(queryDetailWrapper);
 
     int orderNo = planDetails.size() + 1;
     for (String productId : productIds) {
@@ -59,25 +58,25 @@ public class TakeStockPlanDetailServiceImpl implements ITakeStockPlanDetailServi
       detail.setPlanId(planId);
       detail.setProductId(productId);
 
-      ProductStockDto productStock = productStockService
-          .getByProductIdAndScId(productId, takeStockPlan.getScId());
+      ProductStockDto productStock = productStockService.getByProductIdAndScId(productId,
+          takeStockPlan.getScId());
       detail.setStockNum(productStock == null ? 0 : productStock.getStockNum());
 
       detail.setDescription(StringPool.EMPTY_STR);
       detail.setOrderNo(orderNo++);
-      takeStockPlanDetailMapper.insert(detail);
+      getBaseMapper().insert(detail);
     }
   }
 
   @Override
   public List<TakeStockPlanDetailDto> getDetailsByPlanId(String planId) {
 
-    return takeStockPlanDetailMapper.getDetailsByPlanId(planId);
+    return getBaseMapper().getDetailsByPlanId(planId);
   }
 
   @Transactional
   @Override
   public void updateOriTakeNum(String planId, String productId, Integer num) {
-    takeStockPlanDetailMapper.updateOriTakeNum(planId, productId, num);
+    getBaseMapper().updateOriTakeNum(planId, productId, num);
   }
 }

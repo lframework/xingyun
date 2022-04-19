@@ -14,6 +14,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -48,6 +49,7 @@ import com.lframework.xingyun.sc.mappers.TakeStockPlanMapper;
 import com.lframework.xingyun.sc.service.stock.IProductLotService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
+import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanDetailService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
@@ -68,13 +70,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
+public class TakeStockPlanServiceImpl extends
+    BaseMpServiceImpl<TakeStockPlanMapper, TakeStockPlan> implements ITakeStockPlanService {
 
   @Autowired
-  private TakeStockPlanMapper takeStockPlanMapper;
-
-  @Autowired
-  private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
+  private ITakeStockPlanDetailService takeStockPlanDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -113,7 +113,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
   @Override
   public List<TakeStockPlanDto> query(QueryTakeStockPlanVo vo) {
 
-    return takeStockPlanMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -123,7 +123,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<TakeStockPlanSelectorDto> datas = takeStockPlanMapper.selector(vo);
+    List<TakeStockPlanSelectorDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -131,13 +131,13 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
   @Override
   public TakeStockPlanDto getById(String id) {
 
-    return takeStockPlanMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public TakeStockPlanFullDto getDetail(String id) {
 
-    return takeStockPlanMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增盘点任务，ID：{}", params = {"#id"})
@@ -159,7 +159,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    takeStockPlanMapper.insert(data);
+    getBaseMapper().insert(data);
 
     List<ProductDto> products = null;
     if (data.getTakeType() != TakeStockPlanType.SIMPLE) {
@@ -191,8 +191,8 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
     if (products != null) {
       List<String> productIds = products.stream().map(ProductDto::getId)
           .collect(Collectors.toList());
-      List<ProductStockDto> productStocks = productStockService
-          .getByProductIdsAndScId(productIds, vo.getScId());
+      List<ProductStockDto> productStocks = productStockService.getByProductIdsAndScId(productIds,
+          vo.getScId());
       int orderNo = 1;
       for (ProductDto product : products) {
         ProductStockDto productStock = productStocks.stream()
@@ -208,7 +208,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
         detail.setTotalInNum(0);
         detail.setOrderNo(orderNo++);
 
-        takeStockPlanDetailMapper.insert(detail);
+        takeStockPlanDetailService.save(detail);
       }
     }
 
@@ -223,7 +223,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
   @Override
   public void update(UpdateTakeStockPlanVo vo) {
 
-    TakeStockPlan data = takeStockPlanMapper.selectById(vo.getId());
+    TakeStockPlan data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -233,7 +233,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
         .set(TakeStockPlan::getDescription, vo.getDescription())
         .eq(TakeStockPlan::getId, vo.getId());
 
-    takeStockPlanMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setExtra(vo);
@@ -242,7 +242,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
   @Override
   public List<QueryTakeStockPlanProductDto> getProducts(String planId) {
 
-    return takeStockPlanMapper.getProducts(planId);
+    return getBaseMapper().getProducts(planId);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "差异生成，盘点任务ID：{}", params = {"#id"})
@@ -250,7 +250,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
   @Override
   public void createDiff(String id) {
 
-    TakeStockPlan data = takeStockPlanMapper.selectById(id);
+    TakeStockPlan data = getBaseMapper().selectById(id);
     if (data == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -264,14 +264,14 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
         .set(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.DIFF_CREATED)
         .eq(TakeStockPlan::getId, data.getId())
         .eq(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.CREATED);
-    if (takeStockPlanMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
     }
 
-    Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(TakeStockPlanDetail.class).eq(TakeStockPlanDetail::getPlanId, data.getId())
+    Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockPlanDetail.class).eq(TakeStockPlanDetail::getPlanId, data.getId())
         .orderByAsc(TakeStockPlanDetail::getOrderNo);
-    List<TakeStockPlanDetail> details = takeStockPlanDetailMapper.selectList(queryDetailWrapper);
+    List<TakeStockPlanDetail> details = takeStockPlanDetailService.list(queryDetailWrapper);
     if (CollectionUtil.isEmpty(details)) {
       throw new DefaultClientException("盘点任务不存在商品信息，不允许执行差异生成操作！");
     }
@@ -279,11 +279,11 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
       if (detail.getOriTakeNum() != null) {
         continue;
       }
-      LambdaUpdateWrapper<TakeStockPlanDetail> updateDetailWrapper = Wrappers
-          .lambdaUpdate(TakeStockPlanDetail.class).set(TakeStockPlanDetail::getOriTakeNum, 0)
+      LambdaUpdateWrapper<TakeStockPlanDetail> updateDetailWrapper = Wrappers.lambdaUpdate(
+              TakeStockPlanDetail.class).set(TakeStockPlanDetail::getOriTakeNum, 0)
           .eq(TakeStockPlanDetail::getId, detail.getId());
 
-      takeStockPlanDetailMapper.update(updateDetailWrapper);
+      takeStockPlanDetailService.update(updateDetailWrapper);
     }
   }
 
@@ -292,7 +292,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
   @Override
   public void handleDiff(HandleTakeStockPlanVo vo) {
 
-    TakeStockPlan data = takeStockPlanMapper.selectById(vo.getId());
+    TakeStockPlan data = getBaseMapper().selectById(vo.getId());
     if (data == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -303,16 +303,16 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
         .set(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.FINISHED)
         .eq(TakeStockPlan::getId, data.getId())
         .eq(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.DIFF_CREATED);
-    if (takeStockPlanMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
     }
 
     TakeStockConfigDto config = takeStockConfigService.get();
 
-    Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(TakeStockPlanDetail.class).eq(TakeStockPlanDetail::getPlanId, data.getId())
+    Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockPlanDetail.class).eq(TakeStockPlanDetail::getPlanId, data.getId())
         .orderByAsc(TakeStockPlanDetail::getOrderNo);
-    List<TakeStockPlanDetail> details = takeStockPlanDetailMapper.selectList(queryDetailWrapper);
+    List<TakeStockPlanDetail> details = takeStockPlanDetailService.list(queryDetailWrapper);
     if (CollectionUtil.isEmpty(details)) {
       throw new DefaultClientException("盘点任务不存在商品信息，不允许执行差异处理操作！");
     }
@@ -331,18 +331,17 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
       } else {
         // 如果允许自动调整，那么盘点数量=盘点单的盘点数量 - 进项数量 + 出项数量，否则就等于盘点单的盘点数量
         detail.setTakeNum(
-            config.getAutoChangeStock() ? detail.getOriTakeNum() - detail.getTotalInNum() + detail
-                .getTotalOutNum() : detail.getOriTakeNum());
+            config.getAutoChangeStock() ? detail.getOriTakeNum() - detail.getTotalInNum()
+                + detail.getTotalOutNum() : detail.getOriTakeNum());
       }
       detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
           : productVo.getDescription());
 
-      LambdaUpdateWrapper<TakeStockPlanDetail> updateDetailWrapper = Wrappers
-          .lambdaUpdate(TakeStockPlanDetail.class)
-          .set(TakeStockPlanDetail::getTakeNum, detail.getTakeNum())
+      LambdaUpdateWrapper<TakeStockPlanDetail> updateDetailWrapper = Wrappers.lambdaUpdate(
+              TakeStockPlanDetail.class).set(TakeStockPlanDetail::getTakeNum, detail.getTakeNum())
           .set(TakeStockPlanDetail::getDescription, detail.getDescription())
           .eq(TakeStockPlanDetail::getId, detail.getId());
-      takeStockPlanDetailMapper.update(updateDetailWrapper);
+      takeStockPlanDetailService.update(updateDetailWrapper);
     }
 
     // 进行出入库操作
@@ -351,8 +350,8 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
       orderNo++;
       if (!NumberUtil.equal(detail.getStockNum(), detail.getTakeNum())) {
         if (NumberUtil.lt(detail.getStockNum(), detail.getTakeNum())) {
-          ProductLotWithStockDto productLot = productLotService
-              .getLastPurchaseLot(detail.getProductId(), data.getScId(), null);
+          ProductLotWithStockDto productLot = productLotService.getLastPurchaseLot(
+              detail.getProductId(), data.getScId(), null);
           if (productLot == null) {
             throw new DefaultClientException("第" + orderNo + "行商品在系统中无入库记录，无法盘点报溢！");
           }
@@ -393,7 +392,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
   @Transactional
   @Override
   public void cancel(CancelTakeStockPlanVo vo) {
-    TakeStockPlan data = takeStockPlanMapper.selectById(vo.getId());
+    TakeStockPlan data = getBaseMapper().selectById(vo.getId());
     if (data == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -403,7 +402,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
         .eq(TakeStockPlan::getId, data.getId())
         .in(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.CREATED,
             TakeStockPlanStatus.DIFF_CREATED);
-    if (takeStockPlanMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
     }
 
@@ -415,7 +414,7 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
   @Transactional
   @Override
   public void deleteById(String id) {
-    TakeStockPlan data = takeStockPlanMapper.selectById(id);
+    TakeStockPlan data = getBaseMapper().selectById(id);
     if (data == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -423,13 +422,13 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
     Wrapper<TakeStockPlan> deleteWrapper = Wrappers.lambdaQuery(TakeStockPlan.class)
         .eq(TakeStockPlan::getId, data.getId())
         .eq(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.CANCELED);
-    if (takeStockPlanMapper.delete(deleteWrapper) != 1) {
+    if (getBaseMapper().delete(deleteWrapper) != 1) {
       throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
     }
 
-    Wrapper<TakeStockPlanDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(TakeStockPlanDetail.class).eq(TakeStockPlanDetail::getPlanId, data.getId());
-    takeStockPlanDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<TakeStockPlanDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        TakeStockPlanDetail.class).eq(TakeStockPlanDetail::getPlanId, data.getId());
+    takeStockPlanDetailService.remove(deleteDetailWrapper);
 
     DeleteTakeStockPlanEvent deleteEvent = new DeleteTakeStockPlanEvent(this, data.getId());
     ApplicationUtil.publishEvent(deleteEvent);
@@ -451,8 +450,8 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
     public void onApplicationEvent(AddStockEvent addStockEvent) {
 
       ProductStockChangeDto change = addStockEvent.getChange();
-      takeStockPlanDetailMapper
-          .addTotalInNum(change.getScId(), change.getProductId(), change.getNum());
+      takeStockPlanDetailMapper.addTotalInNum(change.getScId(), change.getProductId(),
+          change.getNum());
     }
   }
 
@@ -467,8 +466,8 @@ public class TakeStockPlanServiceImpl implements ITakeStockPlanService {
     public void onApplicationEvent(SubStockEvent addStockEvent) {
 
       ProductStockChangeDto change = addStockEvent.getChange();
-      takeStockPlanDetailMapper
-          .addTotalOutNum(change.getScId(), change.getProductId(), change.getNum());
+      takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getProductId(),
+          change.getNum());
     }
   }
 

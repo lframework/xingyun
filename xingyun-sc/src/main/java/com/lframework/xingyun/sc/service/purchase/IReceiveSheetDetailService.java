@@ -1,10 +1,11 @@
 package com.lframework.xingyun.sc.service.purchase;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDetailDto;
+import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import java.util.List;
 
-public interface IReceiveSheetDetailService extends BaseService {
+public interface IReceiveSheetDetailService extends BaseMpService<ReceiveSheetDetail> {
 
   /**
    * 根据ID查询

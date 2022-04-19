@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.impl.sale;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.NumberUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailDto;
@@ -15,10 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleOutSheetDetailServiceImpl implements ISaleOutSheetDetailService {
-
-  @Autowired
-  private SaleOutSheetDetailMapper saleOutSheetDetailMapper;
+public class SaleOutSheetDetailServiceImpl extends
+    BaseMpServiceImpl<SaleOutSheetDetailMapper, SaleOutSheetDetail> implements
+    ISaleOutSheetDetailService {
 
   @Autowired
   private IProductService productService;
@@ -26,13 +26,13 @@ public class SaleOutSheetDetailServiceImpl implements ISaleOutSheetDetailService
   @Override
   public SaleOutSheetDetailDto getById(String id) {
 
-    return saleOutSheetDetailMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public List<SaleOutSheetDetailDto> getBySheetId(String sheetId) {
 
-    return saleOutSheetDetailMapper.getBySheetId(sheetId);
+    return getBaseMapper().getBySheetId(sheetId);
   }
 
   @Transactional
@@ -42,7 +42,7 @@ public class SaleOutSheetDetailServiceImpl implements ISaleOutSheetDetailService
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    SaleOutSheetDetail detail = saleOutSheetDetailMapper.selectById(id);
+    SaleOutSheetDetail detail = getBaseMapper().selectById(id);
 
     Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
     if (NumberUtil.lt(remainNum, num)) {
@@ -54,7 +54,7 @@ public class SaleOutSheetDetailServiceImpl implements ISaleOutSheetDetailService
               + remainNum + "个！");
     }
 
-    if (saleOutSheetDetailMapper.addReturnNum(detail.getId(), num) != 1) {
+    if (getBaseMapper().addReturnNum(detail.getId(), num) != 1) {
       ProductDto product = productService.getById(detail.getProductId());
 
       throw new DefaultClientException(
@@ -69,7 +69,7 @@ public class SaleOutSheetDetailServiceImpl implements ISaleOutSheetDetailService
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    SaleOutSheetDetail orderDetail = saleOutSheetDetailMapper.selectById(id);
+    SaleOutSheetDetail orderDetail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(orderDetail.getReturnNum(), num)) {
       ProductDto product = productService.getById(orderDetail.getProductId());
@@ -79,7 +79,7 @@ public class SaleOutSheetDetailServiceImpl implements ISaleOutSheetDetailService
               + "个，本次取消退货数量不允许大于" + orderDetail.getReturnNum() + "个！");
     }
 
-    if (saleOutSheetDetailMapper.subReturnNum(orderDetail.getId(), num) != 1) {
+    if (getBaseMapper().subReturnNum(orderDetail.getId(), num) != 1) {
       ProductDto product = productService.getById(orderDetail.getProductId());
 
       throw new DefaultClientException(

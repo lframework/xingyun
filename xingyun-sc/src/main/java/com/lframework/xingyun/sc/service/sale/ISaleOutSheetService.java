@@ -1,11 +1,12 @@
 package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.vo.sale.out.ApprovePassSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.ApproveRefuseSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.BatchApprovePassSaleOutSheetVo;
@@ -17,7 +18,7 @@ import com.lframework.xingyun.sc.vo.sale.out.SaleOutSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.sale.out.UpdateSaleOutSheetVo;
 import java.util.List;
 
-public interface ISaleOutSheetService extends BaseService {
+public interface ISaleOutSheetService extends BaseMpService<SaleOutSheet> {
 
   /**
    * 查询列表

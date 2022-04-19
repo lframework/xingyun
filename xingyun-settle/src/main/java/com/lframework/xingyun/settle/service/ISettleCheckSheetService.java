@@ -1,10 +1,11 @@
 package com.lframework.xingyun.settle.service;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.settle.dto.check.SettleCheckBizItemDto;
 import com.lframework.xingyun.settle.dto.check.SettleCheckSheetDto;
 import com.lframework.xingyun.settle.dto.check.SettleCheckSheetFullDto;
+import com.lframework.xingyun.settle.entity.SettleCheckSheet;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
 import com.lframework.xingyun.settle.vo.check.ApprovePassSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.ApproveRefuseSettleCheckSheetVo;
@@ -18,7 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ISettleCheckSheetService extends BaseService {
+public interface ISettleCheckSheetService extends BaseMpService<SettleCheckSheet> {
 
   /**
    * 查询列表

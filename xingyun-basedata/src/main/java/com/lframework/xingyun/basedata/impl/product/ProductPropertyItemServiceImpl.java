@@ -11,6 +11,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -32,10 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductPropertyItemServiceImpl implements IProductPropertyItemService {
-
-  @Autowired
-  private ProductPropertyItemMapper productPropertyItemMapper;
+public class ProductPropertyItemServiceImpl extends
+    BaseMpServiceImpl<ProductPropertyItemMapper, ProductPropertyItem> implements
+    IProductPropertyItemService {
 
   @Autowired
   private IProductPropertyService productPropertyService;
@@ -56,20 +56,20 @@ public class ProductPropertyItemServiceImpl implements IProductPropertyItemServi
   @Override
   public List<ProductPropertyItemDto> query(QueryProductPropertyItemVo vo) {
 
-    return productPropertyItemMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public List<ProductPropertyItemDto> getByPropertyId(String propertyId) {
 
-    return productPropertyItemMapper.getByPropertyId(propertyId);
+    return getBaseMapper().getByPropertyId(propertyId);
   }
 
   @Cacheable(value = ProductPropertyItemDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public ProductPropertyItemDto getById(String id) {
 
-    return productPropertyItemMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增商品属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -85,14 +85,14 @@ public class ProductPropertyItemServiceImpl implements IProductPropertyItemServi
     Wrapper<ProductPropertyItem> checkWrapper = Wrappers.lambdaQuery(ProductPropertyItem.class)
         .eq(ProductPropertyItem::getPropertyId, vo.getPropertyId())
         .eq(ProductPropertyItem::getCode, vo.getCode());
-    if (productPropertyItemMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     Wrapper<ProductPropertyItem> checkNameWrapper = Wrappers.lambdaQuery(ProductPropertyItem.class)
         .eq(ProductPropertyItem::getPropertyId, vo.getPropertyId())
         .eq(ProductPropertyItem::getName, vo.getName());
-    if (productPropertyItemMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -105,7 +105,7 @@ public class ProductPropertyItemServiceImpl implements IProductPropertyItemServi
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    productPropertyItemMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -127,14 +127,14 @@ public class ProductPropertyItemServiceImpl implements IProductPropertyItemServi
     Wrapper<ProductPropertyItem> checkWrapper = Wrappers.lambdaQuery(ProductPropertyItem.class)
         .eq(ProductPropertyItem::getPropertyId, data.getPropertyId())
         .eq(ProductPropertyItem::getCode, vo.getCode()).ne(ProductPropertyItem::getId, vo.getId());
-    if (productPropertyItemMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     Wrapper<ProductPropertyItem> checkNameWrapper = Wrappers.lambdaQuery(ProductPropertyItem.class)
         .eq(ProductPropertyItem::getPropertyId, data.getPropertyId())
         .eq(ProductPropertyItem::getName, vo.getName()).ne(ProductPropertyItem::getId, vo.getId());
-    if (productPropertyItemMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -145,7 +145,7 @@ public class ProductPropertyItemServiceImpl implements IProductPropertyItemServi
         .eq(ProductPropertyItem::getId, vo.getId())
         .set(ProductPropertyItem::getDescription,
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
-    productPropertyItemMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());

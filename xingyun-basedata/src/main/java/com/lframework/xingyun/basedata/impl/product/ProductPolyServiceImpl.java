@@ -10,6 +10,7 @@ import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.web.utils.CacheUtil;
 import com.lframework.starter.web.utils.JsonUtil;
@@ -41,10 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-public class ProductPolyServiceImpl implements IProductPolyService {
-
-  @Autowired
-  private ProductPolyMapper productPolyMapper;
+public class ProductPolyServiceImpl extends
+    BaseMpServiceImpl<ProductPolyMapper, ProductPoly> implements IProductPolyService {
 
   @Autowired
   private IProductPolyPropertyService productPolyPropertyService;
@@ -69,7 +68,7 @@ public class ProductPolyServiceImpl implements IProductPolyService {
 
     ProductPolyDto data = CacheUtil.get(ProductPolyDto.CACHE_NAME, id, ProductPolyDto.class);
     if (data == null) {
-      data = productPolyMapper.getById(id);
+      data = getBaseMapper().getById(id);
       if (data == null) {
         return data;
       }
@@ -83,13 +82,13 @@ public class ProductPolyServiceImpl implements IProductPolyService {
   @Override
   public List<String> getIdNotInPolyProperty(String propertyId) {
 
-    return productPolyMapper.getIdNotInPolyProperty(propertyId);
+    return getBaseMapper().getIdNotInPolyProperty(propertyId);
   }
 
   @Override
   public List<String> getIdByCategoryId(String categoryId) {
 
-    return productPolyMapper.getIdByCategoryId(categoryId);
+    return getBaseMapper().getIdByCategoryId(categoryId);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增商品SPU，ID：{}, 货号：{}", params = {"#id", "#code"})
@@ -99,13 +98,13 @@ public class ProductPolyServiceImpl implements IProductPolyService {
 
     Wrapper<ProductPoly> checkCodeWrapper = Wrappers.lambdaQuery(ProductPoly.class)
         .eq(ProductPoly::getCode, vo.getCode());
-    if (productPolyMapper.selectCount(checkCodeWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkCodeWrapper) > 0) {
       throw new DefaultClientException("商品货号重复，请重新输入！");
     }
 
     Wrapper<ProductPoly> checkNameWrapper = Wrappers.lambdaQuery(ProductPoly.class)
         .eq(ProductPoly::getName, vo.getName());
-    if (productPolyMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("商品名称重复，请重新输入！");
     }
 
@@ -131,7 +130,7 @@ public class ProductPolyServiceImpl implements IProductPolyService {
     poly.setTaxRate(vo.getTaxRate());
     poly.setSaleTaxRate(vo.getSaleTaxRate());
 
-    productPolyMapper.insert(poly);
+    getBaseMapper().insert(poly);
 
     //建立poly和属性值的关系
     if (!CollectionUtil.isEmpty(vo.getProperties())) {

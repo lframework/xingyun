@@ -14,6 +14,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -31,9 +32,9 @@ import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheetDetail;
 import com.lframework.xingyun.sc.enums.StockCostAdjustSheetStatus;
-import com.lframework.xingyun.sc.mappers.StockCostAdjustSheetDetailMapper;
 import com.lframework.xingyun.sc.mappers.StockCostAdjustSheetMapper;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
+import com.lframework.xingyun.sc.service.stock.adjust.IStockCostAdjustSheetDetailService;
 import com.lframework.xingyun.sc.service.stock.adjust.IStockCostAdjustSheetService;
 import com.lframework.xingyun.sc.vo.stock.StockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.ApprovePassStockCostAdjustSheetVo;
@@ -53,13 +54,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetService {
+public class StockCostAdjustSheetServiceImpl extends
+    BaseMpServiceImpl<StockCostAdjustSheetMapper, StockCostAdjustSheet> implements
+    IStockCostAdjustSheetService {
 
   @Autowired
-  private StockCostAdjustSheetMapper stockCostAdjustSheetMapper;
-
-  @Autowired
-  private StockCostAdjustSheetDetailMapper stockCostAdjustSheetDetailMapper;
+  private IStockCostAdjustSheetDetailService stockCostAdjustSheetDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -89,19 +89,19 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
   @Override
   public List<StockCostAdjustSheetDto> query(QueryStockCostAdjustSheetVo vo) {
 
-    return stockCostAdjustSheetMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public StockCostAdjustSheetDto getById(String id) {
 
-    return stockCostAdjustSheetMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public StockCostAdjustSheetFullDto getDetail(String id) {
 
-    return stockCostAdjustSheetMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增库存成本调整单，ID：{}", params = {"#id"})
@@ -115,7 +115,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
 
     this.create(data, vo);
 
-    stockCostAdjustSheetMapper.insert(data);
+    getBaseMapper().insert(data);
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setExtra(vo);
@@ -128,7 +128,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
   @Override
   public void update(UpdateStockCostAdjustSheetVo vo) {
 
-    StockCostAdjustSheet data = stockCostAdjustSheetMapper.selectById(vo.getId());
+    StockCostAdjustSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("库存成本调整单不存在！");
     }
@@ -147,7 +147,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
     Wrapper<StockCostAdjustSheetDetail> deleteDetailWrapper = Wrappers
         .lambdaQuery(StockCostAdjustSheetDetail.class)
         .eq(StockCostAdjustSheetDetail::getSheetId, data.getId());
-    stockCostAdjustSheetDetailMapper.delete(deleteDetailWrapper);
+    stockCostAdjustSheetDetailService.remove(deleteDetailWrapper);
 
     this.create(data, vo);
 
@@ -164,7 +164,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
         .set(StockCostAdjustSheet::getRefuseReason, StringPool.EMPTY_STR)
         .eq(StockCostAdjustSheet::getId, data.getId())
         .in(StockCostAdjustSheet::getStatus, statusList);
-    if (stockCostAdjustSheetMapper.update(data, updateSheetWrapper) != 1) {
+    if (getBaseMapper().update(data, updateSheetWrapper) != 1) {
       throw new DefaultClientException("库存成本调整单信息已过期，请刷新重试！");
     }
 
@@ -176,7 +176,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
   @Transactional
   @Override
   public void deleteById(String id) {
-    StockCostAdjustSheet data = stockCostAdjustSheetMapper.selectById(id);
+    StockCostAdjustSheet data = getBaseMapper().selectById(id);
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("库存成本调整单不存在！");
     }
@@ -189,14 +189,14 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
         .eq(StockCostAdjustSheet::getId, id)
         .in(StockCostAdjustSheet::getStatus, StockCostAdjustSheetStatus.CREATED,
             StockCostAdjustSheetStatus.APPROVE_REFUSE);
-    if (stockCostAdjustSheetMapper.delete(deleteWrapper) != 1) {
+    if (getBaseMapper().delete(deleteWrapper) != 1) {
       throw new DefaultClientException("库存成本调整单信息已过期，请刷新重试！");
     }
 
     Wrapper<StockCostAdjustSheetDetail> deleteDetailWrapper = Wrappers
         .lambdaQuery(StockCostAdjustSheetDetail.class)
         .eq(StockCostAdjustSheetDetail::getSheetId, id);
-    stockCostAdjustSheetDetailMapper.delete(deleteDetailWrapper);
+    stockCostAdjustSheetDetailService.remove(deleteDetailWrapper);
   }
 
   @Transactional
@@ -222,7 +222,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
   @Transactional
   @Override
   public void approvePass(ApprovePassStockCostAdjustSheetVo vo) {
-    StockCostAdjustSheet data = stockCostAdjustSheetMapper.selectById(vo.getId());
+    StockCostAdjustSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("库存成本调整单不存在！");
     }
@@ -247,7 +247,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
         .set(StockCostAdjustSheet::getStatus, StockCostAdjustSheetStatus.APPROVE_PASS)
         .set(StockCostAdjustSheet::getDescription,
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
-    if (stockCostAdjustSheetMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("库存成本调整单信息已过期，请刷新重试！");
     }
 
@@ -255,8 +255,8 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
         .lambdaQuery(StockCostAdjustSheetDetail.class)
         .eq(StockCostAdjustSheetDetail::getSheetId, data.getId())
         .orderByAsc(StockCostAdjustSheetDetail::getOrderNo);
-    List<StockCostAdjustSheetDetail> details = stockCostAdjustSheetDetailMapper
-        .selectList(queryDetailWrapper);
+    List<StockCostAdjustSheetDetail> details = stockCostAdjustSheetDetailService
+        .list(queryDetailWrapper);
 
     for (StockCostAdjustSheetDetail detail : details) {
       ProductDto product = productService.getById(detail.getProductId());
@@ -310,7 +310,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseStockCostAdjustSheetVo vo) {
-    StockCostAdjustSheet data = stockCostAdjustSheetMapper.selectById(vo.getId());
+    StockCostAdjustSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("库存成本调整单不存在！");
     }
@@ -333,7 +333,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
         .set(StockCostAdjustSheet::getApproveTime, LocalDateTime.now())
         .set(StockCostAdjustSheet::getRefuseReason, vo.getRefuseReason())
         .set(StockCostAdjustSheet::getStatus, StockCostAdjustSheetStatus.APPROVE_REFUSE);
-    if (stockCostAdjustSheetMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("库存成本调整单信息已过期，请刷新重试！");
     }
 
@@ -396,7 +396,7 @@ public class StockCostAdjustSheetServiceImpl implements IStockCostAdjustSheetSer
 
       diffAmount = NumberUtil.add(diffAmount, detail.getDiffAmount());
 
-      stockCostAdjustSheetDetailMapper.insert(detail);
+      stockCostAdjustSheetDetailService.save(detail);
     }
 
     data.setProductNum(productNum);

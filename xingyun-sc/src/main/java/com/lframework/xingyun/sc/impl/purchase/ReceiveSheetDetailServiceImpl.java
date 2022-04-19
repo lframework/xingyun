@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.impl.purchase;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.NumberUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDetailDto;
@@ -15,10 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ReceiveSheetDetailServiceImpl implements IReceiveSheetDetailService {
-
-  @Autowired
-  private ReceiveSheetDetailMapper receiveSheetDetailMapper;
+public class ReceiveSheetDetailServiceImpl extends
+    BaseMpServiceImpl<ReceiveSheetDetailMapper, ReceiveSheetDetail> implements
+    IReceiveSheetDetailService {
 
   @Autowired
   private IProductService productService;
@@ -26,13 +26,13 @@ public class ReceiveSheetDetailServiceImpl implements IReceiveSheetDetailService
   @Override
   public ReceiveSheetDetailDto getById(String id) {
 
-    return receiveSheetDetailMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public List<ReceiveSheetDetailDto> getBySheetId(String sheetId) {
 
-    return receiveSheetDetailMapper.getBySheetId(sheetId);
+    return getBaseMapper().getBySheetId(sheetId);
   }
 
   @Transactional
@@ -42,7 +42,7 @@ public class ReceiveSheetDetailServiceImpl implements IReceiveSheetDetailService
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    ReceiveSheetDetail detail = receiveSheetDetailMapper.selectById(id);
+    ReceiveSheetDetail detail = getBaseMapper().selectById(id);
 
     Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
     if (NumberUtil.lt(remainNum, num)) {
@@ -50,11 +50,10 @@ public class ReceiveSheetDetailServiceImpl implements IReceiveSheetDetailService
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余退货数量为" + remainNum
-              + "个，本次退货数量不允许大于"
-              + remainNum + "个！");
+              + "个，本次退货数量不允许大于" + remainNum + "个！");
     }
 
-    if (receiveSheetDetailMapper.addReturnNum(detail.getId(), num) != 1) {
+    if (getBaseMapper().addReturnNum(detail.getId(), num) != 1) {
       ProductDto product = productService.getById(detail.getProductId());
 
       throw new DefaultClientException(
@@ -69,7 +68,7 @@ public class ReceiveSheetDetailServiceImpl implements IReceiveSheetDetailService
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    ReceiveSheetDetail orderDetail = receiveSheetDetailMapper.selectById(id);
+    ReceiveSheetDetail orderDetail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(orderDetail.getReturnNum(), num)) {
       ProductDto product = productService.getById(orderDetail.getProductId());
@@ -79,7 +78,7 @@ public class ReceiveSheetDetailServiceImpl implements IReceiveSheetDetailService
               + "个，本次取消退货数量不允许大于" + orderDetail.getReturnNum() + "个！");
     }
 
-    if (receiveSheetDetailMapper.subReturnNum(orderDetail.getId(), num) != 1) {
+    if (getBaseMapper().subReturnNum(orderDetail.getId(), num) != 1) {
       ProductDto product = productService.getById(orderDetail.getProductId());
 
       throw new DefaultClientException(

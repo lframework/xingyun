@@ -1,8 +1,9 @@
 package com.lframework.xingyun.basedata.service.member;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.member.MemberDto;
+import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
@@ -10,7 +11,7 @@ import com.lframework.xingyun.basedata.vo.member.UpdateMemberVo;
 import java.util.Collection;
 import java.util.List;
 
-public interface IMemberService extends BaseService {
+public interface IMemberService extends BaseMpService<Member> {
 
   /**
    * 查询列表

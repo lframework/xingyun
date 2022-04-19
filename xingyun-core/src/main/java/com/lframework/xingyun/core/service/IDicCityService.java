@@ -1,10 +1,11 @@
 package com.lframework.xingyun.core.service;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
+import com.lframework.xingyun.core.entity.DicCity;
 import java.util.List;
 
-public interface IDicCityService extends BaseService {
+public interface IDicCityService extends BaseMpService<DicCity> {
 
   /**
    * 查询所有数据

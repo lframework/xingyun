@@ -1,34 +1,33 @@
 package com.lframework.xingyun.core.impl;
 
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
+import com.lframework.xingyun.core.entity.DicCity;
 import com.lframework.xingyun.core.mappers.DicCityMapper;
 import com.lframework.xingyun.core.service.IDicCityService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DicCityServiceImpl implements IDicCityService {
-
-  @Autowired
-  private DicCityMapper dicCityMapper;
+public class DicCityServiceImpl extends BaseMpServiceImpl<DicCityMapper, DicCity> implements
+    IDicCityService {
 
   @Cacheable(value = DicCityDto.SELECTOR_CACHE_NAME, key = "'all'")
   @Override
   public List<DicCityDto> getAll() {
 
-    return dicCityMapper.getAll();
+    return getBaseMapper().getAll();
   }
 
   @Cacheable(value = DicCityDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public DicCityDto getById(String id) {
 
-    return dicCityMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override

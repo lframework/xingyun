@@ -1,11 +1,12 @@
 package com.lframework.xingyun.basedata.service.product;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.product.poly.ProductPolyPropertyDto;
+import com.lframework.xingyun.basedata.entity.ProductPolyProperty;
 import com.lframework.xingyun.basedata.vo.product.poly.property.CreateProductPolyPropertyVo;
 import java.util.List;
 
-public interface IProductPolyPropertyService extends BaseService {
+public interface IProductPolyPropertyService extends BaseMpService<ProductPolyProperty> {
 
   /**
    * 根据polyId查询

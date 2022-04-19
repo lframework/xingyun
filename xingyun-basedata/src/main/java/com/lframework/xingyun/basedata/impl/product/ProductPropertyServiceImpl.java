@@ -14,6 +14,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.system.IRecursionMappingService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -52,10 +53,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductPropertyServiceImpl implements IProductPropertyService {
-
-  @Autowired
-  private ProductPropertyMapper productPropertyMapper;
+public class ProductPropertyServiceImpl extends
+    BaseMpServiceImpl<ProductPropertyMapper, ProductProperty> implements IProductPropertyService {
 
   @Autowired
   private IProductPolyPropertyService productPolyPropertyService;
@@ -85,14 +84,14 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
   @Override
   public List<ProductPropertyDto> query(QueryProductPropertyVo vo) {
 
-    return productPropertyMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Cacheable(value = ProductPropertyDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public ProductPropertyDto getById(String id) {
 
-    return productPropertyMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用商品属性，ID：{}", params = "#ids", loopFormat = true)
@@ -106,7 +105,7 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
 
     Wrapper<ProductProperty> updateWrapper = Wrappers.lambdaUpdate(ProductProperty.class)
         .set(ProductProperty::getAvailable, Boolean.FALSE).in(ProductProperty::getId, ids);
-    productPropertyMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductPropertyService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -125,7 +124,7 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
 
     Wrapper<ProductProperty> updateWrapper = Wrappers.lambdaUpdate(ProductProperty.class)
         .set(ProductProperty::getAvailable, Boolean.TRUE).in(ProductProperty::getId, ids);
-    productPropertyMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductPropertyService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -165,13 +164,13 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
 
     Wrapper<ProductProperty> checkCodeWrapper = Wrappers.lambdaQuery(ProductProperty.class)
         .eq(ProductProperty::getCode, vo.getCode());
-    if (productPropertyMapper.selectCount(checkCodeWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkCodeWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     Wrapper<ProductProperty> checkNameWrapper = Wrappers.lambdaQuery(ProductProperty.class)
         .eq(ProductProperty::getName, vo.getName());
-    if (productPropertyMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -209,7 +208,7 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    productPropertyMapper.insert(data);
+    getBaseMapper().insert(data);
 
     if (data.getPropertyType() == PropertyType.APPOINT) {
       for (String categoryId : vo.getCategoryIds()) {
@@ -229,20 +228,20 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
   @Override
   public void update(UpdateProductPropertyVo vo) {
 
-    ProductProperty data = productPropertyMapper.selectById(vo.getId());
+    ProductProperty data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("属性不存在！");
     }
 
     Wrapper<ProductProperty> checkWrapper = Wrappers.lambdaQuery(ProductProperty.class)
         .eq(ProductProperty::getCode, vo.getCode()).ne(ProductProperty::getId, vo.getId());
-    if (productPropertyMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     Wrapper<ProductProperty> checkNameWrapper = Wrappers.lambdaQuery(ProductProperty.class)
         .eq(ProductProperty::getName, vo.getName()).ne(ProductProperty::getId, vo.getId());
-    if (productPropertyMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -324,7 +323,7 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
       }
     }
 
-    productPropertyMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     if (vo.getPropertyType() != PropertyType.NONE.getCode().intValue()) {
       if (data.getColumnType() == ColumnType.MULTIPLE && vo.getColumnType() == ColumnType.SINGLE
@@ -374,7 +373,7 @@ public class ProductPropertyServiceImpl implements IProductPropertyService {
         .getNodeParentIds(categoryId, ApplicationUtil.getBean(ProductCategoryNodeType.class));
     List<String> categoryIds = new ArrayList<>(parentCategoryIds);
     categoryIds.add(categoryId);
-    List<ProductPropertyModelorDto> datas = productPropertyMapper
+    List<ProductPropertyModelorDto> datas = getBaseMapper()
         .getModelorByCategoryId(categoryIds);
     return datas;
   }

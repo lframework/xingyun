@@ -14,6 +14,7 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -32,8 +33,8 @@ import com.lframework.xingyun.settle.entity.SettleFeeSheet;
 import com.lframework.xingyun.settle.entity.SettleFeeSheetDetail;
 import com.lframework.xingyun.settle.enums.SettleFeeSheetStatus;
 import com.lframework.xingyun.settle.enums.SettleFeeSheetType;
-import com.lframework.xingyun.settle.mappers.SettleFeeSheetDetailMapper;
 import com.lframework.xingyun.settle.mappers.SettleFeeSheetMapper;
+import com.lframework.xingyun.settle.service.ISettleFeeSheetDetailService;
 import com.lframework.xingyun.settle.service.ISettleFeeSheetService;
 import com.lframework.xingyun.settle.service.ISettleInItemService;
 import com.lframework.xingyun.settle.service.ISettleOutItemService;
@@ -54,13 +55,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
+public class SettleFeeSheetServiceImpl extends
+    BaseMpServiceImpl<SettleFeeSheetMapper, SettleFeeSheet> implements ISettleFeeSheetService {
 
   @Autowired
-  private SettleFeeSheetMapper settleFeeSheetMapper;
-
-  @Autowired
-  private SettleFeeSheetDetailMapper settleFeeSheetDetailMapper;
+  private ISettleFeeSheetDetailService settleFeeSheetDetailService;
 
   @Autowired
   private ISettleOutItemService settleOutItemService;
@@ -87,19 +86,19 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
   @Override
   public List<SettleFeeSheetDto> query(QuerySettleFeeSheetVo vo) {
 
-    return settleFeeSheetMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public SettleFeeSheetDto getById(String id) {
 
-    return settleFeeSheetMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public SettleFeeSheetFullDto getDetail(String id) {
 
-    return settleFeeSheetMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建供应商费用单，单号：{}", params = "#code")
@@ -119,7 +118,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
 
-    settleFeeSheetMapper.insert(sheet);
+    getBaseMapper().insert(sheet);
 
     return sheet.getId();
   }
@@ -129,7 +128,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
   @Override
   public void update(UpdateSettleFeeSheetVo vo) {
 
-    SettleFeeSheet sheet = settleFeeSheetMapper.selectById(vo.getId());
+    SettleFeeSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商费用单不存在！");
     }
@@ -144,10 +143,9 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
     }
 
     // 删除明细
-    Wrapper<SettleFeeSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(SettleFeeSheetDetail.class)
-        .eq(SettleFeeSheetDetail::getSheetId, sheet.getId());
-    settleFeeSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<SettleFeeSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        SettleFeeSheetDetail.class).eq(SettleFeeSheetDetail::getSheetId, sheet.getId());
+    settleFeeSheetDetailService.remove(deleteDetailWrapper);
 
     this.create(sheet, vo);
 
@@ -160,9 +158,8 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
     Wrapper<SettleFeeSheet> updateWrapper = Wrappers.lambdaUpdate(SettleFeeSheet.class)
         .set(SettleFeeSheet::getApproveBy, null).set(SettleFeeSheet::getApproveTime, null)
         .set(SettleFeeSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(SettleFeeSheet::getId, sheet.getId())
-        .in(SettleFeeSheet::getStatus, statusList);
-    if (settleFeeSheetMapper.update(sheet, updateWrapper) != 1) {
+        .eq(SettleFeeSheet::getId, sheet.getId()).in(SettleFeeSheet::getStatus, statusList);
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商费用单信息已过期，请刷新重试！");
     }
 
@@ -175,7 +172,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
   @Override
   public void approvePass(ApprovePassSettleFeeSheetVo vo) {
 
-    SettleFeeSheet sheet = settleFeeSheetMapper.selectById(vo.getId());
+    SettleFeeSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商费用单不存在！");
     }
@@ -201,7 +198,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
 
     Wrapper<SettleFeeSheet> updateWrapper = Wrappers.lambdaUpdate(SettleFeeSheet.class)
         .eq(SettleFeeSheet::getId, sheet.getId()).in(SettleFeeSheet::getStatus, statusList);
-    if (settleFeeSheetMapper.update(sheet, updateWrapper) != 1) {
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商费用单信息已过期，请刷新重试！");
     }
 
@@ -228,7 +225,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
   @Override
   public void approveRefuse(ApproveRefuseSettleFeeSheetVo vo) {
 
-    SettleFeeSheet sheet = settleFeeSheetMapper.selectById(vo.getId());
+    SettleFeeSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商费用单不存在！");
     }
@@ -253,9 +250,8 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
     statusList.add(SettleFeeSheetStatus.APPROVE_REFUSE);
 
     Wrapper<SettleFeeSheet> updateWrapper = Wrappers.lambdaUpdate(SettleFeeSheet.class)
-        .eq(SettleFeeSheet::getId, sheet.getId())
-        .in(SettleFeeSheet::getStatus, statusList);
-    if (settleFeeSheetMapper.update(sheet, updateWrapper) != 1) {
+        .eq(SettleFeeSheet::getId, sheet.getId()).in(SettleFeeSheet::getStatus, statusList);
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商费用单信息已过期，请刷新重试！");
     }
 
@@ -307,7 +303,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    SettleFeeSheet sheet = settleFeeSheetMapper.selectById(id);
+    SettleFeeSheet sheet = getBaseMapper().selectById(id);
     if (sheet == null) {
       throw new InputErrorException("供应商费用单不存在！");
     }
@@ -323,13 +319,12 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
     }
 
     // 删除明细
-    Wrapper<SettleFeeSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(SettleFeeSheetDetail.class)
-        .eq(SettleFeeSheetDetail::getSheetId, sheet.getId());
-    settleFeeSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<SettleFeeSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        SettleFeeSheetDetail.class).eq(SettleFeeSheetDetail::getSheetId, sheet.getId());
+    settleFeeSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除单据
-    settleFeeSheetMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
   }
@@ -361,7 +356,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
     Wrapper<SettleFeeSheet> updateWrapper = Wrappers.lambdaUpdate(SettleFeeSheet.class)
         .set(SettleFeeSheet::getSettleStatus, SettleStatus.UN_SETTLE).eq(SettleFeeSheet::getId, id)
         .eq(SettleFeeSheet::getSettleStatus, SettleStatus.PART_SETTLE);
-    int count = settleFeeSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     return count;
   }
@@ -374,7 +369,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
         .set(SettleFeeSheet::getSettleStatus, SettleStatus.PART_SETTLE)
         .eq(SettleFeeSheet::getId, id)
         .in(SettleFeeSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = settleFeeSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     return count;
   }
@@ -386,17 +381,16 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
     Wrapper<SettleFeeSheet> updateWrapper = Wrappers.lambdaUpdate(SettleFeeSheet.class)
         .set(SettleFeeSheet::getSettleStatus, SettleStatus.SETTLED).eq(SettleFeeSheet::getId, id)
         .in(SettleFeeSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = settleFeeSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     return count;
   }
 
   @Override
   public List<SettleFeeSheetDto> getApprovedList(String supplierId, LocalDateTime startTime,
-      LocalDateTime endTime,
-      SettleStatus settleStatus) {
+      LocalDateTime endTime, SettleStatus settleStatus) {
 
-    return settleFeeSheetMapper.getApprovedList(supplierId, startTime, endTime, settleStatus);
+    return getBaseMapper().getApprovedList(supplierId, startTime, endTime, settleStatus);
   }
 
   private void create(SettleFeeSheet sheet, CreateSettleFeeSheetVo vo) {
@@ -423,7 +417,7 @@ public class SettleFeeSheetServiceImpl implements ISettleFeeSheetService {
       detail.setAmount(itemVo.getAmount());
       detail.setOrderNo(orderNo);
 
-      settleFeeSheetDetailMapper.insert(detail);
+      settleFeeSheetDetailService.save(detail);
 
       totalAmount = NumberUtil.add(totalAmount, detail.getAmount());
 

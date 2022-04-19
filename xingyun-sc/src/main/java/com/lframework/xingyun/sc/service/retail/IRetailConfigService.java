@@ -1,10 +1,11 @@
 package com.lframework.xingyun.sc.service.retail;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.retail.config.RetailConfigDto;
+import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.vo.retail.config.UpdateRetailConfigVo;
 
-public interface IRetailConfigService extends BaseService {
+public interface IRetailConfigService extends BaseMpService<RetailConfig> {
 
   /**
    * 查询

@@ -1,11 +1,12 @@
 package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApprovePassReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApproveRefuseReceiveSheetVo;
@@ -19,7 +20,7 @@ import com.lframework.xingyun.sc.vo.purchase.receive.UpdateReceiveSheetVo;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface IReceiveSheetService extends BaseService {
+public interface IReceiveSheetService extends BaseMpService<ReceiveSheet> {
 
   /**
    * 查询列表

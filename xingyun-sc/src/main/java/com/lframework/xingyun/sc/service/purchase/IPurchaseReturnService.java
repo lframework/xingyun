@@ -1,9 +1,10 @@
 package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
+import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.purchase.returned.ApprovePassPurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.ApproveRefusePurchaseReturnVo;
@@ -15,7 +16,7 @@ import com.lframework.xingyun.sc.vo.purchase.returned.UpdatePurchaseReturnVo;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface IPurchaseReturnService extends BaseService {
+public interface IPurchaseReturnService extends BaseMpService<PurchaseReturn> {
 
   /**
    * 查询列表

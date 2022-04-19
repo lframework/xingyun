@@ -10,6 +10,7 @@ import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
@@ -51,10 +52,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductStockServiceImpl implements IProductStockService {
-
-  @Autowired
-  private ProductStockMapper productStockMapper;
+public class ProductStockServiceImpl extends
+    BaseMpServiceImpl<ProductStockMapper, ProductStock> implements IProductStockService {
 
   @Autowired
   private IProductService productService;
@@ -87,13 +86,13 @@ public class ProductStockServiceImpl implements IProductStockService {
   @Override
   public List<ProductStockDto> query(QueryProductStockVo vo) {
 
-    return productStockMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public ProductStockDto getByProductIdAndScId(String productId, String scId) {
 
-    return productStockMapper.getByProductIdAndScId(productId, scId);
+    return getBaseMapper().getByProductIdAndScId(productId, scId);
   }
 
   @Override
@@ -102,7 +101,7 @@ public class ProductStockServiceImpl implements IProductStockService {
       return Collections.EMPTY_LIST;
     }
 
-    return productStockMapper.getByProductIdsAndScId(productIds, scId);
+    return getBaseMapper().getByProductIdsAndScId(productIds, scId);
   }
 
   @Transactional
@@ -112,7 +111,7 @@ public class ProductStockServiceImpl implements IProductStockService {
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
         .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
 
-    ProductStock productStock = productStockMapper.selectOne(queryWrapper);
+    ProductStock productStock = getBaseMapper().selectOne(queryWrapper);
 
     boolean isStockEmpty = false;
     if (productStock == null) {
@@ -127,7 +126,7 @@ public class ProductStockServiceImpl implements IProductStockService {
       productStock.setUnTaxPrice(BigDecimal.ZERO);
       productStock.setUnTaxAmount(BigDecimal.ZERO);
 
-      productStockMapper.insert(productStock);
+      getBaseMapper().insert(productStock);
 
       isStockEmpty = true;
     }
@@ -153,7 +152,7 @@ public class ProductStockServiceImpl implements IProductStockService {
     vo.setTaxAmount(NumberUtil.getNumber(vo.getTaxAmount(), 2));
     BigDecimal changeUnTaxAmount = NumberUtil
         .getNumber(NumberUtil.calcUnTaxPrice(vo.getTaxAmount(), vo.getTaxRate()), 6);
-    int count = productStockMapper
+    int count = getBaseMapper()
         .addStock(vo.getProductId(), vo.getScId(), vo.getStockNum(), vo.getTaxAmount(),
             NumberUtil.calcUnTaxPrice(vo.getTaxAmount(), vo.getTaxRate()),
             productStock.getStockNum(),
@@ -253,7 +252,7 @@ public class ProductStockServiceImpl implements IProductStockService {
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
         .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
 
-    ProductStock productStock = productStockMapper.selectOne(queryWrapper);
+    ProductStock productStock = getBaseMapper().selectOne(queryWrapper);
 
     if (productStock == null) {
       ProductDto product = productService.getById(vo.getProductId());
@@ -319,7 +318,7 @@ public class ProductStockServiceImpl implements IProductStockService {
           .calcUnTaxPrice(subTaxAmount,
               vo.getTaxRate() == null ? lot.getTaxRate() : vo.getTaxRate()), 6);
 
-      int count = productStockMapper
+      int count = getBaseMapper()
           .subStock(vo.getProductId(), vo.getScId(), num, subTaxAmount, subUnTaxAmount,
               productStock.getStockNum(), productStock.getTaxAmount(), reCalcCostPrice);
       if (count != 1) {
@@ -407,7 +406,7 @@ public class ProductStockServiceImpl implements IProductStockService {
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
         .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
 
-    ProductStock productStock = productStockMapper.selectOne(queryWrapper);
+    ProductStock productStock = getBaseMapper().selectOne(queryWrapper);
 
     if (productStock == null) {
       // 没有库存，跳过
@@ -418,7 +417,7 @@ public class ProductStockServiceImpl implements IProductStockService {
     BigDecimal unTaxPrice = NumberUtil
         .getNumber(NumberUtil.calcUnTaxPrice(vo.getTaxPrice(), vo.getTaxRate()), 6);
 
-    productStockMapper.stockCostAdjust(vo.getProductId(), vo.getScId(), taxPrice, unTaxPrice);
+    getBaseMapper().stockCostAdjust(vo.getProductId(), vo.getScId(), taxPrice, unTaxPrice);
 
     List<ProductLotStockDto> lotStocks = productLotStockService
         .getAllHasStockLots(vo.getProductId(), vo.getScId());

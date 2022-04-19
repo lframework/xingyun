@@ -2,9 +2,9 @@ package com.lframework.xingyun.api.bo.basedata.supplier;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
+import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.supplier.SupplierDto;
 import io.swagger.annotations.ApiModelProperty;

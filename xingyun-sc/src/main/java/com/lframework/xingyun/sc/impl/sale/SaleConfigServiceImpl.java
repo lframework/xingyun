@@ -3,29 +3,27 @@ package com.lframework.xingyun.sc.impl.sale;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.xingyun.sc.dto.sale.config.SaleConfigDto;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.mappers.SaleConfigMapper;
 import com.lframework.xingyun.sc.service.sale.ISaleConfigService;
 import com.lframework.xingyun.sc.vo.sale.config.UpdateSaleConfigVo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleConfigServiceImpl implements ISaleConfigService {
-
-  @Autowired
-  private SaleConfigMapper saleConfigMapper;
+public class SaleConfigServiceImpl extends
+    BaseMpServiceImpl<SaleConfigMapper, SaleConfig> implements ISaleConfigService {
 
   @Cacheable(value = SaleConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
   @Override
   public SaleConfigDto get() {
 
-    SaleConfig config = saleConfigMapper.selectOne(Wrappers.query());
+    SaleConfig config = getBaseMapper().selectOne(Wrappers.query());
 
     SaleConfigDto result = new SaleConfigDto();
 
@@ -43,13 +41,13 @@ public class SaleConfigServiceImpl implements ISaleConfigService {
   @Override
   public void update(UpdateSaleConfigVo vo) {
 
-    SaleConfig config = saleConfigMapper.selectOne(Wrappers.query());
+    SaleConfig config = getBaseMapper().selectOne(Wrappers.query());
     config.setOutStockRequireSale(vo.getOutStockRequireSale());
     config.setOutStockMultipleRelateSale(vo.getOutStockMultipleRelateSale());
     config.setSaleReturnRequireOutStock(vo.getSaleReturnRequireOutStock());
     config.setSaleReturnMultipleRelateOutStock(vo.getSaleReturnMultipleRelateOutStock());
 
-    saleConfigMapper.updateById(config);
+    getBaseMapper().updateById(config);
 
     OpLogUtil.setExtra(vo);
 

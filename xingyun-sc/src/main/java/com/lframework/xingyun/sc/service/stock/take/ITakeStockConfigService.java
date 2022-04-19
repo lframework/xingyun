@@ -1,7 +1,8 @@
 package com.lframework.xingyun.sc.service.stock.take;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto;
+import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.vo.stock.take.config.UpdateTakeStockConfigVo;
 
 /**
@@ -9,7 +10,7 @@ import com.lframework.xingyun.sc.vo.stock.take.config.UpdateTakeStockConfigVo;
  *
  * @author zmj
  */
-public interface ITakeStockConfigService extends BaseService {
+public interface ITakeStockConfigService extends BaseMpService<TakeStockConfig> {
 
   /**
    * 根据ID查询

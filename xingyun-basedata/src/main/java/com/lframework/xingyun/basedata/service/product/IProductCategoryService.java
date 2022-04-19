@@ -1,14 +1,15 @@
 package com.lframework.xingyun.basedata.service.product;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
+import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
 import java.util.Collection;
 import java.util.List;
 
-public interface IProductCategoryService extends BaseService {
+public interface IProductCategoryService extends BaseMpService<ProductCategory> {
 
   /**
    * 查询全部类目信息

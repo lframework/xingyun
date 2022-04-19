@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.impl.sale;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.NumberUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderDetailDto;
@@ -15,10 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleOrderDetailServiceImpl implements ISaleOrderDetailService {
-
-  @Autowired
-  private SaleOrderDetailMapper saleOrderDetailMapper;
+public class SaleOrderDetailServiceImpl extends
+    BaseMpServiceImpl<SaleOrderDetailMapper, SaleOrderDetail> implements ISaleOrderDetailService {
 
   @Autowired
   private IProductService productService;
@@ -26,13 +25,13 @@ public class SaleOrderDetailServiceImpl implements ISaleOrderDetailService {
   @Override
   public SaleOrderDetailDto getById(String id) {
 
-    return saleOrderDetailMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public List<SaleOrderDetailDto> getByOrderId(String orderId) {
 
-    return saleOrderDetailMapper.getByOrderId(orderId);
+    return getBaseMapper().getByOrderId(orderId);
   }
 
   @Transactional
@@ -42,7 +41,7 @@ public class SaleOrderDetailServiceImpl implements ISaleOrderDetailService {
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    SaleOrderDetail orderDetail = saleOrderDetailMapper.selectById(id);
+    SaleOrderDetail orderDetail = getBaseMapper().selectById(id);
 
     Integer remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getOutNum())
         .intValue();
@@ -55,7 +54,7 @@ public class SaleOrderDetailServiceImpl implements ISaleOrderDetailService {
               + remainNum + "个！");
     }
 
-    if (saleOrderDetailMapper.addOutNum(orderDetail.getId(), num) != 1) {
+    if (getBaseMapper().addOutNum(orderDetail.getId(), num) != 1) {
       ProductDto product = productService.getById(orderDetail.getProductId());
 
       throw new DefaultClientException(
@@ -70,7 +69,7 @@ public class SaleOrderDetailServiceImpl implements ISaleOrderDetailService {
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    SaleOrderDetail orderDetail = saleOrderDetailMapper.selectById(id);
+    SaleOrderDetail orderDetail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(orderDetail.getOutNum(), num)) {
       ProductDto product = productService.getById(orderDetail.getProductId());
@@ -80,7 +79,7 @@ public class SaleOrderDetailServiceImpl implements ISaleOrderDetailService {
               + "个，本次取消出库数量不允许大于" + orderDetail.getOutNum() + "个！");
     }
 
-    if (saleOrderDetailMapper.subOutNum(orderDetail.getId(), num) != 1) {
+    if (getBaseMapper().subOutNum(orderDetail.getId(), num) != 1) {
       ProductDto product = productService.getById(orderDetail.getProductId());
 
       throw new DefaultClientException(

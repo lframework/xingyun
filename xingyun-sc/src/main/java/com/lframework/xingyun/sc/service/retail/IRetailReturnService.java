@@ -1,9 +1,10 @@
 package com.lframework.xingyun.sc.service.retail;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
+import com.lframework.xingyun.sc.entity.RetailReturn;
 import com.lframework.xingyun.sc.vo.retail.returned.ApprovePassRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.ApproveRefuseRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.BatchApprovePassRetailReturnVo;
@@ -13,7 +14,7 @@ import com.lframework.xingyun.sc.vo.retail.returned.QueryRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.UpdateRetailReturnVo;
 import java.util.List;
 
-public interface IRetailReturnService extends BaseService {
+public interface IRetailReturnService extends BaseMpService<RetailReturn> {
 
   /**
    * 查询列表

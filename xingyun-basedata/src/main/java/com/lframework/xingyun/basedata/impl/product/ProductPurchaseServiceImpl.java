@@ -5,26 +5,24 @@ import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.mappers.ProductPurchaseMapper;
 import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
 import com.lframework.xingyun.basedata.vo.product.purchase.CreateProductPurchaseVo;
 import com.lframework.xingyun.basedata.vo.product.purchase.UpdateProductPurchaseVo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductPurchaseServiceImpl implements IProductPurchaseService {
-
-  @Autowired
-  private ProductPurchaseMapper productPurchaseMapper;
+public class ProductPurchaseServiceImpl extends
+    BaseMpServiceImpl<ProductPurchaseMapper, ProductPurchase> implements IProductPurchaseService {
 
   @Override
   public ProductPurchaseDto getById(String id) {
 
-    return productPurchaseMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
@@ -40,7 +38,7 @@ public class ProductPurchaseServiceImpl implements IProductPurchaseService {
 
     data.setPrice(vo.getPrice());
 
-    productPurchaseMapper.insert(data);
+    getBaseMapper().insert(data);
 
     return data.getId();
   }
@@ -58,7 +56,7 @@ public class ProductPurchaseServiceImpl implements IProductPurchaseService {
       throw new InputErrorException("采购价必须大于0！");
     }
 
-    productPurchaseMapper.deleteById(vo.getId());
+    getBaseMapper().deleteById(vo.getId());
 
     CreateProductPurchaseVo createVo = new CreateProductPurchaseVo();
     createVo.setId(vo.getId());

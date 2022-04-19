@@ -15,13 +15,14 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
+import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.service.IUserService;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
@@ -44,11 +45,11 @@ import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.ReceiveSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
-import com.lframework.xingyun.sc.mappers.ReceiveSheetDetailMapper;
 import com.lframework.xingyun.sc.mappers.ReceiveSheetMapper;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
+import com.lframework.xingyun.sc.service.purchase.IReceiveSheetDetailService;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApprovePassReceiveSheetVo;
@@ -72,13 +73,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ReceiveSheetServiceImpl implements IReceiveSheetService {
+public class ReceiveSheetServiceImpl extends
+    BaseMpServiceImpl<ReceiveSheetMapper, ReceiveSheet> implements IReceiveSheetService {
 
   @Autowired
-  private ReceiveSheetMapper receiveSheetMapper;
-
-  @Autowired
-  private ReceiveSheetDetailMapper receiveSheetDetailMapper;
+  private IReceiveSheetDetailService receiveSheetDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -123,7 +122,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
   @Override
   public List<ReceiveSheetDto> query(QueryReceiveSheetVo vo) {
 
-    return receiveSheetMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -134,7 +133,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ReceiveSheetDto> datas = receiveSheetMapper.selector(vo);
+    List<ReceiveSheetDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -142,7 +141,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
   @Override
   public ReceiveSheetDto getById(String id) {
 
-    return receiveSheetMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -173,7 +172,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
   @Override
   public ReceiveSheetFullDto getDetail(String id) {
 
-    return receiveSheetMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @Override
@@ -181,8 +180,8 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
 
     PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
 
-    ReceiveSheetWithReturnDto sheet = receiveSheetMapper
-        .getWithReturn(id, purchaseConfig.getPurchaseReturnRequireReceive());
+    ReceiveSheetWithReturnDto sheet = getBaseMapper().getWithReturn(id,
+        purchaseConfig.getPurchaseReturnRequireReceive());
     if (sheet == null) {
       throw new InputErrorException("收货单不存在！");
     }
@@ -199,8 +198,8 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ReceiveSheetDto> datas = receiveSheetMapper
-        .queryWithReturn(vo, purchaseConfig.getPurchaseReturnMultipleRelateReceive());
+    List<ReceiveSheetDto> datas = getBaseMapper().queryWithReturn(vo,
+        purchaseConfig.getPurchaseReturnMultipleRelateReceive());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -220,7 +219,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
 
     sheet.setStatus(ReceiveSheetStatus.CREATED);
 
-    receiveSheetMapper.insert(sheet);
+    getBaseMapper().insert(sheet);
 
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
@@ -233,7 +232,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
   @Override
   public void update(UpdateReceiveSheetVo vo) {
 
-    ReceiveSheet sheet = receiveSheetMapper.selectById(vo.getId());
+    ReceiveSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new InputErrorException("采购收货单不存在！");
     }
@@ -252,15 +251,14 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
 
     if (requirePurchase) {
       //查询采购收货单明细
-      Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers
-          .lambdaQuery(ReceiveSheetDetail.class)
-          .eq(ReceiveSheetDetail::getSheetId, sheet.getId());
-      List<ReceiveSheetDetail> details = receiveSheetDetailMapper.selectList(queryDetailWrapper);
+      Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+          ReceiveSheetDetail.class).eq(ReceiveSheetDetail::getSheetId, sheet.getId());
+      List<ReceiveSheetDetail> details = receiveSheetDetailService.list(queryDetailWrapper);
       for (ReceiveSheetDetail detail : details) {
         if (!StringUtil.isBlank(detail.getPurchaseOrderDetailId())) {
           //先恢复已收货数量
-          purchaseOrderDetailService
-              .subReceiveNum(detail.getPurchaseOrderDetailId(), detail.getOrderNum());
+          purchaseOrderDetailService.subReceiveNum(detail.getPurchaseOrderDetailId(),
+              detail.getOrderNum());
         }
       }
     }
@@ -268,7 +266,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     // 删除采购收货单明细
     Wrapper<ReceiveSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(ReceiveSheetDetail.class)
         .eq(ReceiveSheetDetail::getSheetId, sheet.getId());
-    receiveSheetDetailMapper.delete(deleteDetailWrapper);
+    receiveSheetDetailService.remove(deleteDetailWrapper);
 
     this.create(sheet, vo, requirePurchase);
 
@@ -281,9 +279,8 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     Wrapper<ReceiveSheet> updateOrderWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getApproveBy, null).set(ReceiveSheet::getApproveTime, null)
         .set(ReceiveSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(ReceiveSheet::getId, sheet.getId())
-        .in(ReceiveSheet::getStatus, statusList);
-    if (receiveSheetMapper.update(sheet, updateOrderWrapper) != 1) {
+        .eq(ReceiveSheet::getId, sheet.getId()).in(ReceiveSheet::getStatus, statusList);
+    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
 
@@ -296,7 +293,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
   @Override
   public void approvePass(ApprovePassReceiveSheetVo vo) {
 
-    ReceiveSheet sheet = receiveSheetMapper.selectById(vo.getId());
+    ReceiveSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new InputErrorException("采购收货单不存在！");
     }
@@ -317,7 +314,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
       Wrapper<ReceiveSheet> checkWrapper = Wrappers.lambdaQuery(ReceiveSheet.class)
           .eq(ReceiveSheet::getPurchaseOrderId, sheet.getPurchaseOrderId())
           .ne(ReceiveSheet::getId, sheet.getId());
-      if (receiveSheetMapper.selectCount(checkWrapper) > 0) {
+      if (getBaseMapper().selectCount(checkWrapper) > 0) {
         PurchaseOrderDto purchaseOrder = purchaseOrderService.getById(sheet.getPurchaseOrderId());
         throw new DefaultClientException(
             "采购订单号：" + purchaseOrder.getCode() + "，已关联其他采购收货单，不允许关联多个采购收货单！");
@@ -333,19 +330,18 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     LambdaUpdateWrapper<ReceiveSheet> updateOrderWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(ReceiveSheet::getApproveTime, LocalDateTime.now())
-        .eq(ReceiveSheet::getId, sheet.getId())
-        .in(ReceiveSheet::getStatus, statusList);
+        .eq(ReceiveSheet::getId, sheet.getId()).in(ReceiveSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(ReceiveSheet::getDescription, vo.getDescription());
     }
-    if (receiveSheetMapper.update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
 
     Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(ReceiveSheetDetail.class)
         .eq(ReceiveSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(ReceiveSheetDetail::getOrderNo);
-    List<ReceiveSheetDetail> details = receiveSheetDetailMapper.selectList(queryDetailWrapper);
+    List<ReceiveSheetDetail> details = receiveSheetDetailService.list(queryDetailWrapper);
     for (ReceiveSheetDetail detail : details) {
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
@@ -406,7 +402,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
   @Override
   public void approveRefuse(ApproveRefuseReceiveSheetVo vo) {
 
-    ReceiveSheet sheet = receiveSheetMapper.selectById(vo.getId());
+    ReceiveSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new InputErrorException("采购收货单不存在！");
     }
@@ -432,7 +428,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
         .set(ReceiveSheet::getRefuseReason, vo.getRefuseReason())
         .eq(ReceiveSheet::getId, sheet.getId())
         .eq(ReceiveSheet::getStatus, ReceiveSheetStatus.CREATED);
-    if (receiveSheetMapper.update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
 
@@ -467,7 +463,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    ReceiveSheet sheet = receiveSheetMapper.selectById(id);
+    ReceiveSheet sheet = getBaseMapper().selectById(id);
     if (sheet == null) {
       throw new InputErrorException("采购收货单不存在！");
     }
@@ -484,15 +480,14 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
 
     if (!StringUtil.isBlank(sheet.getPurchaseOrderId())) {
       //查询采购收货单明细
-      Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers
-          .lambdaQuery(ReceiveSheetDetail.class)
-          .eq(ReceiveSheetDetail::getSheetId, sheet.getId());
-      List<ReceiveSheetDetail> details = receiveSheetDetailMapper.selectList(queryDetailWrapper);
+      Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+          ReceiveSheetDetail.class).eq(ReceiveSheetDetail::getSheetId, sheet.getId());
+      List<ReceiveSheetDetail> details = receiveSheetDetailService.list(queryDetailWrapper);
       for (ReceiveSheetDetail detail : details) {
         if (!StringUtil.isBlank(detail.getPurchaseOrderDetailId())) {
           //恢复已收货数量
-          purchaseOrderDetailService
-              .subReceiveNum(detail.getPurchaseOrderDetailId(), detail.getOrderNum());
+          purchaseOrderDetailService.subReceiveNum(detail.getPurchaseOrderDetailId(),
+              detail.getOrderNum());
         }
       }
     }
@@ -500,10 +495,10 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     // 删除订单明细
     Wrapper<ReceiveSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(ReceiveSheetDetail.class)
         .eq(ReceiveSheetDetail::getSheetId, sheet.getId());
-    receiveSheetDetailMapper.delete(deleteDetailWrapper);
+    receiveSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除订单
-    receiveSheetMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
   }
@@ -535,7 +530,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     Wrapper<ReceiveSheet> updateWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getSettleStatus, SettleStatus.UN_SETTLE).eq(ReceiveSheet::getId, id)
         .eq(ReceiveSheet::getSettleStatus, SettleStatus.PART_SETTLE);
-    int count = receiveSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     IReceiveSheetService thisService = getThis(this.getClass());
     thisService.cleanCacheByKey(id);
@@ -550,7 +545,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     Wrapper<ReceiveSheet> updateWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getSettleStatus, SettleStatus.PART_SETTLE).eq(ReceiveSheet::getId, id)
         .in(ReceiveSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = receiveSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     IReceiveSheetService thisService = getThis(this.getClass());
     thisService.cleanCacheByKey(id);
@@ -565,7 +560,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     Wrapper<ReceiveSheet> updateWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getSettleStatus, SettleStatus.SETTLED).eq(ReceiveSheet::getId, id)
         .in(ReceiveSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = receiveSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     IReceiveSheetService thisService = getThis(this.getClass());
     thisService.cleanCacheByKey(id);
@@ -575,10 +570,9 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
 
   @Override
   public List<ReceiveSheetDto> getApprovedList(String supplierId, LocalDateTime startTime,
-      LocalDateTime endTime,
-      SettleStatus settleStatus) {
+      LocalDateTime endTime, SettleStatus settleStatus) {
 
-    return receiveSheetMapper.getApprovedList(supplierId, startTime, endTime, settleStatus);
+    return getBaseMapper().getApprovedList(supplierId, startTime, endTime, settleStatus);
   }
 
   private void create(ReceiveSheet sheet, CreateReceiveSheetVo vo, boolean receiveRequirePurchase) {
@@ -628,7 +622,7 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
         Wrapper<ReceiveSheet> checkWrapper = Wrappers.lambdaQuery(ReceiveSheet.class)
             .eq(ReceiveSheet::getPurchaseOrderId, purchaseOrder.getId())
             .ne(ReceiveSheet::getId, sheet.getId());
-        if (receiveSheetMapper.selectCount(checkWrapper) > 0) {
+        if (getBaseMapper().selectCount(checkWrapper) > 0) {
           throw new DefaultClientException(
               "采购订单号：" + purchaseOrder.getCode() + "，已关联其他采购收货单，不允许关联多个采购收货单！");
         }
@@ -642,8 +636,8 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
     for (ReceiveProductVo productVo : vo.getProducts()) {
       if (receiveRequirePurchase) {
         if (!StringUtil.isBlank(productVo.getPurchaseOrderDetailId())) {
-          PurchaseOrderDetailDto orderDetail = purchaseOrderDetailService
-              .getById(productVo.getPurchaseOrderDetailId());
+          PurchaseOrderDetailDto orderDetail = purchaseOrderDetailService.getById(
+              productVo.getPurchaseOrderDetailId());
           productVo.setPurchasePrice(orderDetail.getTaxPrice());
         } else {
           productVo.setPurchasePrice(BigDecimal.ZERO);
@@ -666,9 +660,8 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
         purchaseNum += productVo.getReceiveNum();
       }
 
-      totalAmount = NumberUtil
-          .add(totalAmount,
-              NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReceiveNum()));
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReceiveNum()));
 
       ReceiveSheetDetail detail = new ReceiveSheetDetail();
       detail.setId(IdUtil.getId());
@@ -688,17 +681,16 @@ public class ReceiveSheetServiceImpl implements IReceiveSheetService {
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getPoly().getTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       if (receiveRequirePurchase && !StringUtil.isBlank(productVo.getPurchaseOrderDetailId())) {
         detail.setPurchaseOrderDetailId(productVo.getPurchaseOrderDetailId());
-        purchaseOrderDetailService
-            .addReceiveNum(productVo.getPurchaseOrderDetailId(), detail.getOrderNum());
+        purchaseOrderDetailService.addReceiveNum(productVo.getPurchaseOrderDetailId(),
+            detail.getOrderNum());
       }
 
-      receiveSheetDetailMapper.insert(detail);
+      receiveSheetDetailService.save(detail);
       orderNo++;
     }
     sheet.setTotalNum(purchaseNum);

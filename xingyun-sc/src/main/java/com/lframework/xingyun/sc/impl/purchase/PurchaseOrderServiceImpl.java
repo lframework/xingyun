@@ -15,13 +15,14 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
+import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
@@ -39,9 +40,9 @@ import com.lframework.xingyun.sc.dto.purchase.config.PurchaseConfigDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
-import com.lframework.xingyun.sc.mappers.PurchaseOrderDetailMapper;
 import com.lframework.xingyun.sc.mappers.PurchaseOrderMapper;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
+import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
@@ -62,13 +63,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
+public class PurchaseOrderServiceImpl extends
+    BaseMpServiceImpl<PurchaseOrderMapper, PurchaseOrder> implements IPurchaseOrderService {
 
   @Autowired
-  private PurchaseOrderMapper purchaseOrderMapper;
-
-  @Autowired
-  private PurchaseOrderDetailMapper purchaseOrderDetailMapper;
+  private IPurchaseOrderDetailService purchaseOrderDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -104,7 +103,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
   @Override
   public List<PurchaseOrderDto> query(QueryPurchaseOrderVo vo) {
 
-    return purchaseOrderMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -115,7 +114,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PurchaseOrderDto> datas = purchaseOrderMapper.selector(vo);
+    List<PurchaseOrderDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -123,13 +122,13 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
   @Override
   public PurchaseOrderDto getById(String id) {
 
-    return purchaseOrderMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public PurchaseOrderFullDto getDetail(String id) {
 
-    PurchaseOrderFullDto order = purchaseOrderMapper.getDetail(id);
+    PurchaseOrderFullDto order = getBaseMapper().getDetail(id);
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -142,8 +141,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
 
-    PurchaseOrderWithReceiveDto order = purchaseOrderMapper
-        .getWithReceive(id, purchaseConfig.getReceiveRequirePurchase());
+    PurchaseOrderWithReceiveDto order = getBaseMapper().getWithReceive(id,
+        purchaseConfig.getReceiveRequirePurchase());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -160,8 +159,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PurchaseOrderDto> datas = purchaseOrderMapper
-        .queryWithReceive(vo, purchaseConfig.getReceiveMultipleRelatePurchase());
+    List<PurchaseOrderDto> datas = getBaseMapper().queryWithReceive(vo,
+        purchaseConfig.getReceiveMultipleRelatePurchase());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -179,7 +178,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     order.setStatus(PurchaseOrderStatus.CREATED);
 
-    purchaseOrderMapper.insert(order);
+    getBaseMapper().insert(order);
 
     OpLogUtil.setVariable("code", order.getCode());
     OpLogUtil.setExtra(vo);
@@ -192,7 +191,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
   @Override
   public void update(UpdatePurchaseOrderVo vo) {
 
-    PurchaseOrder order = purchaseOrderMapper.selectById(vo.getId());
+    PurchaseOrder order = getBaseMapper().selectById(vo.getId());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -208,10 +207,9 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     }
 
     // 删除订单明细
-    Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(PurchaseOrderDetail.class)
-        .eq(PurchaseOrderDetail::getOrderId, order.getId());
-    purchaseOrderDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        PurchaseOrderDetail.class).eq(PurchaseOrderDetail::getOrderId, order.getId());
+    purchaseOrderDetailService.remove(deleteDetailWrapper);
 
     this.create(order, vo);
 
@@ -224,9 +222,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     Wrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(PurchaseOrder.class)
         .set(PurchaseOrder::getApproveBy, null).set(PurchaseOrder::getApproveTime, null)
         .set(PurchaseOrder::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(PurchaseOrder::getId, order.getId())
-        .in(PurchaseOrder::getStatus, statusList);
-    if (purchaseOrderMapper.update(order, updateOrderWrapper) != 1) {
+        .eq(PurchaseOrder::getId, order.getId()).in(PurchaseOrder::getStatus, statusList);
+    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -239,7 +236,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
   @Override
   public void approvePass(ApprovePassPurchaseOrderVo vo) {
 
-    PurchaseOrder order = purchaseOrderMapper.selectById(vo.getId());
+    PurchaseOrder order = getBaseMapper().selectById(vo.getId());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -260,16 +257,14 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     statusList.add(PurchaseOrderStatus.CREATED);
     statusList.add(PurchaseOrderStatus.APPROVE_REFUSE);
 
-    LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers
-        .lambdaUpdate(PurchaseOrder.class)
-        .set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
+    LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
+            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
-        .eq(PurchaseOrder::getId, order.getId())
-        .in(PurchaseOrder::getStatus, statusList);
+        .eq(PurchaseOrder::getId, order.getId()).in(PurchaseOrder::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(PurchaseOrder::getDescription, vo.getDescription());
     }
-    if (purchaseOrderMapper.update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -319,7 +314,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
   @Override
   public void approveRefuse(ApproveRefusePurchaseOrderVo vo) {
 
-    PurchaseOrder order = purchaseOrderMapper.selectById(vo.getId());
+    PurchaseOrder order = getBaseMapper().selectById(vo.getId());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -339,14 +334,13 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     order.setStatus(PurchaseOrderStatus.APPROVE_REFUSE);
 
-    LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers
-        .lambdaUpdate(PurchaseOrder.class)
-        .set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
+    LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
+            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
         .set(PurchaseOrder::getRefuseReason, vo.getRefuseReason())
         .eq(PurchaseOrder::getId, order.getId())
         .eq(PurchaseOrder::getStatus, PurchaseOrderStatus.CREATED);
-    if (purchaseOrderMapper.update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -381,7 +375,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    PurchaseOrder order = purchaseOrderMapper.selectById(id);
+    PurchaseOrder order = getBaseMapper().selectById(id);
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -397,13 +391,12 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     }
 
     // 删除订单明细
-    Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(PurchaseOrderDetail.class)
-        .eq(PurchaseOrderDetail::getOrderId, order.getId());
-    purchaseOrderDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        PurchaseOrderDetail.class).eq(PurchaseOrderDetail::getOrderId, order.getId());
+    purchaseOrderDetailService.remove(deleteDetailWrapper);
 
     // 删除订单
-    purchaseOrderMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", order.getCode());
   }
@@ -435,7 +428,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     Assert.notBlank(id);
 
-    PurchaseOrder order = purchaseOrderMapper.selectById(id);
+    PurchaseOrder order = getBaseMapper().selectById(id);
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -452,7 +445,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         .set(PurchaseOrder::getRefuseReason, StringPool.EMPTY_STR)
         .eq(PurchaseOrder::getId, order.getId())
         .eq(PurchaseOrder::getStatus, PurchaseOrderStatus.APPROVE_PASS);
-    if (purchaseOrderMapper.update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -499,9 +492,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         purchaseNum += productVo.getPurchaseNum();
       }
 
-      totalAmount = NumberUtil
-          .add(totalAmount,
-              NumberUtil.mul(productVo.getPurchasePrice(), productVo.getPurchaseNum()));
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.mul(productVo.getPurchasePrice(), productVo.getPurchaseNum()));
 
       PurchaseOrderDetail orderDetail = new PurchaseOrderDetail();
       orderDetail.setId(IdUtil.getId());
@@ -526,7 +518,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
               : productVo.getDescription());
       orderDetail.setOrderNo(orderNo);
 
-      purchaseOrderDetailMapper.insert(orderDetail);
+      purchaseOrderDetailService.save(orderDetail);
       orderNo++;
     }
     order.setTotalNum(purchaseNum);

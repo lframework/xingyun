@@ -1,11 +1,12 @@
 package com.lframework.xingyun.sc.service.stock.take;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
+import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.vo.stock.take.plan.CancelTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.CreateTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.HandleTakeStockPlanVo;
@@ -19,7 +20,7 @@ import java.util.List;
  *
  * @author zmj
  */
-public interface ITakeStockPlanService extends BaseService {
+public interface ITakeStockPlanService extends BaseMpService<TakeStockPlan> {
 
   /**
    * 查询列表

@@ -1,10 +1,11 @@
 package com.lframework.xingyun.settle.service;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.settle.dto.sheet.SettleBizItemDto;
 import com.lframework.xingyun.settle.dto.sheet.SettleSheetDto;
 import com.lframework.xingyun.settle.dto.sheet.SettleSheetFullDto;
+import com.lframework.xingyun.settle.entity.SettleSheet;
 import com.lframework.xingyun.settle.vo.sheet.ApprovePassSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.ApproveRefuseSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.BatchApprovePassSettleSheetVo;
@@ -15,7 +16,7 @@ import com.lframework.xingyun.settle.vo.sheet.QueryUnSettleBizItemVo;
 import com.lframework.xingyun.settle.vo.sheet.UpdateSettleSheetVo;
 import java.util.List;
 
-public interface ISettleSheetService extends BaseService {
+public interface ISettleSheetService extends BaseMpService<SettleSheet> {
 
   /**
    * 查询列表

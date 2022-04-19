@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
@@ -18,15 +19,12 @@ import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductStockLogServiceImpl implements IProductStockLogService {
-
-  @Autowired
-  private ProductStockLogMapper productStockLogMapper;
+public class ProductStockLogServiceImpl extends
+    BaseMpServiceImpl<ProductStockLogMapper, ProductStockLog> implements IProductStockLogService {
 
   @Override
   public PageResult<ProductStockLogDto> query(Integer pageIndex, Integer pageSize,
@@ -44,7 +42,7 @@ public class ProductStockLogServiceImpl implements IProductStockLogService {
   @Override
   public List<ProductStockLogDto> query(QueryProductStockLogVo vo) {
 
-    return productStockLogMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Transactional
@@ -80,7 +78,7 @@ public class ProductStockLogServiceImpl implements IProductStockLogService {
     }
     record.setBizType(EnumUtil.getByCode(ProductStockBizType.class, vo.getBizType()));
 
-    productStockLogMapper.insert(record);
+    getBaseMapper().insert(record);
   }
 
   @Transactional
@@ -116,7 +114,7 @@ public class ProductStockLogServiceImpl implements IProductStockLogService {
     }
     record.setBizType(EnumUtil.getByCode(ProductStockBizType.class, vo.getBizType()));
 
-    productStockLogMapper.insert(record);
+    getBaseMapper().insert(record);
   }
 
   @Transactional
@@ -151,6 +149,6 @@ public class ProductStockLogServiceImpl implements IProductStockLogService {
     }
     record.setBizType(ProductStockBizType.STOCK_COST_ADJUST);
 
-    productStockLogMapper.insert(record);
+    getBaseMapper().insert(record);
   }
 }

@@ -15,13 +15,14 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
+import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
@@ -44,9 +45,9 @@ import com.lframework.xingyun.sc.entity.PurchaseReturnDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
-import com.lframework.xingyun.sc.mappers.PurchaseReturnDetailMapper;
 import com.lframework.xingyun.sc.mappers.PurchaseReturnMapper;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
+import com.lframework.xingyun.sc.service.purchase.IPurchaseReturnDetailService;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseReturnService;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetDetailService;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
@@ -69,13 +70,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
+public class PurchaseReturnServiceImpl extends
+    BaseMpServiceImpl<PurchaseReturnMapper, PurchaseReturn> implements IPurchaseReturnService {
 
   @Autowired
-  private PurchaseReturnMapper purchaseReturnMapper;
-
-  @Autowired
-  private PurchaseReturnDetailMapper purchaseReturnDetailMapper;
+  private IPurchaseReturnDetailService purchaseReturnDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -120,19 +119,19 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
   @Override
   public List<PurchaseReturnDto> query(QueryPurchaseReturnVo vo) {
 
-    return purchaseReturnMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public PurchaseReturnDto getById(String id) {
 
-    return purchaseReturnMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public PurchaseReturnFullDto getDetail(String id) {
 
-    return purchaseReturnMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建采购退货单，单号：{}", params = "#code")
@@ -150,7 +149,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
 
     purchaseReturn.setStatus(PurchaseReturnStatus.CREATED);
 
-    purchaseReturnMapper.insert(purchaseReturn);
+    getBaseMapper().insert(purchaseReturn);
 
     OpLogUtil.setVariable("code", purchaseReturn.getCode());
     OpLogUtil.setExtra(vo);
@@ -163,7 +162,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
   @Override
   public void update(UpdatePurchaseReturnVo vo) {
 
-    PurchaseReturn purchaseReturn = purchaseReturnMapper.selectById(vo.getId());
+    PurchaseReturn purchaseReturn = getBaseMapper().selectById(vo.getId());
     if (purchaseReturn == null) {
       throw new InputErrorException("采购退货单不存在！");
     }
@@ -182,25 +181,22 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
 
     if (requireReceive) {
       //查询采购退货单明细
-      Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers
-          .lambdaQuery(PurchaseReturnDetail.class)
-          .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
-      List<PurchaseReturnDetail> details = purchaseReturnDetailMapper
-          .selectList(queryDetailWrapper);
+      Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+          PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
+      List<PurchaseReturnDetail> details = purchaseReturnDetailService.list(queryDetailWrapper);
       for (PurchaseReturnDetail detail : details) {
         if (!StringUtil.isBlank(detail.getReceiveSheetDetailId())) {
           //先恢复已退货数量
-          receiveSheetDetailService
-              .subReturnNum(detail.getReceiveSheetDetailId(), detail.getReturnNum());
+          receiveSheetDetailService.subReturnNum(detail.getReceiveSheetDetailId(),
+              detail.getReturnNum());
         }
       }
     }
 
     // 删除采购退货单明细
-    Wrapper<PurchaseReturnDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(PurchaseReturnDetail.class)
-        .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
-    purchaseReturnDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<PurchaseReturnDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
+    purchaseReturnDetailService.remove(deleteDetailWrapper);
 
     this.create(purchaseReturn, vo, requireReceive);
 
@@ -215,7 +211,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
         .set(PurchaseReturn::getRefuseReason, StringPool.EMPTY_STR)
         .eq(PurchaseReturn::getId, purchaseReturn.getId())
         .in(PurchaseReturn::getStatus, statusList);
-    if (purchaseReturnMapper.update(purchaseReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(purchaseReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购退货单信息已过期，请刷新重试！");
     }
 
@@ -228,7 +224,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
   @Override
   public void approvePass(ApprovePassPurchaseReturnVo vo) {
 
-    PurchaseReturn purchaseReturn = purchaseReturnMapper.selectById(vo.getId());
+    PurchaseReturn purchaseReturn = getBaseMapper().selectById(vo.getId());
     if (purchaseReturn == null) {
       throw new InputErrorException("采购退货单不存在！");
     }
@@ -249,9 +245,9 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
       Wrapper<PurchaseReturn> checkWrapper = Wrappers.lambdaQuery(PurchaseReturn.class)
           .eq(PurchaseReturn::getReceiveSheetId, purchaseReturn.getReceiveSheetId())
           .ne(PurchaseReturn::getId, purchaseReturn.getId());
-      if (purchaseReturnMapper.selectCount(checkWrapper) > 0) {
-        ReceiveSheetDto receiveSheet = receiveSheetService
-            .getById(purchaseReturn.getReceiveSheetId());
+      if (getBaseMapper().selectCount(checkWrapper) > 0) {
+        ReceiveSheetDto receiveSheet = receiveSheetService.getById(
+            purchaseReturn.getReceiveSheetId());
         throw new DefaultClientException(
             "采购收货单号：" + receiveSheet.getCode() + "，已关联其他采购退货单，不允许关联多个采购退货单！");
       }
@@ -263,8 +259,8 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
     statusList.add(PurchaseReturnStatus.CREATED);
     statusList.add(PurchaseReturnStatus.APPROVE_REFUSE);
 
-    LambdaUpdateWrapper<PurchaseReturn> updateOrderWrapper = Wrappers
-        .lambdaUpdate(PurchaseReturn.class)
+    LambdaUpdateWrapper<PurchaseReturn> updateOrderWrapper = Wrappers.lambdaUpdate(
+            PurchaseReturn.class)
         .set(PurchaseReturn::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(PurchaseReturn::getApproveTime, LocalDateTime.now())
         .eq(PurchaseReturn::getId, purchaseReturn.getId())
@@ -272,15 +268,14 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(PurchaseReturn::getDescription, vo.getDescription());
     }
-    if (purchaseReturnMapper.update(purchaseReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(purchaseReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购退货单信息已过期，请刷新重试！");
     }
 
-    Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(PurchaseReturnDetail.class)
-        .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId())
+    Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId())
         .orderByAsc(PurchaseReturnDetail::getOrderNo);
-    List<PurchaseReturnDetail> details = purchaseReturnDetailMapper.selectList(queryDetailWrapper);
+    List<PurchaseReturnDetail> details = purchaseReturnDetailService.list(queryDetailWrapper);
     for (PurchaseReturnDetail detail : details) {
       SubProductStockVo subproductStockVo = new SubProductStockVo();
 
@@ -344,7 +339,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
   @Override
   public void approveRefuse(ApproveRefusePurchaseReturnVo vo) {
 
-    PurchaseReturn purchaseReturn = purchaseReturnMapper.selectById(vo.getId());
+    PurchaseReturn purchaseReturn = getBaseMapper().selectById(vo.getId());
     if (purchaseReturn == null) {
       throw new InputErrorException("采购退货单不存在！");
     }
@@ -364,14 +359,14 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
 
     purchaseReturn.setStatus(PurchaseReturnStatus.APPROVE_REFUSE);
 
-    LambdaUpdateWrapper<PurchaseReturn> updateOrderWrapper = Wrappers
-        .lambdaUpdate(PurchaseReturn.class)
+    LambdaUpdateWrapper<PurchaseReturn> updateOrderWrapper = Wrappers.lambdaUpdate(
+            PurchaseReturn.class)
         .set(PurchaseReturn::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(PurchaseReturn::getApproveTime, LocalDateTime.now())
         .set(PurchaseReturn::getRefuseReason, vo.getRefuseReason())
         .eq(PurchaseReturn::getId, purchaseReturn.getId())
         .eq(PurchaseReturn::getStatus, PurchaseReturnStatus.CREATED);
-    if (purchaseReturnMapper.update(purchaseReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().update(purchaseReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购退货单信息已过期，请刷新重试！");
     }
 
@@ -406,7 +401,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    PurchaseReturn purchaseReturn = purchaseReturnMapper.selectById(id);
+    PurchaseReturn purchaseReturn = getBaseMapper().selectById(id);
     if (purchaseReturn == null) {
       throw new InputErrorException("采购退货单不存在！");
     }
@@ -423,28 +418,25 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
 
     if (!StringUtil.isBlank(purchaseReturn.getReceiveSheetId())) {
       //查询采购退货单明细
-      Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers
-          .lambdaQuery(PurchaseReturnDetail.class)
-          .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
-      List<PurchaseReturnDetail> details = purchaseReturnDetailMapper
-          .selectList(queryDetailWrapper);
+      Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+          PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
+      List<PurchaseReturnDetail> details = purchaseReturnDetailService.list(queryDetailWrapper);
       for (PurchaseReturnDetail detail : details) {
         if (!StringUtil.isBlank(detail.getReceiveSheetDetailId())) {
           //恢复已退货数量
-          receiveSheetDetailService
-              .subReturnNum(detail.getReceiveSheetDetailId(), detail.getReturnNum());
+          receiveSheetDetailService.subReturnNum(detail.getReceiveSheetDetailId(),
+              detail.getReturnNum());
         }
       }
     }
 
     // 删除退货单明细
-    Wrapper<PurchaseReturnDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(PurchaseReturnDetail.class)
-        .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
-    purchaseReturnDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<PurchaseReturnDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
+    purchaseReturnDetailService.remove(deleteDetailWrapper);
 
     // 删除退货单
-    purchaseReturnMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", purchaseReturn.getCode());
   }
@@ -476,7 +468,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
     Wrapper<PurchaseReturn> updateWrapper = Wrappers.lambdaUpdate(PurchaseReturn.class)
         .set(PurchaseReturn::getSettleStatus, SettleStatus.UN_SETTLE).eq(PurchaseReturn::getId, id)
         .eq(PurchaseReturn::getSettleStatus, SettleStatus.PART_SETTLE);
-    int count = purchaseReturnMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     IPurchaseReturnService thisService = getThis(this.getClass());
     thisService.cleanCacheByKey(id);
@@ -492,7 +484,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
         .set(PurchaseReturn::getSettleStatus, SettleStatus.PART_SETTLE)
         .eq(PurchaseReturn::getId, id)
         .in(PurchaseReturn::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = purchaseReturnMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     IPurchaseReturnService thisService = getThis(this.getClass());
     thisService.cleanCacheByKey(id);
@@ -507,7 +499,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
     Wrapper<PurchaseReturn> updateWrapper = Wrappers.lambdaUpdate(PurchaseReturn.class)
         .set(PurchaseReturn::getSettleStatus, SettleStatus.SETTLED).eq(PurchaseReturn::getId, id)
         .in(PurchaseReturn::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = purchaseReturnMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     IPurchaseReturnService thisService = getThis(this.getClass());
     thisService.cleanCacheByKey(id);
@@ -517,10 +509,9 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
 
   @Override
   public List<PurchaseReturnDto> getApprovedList(String supplierId, LocalDateTime startTime,
-      LocalDateTime endTime,
-      SettleStatus settleStatus) {
+      LocalDateTime endTime, SettleStatus settleStatus) {
 
-    return purchaseReturnMapper.getApprovedList(supplierId, startTime, endTime, settleStatus);
+    return getBaseMapper().getApprovedList(supplierId, startTime, endTime, settleStatus);
   }
 
   private void create(PurchaseReturn purchaseReturn, CreatePurchaseReturnVo vo,
@@ -552,9 +543,8 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
 
     GetPaymentDateDto paymentDate = receiveSheetService.getPaymentDate(supplier.getId());
 
-    purchaseReturn
-        .setPaymentDate(
-            paymentDate.getAllowModify() ? vo.getPaymentDate() : paymentDate.getPaymentDate());
+    purchaseReturn.setPaymentDate(
+        paymentDate.getAllowModify() ? vo.getPaymentDate() : paymentDate.getPaymentDate());
 
     if (requireReceive) {
 
@@ -571,7 +561,7 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
         Wrapper<PurchaseReturn> checkWrapper = Wrappers.lambdaQuery(PurchaseReturn.class)
             .eq(PurchaseReturn::getReceiveSheetId, receiveSheet.getId())
             .ne(PurchaseReturn::getId, purchaseReturn.getId());
-        if (purchaseReturnMapper.selectCount(checkWrapper) > 0) {
+        if (getBaseMapper().selectCount(checkWrapper) > 0) {
           throw new DefaultClientException(
               "采购收货单号：" + receiveSheet.getCode() + "，已关联其他采购退货单，不允许关联多个采购退货单！");
         }
@@ -585,8 +575,8 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
     for (ReturnProductVo productVo : vo.getProducts()) {
       if (requireReceive) {
         if (!StringUtil.isBlank(productVo.getReceiveSheetDetailId())) {
-          ReceiveSheetDetailDto detail = receiveSheetDetailService
-              .getById(productVo.getReceiveSheetDetailId());
+          ReceiveSheetDetailDto detail = receiveSheetDetailService.getById(
+              productVo.getReceiveSheetDetailId());
           productVo.setPurchasePrice(detail.getTaxPrice());
         } else {
           productVo.setPurchasePrice(BigDecimal.ZERO);
@@ -609,8 +599,8 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
         returnNum += productVo.getReturnNum();
       }
 
-      totalAmount = NumberUtil
-          .add(totalAmount, NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReturnNum()));
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReturnNum()));
 
       PurchaseReturnDetail detail = new PurchaseReturnDetail();
       detail.setId(IdUtil.getId());
@@ -630,25 +620,23 @@ public class PurchaseReturnServiceImpl implements IPurchaseReturnService {
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getPoly().getTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       if (requireReceive && !StringUtil.isBlank(productVo.getReceiveSheetDetailId())) {
         detail.setReceiveSheetDetailId(productVo.getReceiveSheetDetailId());
-        receiveSheetDetailService
-            .addReturnNum(productVo.getReceiveSheetDetailId(), detail.getReturnNum());
+        receiveSheetDetailService.addReturnNum(productVo.getReceiveSheetDetailId(),
+            detail.getReturnNum());
       }
 
-      purchaseReturnDetailMapper.insert(detail);
+      purchaseReturnDetailService.save(detail);
       orderNo++;
     }
     purchaseReturn.setTotalNum(returnNum);
     purchaseReturn.setTotalGiftNum(giftNum);
     purchaseReturn.setTotalAmount(totalAmount);
-    purchaseReturn
-        .setDescription(
-            StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+    purchaseReturn.setDescription(
+        StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     purchaseReturn.setSettleStatus(this.getInitSettleStatus(supplier));
   }
 

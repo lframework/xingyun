@@ -1,8 +1,9 @@
 package com.lframework.xingyun.settle.service;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.settle.dto.item.in.SettleInItemDto;
+import com.lframework.xingyun.settle.entity.SettleInItem;
 import com.lframework.xingyun.settle.vo.item.in.CreateSettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.QuerySettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.SettleInItemSelectorVo;
@@ -10,7 +11,7 @@ import com.lframework.xingyun.settle.vo.item.in.UpdateSettleInItemVo;
 import java.util.Collection;
 import java.util.List;
 
-public interface ISettleInItemService extends BaseService {
+public interface ISettleInItemService extends BaseMpService<SettleInItem> {
 
   /**
    * 查询列表

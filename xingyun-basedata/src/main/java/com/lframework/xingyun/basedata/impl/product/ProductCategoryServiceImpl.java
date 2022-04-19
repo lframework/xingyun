@@ -10,6 +10,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.service.system.IRecursionMappingService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
@@ -31,10 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductCategoryServiceImpl implements IProductCategoryService {
-
-  @Autowired
-  private ProductCategoryMapper productCategoryMapper;
+public class ProductCategoryServiceImpl extends
+    BaseMpServiceImpl<ProductCategoryMapper, ProductCategory> implements IProductCategoryService {
 
   @Autowired
   private IRecursionMappingService recursionMappingService;
@@ -42,20 +41,20 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
   @Override
   public List<ProductCategoryDto> getAllProductCategories() {
 
-    return productCategoryMapper.getAllProductCategories();
+    return getBaseMapper().getAllProductCategories();
   }
 
   @Cacheable(value = ProductCategoryDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public ProductCategoryDto getById(String id) {
 
-    return productCategoryMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public List<ProductCategoryDto> selector(QueryProductCategorySelectorVo vo) {
 
-    return productCategoryMapper.selector(vo);
+    return getBaseMapper().selector(vo);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用商品类目，ID：{}", params = "#ids", loopFormat = true)
@@ -82,7 +81,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
 
     Wrapper<ProductCategory> updateWrapper = Wrappers.lambdaUpdate(ProductCategory.class)
         .set(ProductCategory::getAvailable, Boolean.FALSE).in(ProductCategory::getId, batchIds);
-    productCategoryMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductCategoryService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -114,7 +113,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
 
     Wrapper<ProductCategory> updateWrapper = Wrappers.lambdaUpdate(ProductCategory.class)
         .set(ProductCategory::getAvailable, Boolean.TRUE).in(ProductCategory::getId, batchIds);
-    productCategoryMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductCategoryService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -130,14 +129,14 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
     //查询Code是否重复
     Wrapper<ProductCategory> checkCodeWrapper = Wrappers.lambdaQuery(ProductCategory.class)
         .eq(ProductCategory::getCode, vo.getCode());
-    if (productCategoryMapper.selectCount(checkCodeWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkCodeWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     //查询Name是否重复
     Wrapper<ProductCategory> checkNameWrapper = Wrappers.lambdaQuery(ProductCategory.class)
         .eq(ProductCategory::getName, vo.getName());
-    if (productCategoryMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -145,7 +144,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
     if (!StringUtil.isBlank(vo.getParentId())) {
       Wrapper<ProductCategory> checkParentWrapper = Wrappers.lambdaQuery(ProductCategory.class)
           .eq(ProductCategory::getId, vo.getParentId());
-      if (productCategoryMapper.selectCount(checkParentWrapper) == 0) {
+      if (getBaseMapper().selectCount(checkParentWrapper) == 0) {
         throw new DefaultClientException("上级类目不存在，请检查！");
       }
     }
@@ -160,7 +159,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
     data.setAvailable(Boolean.TRUE);
     data.setDescription(vo.getDescription());
 
-    productCategoryMapper.insert(data);
+    getBaseMapper().insert(data);
 
     this.saveRecursion(data.getId(), data.getParentId());
 
@@ -176,7 +175,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
   @Override
   public void update(UpdateProductCategoryVo vo) {
 
-    ProductCategory data = productCategoryMapper.selectById(vo.getId());
+    ProductCategory data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("类目不存在！");
     }
@@ -184,14 +183,14 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
     //查询Code是否重复
     Wrapper<ProductCategory> checkCodeWrapper = Wrappers.lambdaQuery(ProductCategory.class)
         .eq(ProductCategory::getCode, vo.getCode()).ne(ProductCategory::getId, data.getId());
-    if (productCategoryMapper.selectCount(checkCodeWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkCodeWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     //查询Name是否重复
     Wrapper<ProductCategory> checkNameWrapper = Wrappers.lambdaQuery(ProductCategory.class)
         .eq(ProductCategory::getName, vo.getName()).ne(ProductCategory::getId, data.getId());
-    if (productCategoryMapper.selectCount(checkNameWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
@@ -202,7 +201,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
         .set(ProductCategory::getAvailable, vo.getAvailable())
         .eq(ProductCategory::getId, data.getId());
 
-    productCategoryMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     if (!vo.getAvailable()) {
       if (data.getAvailable()) {

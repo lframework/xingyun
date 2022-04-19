@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.impl.product;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.IdUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.dto.product.saleprop.item.ProductSalePropItemDto;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItemRelation;
@@ -15,10 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductSalePropItemRelationServiceImpl implements IProductSalePropItemRelationService {
-
-  @Autowired
-  private ProductSalePropItemRelationMapper productSalePropItemRelationMapper;
+public class ProductSalePropItemRelationServiceImpl extends
+    BaseMpServiceImpl<ProductSalePropItemRelationMapper, ProductSalePropItemRelation> implements
+    IProductSalePropItemRelationService {
 
   @Autowired
   private IProductService productService;
@@ -49,7 +49,7 @@ public class ProductSalePropItemRelationServiceImpl implements IProductSalePropI
       data.setSalePropItemId(salePropItemId);
       data.setOrderNo(orderNo);
 
-      productSalePropItemRelationMapper.insert(data);
+      getBaseMapper().insert(data);
 
       orderNo++;
     }

@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.impl.sale;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.NumberUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailDto;
@@ -16,10 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleOutSheetDetailLotServiceImpl implements ISaleOutSheetDetailLotService {
-
-  @Autowired
-  private SaleOutSheetDetailLotMapper saleOutSheetDetailLotMapper;
+public class SaleOutSheetDetailLotServiceImpl extends
+    BaseMpServiceImpl<SaleOutSheetDetailLotMapper, SaleOutSheetDetailLot> implements
+    ISaleOutSheetDetailLotService {
 
   @Autowired
   private IProductService productService;
@@ -30,7 +30,7 @@ public class SaleOutSheetDetailLotServiceImpl implements ISaleOutSheetDetailLotS
   @Override
   public SaleOutSheetDetailLotDto getById(String id) {
 
-    return saleOutSheetDetailLotMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Transactional
@@ -40,7 +40,7 @@ public class SaleOutSheetDetailLotServiceImpl implements ISaleOutSheetDetailLotS
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    SaleOutSheetDetailLot detail = saleOutSheetDetailLotMapper.selectById(id);
+    SaleOutSheetDetailLot detail = getBaseMapper().selectById(id);
 
     Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
     if (NumberUtil.lt(remainNum, num)) {
@@ -54,7 +54,7 @@ public class SaleOutSheetDetailLotServiceImpl implements ISaleOutSheetDetailLotS
               + remainNum + "个！");
     }
 
-    if (saleOutSheetDetailLotMapper.addReturnNum(detail.getId(), num) != 1) {
+    if (getBaseMapper().addReturnNum(detail.getId(), num) != 1) {
       SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
       ProductDto product = productService.getById(sheetDetail.getProductId());
@@ -73,7 +73,7 @@ public class SaleOutSheetDetailLotServiceImpl implements ISaleOutSheetDetailLotS
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    SaleOutSheetDetailLot detail = saleOutSheetDetailLotMapper.selectById(id);
+    SaleOutSheetDetailLot detail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(detail.getReturnNum(), num)) {
       SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
@@ -85,7 +85,7 @@ public class SaleOutSheetDetailLotServiceImpl implements ISaleOutSheetDetailLotS
               + "个，本次取消退货数量不允许大于" + detail.getReturnNum() + "个！");
     }
 
-    if (saleOutSheetDetailLotMapper.subReturnNum(detail.getId(), num) != 1) {
+    if (getBaseMapper().subReturnNum(detail.getId(), num) != 1) {
       SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
       ProductDto product = productService.getById(sheetDetail.getProductId());

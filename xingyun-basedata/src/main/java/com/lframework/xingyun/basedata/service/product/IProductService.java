@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.product.info.GetProductDto;
 import com.lframework.xingyun.basedata.dto.product.info.PreTakeStockProductDto;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
@@ -10,6 +10,7 @@ import com.lframework.xingyun.basedata.dto.product.info.RetailProductDto;
 import com.lframework.xingyun.basedata.dto.product.info.SaleProductDto;
 import com.lframework.xingyun.basedata.dto.product.info.StockCostAdjustProductDto;
 import com.lframework.xingyun.basedata.dto.product.info.TakeStockSheetProductDto;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
@@ -22,7 +23,7 @@ import com.lframework.xingyun.basedata.vo.product.info.UpdateProductVo;
 import java.util.Collection;
 import java.util.List;
 
-public interface IProductService extends BaseService {
+public interface IProductService extends BaseMpService<Product> {
 
   /**
    * 查询列表

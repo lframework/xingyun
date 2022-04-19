@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.impl.purchase;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.NumberUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDetailDto;
@@ -15,10 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PurchaseOrderDetailServiceImpl implements IPurchaseOrderDetailService {
-
-  @Autowired
-  private PurchaseOrderDetailMapper purchaseOrderDetailMapper;
+public class PurchaseOrderDetailServiceImpl extends
+    BaseMpServiceImpl<PurchaseOrderDetailMapper, PurchaseOrderDetail> implements
+    IPurchaseOrderDetailService {
 
   @Autowired
   private IProductService productService;
@@ -26,13 +26,13 @@ public class PurchaseOrderDetailServiceImpl implements IPurchaseOrderDetailServi
   @Override
   public PurchaseOrderDetailDto getById(String id) {
 
-    return purchaseOrderDetailMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public List<PurchaseOrderDetailDto> getByOrderId(String orderId) {
 
-    return purchaseOrderDetailMapper.getByOrderId(orderId);
+    return getBaseMapper().getByOrderId(orderId);
   }
 
   @Transactional
@@ -42,7 +42,7 @@ public class PurchaseOrderDetailServiceImpl implements IPurchaseOrderDetailServi
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    PurchaseOrderDetail orderDetail = purchaseOrderDetailMapper.selectById(id);
+    PurchaseOrderDetail orderDetail = getBaseMapper().selectById(id);
 
     Integer remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getReceiveNum())
         .intValue();
@@ -55,7 +55,7 @@ public class PurchaseOrderDetailServiceImpl implements IPurchaseOrderDetailServi
               + remainNum + "个！");
     }
 
-    if (purchaseOrderDetailMapper.addReceiveNum(orderDetail.getId(), num) != 1) {
+    if (getBaseMapper().addReceiveNum(orderDetail.getId(), num) != 1) {
       ProductDto product = productService.getById(orderDetail.getProductId());
 
       throw new DefaultClientException(
@@ -70,7 +70,7 @@ public class PurchaseOrderDetailServiceImpl implements IPurchaseOrderDetailServi
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
-    PurchaseOrderDetail orderDetail = purchaseOrderDetailMapper.selectById(id);
+    PurchaseOrderDetail orderDetail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(orderDetail.getReceiveNum(), num)) {
       ProductDto product = productService.getById(orderDetail.getProductId());
@@ -80,7 +80,7 @@ public class PurchaseOrderDetailServiceImpl implements IPurchaseOrderDetailServi
               + "个，本次取消收货数量不允许大于" + orderDetail.getReceiveNum() + "个！");
     }
 
-    if (purchaseOrderDetailMapper.subReceiveNum(orderDetail.getId(), num) != 1) {
+    if (getBaseMapper().subReceiveNum(orderDetail.getId(), num) != 1) {
       ProductDto product = productService.getById(orderDetail.getProductId());
 
       throw new DefaultClientException(

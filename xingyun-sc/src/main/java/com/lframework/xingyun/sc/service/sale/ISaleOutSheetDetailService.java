@@ -1,10 +1,11 @@
 package com.lframework.xingyun.sc.service.sale;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailDto;
+import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
 import java.util.List;
 
-public interface ISaleOutSheetDetailService extends BaseService {
+public interface ISaleOutSheetDetailService extends BaseMpService<SaleOutSheetDetail> {
 
   /**
    * 根据ID查询

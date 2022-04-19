@@ -1,9 +1,10 @@
 package com.lframework.xingyun.sc.service.stock.adjust;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
+import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
 import com.lframework.xingyun.sc.vo.stock.adjust.ApprovePassStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.ApproveRefuseStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.BatchApprovePassStockCostAdjustSheetVo;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @author zmj
  */
-public interface IStockCostAdjustSheetService extends BaseService {
+public interface IStockCostAdjustSheetService extends BaseMpService<StockCostAdjustSheet> {
 
   /**
    * 查询列表

@@ -1,10 +1,11 @@
 package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
+import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.vo.sale.ApprovePassSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.ApproveRefuseSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.BatchApprovePassSaleOrderVo;
@@ -16,7 +17,7 @@ import com.lframework.xingyun.sc.vo.sale.SaleOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
 import java.util.List;
 
-public interface ISaleOrderService extends BaseService {
+public interface ISaleOrderService extends BaseMpService<SaleOrder> {
 
   /**
    * 查询列表

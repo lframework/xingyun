@@ -1,11 +1,12 @@
 package com.lframework.xingyun.sc.service.retail;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.vo.retail.out.ApprovePassRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.ApproveRefuseRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.BatchApprovePassRetailOutSheetVo;
@@ -17,7 +18,7 @@ import com.lframework.xingyun.sc.vo.retail.out.RetailOutSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.retail.out.UpdateRetailOutSheetVo;
 import java.util.List;
 
-public interface IRetailOutSheetService extends BaseService {
+public interface IRetailOutSheetService extends BaseMpService<RetailOutSheet> {
 
   /**
    * 查询列表

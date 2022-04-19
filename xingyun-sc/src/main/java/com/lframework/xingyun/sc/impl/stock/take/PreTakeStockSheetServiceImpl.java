@@ -12,6 +12,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -26,8 +27,8 @@ import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProduc
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheetDetail;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
-import com.lframework.xingyun.sc.mappers.PreTakeStockSheetDetailMapper;
 import com.lframework.xingyun.sc.mappers.PreTakeStockSheetMapper;
+import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetDetailService;
 import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
@@ -41,13 +42,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
+public class PreTakeStockSheetServiceImpl extends
+    BaseMpServiceImpl<PreTakeStockSheetMapper, PreTakeStockSheet> implements
+    IPreTakeStockSheetService {
 
   @Autowired
-  private PreTakeStockSheetMapper preTakeStockSheetMapper;
-
-  @Autowired
-  private PreTakeStockSheetDetailMapper preTakeStockSheetDetailMapper;
+  private IPreTakeStockSheetDetailService preTakeStockSheetDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -71,7 +71,7 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
   @Override
   public List<PreTakeStockSheetDto> query(QueryPreTakeStockSheetVo vo) {
 
-    return preTakeStockSheetMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -82,7 +82,7 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PreTakeStockSheetSelectorDto> datas = preTakeStockSheetMapper.selector(vo);
+    List<PreTakeStockSheetSelectorDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -90,13 +90,13 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
   @Override
   public PreTakeStockSheetDto getById(String id) {
 
-    return preTakeStockSheetMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public PreTakeStockSheetFullDto getDetail(String id) {
 
-    PreTakeStockSheetFullDto data = preTakeStockSheetMapper.getDetail(id);
+    PreTakeStockSheetFullDto data = getBaseMapper().getDetail(id);
     if (data == null) {
       throw new DefaultClientException("预先盘点单不存在！");
     }
@@ -107,7 +107,7 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
   @Override
   public List<QueryPreTakeStockSheetProductDto> getProducts(String id, String planId) {
 
-    return preTakeStockSheetMapper.getProducts(id, planId);
+    return getBaseMapper().getProducts(id, planId);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增预先盘点单，ID：{}", params = {"#id"})
@@ -123,7 +123,7 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     data.setTakeStatus(EnumUtil.getByCode(PreTakeStockSheetStatus.class, vo.getTakeStatus()));
 
-    preTakeStockSheetMapper.insert(data);
+    getBaseMapper().insert(data);
 
     int orderNo = 1;
     for (PreTakeStockProductVo product : vo.getProducts()) {
@@ -136,7 +136,7 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
       detail.setRandNum(product.getRandNum());
       detail.setOrderNo(orderNo++);
 
-      preTakeStockSheetDetailMapper.insert(detail);
+      preTakeStockSheetDetailService.save(detail);
     }
 
     OpLogUtil.setVariable("id", data.getId());
@@ -150,26 +150,24 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
   @Override
   public void update(UpdatePreTakeStockSheetVo vo) {
 
-    PreTakeStockSheet data = preTakeStockSheetMapper.selectById(vo.getId());
+    PreTakeStockSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("预先盘点单不存在！");
     }
 
-    LambdaUpdateWrapper<PreTakeStockSheet> updateWrapper = Wrappers
-        .lambdaUpdate(PreTakeStockSheet.class)
-        .set(PreTakeStockSheet::getScId, vo.getScId())
+    LambdaUpdateWrapper<PreTakeStockSheet> updateWrapper = Wrappers.lambdaUpdate(
+            PreTakeStockSheet.class).set(PreTakeStockSheet::getScId, vo.getScId())
         .set(PreTakeStockSheet::getDescription,
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .set(PreTakeStockSheet::getTakeStatus,
             EnumUtil.getByCode(PreTakeStockSheetStatus.class, vo.getTakeStatus()))
         .eq(PreTakeStockSheet::getId, vo.getId());
 
-    preTakeStockSheetMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
-    Wrapper<PreTakeStockSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(PreTakeStockSheetDetail.class)
-        .eq(PreTakeStockSheetDetail::getSheetId, data.getId());
-    preTakeStockSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<PreTakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        PreTakeStockSheetDetail.class).eq(PreTakeStockSheetDetail::getSheetId, data.getId());
+    preTakeStockSheetDetailService.remove(deleteDetailWrapper);
 
     int orderNo = 1;
     for (PreTakeStockProductVo product : vo.getProducts()) {
@@ -182,7 +180,7 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
       detail.setRandNum(product.getRandNum());
       detail.setOrderNo(orderNo++);
 
-      preTakeStockSheetDetailMapper.insert(detail);
+      preTakeStockSheetDetailService.save(detail);
     }
 
     OpLogUtil.setVariable("id", data.getId());
@@ -198,11 +196,11 @@ public class PreTakeStockSheetServiceImpl implements IPreTakeStockSheetService {
       throw new DefaultClientException("已有库存盘点单关联此预先盘点单，不允许执行删除操作！");
     }
 
-    preTakeStockSheetMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
-    Wrapper<PreTakeStockSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(PreTakeStockSheetDetail.class).eq(PreTakeStockSheetDetail::getSheetId, id);
-    preTakeStockSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<PreTakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        PreTakeStockSheetDetail.class).eq(PreTakeStockSheetDetail::getSheetId, id);
+    preTakeStockSheetDetailService.remove(deleteDetailWrapper);
   }
 
   @Transactional

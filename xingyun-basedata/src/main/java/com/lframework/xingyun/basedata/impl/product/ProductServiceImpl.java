@@ -12,6 +12,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.system.IRecursionMappingService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -66,10 +67,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductServiceImpl implements IProductService {
-
-  @Autowired
-  private ProductMapper productMapper;
+public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product> implements
+    IProductService {
 
   @Autowired
   private IProductPolyService productPolyService;
@@ -107,7 +106,7 @@ public class ProductServiceImpl implements IProductService {
   @Override
   public List<ProductDto> query(QueryProductVo vo) {
 
-    List<ProductDto> datas = productMapper.query(vo);
+    List<ProductDto> datas = getBaseMapper().query(vo);
     if (!CollectionUtil.isEmpty(datas)) {
       datas.forEach(this::convertDto);
     }
@@ -117,21 +116,21 @@ public class ProductServiceImpl implements IProductService {
 
   @Override
   public Integer queryCount(QueryProductVo vo) {
-    return productMapper.queryCount(vo);
+    return getBaseMapper().queryCount(vo);
   }
 
   @Cacheable(value = ProductDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
   public ProductDto getById(String id) {
 
-    ProductDto data = productMapper.getById(id);
+    ProductDto data = getBaseMapper().getById(id);
     return this.convertDto(data);
   }
 
   @Override
   public GetProductDto getDetailById(String id) {
 
-    return productMapper.getDetailById(id);
+    return getBaseMapper().getDetailById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用商品，ID：{}", params = "#ids", loopFormat = true)
@@ -146,7 +145,7 @@ public class ProductServiceImpl implements IProductService {
     Wrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class)
         .set(Product::getAvailable, Boolean.FALSE)
         .in(Product::getId, ids);
-    productMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -166,7 +165,7 @@ public class ProductServiceImpl implements IProductService {
     Wrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class)
         .set(Product::getAvailable, Boolean.TRUE)
         .in(Product::getId, ids);
-    productMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     IProductService thisService = getThis(this.getClass());
     for (String id : ids) {
@@ -181,12 +180,12 @@ public class ProductServiceImpl implements IProductService {
 
     Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class)
         .eq(Product::getCode, vo.getCode());
-    if (productMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode());
-    if (productMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("商品SKU编号重复，请重新输入！");
     }
 
@@ -209,7 +208,7 @@ public class ProductServiceImpl implements IProductService {
     }
     data.setAvailable(Boolean.TRUE);
 
-    productMapper.insert(data);
+    getBaseMapper().insert(data);
 
     if (vo.getPurchasePrice() == null) {
       throw new DefaultClientException("采购价不能为空！");
@@ -273,7 +272,7 @@ public class ProductServiceImpl implements IProductService {
   @Override
   public void update(UpdateProductVo vo) {
 
-    Product data = productMapper.selectById(vo.getId());
+    Product data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("商品不存在！");
     }
@@ -281,13 +280,13 @@ public class ProductServiceImpl implements IProductService {
     Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class)
         .eq(Product::getCode, vo.getCode())
         .ne(Product::getId, vo.getId());
-    if (productMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
     checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode())
         .ne(Product::getId, vo.getId());
-    if (productMapper.selectCount(checkWrapper) > 0) {
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("商品SKU编号重复，请重新输入！");
     }
 
@@ -300,7 +299,7 @@ public class ProductServiceImpl implements IProductService {
         .set(Product::getUnit, StringUtil.isBlank(vo.getUnit()) ? null : vo.getUnit())
         .eq(Product::getId, vo.getId());
 
-    productMapper.update(updateWrapper);
+    getBaseMapper().update(updateWrapper);
 
     if (vo.getPurchasePrice() != null) {
 
@@ -345,7 +344,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PurchaseProductDto> datas = productMapper.queryPurchaseByCondition(condition);
+    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(condition);
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     if (!CollectionUtil.isEmpty(datas)) {
@@ -368,7 +367,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PurchaseProductDto> datas = productMapper.queryPurchaseList(vo);
+    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseList(vo);
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     if (!CollectionUtil.isEmpty(datas)) {
@@ -385,7 +384,7 @@ public class ProductServiceImpl implements IProductService {
   @Override
   public PurchaseProductDto getPurchaseById(String id) {
 
-    PurchaseProductDto data = productMapper.getPurchaseById(id);
+    PurchaseProductDto data = getBaseMapper().getPurchaseById(id);
     if (data != null) {
       List<SalePropItemByProductDto> saleProps = productSalePropItemService
           .getByProductId(data.getId());
@@ -404,7 +403,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<SaleProductDto> datas = productMapper.querySaleByCondition(condition);
+    List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition);
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     if (!CollectionUtil.isEmpty(datas)) {
@@ -427,7 +426,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<SaleProductDto> datas = productMapper.querySaleList(vo);
+    List<SaleProductDto> datas = getBaseMapper().querySaleList(vo);
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     if (!CollectionUtil.isEmpty(datas)) {
@@ -444,7 +443,7 @@ public class ProductServiceImpl implements IProductService {
   @Override
   public SaleProductDto getSaleById(String id) {
 
-    SaleProductDto data = productMapper.getSaleById(id);
+    SaleProductDto data = getBaseMapper().getSaleById(id);
     if (data != null) {
       List<SalePropItemByProductDto> saleProps = productSalePropItemService
           .getByProductId(data.getId());
@@ -463,7 +462,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<RetailProductDto> datas = productMapper.queryRetailByCondition(condition);
+    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition);
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     if (!CollectionUtil.isEmpty(datas)) {
@@ -486,7 +485,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<RetailProductDto> datas = productMapper.queryRetailList(vo);
+    List<RetailProductDto> datas = getBaseMapper().queryRetailList(vo);
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     if (!CollectionUtil.isEmpty(datas)) {
@@ -503,7 +502,7 @@ public class ProductServiceImpl implements IProductService {
   @Override
   public RetailProductDto getRetailById(String id) {
 
-    RetailProductDto data = productMapper.getRetailById(id);
+    RetailProductDto data = getBaseMapper().getRetailById(id);
     if (data != null) {
       List<SalePropItemByProductDto> retailProps = productSalePropItemService
           .getByProductId(data.getId());
@@ -521,7 +520,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PreTakeStockProductDto> datas = productMapper.queryPreTakeStockByCondition(condition);
+    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockByCondition(condition);
     PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -536,7 +535,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PreTakeStockProductDto> datas = productMapper.queryPreTakeStockList(vo);
+    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockList(vo);
     PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -559,7 +558,7 @@ public class ProductServiceImpl implements IProductService {
 
     children = children.stream().distinct().collect(Collectors.toList());
 
-    List<ProductDto> datas = productMapper.getByCategoryIds(children);
+    List<ProductDto> datas = getBaseMapper().getByCategoryIds(children);
     if (!CollectionUtil.isEmpty(datas)) {
       datas.forEach(this::convertDto);
     }
@@ -574,7 +573,7 @@ public class ProductServiceImpl implements IProductService {
       return Collections.EMPTY_LIST;
     }
 
-    List<ProductDto> datas = productMapper.getByBrandIds(brandIds);
+    List<ProductDto> datas = getBaseMapper().getByBrandIds(brandIds);
     if (!CollectionUtil.isEmpty(datas)) {
       datas.forEach(this::convertDto);
     }
@@ -590,7 +589,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<TakeStockSheetProductDto> datas = productMapper
+    List<TakeStockSheetProductDto> datas = getBaseMapper()
         .queryTakeStockByCondition(planId, condition);
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
@@ -605,7 +604,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<TakeStockSheetProductDto> datas = productMapper.queryTakeStockList(vo);
+    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockList(vo);
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -620,7 +619,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<StockCostAdjustProductDto> datas = productMapper
+    List<StockCostAdjustProductDto> datas = getBaseMapper()
         .queryStockCostAdjustByCondition(scId, condition);
     PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil
         .convert(new PageInfo<>(datas));
@@ -637,7 +636,7 @@ public class ProductServiceImpl implements IProductService {
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<StockCostAdjustProductDto> datas = productMapper.queryStockCostAdjustList(vo);
+    List<StockCostAdjustProductDto> datas = getBaseMapper().queryStockCostAdjustList(vo);
     PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil
         .convert(new PageInfo<>(datas));
 

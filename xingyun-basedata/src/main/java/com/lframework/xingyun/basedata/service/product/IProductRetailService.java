@@ -1,11 +1,12 @@
 package com.lframework.xingyun.basedata.service.product;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.product.retail.ProductRetailDto;
+import com.lframework.xingyun.basedata.entity.ProductRetail;
 import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.retail.UpdateProductRetailVo;
 
-public interface IProductRetailService extends BaseService {
+public interface IProductRetailService extends BaseMpService<ProductRetail> {
 
   /**
    * 根据ID查询

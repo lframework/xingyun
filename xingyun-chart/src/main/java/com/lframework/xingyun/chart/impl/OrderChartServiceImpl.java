@@ -3,6 +3,7 @@ package com.lframework.xingyun.chart.impl;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.DateUtil;
 import com.lframework.common.utils.IdUtil;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.chart.dto.OrderChartSameMonthDto;
 import com.lframework.xingyun.chart.dto.OrderChartSumDto;
@@ -20,15 +21,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class OrderChartServiceImpl implements IOrderChartService {
-
-  @Autowired
-  private OrderChartMapper orderChartMapper;
+public class OrderChartServiceImpl extends
+    BaseMpServiceImpl<OrderChartMapper, OrderChart> implements IOrderChartService {
 
   @Transactional
   @Override
@@ -46,7 +44,7 @@ public class OrderChartServiceImpl implements IOrderChartService {
     record.setCreateDate(DateUtil.formatDate(vo.getCreateTime().toLocalDate()));
     record.setCreateHour(DateUtil.format(vo.getCreateTime(), StringPool.DATE_TIME_HOUR_PATTER));
 
-    orderChartMapper.insert(record);
+    getBaseMapper().insert(record);
 
     return record.getId();
   }
@@ -56,7 +54,7 @@ public class OrderChartServiceImpl implements IOrderChartService {
 
     LocalDate now = LocalDate.now();
 
-    OrderChartSumDto data = orderChartMapper
+    OrderChartSumDto data = getBaseMapper()
         .getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
             DateUtil.toLocalDateTimeMax(now));
     if (data == null) {
@@ -74,7 +72,7 @@ public class OrderChartServiceImpl implements IOrderChartService {
     LocalDate startDate = LocalDate.now().withDayOfMonth(1);
     LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
-    OrderChartSumDto data = orderChartMapper
+    OrderChartSumDto data = getBaseMapper()
         .getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(startDate),
             DateUtil.toLocalDateTimeMax(endDate));
     if (data == null) {
@@ -91,7 +89,7 @@ public class OrderChartServiceImpl implements IOrderChartService {
 
     LocalDate now = LocalDate.now();
 
-    List<OrderChartTodayDto> results = orderChartMapper
+    List<OrderChartTodayDto> results = getBaseMapper()
         .queryToday(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
             DateUtil.toLocalDateTimeMax(now));
 
@@ -124,7 +122,7 @@ public class OrderChartServiceImpl implements IOrderChartService {
     LocalDate startDate = LocalDate.now().withDayOfMonth(1);
     LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
-    List<OrderChartSameMonthDto> results = orderChartMapper
+    List<OrderChartSameMonthDto> results = getBaseMapper()
         .querySameMonth(vo.getBizTypes(),
             DateUtil.toLocalDateTime(startDate), DateUtil.toLocalDateTimeMax(endDate));
 

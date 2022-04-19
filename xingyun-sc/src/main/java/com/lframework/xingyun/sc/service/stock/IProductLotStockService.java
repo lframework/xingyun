@@ -1,11 +1,12 @@
 package com.lframework.xingyun.sc.service.stock;
 
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.ProductLotStockDto;
+import com.lframework.xingyun.sc.entity.ProductLotStock;
 import com.lframework.xingyun.sc.vo.stock.lot.AddProductLotStockVo;
 import java.util.List;
 
-public interface IProductLotStockService extends BaseService {
+public interface IProductLotStockService extends BaseMpService<ProductLotStock> {
 
   /**
    * 查询列表（出库业务） 出库规则：先进先出

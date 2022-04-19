@@ -14,6 +14,7 @@ import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -30,10 +31,10 @@ import com.lframework.xingyun.sc.entity.TakeStockSheetDetail;
 import com.lframework.xingyun.sc.enums.TakeStockPlanStatus;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.enums.TakeStockSheetStatus;
-import com.lframework.xingyun.sc.mappers.TakeStockSheetDetailMapper;
 import com.lframework.xingyun.sc.mappers.TakeStockSheetMapper;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanDetailService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
+import com.lframework.xingyun.sc.service.stock.take.ITakeStockSheetDetailService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApprovePassTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApproveRefuseTakeStockSheetVo;
@@ -53,13 +54,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
+public class TakeStockSheetServiceImpl extends
+    BaseMpServiceImpl<TakeStockSheetMapper, TakeStockSheet> implements ITakeStockSheetService {
 
   @Autowired
-  private TakeStockSheetMapper takeStockSheetMapper;
-
-  @Autowired
-  private TakeStockSheetDetailMapper takeStockSheetDetailMapper;
+  private ITakeStockSheetDetailService takeStockSheetDetailService;
 
   @Autowired
   private IGenerateCodeService generateCodeService;
@@ -86,19 +85,19 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
   @Override
   public List<TakeStockSheetDto> query(QueryTakeStockSheetVo vo) {
 
-    return takeStockSheetMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public TakeStockSheetDto getById(String id) {
 
-    return takeStockSheetMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public TakeStockSheetFullDto getDetail(String id) {
 
-    TakeStockSheetFullDto data = takeStockSheetMapper.getDetail(id);
+    TakeStockSheetFullDto data = getBaseMapper().getDetail(id);
     if (data == null) {
       throw new DefaultClientException("盘点单不存在！");
     }
@@ -131,7 +130,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    takeStockSheetMapper.insert(data);
+    getBaseMapper().insert(data);
 
     int orderNo = 1;
     for (TakeStockSheetProductVo product : vo.getProducts()) {
@@ -144,7 +143,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
           : product.getDescription());
       detail.setOrderNo(orderNo++);
 
-      takeStockSheetDetailMapper.insert(detail);
+      takeStockSheetDetailService.save(detail);
     }
 
     // 盘点任务如果是单品盘点
@@ -165,7 +164,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
   @Override
   public void update(UpdateTakeStockSheetVo vo) {
 
-    TakeStockSheet data = takeStockSheetMapper.selectById(vo.getId());
+    TakeStockSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点单不存在！");
     }
@@ -182,22 +181,21 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
     LambdaUpdateWrapper<TakeStockSheet> updateWrapper = Wrappers.lambdaUpdate(TakeStockSheet.class)
         .set(TakeStockSheet::getDescription,
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
-        .set(TakeStockSheet::getApproveBy, null)
-        .set(TakeStockSheet::getApproveTime, null)
+        .set(TakeStockSheet::getApproveBy, null).set(TakeStockSheet::getApproveTime, null)
         .set(TakeStockSheet::getRefuseReason, null)
         .set(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED)
         .eq(TakeStockSheet::getId, vo.getId())
         .in(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED,
             TakeStockSheetStatus.APPROVE_REFUSE);
 
-    if (takeStockSheetMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("盘点单信息已过期，请刷新重试！");
     }
 
     // 删除明细
-    Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId());
-    takeStockSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId());
+    takeStockSheetDetailService.remove(deleteDetailWrapper);
 
     int orderNo = 1;
     for (TakeStockSheetProductVo product : vo.getProducts()) {
@@ -210,7 +208,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
           : product.getDescription());
       detail.setOrderNo(orderNo++);
 
-      takeStockSheetDetailMapper.insert(detail);
+      takeStockSheetDetailService.save(detail);
     }
 
     // 盘点任务如果是单品盘点
@@ -229,7 +227,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
   @Override
   public void approvePass(ApprovePassTakeStockSheetVo vo) {
 
-    TakeStockSheet data = takeStockSheetMapper.selectById(vo.getId());
+    TakeStockSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点单不存在！");
     }
@@ -250,17 +248,17 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
         .eq(TakeStockSheet::getId, data.getId())
         .in(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED,
             TakeStockSheetStatus.APPROVE_REFUSE);
-    if (takeStockSheetMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("盘点单信息已过期，请刷新重试！");
     }
 
-    Wrapper<TakeStockSheetDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId())
+    Wrapper<TakeStockSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId())
         .orderByAsc(TakeStockSheetDetail::getOrderNo);
-    List<TakeStockSheetDetail> details = takeStockSheetDetailMapper.selectList(queryDetailWrapper);
+    List<TakeStockSheetDetail> details = takeStockSheetDetailService.list(queryDetailWrapper);
     for (TakeStockSheetDetail detail : details) {
-      takeStockPlanDetailService
-          .updateOriTakeNum(data.getPlanId(), detail.getProductId(), detail.getTakeNum());
+      takeStockPlanDetailService.updateOriTakeNum(data.getPlanId(), detail.getProductId(),
+          detail.getTakeNum());
     }
 
     OpLogUtil.setVariable("id", data.getId());
@@ -301,7 +299,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseTakeStockSheetVo vo) {
-    TakeStockSheet data = takeStockSheetMapper.selectById(vo.getId());
+    TakeStockSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点单不存在！");
     }
@@ -323,7 +321,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
         .set(TakeStockSheet::getStatus, TakeStockSheetStatus.APPROVE_REFUSE)
         .eq(TakeStockSheet::getId, data.getId())
         .eq(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED);
-    if (takeStockSheetMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("盘点单信息已过期，请刷新重试！");
     }
 
@@ -353,7 +351,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
   @Transactional
   @Override
   public void cancelApprovePass(String id) {
-    TakeStockSheet data = takeStockSheetMapper.selectById(id);
+    TakeStockSheet data = getBaseMapper().selectById(id);
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点单不存在！");
     }
@@ -368,24 +366,23 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
     }
 
     LambdaUpdateWrapper<TakeStockSheet> updateWrapper = Wrappers.lambdaUpdate(TakeStockSheet.class)
-        .set(TakeStockSheet::getApproveBy, null)
-        .set(TakeStockSheet::getApproveTime, null)
+        .set(TakeStockSheet::getApproveBy, null).set(TakeStockSheet::getApproveTime, null)
         .set(TakeStockSheet::getRefuseReason, null)
         .set(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED)
         .eq(TakeStockSheet::getId, data.getId())
         .eq(TakeStockSheet::getStatus, TakeStockSheetStatus.APPROVE_PASS);
 
-    if (takeStockSheetMapper.update(updateWrapper) != 1) {
+    if (getBaseMapper().update(updateWrapper) != 1) {
       throw new DefaultClientException("盘点单信息已过期，请刷新重试！");
     }
 
-    Wrapper<TakeStockSheetDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId())
+    Wrapper<TakeStockSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId())
         .orderByAsc(TakeStockSheetDetail::getOrderNo);
-    List<TakeStockSheetDetail> details = takeStockSheetDetailMapper.selectList(queryDetailWrapper);
+    List<TakeStockSheetDetail> details = takeStockSheetDetailService.list(queryDetailWrapper);
     for (TakeStockSheetDetail detail : details) {
-      takeStockPlanDetailService
-          .updateOriTakeNum(data.getPlanId(), detail.getProductId(), -detail.getTakeNum());
+      takeStockPlanDetailService.updateOriTakeNum(data.getPlanId(), detail.getProductId(),
+          -detail.getTakeNum());
     }
 
     OpLogUtil.setVariable("id", data.getId());
@@ -395,7 +392,7 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
   @Transactional
   @Override
   public void deleteById(String id) {
-    TakeStockSheet data = takeStockSheetMapper.selectById(id);
+    TakeStockSheet data = getBaseMapper().selectById(id);
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点单不存在！");
     }
@@ -403,13 +400,13 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
     Wrapper<TakeStockSheet> deleteWrapper = Wrappers.lambdaQuery(TakeStockSheet.class)
         .eq(TakeStockSheet::getId, id).in(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED,
             TakeStockSheetStatus.APPROVE_REFUSE);
-    if (takeStockSheetMapper.delete(deleteWrapper) != 1) {
+    if (getBaseMapper().delete(deleteWrapper) != 1) {
       throw new DefaultClientException("盘点单信息已过期，请刷新重试！");
     }
 
-    Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId());
-    takeStockSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId());
+    takeStockSheetDetailService.remove(deleteDetailWrapper);
   }
 
   @Transactional
@@ -429,12 +426,12 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
 
   @Override
   public Boolean hasRelatePreTakeStockSheet(String preSheetId) {
-    return takeStockSheetMapper.hasRelatePreTakeStockSheet(preSheetId);
+    return getBaseMapper().hasRelatePreTakeStockSheet(preSheetId);
   }
 
   @Override
   public Boolean hasUnApprove(String planId) {
-    return takeStockSheetMapper.hasUnApprove(planId);
+    return getBaseMapper().hasUnApprove(planId);
   }
 
   @Override
@@ -447,10 +444,10 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
       ApplicationListener<DeleteTakeStockPlanEvent> {
 
     @Autowired
-    private TakeStockSheetMapper takeStockSheetMapper;
+    private ITakeStockSheetService takeStockSheetService;
 
     @Autowired
-    private TakeStockSheetDetailMapper takeStockSheetDetailMapper;
+    private ITakeStockSheetDetailService takeStockSheetDetailService;
 
     @OpLog(type = OpLogType.OTHER, name = "删除库存盘点表，ID：{}", params = "#ids", loopFormat = true)
     @Transactional
@@ -458,18 +455,18 @@ public class TakeStockSheetServiceImpl implements ITakeStockSheetService {
     public void onApplicationEvent(DeleteTakeStockPlanEvent deleteTakeStockPlanEvent) {
       Wrapper<TakeStockSheet> deleteWrapper = Wrappers.lambdaQuery(TakeStockSheet.class)
           .eq(TakeStockSheet::getPlanId, deleteTakeStockPlanEvent.getId());
-      List<TakeStockSheet> sheets = takeStockSheetMapper.selectList(deleteWrapper);
+      List<TakeStockSheet> sheets = takeStockSheetService.list(deleteWrapper);
 
       List<String> ids = Collections.EMPTY_LIST;
 
       if (!CollectionUtil.isEmpty(sheets)) {
         ids = sheets.stream().map(TakeStockSheet::getId).collect(Collectors.toList());
-        Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers
-            .lambdaQuery(TakeStockSheetDetail.class).in(TakeStockSheetDetail::getSheetId, ids);
-        takeStockSheetDetailMapper.delete(deleteDetailWrapper);
+        Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockSheetDetail.class).in(TakeStockSheetDetail::getSheetId, ids);
+        takeStockSheetDetailService.remove(deleteDetailWrapper);
       }
 
-      takeStockSheetMapper.delete(deleteWrapper);
+      takeStockSheetService.remove(deleteWrapper);
 
       OpLogUtil.setVariable("ids", ids);
     }

@@ -14,6 +14,7 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -29,9 +30,9 @@ import com.lframework.xingyun.settle.dto.pre.SettlePreSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettlePreSheet;
 import com.lframework.xingyun.settle.entity.SettlePreSheetDetail;
 import com.lframework.xingyun.settle.enums.SettlePreSheetStatus;
-import com.lframework.xingyun.settle.mappers.SettlePreSheetDetailMapper;
 import com.lframework.xingyun.settle.mappers.SettlePreSheetMapper;
 import com.lframework.xingyun.settle.service.ISettleOutItemService;
+import com.lframework.xingyun.settle.service.ISettlePreSheetDetailService;
 import com.lframework.xingyun.settle.service.ISettlePreSheetService;
 import com.lframework.xingyun.settle.vo.pre.ApprovePassSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.ApproveRefuseSettlePreSheetVo;
@@ -50,13 +51,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
+public class SettlePreSheetServiceImpl extends
+    BaseMpServiceImpl<SettlePreSheetMapper, SettlePreSheet> implements ISettlePreSheetService {
 
   @Autowired
-  private SettlePreSheetMapper settlePreSheetMapper;
-
-  @Autowired
-  private SettlePreSheetDetailMapper settlePreSheetDetailMapper;
+  private ISettlePreSheetDetailService settlePreSheetDetailService;
 
   @Autowired
   private ISettleOutItemService settleOutItemService;
@@ -80,19 +79,19 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
   @Override
   public List<SettlePreSheetDto> query(QuerySettlePreSheetVo vo) {
 
-    return settlePreSheetMapper.query(vo);
+    return getBaseMapper().query(vo);
   }
 
   @Override
   public SettlePreSheetDto getById(String id) {
 
-    return settlePreSheetMapper.getById(id);
+    return getBaseMapper().getById(id);
   }
 
   @Override
   public SettlePreSheetFullDto getDetail(String id) {
 
-    return settlePreSheetMapper.getDetail(id);
+    return getBaseMapper().getDetail(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建供应商预付款单，单号：{}", params = "#code")
@@ -112,7 +111,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
 
-    settlePreSheetMapper.insert(sheet);
+    getBaseMapper().insert(sheet);
 
     return sheet.getId();
   }
@@ -122,7 +121,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
   @Override
   public void update(UpdateSettlePreSheetVo vo) {
 
-    SettlePreSheet sheet = settlePreSheetMapper.selectById(vo.getId());
+    SettlePreSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商预付款单不存在！");
     }
@@ -137,10 +136,9 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
     }
 
     // 删除明细
-    Wrapper<SettlePreSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(SettlePreSheetDetail.class)
-        .eq(SettlePreSheetDetail::getSheetId, sheet.getId());
-    settlePreSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<SettlePreSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        SettlePreSheetDetail.class).eq(SettlePreSheetDetail::getSheetId, sheet.getId());
+    settlePreSheetDetailService.remove(deleteDetailWrapper);
 
     this.create(sheet, vo);
 
@@ -153,9 +151,8 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
     Wrapper<SettlePreSheet> updateWrapper = Wrappers.lambdaUpdate(SettlePreSheet.class)
         .set(SettlePreSheet::getApproveBy, null).set(SettlePreSheet::getApproveTime, null)
         .set(SettlePreSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(SettlePreSheet::getId, sheet.getId())
-        .in(SettlePreSheet::getStatus, statusList);
-    if (settlePreSheetMapper.update(sheet, updateWrapper) != 1) {
+        .eq(SettlePreSheet::getId, sheet.getId()).in(SettlePreSheet::getStatus, statusList);
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商预付款单信息已过期，请刷新重试！");
     }
 
@@ -168,7 +165,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
   @Override
   public void approvePass(ApprovePassSettlePreSheetVo vo) {
 
-    SettlePreSheet sheet = settlePreSheetMapper.selectById(vo.getId());
+    SettlePreSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商预付款单不存在！");
     }
@@ -194,7 +191,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
 
     Wrapper<SettlePreSheet> updateWrapper = Wrappers.lambdaUpdate(SettlePreSheet.class)
         .eq(SettlePreSheet::getId, sheet.getId()).in(SettlePreSheet::getStatus, statusList);
-    if (settlePreSheetMapper.update(sheet, updateWrapper) != 1) {
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商预付款单信息已过期，请刷新重试！");
     }
 
@@ -221,7 +218,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
   @Override
   public void approveRefuse(ApproveRefuseSettlePreSheetVo vo) {
 
-    SettlePreSheet sheet = settlePreSheetMapper.selectById(vo.getId());
+    SettlePreSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
       throw new DefaultClientException("供应商预付款单不存在！");
     }
@@ -246,9 +243,8 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
     statusList.add(SettlePreSheetStatus.APPROVE_REFUSE);
 
     Wrapper<SettlePreSheet> updateWrapper = Wrappers.lambdaUpdate(SettlePreSheet.class)
-        .eq(SettlePreSheet::getId, sheet.getId())
-        .in(SettlePreSheet::getStatus, statusList);
-    if (settlePreSheetMapper.update(sheet, updateWrapper) != 1) {
+        .eq(SettlePreSheet::getId, sheet.getId()).in(SettlePreSheet::getStatus, statusList);
+    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商预付款单信息已过期，请刷新重试！");
     }
 
@@ -300,7 +296,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
   public void deleteById(String id) {
 
     Assert.notBlank(id);
-    SettlePreSheet sheet = settlePreSheetMapper.selectById(id);
+    SettlePreSheet sheet = getBaseMapper().selectById(id);
     if (sheet == null) {
       throw new InputErrorException("供应商预付款单不存在！");
     }
@@ -316,13 +312,12 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
     }
 
     // 删除明细
-    Wrapper<SettlePreSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(SettlePreSheetDetail.class)
-        .eq(SettlePreSheetDetail::getSheetId, sheet.getId());
-    settlePreSheetDetailMapper.delete(deleteDetailWrapper);
+    Wrapper<SettlePreSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+        SettlePreSheetDetail.class).eq(SettlePreSheetDetail::getSheetId, sheet.getId());
+    settlePreSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除单据
-    settlePreSheetMapper.deleteById(id);
+    getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
   }
@@ -354,7 +349,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
     Wrapper<SettlePreSheet> updateWrapper = Wrappers.lambdaUpdate(SettlePreSheet.class)
         .set(SettlePreSheet::getSettleStatus, SettleStatus.UN_SETTLE).eq(SettlePreSheet::getId, id)
         .eq(SettlePreSheet::getSettleStatus, SettleStatus.PART_SETTLE);
-    int count = settlePreSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     return count;
   }
@@ -367,7 +362,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
         .set(SettlePreSheet::getSettleStatus, SettleStatus.PART_SETTLE)
         .eq(SettlePreSheet::getId, id)
         .in(SettlePreSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = settlePreSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     return count;
   }
@@ -379,17 +374,16 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
     Wrapper<SettlePreSheet> updateWrapper = Wrappers.lambdaUpdate(SettlePreSheet.class)
         .set(SettlePreSheet::getSettleStatus, SettleStatus.SETTLED).eq(SettlePreSheet::getId, id)
         .in(SettlePreSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
-    int count = settlePreSheetMapper.update(updateWrapper);
+    int count = getBaseMapper().update(updateWrapper);
 
     return count;
   }
 
   @Override
   public List<SettlePreSheetDto> getApprovedList(String supplierId, LocalDateTime startTime,
-      LocalDateTime endTime,
-      SettleStatus settleStatus) {
+      LocalDateTime endTime, SettleStatus settleStatus) {
 
-    return settlePreSheetMapper.getApprovedList(supplierId, startTime, endTime, settleStatus);
+    return getBaseMapper().getApprovedList(supplierId, startTime, endTime, settleStatus);
   }
 
   private void create(SettlePreSheet sheet, CreateSettlePreSheetVo vo) {
@@ -409,7 +403,7 @@ public class SettlePreSheetServiceImpl implements ISettlePreSheetService {
       detail.setAmount(itemVo.getAmount());
       detail.setOrderNo(orderNo);
 
-      settlePreSheetDetailMapper.insert(detail);
+      settlePreSheetDetailService.save(detail);
 
       totalAmount = NumberUtil.add(totalAmount, detail.getAmount());
 

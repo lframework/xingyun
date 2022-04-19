@@ -1,10 +1,11 @@
 package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.web.service.BaseService;
+import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
+import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.BatchApprovePassPurchaseOrderVo;
@@ -16,7 +17,7 @@ import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import java.util.List;
 
-public interface IPurchaseOrderService extends BaseService {
+public interface IPurchaseOrderService extends BaseMpService<PurchaseOrder> {
 
   /**
    * 查询列表

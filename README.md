@@ -70,7 +70,7 @@ BPM工作流目前是整合AgileBPM工作流管理平台，由于AgileBPM的Lice
 
 <a href="https://gitee.com/dromara/sa-token" target="_blank">Sa-Token</a> 统一用户鉴权
 
-<a href="https://gitee.com/ld/J2Cache" target="_blank">J2Cache</a> L1、L2缓存管理
+<a href="https://gitee.com/ld/J2Cache" target="_blank">J2Cache</a> 基于内存和Redis的两级Java缓存框架
 
 ### 系统展示
 

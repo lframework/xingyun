@@ -43,9 +43,6 @@
 * Lombok 1.18.10
 * EasyExcel 2.2.10（内置了两种导出excel方式：一次性导出、分段导出（只支持简单表头））
 
-### 关于鉴权的说明
-整合sa-token进行鉴权
-
 ### 开发环境
 
 * JDK 1.8
@@ -67,6 +64,14 @@ BPM工作流目前是整合AgileBPM工作流管理平台，由于AgileBPM的Lice
 
 项目使用LGPL3.0许可证，请遵守此许可证的限制条件。
 
+### 集成第三方库
+
+<a href="https://gitee.com/agile-bpm/agile-bpm-basic" target="_blank">AgileBPM</a> 工作流管理平台
+
+<a href="https://gitee.com/dromara/sa-token" target="_blank">Sa-Token</a> 统一用户鉴权
+
+<a href="https://gitee.com/ld/J2Cache" target="_blank">J2Cache</a> L1、L2缓存管理
+
 ### 系统展示
 
 * 首页
@@ -74,7 +79,7 @@ BPM工作流目前是整合AgileBPM工作流管理平台，由于AgileBPM的Lice
 * 系统管理
   ![输入图片说明](screenshots/2.jpg)
 * 基础信息管理
-![输入图片说明](screenshots/3.jpg)
+  ![输入图片说明](screenshots/3.jpg)
 * 商品中心
 ![输入图片说明](screenshots/4.jpg)
 * 采购管理

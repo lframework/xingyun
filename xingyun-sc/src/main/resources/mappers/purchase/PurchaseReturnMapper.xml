@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.PurchaseReturnMapper">
 
-    <resultMap id="PurchaseReturnDto" type="com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnDto">
+    <resultMap id="PurchaseReturn" type="com.lframework.xingyun.sc.entity.PurchaseReturn">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="sc_id" property="scId"/>
@@ -115,7 +115,7 @@
         LEFT JOIN tbl_purchase_return_detail AS d ON d.return_id = r.id
     </sql>
 
-    <select id="query" resultMap="PurchaseReturnDto">
+    <select id="query" resultMap="PurchaseReturn">
         <include refid="PurchaseReturnDto_sql"/>
         <where>
             <if test="vo != null">
@@ -165,10 +165,6 @@
             </if>
         </where>
         ORDER BY r.create_time DESC
-    </select>
-    <select id="getById" resultMap="PurchaseReturnDto">
-        <include refid="PurchaseReturnDto_sql"/>
-        WHERE r.id = #{id}
     </select>
     <select id="getDetail" resultMap="PurchaseReturnFullDto">
         <include refid="PurchaseReturnFullDto_sql"/>
@@ -227,7 +223,7 @@
         </where>
         ORDER BY r.create_time DESC, d.order_no
     </select>
-    <select id="getApprovedList" resultMap="PurchaseReturnDto">
+    <select id="getApprovedList" resultMap="PurchaseReturn">
         <include refid="PurchaseReturnDto_sql"/>
         WHERE r.supplier_id = #{supplierId}
         <if test="startTime != null">

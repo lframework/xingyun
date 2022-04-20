@@ -2,7 +2,6 @@ package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.basedata.dto.product.saleprop.ProductSalePropGroupDto;
 import com.lframework.xingyun.basedata.entity.ProductSalePropGroup;
 import com.lframework.xingyun.basedata.vo.product.saleprop.CreateProductSalePropGroupVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupSelectorVo;
@@ -18,7 +17,7 @@ public interface IProductSalePropGroupService extends BaseMpService<ProductSaleP
    *
    * @return
    */
-  PageResult<ProductSalePropGroupDto> query(Integer pageIndex, Integer pageSize,
+  PageResult<ProductSalePropGroup> query(Integer pageIndex, Integer pageSize,
       QueryProductSalePropGroupVo vo);
 
   /**
@@ -27,14 +26,14 @@ public interface IProductSalePropGroupService extends BaseMpService<ProductSaleP
    * @param vo
    * @return
    */
-  List<ProductSalePropGroupDto> query(QueryProductSalePropGroupVo vo);
+  List<ProductSalePropGroup> query(QueryProductSalePropGroupVo vo);
 
   /**
    * 选择器
    *
    * @return
    */
-  PageResult<ProductSalePropGroupDto> selector(Integer pageIndex, Integer pageSize,
+  PageResult<ProductSalePropGroup> selector(Integer pageIndex, Integer pageSize,
       QueryProductSalePropGroupSelectorVo vo);
 
   /**
@@ -43,7 +42,7 @@ public interface IProductSalePropGroupService extends BaseMpService<ProductSaleP
    * @param id
    * @return
    */
-  ProductSalePropGroupDto getById(String id);
+  ProductSalePropGroup findById(String id);
 
   /**
    * 根据ID停用

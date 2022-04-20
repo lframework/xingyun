@@ -4,7 +4,7 @@ import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.product.saleprop.item.ProductSalePropItemDto;
+import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItemRelation;
 import com.lframework.xingyun.basedata.mappers.ProductSalePropItemRelationMapper;
 import com.lframework.xingyun.basedata.service.product.IProductSalePropItemRelationService;
@@ -16,9 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductSalePropItemRelationServiceImpl extends
-    BaseMpServiceImpl<ProductSalePropItemRelationMapper, ProductSalePropItemRelation> implements
-    IProductSalePropItemRelationService {
+public class ProductSalePropItemRelationServiceImpl
+    extends BaseMpServiceImpl<ProductSalePropItemRelationMapper, ProductSalePropItemRelation>
+    implements IProductSalePropItemRelationService {
 
   @Autowired
   private IProductService productService;
@@ -30,7 +30,7 @@ public class ProductSalePropItemRelationServiceImpl extends
   @Override
   public void create(CreateProductSalePropItemRelationVo vo) {
 
-    ProductDto product = productService.getById(vo.getProductId());
+    ProductDto product = productService.findById(vo.getProductId());
     if (product == null) {
       throw new DefaultClientException("商品不存在！");
     }
@@ -38,7 +38,7 @@ public class ProductSalePropItemRelationServiceImpl extends
     int orderNo = 1;
     for (String salePropItemId : vo.getSalePropItemIds()) {
 
-      ProductSalePropItemDto salePropItem = productSalePropItemService.getById(salePropItemId);
+      ProductSalePropItem salePropItem = productSalePropItemService.findById(salePropItemId);
       if (salePropItem == null) {
         throw new DefaultClientException("销售属性不存在！");
       }

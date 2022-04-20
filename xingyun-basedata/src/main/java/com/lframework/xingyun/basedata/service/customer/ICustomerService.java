@@ -2,7 +2,6 @@ package com.lframework.xingyun.basedata.service.customer;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;
@@ -18,7 +17,7 @@ public interface ICustomerService extends BaseMpService<Customer> {
    *
    * @return
    */
-  PageResult<CustomerDto> query(Integer pageIndex, Integer pageSize, QueryCustomerVo vo);
+  PageResult<Customer> query(Integer pageIndex, Integer pageSize, QueryCustomerVo vo);
 
   /**
    * 查询列表
@@ -26,7 +25,7 @@ public interface ICustomerService extends BaseMpService<Customer> {
    * @param vo
    * @return
    */
-  List<CustomerDto> query(QueryCustomerVo vo);
+  List<Customer> query(QueryCustomerVo vo);
 
   /**
    * 根据ID查询
@@ -34,14 +33,14 @@ public interface ICustomerService extends BaseMpService<Customer> {
    * @param id
    * @return
    */
-  CustomerDto getById(String id);
+  Customer findById(String id);
 
   /**
    * 选择器
    *
    * @return
    */
-  PageResult<CustomerDto> selector(Integer pageIndex, Integer pageSize, QueryCustomerSelectorVo vo);
+  PageResult<Customer> selector(Integer pageIndex, Integer pageSize, QueryCustomerSelectorVo vo);
 
   /**
    * 根据ID停用

@@ -25,23 +25,27 @@ public class SysResourceManagerImpl extends BaseManager<String, SysResource> imp
 
   @Override
   public List<SysResource> getBySystemId(String id) {
+
     List<SysResource> list = sysResourceDao.getBySystemId(id);
     return list;
   }
 
   @Override
   public List<SysResource> getBySystemAndRole(String systemId, String roleId) {
+
     return sysResourceDao.getBySystemAndRole(systemId, roleId);
   }
 
   @Override
   public boolean isExist(SysResource resource) {
+
     boolean rtn = sysResourceDao.isExist(resource) > 0;
     return rtn;
   }
 
   @Override
   public void removeByResId(String resId) {
+
     SysResource resource = sysResourceDao.get(resId);
     if (resource == null) {
       return;
@@ -57,6 +61,7 @@ public class SysResourceManagerImpl extends BaseManager<String, SysResource> imp
 
 
   private void getChildList(List<SysResource> relatedResouces, String id) {
+
     List<SysResource> children = sysResourceDao.getByParentId(id);
     if (CollectionUtil.isEmpty(children)) {
       return;
@@ -70,6 +75,7 @@ public class SysResourceManagerImpl extends BaseManager<String, SysResource> imp
 
   @Override
   public List<SysResource> getBySystemAndUser(String systemId, String userId) {
+
     List<SysResource> list = sysResourceDao.getBySystemAndUser(systemId, userId);
     return list;
   }

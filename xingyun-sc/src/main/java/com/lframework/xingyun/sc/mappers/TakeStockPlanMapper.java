@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
@@ -26,12 +25,7 @@ public interface TakeStockPlanMapper extends BaseMapper<TakeStockPlan> {
    * @param vo
    * @return
    */
-  List<TakeStockPlanDto> query(@Param("vo") QueryTakeStockPlanVo vo);
-
-  /**
-   * 根据ID查询
-   */
-  TakeStockPlanDto getById(@Param("id") String id);
+  List<TakeStockPlan> query(@Param("vo") QueryTakeStockPlanVo vo);
 
   /**
    * 选择器

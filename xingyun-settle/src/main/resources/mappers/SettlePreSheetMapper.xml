@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.settle.mappers.SettlePreSheetMapper">
-    <resultMap id="SettlePreSheetDto" type="com.lframework.xingyun.settle.dto.pre.SettlePreSheetDto">
+    <resultMap id="SettlePreSheet" type="com.lframework.xingyun.settle.entity.SettlePreSheet">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="supplier_id" property="supplierId"/>
@@ -83,7 +83,7 @@
         LEFT JOIN settle_pre_sheet_detail AS d ON d.sheet_id = s.id
     </sql>
 
-    <select id="query" resultMap="SettlePreSheetDto">
+    <select id="query" resultMap="SettlePreSheet">
         <include refid="SettlePreSheetDto_sql"/>
         <where>
             <if test="vo != null">
@@ -124,11 +124,6 @@
             </if>
         </where>
         ORDER BY s.create_time DESC
-    </select>
-
-    <select id="getById" resultMap="SettlePreSheetDto">
-        <include refid="SettlePreSheetDto_sql"/>
-        WHERE s.id = #{id}
     </select>
 
     <select id="getDetail" resultMap="SettlePreSheetFullDto">
@@ -180,7 +175,7 @@
         ORDER BY s.create_time DESC, d.order_no
     </select>
 
-    <select id="getApprovedList" resultMap="SettlePreSheetDto">
+    <select id="getApprovedList" resultMap="SettlePreSheet">
         <include refid="SettlePreSheetDto_sql"/>
         WHERE s.supplier_id = #{supplierId}
         <if test="startTime != null">

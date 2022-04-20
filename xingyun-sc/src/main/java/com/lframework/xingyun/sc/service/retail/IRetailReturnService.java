@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.retail;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.RetailReturn;
 import com.lframework.xingyun.sc.vo.retail.returned.ApprovePassRetailReturnVo;
@@ -24,7 +23,7 @@ public interface IRetailReturnService extends BaseMpService<RetailReturn> {
    * @param vo
    * @return
    */
-  PageResult<RetailReturnDto> query(Integer pageIndex, Integer pageSize, QueryRetailReturnVo vo);
+  PageResult<RetailReturn> query(Integer pageIndex, Integer pageSize, QueryRetailReturnVo vo);
 
   /**
    * 查询列表
@@ -32,15 +31,7 @@ public interface IRetailReturnService extends BaseMpService<RetailReturn> {
    * @param vo
    * @return
    */
-  List<RetailReturnDto> query(QueryRetailReturnVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  RetailReturnDto getById(String id);
+  List<RetailReturn> query(QueryRetailReturnVo vo);
 
   /**
    * 根据ID查询

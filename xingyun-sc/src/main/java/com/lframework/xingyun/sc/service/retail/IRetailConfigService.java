@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.service.retail;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.retail.config.RetailConfigDto;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.vo.retail.config.UpdateRetailConfigVo;
 
@@ -12,7 +11,7 @@ public interface IRetailConfigService extends BaseMpService<RetailConfig> {
    *
    * @return
    */
-  RetailConfigDto get();
+  RetailConfig get();
 
   /**
    * 修改

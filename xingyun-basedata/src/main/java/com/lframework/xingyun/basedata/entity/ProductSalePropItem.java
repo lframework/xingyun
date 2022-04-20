@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,10 +17,11 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("base_data_product_saleprop_item")
-public class ProductSalePropItem extends BaseEntity {
+public class ProductSalePropItem extends BaseEntity implements BaseDto {
 
+  public static final String CACHE_NAME = "ProductSalePropItem";
+  public static final String CACHE_NAME_BY_PRODUCT_ID = "ProductSalePropItemDtoByProductId";
   private static final long serialVersionUID = 1L;
-
   /**
    * ID
    */

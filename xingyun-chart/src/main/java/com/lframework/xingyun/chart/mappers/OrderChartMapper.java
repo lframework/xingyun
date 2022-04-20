@@ -28,7 +28,8 @@ public interface OrderChartMapper extends BaseMapper<OrderChart> {
    * @return
    */
   OrderChartSumDto getChartSum(@Param("bizTypes") List<Integer> bizTypes,
-      @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+      @Param("startTime") LocalDateTime startTime,
+      @Param("endTime") LocalDateTime endTime);
 
   /**
    * 查询列表

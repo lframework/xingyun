@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.stock.adjust;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
 import com.lframework.xingyun.sc.vo.stock.adjust.ApprovePassStockCostAdjustSheetVo;
@@ -26,7 +25,7 @@ public interface IStockCostAdjustSheetService extends BaseMpService<StockCostAdj
    *
    * @return
    */
-  PageResult<StockCostAdjustSheetDto> query(Integer pageIndex, Integer pageSize,
+  PageResult<StockCostAdjustSheet> query(Integer pageIndex, Integer pageSize,
       QueryStockCostAdjustSheetVo vo);
 
   /**
@@ -35,15 +34,7 @@ public interface IStockCostAdjustSheetService extends BaseMpService<StockCostAdj
    * @param vo
    * @return
    */
-  List<StockCostAdjustSheetDto> query(QueryStockCostAdjustSheetVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  StockCostAdjustSheetDto getById(String id);
+  List<StockCostAdjustSheet> query(QueryStockCostAdjustSheetVo vo);
 
   /**
    * 根据ID查询

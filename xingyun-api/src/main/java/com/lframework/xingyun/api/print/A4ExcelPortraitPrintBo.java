@@ -15,10 +15,12 @@ public class A4ExcelPortraitPrintBo<T extends BasePrintDataBo<? extends BaseDto>
     BasePrintBo<T> {
 
   public A4ExcelPortraitPrintBo(String templateName) {
+
     this(templateName, null);
   }
 
   public A4ExcelPortraitPrintBo(String templateName, T data) {
+
     super(templateName, data);
 
     this.setOrient(2);

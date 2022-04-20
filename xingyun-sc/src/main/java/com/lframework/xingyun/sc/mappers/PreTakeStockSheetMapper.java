@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
@@ -26,12 +25,7 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
    * @param vo
    * @return
    */
-  List<PreTakeStockSheetDto> query(@Param("vo") QueryPreTakeStockSheetVo vo);
-
-  /**
-   * 根据ID查询
-   */
-  PreTakeStockSheetDto getById(@Param("id") String id);
+  List<PreTakeStockSheet> query(@Param("vo") QueryPreTakeStockSheetVo vo);
 
   /**
    * 根据ID查询

@@ -25,21 +25,20 @@ import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
-import com.lframework.xingyun.basedata.dto.supplier.SupplierDto;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
+import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.ManageType;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDetailDto;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
-import com.lframework.xingyun.sc.dto.purchase.config.PurchaseConfigDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.PurchaseConfig;
+import com.lframework.xingyun.sc.entity.PurchaseOrder;
+import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
@@ -73,8 +72,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ReceiveSheetServiceImpl extends
-    BaseMpServiceImpl<ReceiveSheetMapper, ReceiveSheet> implements IReceiveSheetService {
+public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMapper, ReceiveSheet>
+    implements IReceiveSheetService {
 
   @Autowired
   private IReceiveSheetDetailService receiveSheetDetailService;
@@ -107,41 +106,35 @@ public class ReceiveSheetServiceImpl extends
   private IProductStockService productStockService;
 
   @Override
-  public PageResult<ReceiveSheetDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<ReceiveSheet> query(Integer pageIndex, Integer pageSize,
       QueryReceiveSheetVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ReceiveSheetDto> datas = this.query(vo);
+    List<ReceiveSheet> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<ReceiveSheetDto> query(QueryReceiveSheetVo vo) {
+  public List<ReceiveSheet> query(QueryReceiveSheetVo vo) {
 
     return getBaseMapper().query(vo);
   }
 
   @Override
-  public PageResult<ReceiveSheetDto> selector(Integer pageIndex, Integer pageSize,
+  public PageResult<ReceiveSheet> selector(Integer pageIndex, Integer pageSize,
       ReceiveSheetSelectorVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ReceiveSheetDto> datas = getBaseMapper().selector(vo);
+    List<ReceiveSheet> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
-  }
-
-  @Override
-  public ReceiveSheetDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -152,7 +145,7 @@ public class ReceiveSheetServiceImpl extends
     //（2）供应商的经营方式为“经销”，且结账方式为“货到付款”，则付款日期默认为此刻，即收货单的创建时间，可能会遇到跨日的问题，但付款日期，均赋值为收货单的创建日期。
     //（3）供应商的经营方式为非经销模式时，收货单、退货单不涉及付款，则付款日期字段置灰，为空，且不可点击。
 
-    SupplierDto supplier = supplierService.getById(supplierId);
+    Supplier supplier = supplierService.findById(supplierId);
 
     GetPaymentDateDto result = new GetPaymentDateDto();
 
@@ -178,7 +171,7 @@ public class ReceiveSheetServiceImpl extends
   @Override
   public ReceiveSheetWithReturnDto getWithReturn(String id) {
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     ReceiveSheetWithReturnDto sheet = getBaseMapper().getWithReturn(id,
         purchaseConfig.getPurchaseReturnRequireReceive());
@@ -189,16 +182,16 @@ public class ReceiveSheetServiceImpl extends
   }
 
   @Override
-  public PageResult<ReceiveSheetDto> queryWithReturn(Integer pageIndex, Integer pageSize,
+  public PageResult<ReceiveSheet> queryWithReturn(Integer pageIndex, Integer pageSize,
       QueryReceiveSheetWithReturnVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ReceiveSheetDto> datas = getBaseMapper().queryWithReturn(vo,
+    List<ReceiveSheet> datas = getBaseMapper().queryWithReturn(vo,
         purchaseConfig.getPurchaseReturnMultipleRelateReceive());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -213,7 +206,7 @@ public class ReceiveSheetServiceImpl extends
     sheet.setId(IdUtil.getId());
     sheet.setCode(generateCodeService.generate(GenerateCodeTypePool.RECEIVE_SHEET));
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     this.create(sheet, vo, purchaseConfig.getReceiveRequirePurchase());
 
@@ -252,7 +245,8 @@ public class ReceiveSheetServiceImpl extends
     if (requirePurchase) {
       //查询采购收货单明细
       Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-          ReceiveSheetDetail.class).eq(ReceiveSheetDetail::getSheetId, sheet.getId());
+              ReceiveSheetDetail.class)
+          .eq(ReceiveSheetDetail::getSheetId, sheet.getId());
       List<ReceiveSheetDetail> details = receiveSheetDetailService.list(queryDetailWrapper);
       for (ReceiveSheetDetail detail : details) {
         if (!StringUtil.isBlank(detail.getPurchaseOrderDetailId())) {
@@ -279,7 +273,8 @@ public class ReceiveSheetServiceImpl extends
     Wrapper<ReceiveSheet> updateOrderWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getApproveBy, null).set(ReceiveSheet::getApproveTime, null)
         .set(ReceiveSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(ReceiveSheet::getId, sheet.getId()).in(ReceiveSheet::getStatus, statusList);
+        .eq(ReceiveSheet::getId, sheet.getId())
+        .in(ReceiveSheet::getStatus, statusList);
     if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
@@ -308,14 +303,14 @@ public class ReceiveSheetServiceImpl extends
       throw new DefaultClientException("采购收货单无法审核通过！");
     }
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     if (!purchaseConfig.getReceiveMultipleRelatePurchase()) {
       Wrapper<ReceiveSheet> checkWrapper = Wrappers.lambdaQuery(ReceiveSheet.class)
           .eq(ReceiveSheet::getPurchaseOrderId, sheet.getPurchaseOrderId())
           .ne(ReceiveSheet::getId, sheet.getId());
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
-        PurchaseOrderDto purchaseOrder = purchaseOrderService.getById(sheet.getPurchaseOrderId());
+        PurchaseOrder purchaseOrder = purchaseOrderService.getById(sheet.getPurchaseOrderId());
         throw new DefaultClientException(
             "采购订单号：" + purchaseOrder.getCode() + "，已关联其他采购收货单，不允许关联多个采购收货单！");
       }
@@ -330,7 +325,8 @@ public class ReceiveSheetServiceImpl extends
     LambdaUpdateWrapper<ReceiveSheet> updateOrderWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(ReceiveSheet::getApproveTime, LocalDateTime.now())
-        .eq(ReceiveSheet::getId, sheet.getId()).in(ReceiveSheet::getStatus, statusList);
+        .eq(ReceiveSheet::getId, sheet.getId())
+        .in(ReceiveSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(ReceiveSheet::getDescription, vo.getDescription());
     }
@@ -481,7 +477,8 @@ public class ReceiveSheetServiceImpl extends
     if (!StringUtil.isBlank(sheet.getPurchaseOrderId())) {
       //查询采购收货单明细
       Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-          ReceiveSheetDetail.class).eq(ReceiveSheetDetail::getSheetId, sheet.getId());
+              ReceiveSheetDetail.class)
+          .eq(ReceiveSheetDetail::getSheetId, sheet.getId());
       List<ReceiveSheetDetail> details = receiveSheetDetailService.list(queryDetailWrapper);
       for (ReceiveSheetDetail detail : details) {
         if (!StringUtil.isBlank(detail.getPurchaseOrderDetailId())) {
@@ -569,29 +566,30 @@ public class ReceiveSheetServiceImpl extends
   }
 
   @Override
-  public List<ReceiveSheetDto> getApprovedList(String supplierId, LocalDateTime startTime,
-      LocalDateTime endTime, SettleStatus settleStatus) {
+  public List<ReceiveSheet> getApprovedList(String supplierId, LocalDateTime startTime,
+      LocalDateTime endTime,
+      SettleStatus settleStatus) {
 
     return getBaseMapper().getApprovedList(supplierId, startTime, endTime, settleStatus);
   }
 
   private void create(ReceiveSheet sheet, CreateReceiveSheetVo vo, boolean receiveRequirePurchase) {
 
-    StoreCenterDto sc = storeCenterService.getById(vo.getScId());
+    StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
       throw new InputErrorException("仓库不存在！");
     }
 
     sheet.setScId(vo.getScId());
 
-    SupplierDto supplier = supplierService.getById(vo.getSupplierId());
+    Supplier supplier = supplierService.findById(vo.getSupplierId());
     if (supplier == null) {
       throw new InputErrorException("供应商不存在！");
     }
     sheet.setSupplierId(vo.getSupplierId());
 
     if (!StringUtil.isBlank(vo.getPurchaserId())) {
-      UserDto purchaser = userService.getById(vo.getPurchaserId());
+      UserDto purchaser = userService.findById(vo.getPurchaserId());
       if (purchaser == null) {
         throw new InputErrorException("采购员不存在！");
       }
@@ -599,7 +597,7 @@ public class ReceiveSheetServiceImpl extends
       sheet.setPurchaserId(vo.getPurchaserId());
     }
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     GetPaymentDateDto paymentDate = this.getPaymentDate(supplier.getId());
 
@@ -609,7 +607,7 @@ public class ReceiveSheetServiceImpl extends
 
     if (receiveRequirePurchase) {
 
-      PurchaseOrderDto purchaseOrder = purchaseOrderService.getById(vo.getPurchaseOrderId());
+      PurchaseOrder purchaseOrder = purchaseOrderService.getById(vo.getPurchaseOrderId());
       if (purchaseOrder == null) {
         throw new DefaultClientException("采购订单不存在！");
       }
@@ -636,7 +634,7 @@ public class ReceiveSheetServiceImpl extends
     for (ReceiveProductVo productVo : vo.getProducts()) {
       if (receiveRequirePurchase) {
         if (!StringUtil.isBlank(productVo.getPurchaseOrderDetailId())) {
-          PurchaseOrderDetailDto orderDetail = purchaseOrderDetailService.getById(
+          PurchaseOrderDetail orderDetail = purchaseOrderDetailService.getById(
               productVo.getPurchaseOrderDetailId());
           productVo.setPurchasePrice(orderDetail.getTaxPrice());
         } else {
@@ -667,7 +665,7 @@ public class ReceiveSheetServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setSheetId(sheet.getId());
 
-      ProductDto product = productService.getById(productVo.getProductId());
+      ProductDto product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -681,8 +679,9 @@ public class ReceiveSheetServiceImpl extends
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getPoly().getTaxRate());
-      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-          : productVo.getDescription());
+      detail.setDescription(
+          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+              : productVo.getDescription());
       detail.setOrderNo(orderNo);
       if (receiveRequirePurchase && !StringUtil.isBlank(productVo.getPurchaseOrderDetailId())) {
         detail.setPurchaseOrderDetailId(productVo.getPurchaseOrderDetailId());
@@ -707,7 +706,7 @@ public class ReceiveSheetServiceImpl extends
    * @param supplier
    * @return
    */
-  private SettleStatus getInitSettleStatus(SupplierDto supplier) {
+  private SettleStatus getInitSettleStatus(Supplier supplier) {
 
     if (supplier.getManageType() == ManageType.DISTRIBUTION) {
       return SettleStatus.UN_SETTLE;

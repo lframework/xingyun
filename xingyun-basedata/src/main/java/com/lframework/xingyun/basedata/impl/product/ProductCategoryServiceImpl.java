@@ -14,7 +14,6 @@ import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.service.system.IRecursionMappingService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.mappers.ProductCategoryMapper;
@@ -33,26 +32,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductCategoryServiceImpl extends
-    BaseMpServiceImpl<ProductCategoryMapper, ProductCategory> implements IProductCategoryService {
+    BaseMpServiceImpl<ProductCategoryMapper, ProductCategory>
+    implements IProductCategoryService {
 
   @Autowired
   private IRecursionMappingService recursionMappingService;
 
   @Override
-  public List<ProductCategoryDto> getAllProductCategories() {
+  public List<ProductCategory> getAllProductCategories() {
 
     return getBaseMapper().getAllProductCategories();
   }
 
-  @Cacheable(value = ProductCategoryDto.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Cacheable(value = ProductCategory.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
-  public ProductCategoryDto getById(String id) {
+  public ProductCategory findById(String id) {
 
-    return getBaseMapper().getById(id);
+    return getBaseMapper().selectById(id);
   }
 
   @Override
-  public List<ProductCategoryDto> selector(QueryProductCategorySelectorVo vo) {
+  public List<ProductCategory> selector(QueryProductCategorySelectorVo vo) {
 
     return getBaseMapper().selector(vo);
   }
@@ -68,8 +68,8 @@ public class ProductCategoryServiceImpl extends
 
     List<String> batchIds = new ArrayList<>();
     for (String id : ids) {
-      List<String> nodeChildIds = recursionMappingService
-          .getNodeChildIds(id, ApplicationUtil.getBean(ProductCategoryNodeType.class));
+      List<String> nodeChildIds = recursionMappingService.getNodeChildIds(id,
+          ApplicationUtil.getBean(ProductCategoryNodeType.class));
       if (CollectionUtil.isEmpty(nodeChildIds)) {
         continue;
       }
@@ -100,8 +100,8 @@ public class ProductCategoryServiceImpl extends
 
     List<String> batchIds = new ArrayList<>();
     for (String id : ids) {
-      List<String> nodeParentIds = recursionMappingService
-          .getNodeParentIds(id, ApplicationUtil.getBean(ProductCategoryNodeType.class));
+      List<String> nodeParentIds = recursionMappingService.getNodeParentIds(id,
+          ApplicationUtil.getBean(ProductCategoryNodeType.class));
       if (CollectionUtil.isEmpty(nodeParentIds)) {
         continue;
       }
@@ -206,8 +206,8 @@ public class ProductCategoryServiceImpl extends
     if (!vo.getAvailable()) {
       if (data.getAvailable()) {
         //如果是停用 子节点全部停用
-        List<String> childrenIds = recursionMappingService
-            .getNodeChildIds(data.getId(), ApplicationUtil.getBean(ProductCategoryNodeType.class));
+        List<String> childrenIds = recursionMappingService.getNodeChildIds(data.getId(),
+            ApplicationUtil.getBean(ProductCategoryNodeType.class));
         if (!CollectionUtil.isEmpty(childrenIds)) {
           this.batchUnable(childrenIds);
         }
@@ -215,8 +215,8 @@ public class ProductCategoryServiceImpl extends
     } else {
       if (!data.getAvailable()) {
         //如果是启用 父节点全部启用
-        List<String> parentIs = recursionMappingService
-            .getNodeParentIds(data.getId(), ApplicationUtil.getBean(ProductCategoryNodeType.class));
+        List<String> parentIs = recursionMappingService.getNodeParentIds(data.getId(),
+            ApplicationUtil.getBean(ProductCategoryNodeType.class));
         if (!CollectionUtil.isEmpty(parentIs)) {
           this.batchEnable(parentIs);
         }
@@ -240,22 +240,23 @@ public class ProductCategoryServiceImpl extends
   private void saveRecursion(String categoryId, String parentId) {
 
     if (!StringUtil.isBlank(parentId)) {
-      List<String> parentIds = recursionMappingService
-          .getNodeParentIds(parentId, ApplicationUtil.getBean(ProductCategoryNodeType.class));
+      List<String> parentIds = recursionMappingService.getNodeParentIds(parentId,
+          ApplicationUtil.getBean(ProductCategoryNodeType.class));
       if (CollectionUtil.isEmpty(parentIds)) {
         parentIds = new ArrayList<>();
       }
       parentIds.add(parentId);
 
-      recursionMappingService
-          .saveNode(categoryId, ApplicationUtil.getBean(ProductCategoryNodeType.class), parentIds);
+      recursionMappingService.saveNode(categoryId,
+          ApplicationUtil.getBean(ProductCategoryNodeType.class),
+          parentIds);
     } else {
-      recursionMappingService
-          .saveNode(categoryId, ApplicationUtil.getBean(ProductCategoryNodeType.class));
+      recursionMappingService.saveNode(categoryId,
+          ApplicationUtil.getBean(ProductCategoryNodeType.class));
     }
   }
 
-  @CacheEvict(value = ProductCategoryDto.CACHE_NAME, key = "#key")
+  @CacheEvict(value = ProductCategory.CACHE_NAME, key = "#key")
   @Override
   public void cleanCacheByKey(String key) {
 

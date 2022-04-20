@@ -9,14 +9,14 @@ import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.bo.BasePrintDataBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.dto.product.info.SaleProductDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
+import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
+import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
 import com.lframework.xingyun.sc.service.sale.ISaleOrderService;
 import io.swagger.annotations.ApiModelProperty;
@@ -140,23 +140,23 @@ public class PrintSaleOutSheetBo extends BasePrintDataBo<SaleOutSheetFullDto> {
     this.approveTime = StringPool.EMPTY_STR;
 
     IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
+    StoreCenter sc = storeCenterService.findById(dto.getScId());
     this.scCode = sc.getCode();
     this.scName = sc.getName();
 
     ICustomerService customerService = ApplicationUtil.getBean(ICustomerService.class);
-    CustomerDto customer = customerService.getById(dto.getCustomerId());
+    Customer customer = customerService.findById(dto.getCustomerId());
     this.customerCode = customer.getCode();
     this.customerName = customer.getName();
 
     IUserService userService = ApplicationUtil.getBean(IUserService.class);
     if (!StringUtil.isBlank(dto.getSalerId())) {
-      this.salerName = userService.getById(dto.getSalerId()).getName();
+      this.salerName = userService.findById(dto.getSalerId()).getName();
     }
 
     ISaleOrderService saleOrderService = ApplicationUtil.getBean(ISaleOrderService.class);
     if (!StringUtil.isBlank(dto.getSaleOrderId())) {
-      SaleOrderDto saleOrder = saleOrderService.getById(dto.getSaleOrderId());
+      SaleOrder saleOrder = saleOrderService.getById(dto.getSaleOrderId());
       this.saleOrderCode = saleOrder.getCode();
     }
 
@@ -164,12 +164,12 @@ public class PrintSaleOutSheetBo extends BasePrintDataBo<SaleOutSheetFullDto> {
       this.paymentDate = DateUtil.formatDate(dto.getPaymentDate());
     }
 
-    this.createBy = userService.getById(dto.getCreateBy()).getName();
+    this.createBy = userService.findById(dto.getCreateBy()).getName();
     this.createTime = DateUtil.formatDateTime(dto.getCreateTime());
 
     if (!StringUtil.isBlank(dto.getApproveBy())
         && dto.getStatus() == SaleOutSheetStatus.APPROVE_PASS) {
-      this.approveBy = userService.getById(dto.getApproveBy()).getName();
+      this.approveBy = userService.findById(dto.getApproveBy()).getName();
       this.approveTime = DateUtil.formatDateTime(dto.getApproveTime());
     }
 

@@ -23,20 +23,22 @@ import org.springframework.stereotype.Service;
 @Service("resRoleManager")
 public class ResRoleManagerImpl extends BaseManager<String, ResRole> implements ResRoleManager {
 
+  public final String URL_ROLE_MAPPING = "agilebpm:sys:resoucesUrlRoleMapping:";
   @Resource
   ResRoleDao resRoleDao;
   @Resource
   ICache iCache;
-  public final String URL_ROLE_MAPPING = "agilebpm:sys:resoucesUrlRoleMapping:";
 
   @Override
   public List<ResRole> getAllByRoleId(String roleId) {
+
     return resRoleDao.getByRoleId(roleId);
   }
 
 
   @Override
   public void assignResByRoleSys(String resIds, String systemId, String roleId) {
+
     resRoleDao.removeByRoleAndSystem(roleId, systemId);
 
     String[] aryRes = resIds.split(",");
@@ -51,6 +53,7 @@ public class ResRoleManagerImpl extends BaseManager<String, ResRole> implements 
   }
 
   private Map<String, Set<String>> getUrlRoleMapping() {
+
     if (iCache.containKey(URL_ROLE_MAPPING)) {
       return (Map<String, Set<String>>) iCache.getByKey(URL_ROLE_MAPPING);
     }
@@ -79,6 +82,7 @@ public class ResRoleManagerImpl extends BaseManager<String, ResRole> implements 
   }
 
   private void cleanResoucesCache() {
+
     iCache.delByKey(URL_ROLE_MAPPING);
   }
 
@@ -88,6 +92,7 @@ public class ResRoleManagerImpl extends BaseManager<String, ResRole> implements 
    */
   @Override
   public Set<String> getAccessRoleByUrl(String url) {
+
     url = url.trim();
     if (StringUtil.isEmpty(url)) {
       return Collections.emptySet();

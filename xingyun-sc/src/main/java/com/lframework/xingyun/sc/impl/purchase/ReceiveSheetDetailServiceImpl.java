@@ -6,7 +6,6 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDetailDto;
 import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import com.lframework.xingyun.sc.mappers.ReceiveSheetDetailMapper;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetDetailService;
@@ -17,20 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReceiveSheetDetailServiceImpl extends
-    BaseMpServiceImpl<ReceiveSheetDetailMapper, ReceiveSheetDetail> implements
-    IReceiveSheetDetailService {
+    BaseMpServiceImpl<ReceiveSheetDetailMapper, ReceiveSheetDetail>
+    implements IReceiveSheetDetailService {
 
   @Autowired
   private IProductService productService;
 
   @Override
-  public ReceiveSheetDetailDto getById(String id) {
-
-    return getBaseMapper().getById(id);
-  }
-
-  @Override
-  public List<ReceiveSheetDetailDto> getBySheetId(String sheetId) {
+  public List<ReceiveSheetDetail> getBySheetId(String sheetId) {
 
     return getBaseMapper().getBySheetId(sheetId);
   }
@@ -46,15 +39,16 @@ public class ReceiveSheetDetailServiceImpl extends
 
     Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
     if (NumberUtil.lt(remainNum, num)) {
-      ProductDto product = productService.getById(detail.getProductId());
+      ProductDto product = productService.findById(detail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余退货数量为" + remainNum
-              + "个，本次退货数量不允许大于" + remainNum + "个！");
+              + "个，本次退货数量不允许大于"
+              + remainNum + "个！");
     }
 
     if (getBaseMapper().addReturnNum(detail.getId(), num) != 1) {
-      ProductDto product = productService.getById(detail.getProductId());
+      ProductDto product = productService.findById(detail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余退货数量不足，不允许继续退货！");
@@ -71,7 +65,7 @@ public class ReceiveSheetDetailServiceImpl extends
     ReceiveSheetDetail orderDetail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(orderDetail.getReturnNum(), num)) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已退货数量为" + orderDetail.getReturnNum()
@@ -79,7 +73,7 @@ public class ReceiveSheetDetailServiceImpl extends
     }
 
     if (getBaseMapper().subReturnNum(orderDetail.getId(), num) != 1) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已退货数量不足，不允许取消退货！");

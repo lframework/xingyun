@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,7 +17,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("base_data_product_saleprop_item_relation")
-public class ProductSalePropItemRelation extends BaseEntity {
+public class ProductSalePropItemRelation extends BaseEntity implements BaseDto {
 
   private static final long serialVersionUID = 1L;
 

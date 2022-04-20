@@ -17,10 +17,12 @@ public class AbSecurityProperties {
    * 忽略xss 的地址
    **/
   private String xssIngores = "";
+
   /**
    * 忽略跨域访问 的地址
    **/
   private String csrfIngores = "127.0.0.1";
+
   /**
    * 忽略鉴权 的地址
    **/
@@ -28,26 +30,32 @@ public class AbSecurityProperties {
 
 
   public String getXssIngores() {
+
     return xssIngores;
   }
 
   public void setXssIngores(String xssIngores) {
+
     this.xssIngores = xssIngores;
   }
 
   public String getCsrfIngores() {
+
     return csrfIngores;
   }
 
   public void setCsrfIngores(String csrfIngores) {
+
     this.csrfIngores = csrfIngores;
   }
 
   public String getAuthIngores() {
+
     return authIngores;
   }
 
   public void setAuthIngores(String authIngores) {
+
     this.authIngores = authIngores;
   }
 

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("tbl_purchase_order")
-public class PurchaseOrder extends BaseEntity {
+public class PurchaseOrder extends BaseEntity implements BaseDto {
 
   private static final long serialVersionUID = 1L;
 

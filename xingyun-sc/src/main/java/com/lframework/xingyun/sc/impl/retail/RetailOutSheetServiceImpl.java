@@ -25,9 +25,9 @@ import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.member.MemberDto;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
+import com.lframework.xingyun.basedata.entity.Member;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
@@ -36,10 +36,9 @@ import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailOutSheetEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.retail.config.RetailConfigDto;
-import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
@@ -74,7 +73,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RetailOutSheetServiceImpl extends
-    BaseMpServiceImpl<RetailOutSheetMapper, RetailOutSheet> implements IRetailOutSheetService {
+    BaseMpServiceImpl<RetailOutSheetMapper, RetailOutSheet>
+    implements IRetailOutSheetService {
 
   @Autowired
   private IRetailOutSheetDetailService retailOutSheetDetailService;
@@ -104,41 +104,35 @@ public class RetailOutSheetServiceImpl extends
   private IProductStockService productStockService;
 
   @Override
-  public PageResult<RetailOutSheetDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<RetailOutSheet> query(Integer pageIndex, Integer pageSize,
       QueryRetailOutSheetVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<RetailOutSheetDto> datas = this.query(vo);
+    List<RetailOutSheet> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<RetailOutSheetDto> query(QueryRetailOutSheetVo vo) {
+  public List<RetailOutSheet> query(QueryRetailOutSheetVo vo) {
 
     return getBaseMapper().query(vo);
   }
 
   @Override
-  public PageResult<RetailOutSheetDto> selector(Integer pageIndex, Integer pageSize,
+  public PageResult<RetailOutSheet> selector(Integer pageIndex, Integer pageSize,
       RetailOutSheetSelectorVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<RetailOutSheetDto> datas = getBaseMapper().selector(vo);
+    List<RetailOutSheet> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
-  }
-
-  @Override
-  public RetailOutSheetDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -160,7 +154,7 @@ public class RetailOutSheetServiceImpl extends
   @Override
   public RetailOutSheetWithReturnDto getWithReturn(String id) {
 
-    RetailConfigDto retailConfig = retailConfigService.get();
+    RetailConfig retailConfig = retailConfigService.get();
 
     RetailOutSheetWithReturnDto sheet = getBaseMapper().getWithReturn(id,
         retailConfig.getRetailReturnRequireOutStock());
@@ -172,16 +166,16 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @Override
-  public PageResult<RetailOutSheetDto> queryWithReturn(Integer pageIndex, Integer pageSize,
+  public PageResult<RetailOutSheet> queryWithReturn(Integer pageIndex, Integer pageSize,
       QueryRetailOutSheetWithReturnVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
-    RetailConfigDto retailConfig = retailConfigService.get();
+    RetailConfig retailConfig = retailConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<RetailOutSheetDto> datas = getBaseMapper().queryWithReturn(vo,
+    List<RetailOutSheet> datas = getBaseMapper().queryWithReturn(vo,
         retailConfig.getRetailReturnMultipleRelateOutStock());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -196,7 +190,7 @@ public class RetailOutSheetServiceImpl extends
     sheet.setId(IdUtil.getId());
     sheet.setCode(generateCodeService.generate(GenerateCodeTypePool.RETAIL_OUT_SHEET));
 
-    RetailConfigDto retailConfig = retailConfigService.get();
+    RetailConfig retailConfig = retailConfigService.get();
 
     this.create(sheet, vo);
 
@@ -232,7 +226,8 @@ public class RetailOutSheetServiceImpl extends
 
     // 删除出库单明细
     Wrapper<RetailOutSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId());
+            RetailOutSheetDetail.class)
+        .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
     retailOutSheetDetailService.remove(deleteDetailWrapper);
 
     this.create(sheet, vo);
@@ -246,7 +241,8 @@ public class RetailOutSheetServiceImpl extends
     Wrapper<RetailOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(RetailOutSheet.class)
         .set(RetailOutSheet::getApproveBy, null).set(RetailOutSheet::getApproveTime, null)
         .set(RetailOutSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(RetailOutSheet::getId, sheet.getId()).in(RetailOutSheet::getStatus, statusList);
+        .eq(RetailOutSheet::getId, sheet.getId())
+        .in(RetailOutSheet::getStatus, statusList);
     if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
@@ -275,7 +271,7 @@ public class RetailOutSheetServiceImpl extends
       throw new DefaultClientException("销售出库单无法审核通过！");
     }
 
-    RetailConfigDto retailConfig = retailConfigService.get();
+    RetailConfig retailConfig = retailConfigService.get();
 
     sheet.setStatus(RetailOutSheetStatus.APPROVE_PASS);
 
@@ -287,7 +283,8 @@ public class RetailOutSheetServiceImpl extends
             RetailOutSheet.class)
         .set(RetailOutSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(RetailOutSheet::getApproveTime, LocalDateTime.now())
-        .eq(RetailOutSheet::getId, sheet.getId()).in(RetailOutSheet::getStatus, statusList);
+        .eq(RetailOutSheet::getId, sheet.getId())
+        .in(RetailOutSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(RetailOutSheet::getDescription, vo.getDescription());
     }
@@ -296,7 +293,8 @@ public class RetailOutSheetServiceImpl extends
     }
 
     Wrapper<RetailOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId())
+            RetailOutSheetDetail.class)
+        .eq(RetailOutSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(RetailOutSheetDetail::getOrderNo);
     List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
     for (RetailOutSheetDetail detail : details) {
@@ -454,7 +452,8 @@ public class RetailOutSheetServiceImpl extends
 
     // 删除订单明细
     Wrapper<RetailOutSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId());
+            RetailOutSheetDetail.class)
+        .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
     retailOutSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除订单
@@ -485,21 +484,21 @@ public class RetailOutSheetServiceImpl extends
 
   private void create(RetailOutSheet sheet, CreateRetailOutSheetVo vo) {
 
-    StoreCenterDto sc = storeCenterService.getById(vo.getScId());
+    StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
       throw new InputErrorException("仓库不存在！");
     }
 
     sheet.setScId(vo.getScId());
 
-    MemberDto member = memberService.getById(vo.getMemberId());
+    Member member = memberService.findById(vo.getMemberId());
     if (member == null) {
       throw new InputErrorException("会员不存在！");
     }
     sheet.setMemberId(vo.getMemberId());
 
     if (!StringUtil.isBlank(vo.getSalerId())) {
-      UserDto saler = userService.getById(vo.getSalerId());
+      UserDto saler = userService.findById(vo.getSalerId());
       if (saler == null) {
         throw new InputErrorException("销售员不存在！");
       }
@@ -507,7 +506,7 @@ public class RetailOutSheetServiceImpl extends
       sheet.setSalerId(vo.getSalerId());
     }
 
-    RetailConfigDto retailConfig = retailConfigService.get();
+    RetailConfig retailConfig = retailConfigService.get();
 
     GetPaymentDateDto paymentDate = this.getPaymentDate(member.getId());
 
@@ -534,7 +533,7 @@ public class RetailOutSheetServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setSheetId(sheet.getId());
 
-      ProductDto product = productService.getById(productVo.getProductId());
+      ProductDto product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -550,8 +549,9 @@ public class RetailOutSheetServiceImpl extends
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getPoly().getTaxRate());
-      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-          : productVo.getDescription());
+      detail.setDescription(
+          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+              : productVo.getDescription());
       detail.setOrderNo(orderNo);
       detail.setSettleStatus(this.getInitSettleStatus(member));
 
@@ -572,7 +572,7 @@ public class RetailOutSheetServiceImpl extends
    * @param member
    * @return
    */
-  private SettleStatus getInitSettleStatus(MemberDto member) {
+  private SettleStatus getInitSettleStatus(Member member) {
 
     return SettleStatus.UN_SETTLE;
   }

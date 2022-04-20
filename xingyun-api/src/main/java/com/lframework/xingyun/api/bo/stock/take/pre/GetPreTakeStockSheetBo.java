@@ -6,16 +6,17 @@ import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -28,65 +29,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GetPreTakeStockSheetBo extends BaseBo<PreTakeStockSheetFullDto> {
 
-  /**
-   * ID
-   */
-  @ApiModelProperty("ID")
-  private String id;
-
-  /**
-   * 业务单据号
-   */
-  @ApiModelProperty("业务单据号")
-  private String code;
-
-  /**
-   * 仓库ID
-   */
-  @ApiModelProperty("仓库ID")
-  private String scId;
-
-  /**
-   * 仓库名称
-   */
-  @ApiModelProperty("仓库名称")
-  private String scName;
-
-  /**
-   * 盘点状态
-   */
-  @ApiModelProperty("盘点状态")
-  private Integer takeStatus;
-
-  /**
-   * 备注
-   */
-  @ApiModelProperty("备注")
-  private String description;
-
-  /**
-   * 操作人
-   */
-  @ApiModelProperty("操作人")
-  private String updateBy;
-
-  /**
-   * 操作时间
-   */
-  @ApiModelProperty("操作时间")
-  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-  private LocalDateTime updateTime;
-
-  /**
-   * 明细
-   */
-  @ApiModelProperty("明细")
-  private List<SheetDetailBo> details;
-
-  @Data
-  @EqualsAndHashCode(callSuper = true)
-  public static class SheetDetailBo extends BaseBo<PreTakeStockSheetFullDto.SheetDetailDto> {
-
     /**
      * ID
      */
@@ -94,128 +36,188 @@ public class GetPreTakeStockSheetBo extends BaseBo<PreTakeStockSheetFullDto> {
     private String id;
 
     /**
-     * 商品ID
+     * 业务单据号
      */
-    @ApiModelProperty("商品ID")
-    private String productId;
+    @ApiModelProperty("业务单据号")
+    private String code;
 
     /**
-     * 编号
+     * 仓库ID
      */
-    @ApiModelProperty("编号")
-    private String productCode;
+    @ApiModelProperty("仓库ID")
+    private String scId;
 
     /**
-     * 名称
+     * 仓库名称
      */
-    @ApiModelProperty("名称")
-    private String productName;
+    @ApiModelProperty("仓库名称")
+    private String scName;
 
     /**
-     * 类目名称
+     * 盘点状态
      */
-    @ApiModelProperty("类目名称")
-    private String categoryName;
+    @ApiModelProperty("盘点状态")
+    private Integer takeStatus;
 
     /**
-     * 品牌名称
+     * 备注
      */
-    @ApiModelProperty("品牌名称")
-    private String brandName;
+    @ApiModelProperty("备注")
+    private String description;
 
     /**
-     * SKU
+     * 操作人
      */
-    @ApiModelProperty("SKU")
-    private String skuCode;
+    @ApiModelProperty("操作人")
+    private String updateBy;
 
     /**
-     * 外部编号
+     * 操作时间
      */
-    @ApiModelProperty("外部编号")
-    private String externalCode;
+    @ApiModelProperty("操作时间")
+    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+    private LocalDateTime updateTime;
 
     /**
-     * 规格
+     * 明细
      */
-    @ApiModelProperty("规格")
-    private String spec;
+    @ApiModelProperty("明细")
+    private List<SheetDetailBo> details;
 
-    /**
-     * 单位
-     */
-    @ApiModelProperty("单位")
-    private String unit;
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class SheetDetailBo extends BaseBo<PreTakeStockSheetFullDto.SheetDetailDto> {
 
-    /**
-     * 初盘数量
-     */
-    @ApiModelProperty("初盘数量")
-    private Integer firstNum;
+        /**
+         * ID
+         */
+        @ApiModelProperty("ID")
+        private String id;
 
-    /**
-     * 复盘数量
-     */
-    @ApiModelProperty("复盘数量")
-    private Integer secondNum;
+        /**
+         * 商品ID
+         */
+        @ApiModelProperty("商品ID")
+        private String productId;
 
-    /**
-     * 抽盘数量
-     */
-    @ApiModelProperty("抽盘数量")
-    private Integer randNum;
+        /**
+         * 编号
+         */
+        @ApiModelProperty("编号")
+        private String productCode;
 
-    public SheetDetailBo(PreTakeStockSheetFullDto.SheetDetailDto dto) {
-      super(dto);
+        /**
+         * 名称
+         */
+        @ApiModelProperty("名称")
+        private String productName;
+
+        /**
+         * 类目名称
+         */
+        @ApiModelProperty("类目名称")
+        private String categoryName;
+
+        /**
+         * 品牌名称
+         */
+        @ApiModelProperty("品牌名称")
+        private String brandName;
+
+        /**
+         * SKU
+         */
+        @ApiModelProperty("SKU")
+        private String skuCode;
+
+        /**
+         * 外部编号
+         */
+        @ApiModelProperty("外部编号")
+        private String externalCode;
+
+        /**
+         * 规格
+         */
+        @ApiModelProperty("规格")
+        private String spec;
+
+        /**
+         * 单位
+         */
+        @ApiModelProperty("单位")
+        private String unit;
+
+        /**
+         * 初盘数量
+         */
+        @ApiModelProperty("初盘数量")
+        private Integer firstNum;
+
+        /**
+         * 复盘数量
+         */
+        @ApiModelProperty("复盘数量")
+        private Integer secondNum;
+
+        /**
+         * 抽盘数量
+         */
+        @ApiModelProperty("抽盘数量")
+        private Integer randNum;
+
+        public SheetDetailBo(PreTakeStockSheetFullDto.SheetDetailDto dto) {
+
+            super(dto);
+        }
+
+        @Override
+        protected void afterInit(PreTakeStockSheetFullDto.SheetDetailDto dto) {
+
+            IProductService productService = ApplicationUtil.getBean(IProductService.class);
+
+            ProductDto product = productService.findById(dto.getProductId());
+
+            this.productCode = product.getCode();
+            this.productName = product.getName();
+            this.brandName = product.getPoly().getBrandName();
+            this.categoryName = product.getPoly().getCategoryName();
+            this.skuCode = product.getSkuCode();
+            this.externalCode = product.getExternalCode();
+            this.spec = product.getSpec();
+            this.unit = product.getUnit();
+        }
+    }
+
+    public GetPreTakeStockSheetBo() {
+
+    }
+
+    public GetPreTakeStockSheetBo(PreTakeStockSheetFullDto dto) {
+
+        super(dto);
     }
 
     @Override
-    protected void afterInit(PreTakeStockSheetFullDto.SheetDetailDto dto) {
+    public BaseBo<PreTakeStockSheetFullDto> convert(PreTakeStockSheetFullDto dto) {
 
-      IProductService productService = ApplicationUtil.getBean(IProductService.class);
-
-      ProductDto product = productService.getById(dto.getProductId());
-
-      this.productCode = product.getCode();
-      this.productName = product.getName();
-      this.brandName = product.getPoly().getBrandName();
-      this.categoryName = product.getPoly().getCategoryName();
-      this.skuCode = product.getSkuCode();
-      this.externalCode = product.getExternalCode();
-      this.spec = product.getSpec();
-      this.unit = product.getUnit();
+        return super.convert(dto, GetPreTakeStockSheetBo::getTakeStatus);
     }
-  }
 
-  public GetPreTakeStockSheetBo() {
+    @Override
+    protected void afterInit(PreTakeStockSheetFullDto dto) {
 
-  }
+        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+        StoreCenter sc = storeCenterService.findById(dto.getScId());
 
-  public GetPreTakeStockSheetBo(PreTakeStockSheetFullDto dto) {
+        this.scId = sc.getId();
+        this.scName = sc.getName();
 
-    super(dto);
-  }
+        this.takeStatus = dto.getTakeStatus().getCode();
 
-  @Override
-  public BaseBo<PreTakeStockSheetFullDto> convert(PreTakeStockSheetFullDto dto) {
+        IUserService userService = ApplicationUtil.getBean(IUserService.class);
+        this.updateBy = userService.findById(dto.getUpdateBy()).getName();
 
-    return super.convert(dto, GetPreTakeStockSheetBo::getTakeStatus);
-  }
-
-  @Override
-  protected void afterInit(PreTakeStockSheetFullDto dto) {
-
-    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-
-    this.scId = sc.getId();
-    this.scName = sc.getName();
-
-    this.takeStatus = dto.getTakeStatus().getCode();
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    this.updateBy = userService.getById(dto.getUpdateBy()).getName();
-
-    this.details = dto.getDetails().stream().map(SheetDetailBo::new).collect(Collectors.toList());
-  }
+        this.details = dto.getDetails().stream().map(SheetDetailBo::new).collect(Collectors.toList());
+    }
 }

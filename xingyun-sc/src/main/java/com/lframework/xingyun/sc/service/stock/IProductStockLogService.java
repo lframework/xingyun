@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.stock;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.stock.ProductStockLogDto;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
@@ -20,8 +19,7 @@ public interface IProductStockLogService extends BaseMpService<ProductStockLog> 
    * @param vo
    * @return
    */
-  PageResult<ProductStockLogDto> query(Integer pageIndex, Integer pageSize,
-      QueryProductStockLogVo vo);
+  PageResult<ProductStockLog> query(Integer pageIndex, Integer pageSize, QueryProductStockLogVo vo);
 
   /**
    * 查询列表
@@ -29,7 +27,7 @@ public interface IProductStockLogService extends BaseMpService<ProductStockLog> 
    * @param vo
    * @return
    */
-  List<ProductStockLogDto> query(QueryProductStockLogVo vo);
+  List<ProductStockLog> query(QueryProductStockLogVo vo);
 
   /**
    * 添加入库记录

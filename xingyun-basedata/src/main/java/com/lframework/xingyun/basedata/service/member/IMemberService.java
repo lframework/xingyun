@@ -2,7 +2,6 @@ package com.lframework.xingyun.basedata.service.member;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.basedata.dto.member.MemberDto;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
@@ -18,7 +17,7 @@ public interface IMemberService extends BaseMpService<Member> {
    *
    * @return
    */
-  PageResult<MemberDto> query(Integer pageIndex, Integer pageSize, QueryMemberVo vo);
+  PageResult<Member> query(Integer pageIndex, Integer pageSize, QueryMemberVo vo);
 
   /**
    * 查询列表
@@ -26,7 +25,7 @@ public interface IMemberService extends BaseMpService<Member> {
    * @param vo
    * @return
    */
-  List<MemberDto> query(QueryMemberVo vo);
+  List<Member> query(QueryMemberVo vo);
 
   /**
    * 根据ID查询
@@ -34,7 +33,7 @@ public interface IMemberService extends BaseMpService<Member> {
    * @param id
    * @return
    */
-  MemberDto getById(String id);
+  Member findById(String id);
 
   /**
    * 根据ID停用
@@ -71,5 +70,5 @@ public interface IMemberService extends BaseMpService<Member> {
    * @param vo
    * @return
    */
-  PageResult<MemberDto> selector(Integer pageIndex, Integer pageSize, QueryMemberSelectorVo vo);
+  PageResult<Member> selector(Integer pageIndex, Integer pageSize, QueryMemberSelectorVo vo);
 }

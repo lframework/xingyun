@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
 import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustSheetVo;
@@ -23,12 +22,7 @@ public interface StockCostAdjustSheetMapper extends BaseMapper<StockCostAdjustSh
    * @param vo
    * @return
    */
-  List<StockCostAdjustSheetDto> query(@Param("vo") QueryStockCostAdjustSheetVo vo);
-
-  /**
-   * 根据ID查询
-   */
-  StockCostAdjustSheetDto getById(@Param("id") String id);
+  List<StockCostAdjustSheet> query(@Param("vo") QueryStockCostAdjustSheetVo vo);
 
   /**
    * 根据ID查询

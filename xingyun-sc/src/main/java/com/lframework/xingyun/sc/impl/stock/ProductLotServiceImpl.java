@@ -9,7 +9,6 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.xingyun.sc.dto.stock.ProductLotDto;
 import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.entity.ProductLot;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
@@ -23,8 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductLotServiceImpl extends
-    BaseMpServiceImpl<ProductLotMapper, ProductLot> implements IProductLotService {
+public class ProductLotServiceImpl extends BaseMpServiceImpl<ProductLotMapper, ProductLot>
+    implements IProductLotService {
 
   @Override
   public PageResult<ProductLotWithStockDto> query(Integer pageIndex, Integer pageSize,
@@ -45,11 +44,11 @@ public class ProductLotServiceImpl extends
     return getBaseMapper().query(vo);
   }
 
-  @Cacheable(value = ProductLotDto.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Cacheable(value = ProductLot.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
-  public ProductLotDto getById(String id) {
+  public ProductLot findById(String id) {
 
-    return getBaseMapper().getById(id);
+    return getBaseMapper().selectById(id);
   }
 
   @Transactional
@@ -82,6 +81,7 @@ public class ProductLotServiceImpl extends
   @Override
   public ProductLotWithStockDto getLastPurchaseLot(String productId, String scId,
       String supplierId) {
+
     return getBaseMapper().getLastPurchaseLot(productId, scId, supplierId);
   }
 }

@@ -25,18 +25,17 @@ import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
+import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleOrderEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
-import com.lframework.xingyun.sc.dto.sale.config.SaleConfigDto;
+import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
@@ -88,40 +87,34 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   private ISaleConfigService saleConfigService;
 
   @Override
-  public PageResult<SaleOrderDto> query(Integer pageIndex, Integer pageSize, QuerySaleOrderVo vo) {
+  public PageResult<SaleOrder> query(Integer pageIndex, Integer pageSize, QuerySaleOrderVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOrderDto> datas = this.query(vo);
+    List<SaleOrder> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<SaleOrderDto> query(QuerySaleOrderVo vo) {
+  public List<SaleOrder> query(QuerySaleOrderVo vo) {
 
     return getBaseMapper().query(vo);
   }
 
   @Override
-  public PageResult<SaleOrderDto> selector(Integer pageIndex, Integer pageSize,
+  public PageResult<SaleOrder> selector(Integer pageIndex, Integer pageSize,
       SaleOrderSelectorVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOrderDto> datas = getBaseMapper().selector(vo);
+    List<SaleOrder> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
-  }
-
-  @Override
-  public SaleOrderDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -138,7 +131,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   @Override
   public SaleOrderWithOutDto getWithOut(String id) {
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     SaleOrderWithOutDto order = getBaseMapper().getWithOut(id, saleConfig.getOutStockRequireSale());
     if (order == null) {
@@ -148,17 +141,17 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @Override
-  public PageResult<SaleOrderDto> queryWithOut(Integer pageIndex, Integer pageSize,
+  public PageResult<SaleOrder> queryWithOut(Integer pageIndex, Integer pageSize,
       QuerySaleOrderWithOutVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOrderDto> datas = getBaseMapper()
-        .queryWithOut(vo, saleConfig.getOutStockMultipleRelateSale());
+    List<SaleOrder> datas = getBaseMapper().queryWithOut(vo,
+        saleConfig.getOutStockMultipleRelateSale());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -420,21 +413,21 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
   private void create(SaleOrder order, CreateSaleOrderVo vo) {
 
-    StoreCenterDto sc = storeCenterService.getById(vo.getScId());
+    StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
       throw new InputErrorException("仓库不存在！");
     }
 
     order.setScId(vo.getScId());
 
-    CustomerDto customer = customerService.getById(vo.getCustomerId());
+    Customer customer = customerService.findById(vo.getCustomerId());
     if (customer == null) {
       throw new InputErrorException("客户不存在！");
     }
     order.setCustomerId(vo.getCustomerId());
 
     if (!StringUtil.isBlank(vo.getSalerId())) {
-      UserDto saler = userService.getById(vo.getSalerId());
+      UserDto saler = userService.findById(vo.getSalerId());
       if (saler == null) {
         throw new InputErrorException("销售员不存在！");
       }
@@ -456,14 +449,14 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
         totalNum += productVo.getOrderNum();
       }
 
-      totalAmount = NumberUtil
-          .add(totalAmount, NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()));
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()));
 
       SaleOrderDetail orderDetail = new SaleOrderDetail();
       orderDetail.setId(IdUtil.getId());
       orderDetail.setOrderId(order.getId());
 
-      ProductDto product = productService.getById(productVo.getProductId());
+      ProductDto product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }

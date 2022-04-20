@@ -7,7 +7,7 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.sale.config.SaleConfigDto;
+import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.service.sale.ISaleConfigService;
 import com.lframework.xingyun.sc.service.sale.ISaleOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
@@ -81,7 +81,7 @@ public class CreateSaleReturnVo implements BaseVo, Serializable {
   public void validate() {
 
     ISaleConfigService saleConfigService = ApplicationUtil.getBean(ISaleConfigService.class);
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     if (!saleConfig.getSaleReturnRequireOutStock().equals(this.required)) {
       throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");
@@ -144,8 +144,8 @@ public class CreateSaleReturnVo implements BaseVo, Serializable {
 
         if (!NumberUtil.equal(product.getOriPrice(), 0D)) {
           BigDecimal diffPrice = NumberUtil.sub(NumberUtil.getNumber(
-                  NumberUtil
-                      .mul(product.getOriPrice(), NumberUtil.div(product.getDiscountRate(), 100D)), 2),
+                  NumberUtil.mul(product.getOriPrice(),
+                      NumberUtil.div(product.getDiscountRate(), 100D)), 2),
               product.getTaxPrice());
           if (!NumberUtil.le(diffPrice.abs(), 0.01D)) {
             throw new InputErrorException("第" + orderNo + "行商品折扣率不正确！");

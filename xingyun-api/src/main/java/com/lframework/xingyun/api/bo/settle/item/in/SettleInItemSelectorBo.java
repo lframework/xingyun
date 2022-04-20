@@ -1,45 +1,45 @@
 package com.lframework.xingyun.api.bo.settle.item.in;
 
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.xingyun.settle.dto.item.in.SettleInItemDto;
+import com.lframework.xingyun.settle.entity.SettleInItem;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SettleInItemSelectorBo extends BaseBo<SettleInItemDto> {
+public class SettleInItemSelectorBo extends BaseBo<SettleInItem> {
 
-  /**
-   * ID
-   */
-  @ApiModelProperty("ID")
-  private String id;
+    /**
+     * ID
+     */
+    @ApiModelProperty("ID")
+    private String id;
 
-  /**
-   * 岗位编号
-   */
-  @ApiModelProperty("岗位编号")
-  private String code;
+    /**
+     * 岗位编号
+     */
+    @ApiModelProperty("岗位编号")
+    private String code;
 
-  /**
-   * 岗位名称
-   */
-  @ApiModelProperty("岗位名称")
-  private String name;
+    /**
+     * 岗位名称
+     */
+    @ApiModelProperty("岗位名称")
+    private String name;
 
-  /**
-   * 状态
-   */
-  @ApiModelProperty("状态")
-  private Boolean available;
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Boolean available;
 
-  public SettleInItemSelectorBo() {
+    public SettleInItemSelectorBo() {
 
-  }
+    }
 
-  public SettleInItemSelectorBo(SettleInItemDto dto) {
+    public SettleInItemSelectorBo(SettleInItem dto) {
 
-    super(dto);
-  }
+        super(dto);
+    }
 }

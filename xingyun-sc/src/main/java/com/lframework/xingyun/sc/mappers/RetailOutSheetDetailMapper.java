@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -17,20 +16,12 @@ import org.apache.ibatis.annotations.Param;
 public interface RetailOutSheetDetailMapper extends BaseMapper<RetailOutSheetDetail> {
 
   /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  RetailOutSheetDetailDto getById(String id);
-
-  /**
    * 根据出库单ID查询
    *
    * @param sheetId
    * @return
    */
-  List<RetailOutSheetDetailDto> getBySheetId(String sheetId);
+  List<RetailOutSheetDetail> getBySheetId(String sheetId);
 
   /**
    * 增加退货数量

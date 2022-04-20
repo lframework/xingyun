@@ -2,20 +2,4 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.ProductPurchaseMapper">
 
-    <resultMap id="ProductPurchaseDto" type="com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto">
-        <id column="id" property="id"/>
-        <result column="price" property="price"/>
-    </resultMap>
-
-    <sql id="ProductPurchaseDto_sql">
-        SELECT
-            id,
-            price
-        FROM base_data_product_purchase
-    </sql>
-
-    <select id="getById" resultMap="ProductPurchaseDto">
-        <include refid="ProductPurchaseDto_sql"/>
-        WHERE id = #{id}
-    </select>
 </mapper>

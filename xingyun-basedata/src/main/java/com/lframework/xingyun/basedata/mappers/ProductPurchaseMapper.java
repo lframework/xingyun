@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 
 /**
@@ -14,11 +13,4 @@ import com.lframework.xingyun.basedata.entity.ProductPurchase;
  */
 public interface ProductPurchaseMapper extends BaseMapper<ProductPurchase> {
 
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ProductPurchaseDto getById(String id);
 }

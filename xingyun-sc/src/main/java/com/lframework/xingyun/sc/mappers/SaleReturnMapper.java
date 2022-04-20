@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
@@ -24,15 +23,7 @@ public interface SaleReturnMapper extends BaseMapper<SaleReturn> {
    * @param vo
    * @return
    */
-  List<SaleReturnDto> query(@Param("vo") QuerySaleReturnVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  SaleReturnDto getById(String id);
+  List<SaleReturn> query(@Param("vo") QuerySaleReturnVo vo);
 
   /**
    * 根据ID查询

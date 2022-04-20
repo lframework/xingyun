@@ -26,6 +26,7 @@ public class DefaultExceptionHandler implements HandlerExceptionResolver {
   public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
       Object handler,
       Exception ex) {
+
     ModelAndView mv = new ModelAndView();
     /* 使用response返回 */
     response.setStatus(HttpStatus.OK.value()); // 设置状态码
@@ -33,8 +34,9 @@ public class DefaultExceptionHandler implements HandlerExceptionResolver {
     response.setCharacterEncoding("UTF-8"); // 避免乱码
     response.setHeader("Cache-Control", "no-cache, must-revalidate");
     try {
-      response.getWriter().write(
-          JSONObject.toJSONString(new ResultMsg<>(BaseStatusCode.SYSTEM_ERROR, ex.getMessage())));
+      response.getWriter()
+          .write(JSONObject.toJSONString(
+              new ResultMsg<>(BaseStatusCode.SYSTEM_ERROR, ex.getMessage())));
     } catch (IOException e) {
       log.error("与客户端通讯异常:" + e.getMessage(), e);
     }

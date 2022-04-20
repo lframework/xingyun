@@ -1,51 +1,51 @@
 package com.lframework.xingyun.api.bo.basedata.product.saleprop.item;
 
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.xingyun.basedata.dto.product.saleprop.item.ProductSalePropItemDto;
+import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GetProductSalePropItemBo extends BaseBo<ProductSalePropItemDto> {
+public class GetProductSalePropItemBo extends BaseBo<ProductSalePropItem> {
 
-  /**
-   * ID
-   */
-  @ApiModelProperty("ID")
-  private String id;
+    /**
+     * ID
+     */
+    @ApiModelProperty("ID")
+    private String id;
 
-  /**
-   * 编号
-   */
-  @ApiModelProperty("编号")
-  private String code;
+    /**
+     * 编号
+     */
+    @ApiModelProperty("编号")
+    private String code;
 
-  /**
-   * 名称
-   */
-  @ApiModelProperty("名称")
-  private String name;
+    /**
+     * 名称
+     */
+    @ApiModelProperty("名称")
+    private String name;
 
-  /**
-   * 状态
-   */
-  @ApiModelProperty("状态")
-  private Boolean available;
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Boolean available;
 
-  /**
-   * 备注
-   */
-  @ApiModelProperty("备注")
-  private String description;
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String description;
 
-  public GetProductSalePropItemBo() {
+    public GetProductSalePropItemBo() {
 
-  }
+    }
 
-  public GetProductSalePropItemBo(ProductSalePropItemDto dto) {
+    public GetProductSalePropItemBo(ProductSalePropItem dto) {
 
-    super(dto);
-  }
+        super(dto);
+    }
 }

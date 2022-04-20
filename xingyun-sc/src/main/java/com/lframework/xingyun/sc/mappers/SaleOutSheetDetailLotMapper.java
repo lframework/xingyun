@@ -21,7 +21,7 @@ public interface SaleOutSheetDetailLotMapper extends BaseMapper<SaleOutSheetDeta
    * @param id
    * @return
    */
-  SaleOutSheetDetailLotDto getById(String id);
+  SaleOutSheetDetailLotDto findById(String id);
 
   /**
    * 增加退货数量

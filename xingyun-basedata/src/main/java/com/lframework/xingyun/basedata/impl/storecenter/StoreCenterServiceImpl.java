@@ -19,7 +19,6 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.mappers.StoreCenterMapper;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
@@ -38,193 +37,189 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class StoreCenterServiceImpl extends
-    BaseMpServiceImpl<StoreCenterMapper, StoreCenter> implements IStoreCenterService {
+public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper, StoreCenter>
+        implements IStoreCenterService {
 
-  @Autowired
-  private IDicCityService dicCityService;
+    @Autowired
+    private IDicCityService dicCityService;
 
-  @Override
-  public PageResult<StoreCenterDto> query(Integer pageIndex, Integer pageSize,
-      QueryStoreCenterVo vo) {
+    @Override
+    public PageResult<StoreCenter> query(Integer pageIndex, Integer pageSize, QueryStoreCenterVo vo) {
 
-    Assert.greaterThanZero(pageIndex);
-    Assert.greaterThanZero(pageSize);
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
 
-    PageHelperUtil.startPage(pageIndex, pageSize);
-    List<StoreCenterDto> datas = getBaseMapper().query(vo);
+        PageHelperUtil.startPage(pageIndex, pageSize);
+        List<StoreCenter> datas = getBaseMapper().query(vo);
 
-    return PageResultUtil.convert(new PageInfo<>(datas));
-  }
-
-  @Cacheable(value = StoreCenterDto.CACHE_NAME, key = "#id", unless = "#result == null")
-  @Override
-  public StoreCenterDto getById(String id) {
-
-    return getBaseMapper().getById(id);
-  }
-
-  @OpLog(type = OpLogType.OTHER, name = "停用仓库，ID：{}", params = "#ids", loopFormat = true)
-  @Transactional
-  @Override
-  public void batchUnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
+        return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    Wrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
-        .set(StoreCenter::getAvailable, Boolean.FALSE).in(StoreCenter::getId, ids);
-    getBaseMapper().update(updateWrapper);
+    @Cacheable(value = StoreCenter.CACHE_NAME, key = "#id", unless = "#result == null")
+    @Override
+    public StoreCenter findById(String id) {
 
-    IStoreCenterService thisService = getThis(this.getClass());
-    for (String id : ids) {
-      thisService.cleanCacheByKey(id);
-    }
-  }
-
-  @OpLog(type = OpLogType.OTHER, name = "启用仓库，ID：{}", params = "#ids", loopFormat = true)
-  @Transactional
-  @Override
-  public void batchEnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
+        return getBaseMapper().selectById(id);
     }
 
-    Wrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
-        .set(StoreCenter::getAvailable, Boolean.TRUE).in(StoreCenter::getId, ids);
-    getBaseMapper().update(updateWrapper);
+    @OpLog(type = OpLogType.OTHER, name = "停用仓库，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional
+    @Override
+    public void batchUnable(Collection<String> ids) {
 
-    IStoreCenterService thisService = getThis(this.getClass());
-    for (String id : ids) {
-      thisService.cleanCacheByKey(id);
-    }
-  }
+        if (CollectionUtil.isEmpty(ids)) {
+            return;
+        }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
-  @Transactional
-  @Override
-  public String create(CreateStoreCenterVo vo) {
+        Wrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
+                .set(StoreCenter::getAvailable, Boolean.FALSE).in(StoreCenter::getId, ids);
+        getBaseMapper().update(updateWrapper);
 
-    Wrapper<StoreCenter> checkWrapper = Wrappers.lambdaQuery(StoreCenter.class)
-        .eq(StoreCenter::getCode, vo.getCode());
-    if (getBaseMapper().selectCount(checkWrapper) > 0) {
-      throw new DefaultClientException("编号重复，请重新输入！");
+        IStoreCenterService thisService = getThis(this.getClass());
+        for (String id : ids) {
+            thisService.cleanCacheByKey(id);
+        }
     }
 
-    StoreCenter data = new StoreCenter();
-    data.setId(IdUtil.getId());
-    data.setCode(vo.getCode());
-    data.setName(vo.getName());
-    if (!StringUtil.isBlank(vo.getContact())) {
-      data.setContact(vo.getContact());
-    }
-    if (!StringUtil.isBlank(vo.getTelephone())) {
-      data.setTelephone(vo.getTelephone());
-    }
-    data.setAvailable(Boolean.TRUE);
-    if (!StringUtil.isBlank(vo.getCityId())) {
-      DicCityDto city = dicCityService.getById(vo.getCityId());
-      if (!ObjectUtil.isNull(city)) {
-        data.setCityId(vo.getCityId());
-      }
-    }
+    @OpLog(type = OpLogType.OTHER, name = "启用仓库，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional
+    @Override
+    public void batchEnable(Collection<String> ids) {
 
-    if (!StringUtil.isBlank(vo.getAddress())) {
-      data.setAddress(vo.getAddress());
+        if (CollectionUtil.isEmpty(ids)) {
+            return;
+        }
+
+        Wrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
+                .set(StoreCenter::getAvailable, Boolean.TRUE).in(StoreCenter::getId, ids);
+        getBaseMapper().update(updateWrapper);
+
+        IStoreCenterService thisService = getThis(this.getClass());
+        for (String id : ids) {
+            thisService.cleanCacheByKey(id);
+        }
     }
 
-    if (vo.getPeopleNum() != null) {
-      if (vo.getPeopleNum() < 0) {
-        throw new InputErrorException("仓库人数不允许小于0！");
-      }
-      data.setPeopleNum(vo.getPeopleNum());
+    @OpLog(type = OpLogType.OTHER, name = "新增仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional
+    @Override
+    public String create(CreateStoreCenterVo vo) {
+
+        Wrapper<StoreCenter> checkWrapper = Wrappers.lambdaQuery(StoreCenter.class)
+                .eq(StoreCenter::getCode, vo.getCode());
+        if (getBaseMapper().selectCount(checkWrapper) > 0) {
+            throw new DefaultClientException("编号重复，请重新输入！");
+        }
+
+        StoreCenter data = new StoreCenter();
+        data.setId(IdUtil.getId());
+        data.setCode(vo.getCode());
+        data.setName(vo.getName());
+        if (!StringUtil.isBlank(vo.getContact())) {
+            data.setContact(vo.getContact());
+        }
+        if (!StringUtil.isBlank(vo.getTelephone())) {
+            data.setTelephone(vo.getTelephone());
+        }
+        data.setAvailable(Boolean.TRUE);
+        if (!StringUtil.isBlank(vo.getCityId())) {
+            DicCityDto city = dicCityService.findById(vo.getCityId());
+            if (!ObjectUtil.isNull(city)) {
+                data.setCityId(vo.getCityId());
+            }
+        }
+
+        if (!StringUtil.isBlank(vo.getAddress())) {
+            data.setAddress(vo.getAddress());
+        }
+
+        if (vo.getPeopleNum() != null) {
+            if (vo.getPeopleNum() < 0) {
+                throw new InputErrorException("仓库人数不允许小于0！");
+            }
+            data.setPeopleNum(vo.getPeopleNum());
+        }
+
+        data.setDescription(StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+
+        getBaseMapper().insert(data);
+
+        OpLogUtil.setVariable("id", data.getId());
+        OpLogUtil.setVariable("code", vo.getCode());
+        OpLogUtil.setExtra(vo);
+
+        return data.getId();
     }
 
-    data.setDescription(
-        StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+    @OpLog(type = OpLogType.OTHER, name = "修改仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional
+    @Override
+    public void update(UpdateStoreCenterVo vo) {
 
-    getBaseMapper().insert(data);
+        StoreCenter data = getBaseMapper().selectById(vo.getId());
+        if (ObjectUtil.isNull(data)) {
+            throw new DefaultClientException("仓库不存在！");
+        }
 
-    OpLogUtil.setVariable("id", data.getId());
-    OpLogUtil.setVariable("code", vo.getCode());
-    OpLogUtil.setExtra(vo);
+        Wrapper<StoreCenter> checkWrapper = Wrappers.lambdaQuery(StoreCenter.class)
+                .eq(StoreCenter::getCode, vo.getCode()).ne(StoreCenter::getId, vo.getId());
+        if (getBaseMapper().selectCount(checkWrapper) > 0) {
+            throw new DefaultClientException("编号重复，请重新输入！");
+        }
 
-    return data.getId();
-  }
+        LambdaUpdateWrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
+                .set(StoreCenter::getCode, vo.getCode()).set(StoreCenter::getName, vo.getName())
+                .set(StoreCenter::getContact, !StringUtil.isBlank(vo.getContact()) ? vo.getContact() : null)
+                .set(StoreCenter::getTelephone, !StringUtil.isBlank(vo.getTelephone()) ? vo.getTelephone() : null)
+                .set(StoreCenter::getAvailable, vo.getAvailable())
+                .set(StoreCenter::getAddress, !StringUtil.isBlank(vo.getAddress()) ? vo.getAddress() : null)
+                .set(StoreCenter::getDescription,
+                        StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
+                .eq(StoreCenter::getId, vo.getId());
 
-  @OpLog(type = OpLogType.OTHER, name = "修改仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
-  @Transactional
-  @Override
-  public void update(UpdateStoreCenterVo vo) {
+        if (!StringUtil.isBlank(vo.getCityId())) {
+            DicCityDto city = dicCityService.findById(vo.getCityId());
+            if (!ObjectUtil.isNull(city)) {
+                updateWrapper.set(StoreCenter::getCityId, vo.getCityId());
+            }
+        } else {
+            updateWrapper.set(StoreCenter::getCityId, null);
+        }
 
-    StoreCenter data = getBaseMapper().selectById(vo.getId());
-    if (ObjectUtil.isNull(data)) {
-      throw new DefaultClientException("仓库不存在！");
+        if (vo.getPeopleNum() != null) {
+            if (vo.getPeopleNum() < 0) {
+                throw new InputErrorException("仓库人数不允许小于0！");
+            }
+            updateWrapper.set(StoreCenter::getPeopleNum, vo.getPeopleNum());
+        } else {
+            updateWrapper.set(StoreCenter::getPeopleNum, null);
+        }
+
+        getBaseMapper().update(updateWrapper);
+
+        OpLogUtil.setVariable("id", data.getId());
+        OpLogUtil.setVariable("code", vo.getCode());
+        OpLogUtil.setExtra(vo);
+
+        IStoreCenterService thisService = getThis(this.getClass());
+        thisService.cleanCacheByKey(data.getId());
     }
 
-    Wrapper<StoreCenter> checkWrapper = Wrappers.lambdaQuery(StoreCenter.class)
-        .eq(StoreCenter::getCode, vo.getCode()).ne(StoreCenter::getId, vo.getId());
-    if (getBaseMapper().selectCount(checkWrapper) > 0) {
-      throw new DefaultClientException("编号重复，请重新输入！");
+    @Override
+    public PageResult<StoreCenter> selector(Integer pageIndex, Integer pageSize, QueryStoreCenterSelectorVo vo) {
+
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+        List<StoreCenter> datas = getBaseMapper().selector(vo);
+
+        return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    LambdaUpdateWrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
-        .set(StoreCenter::getCode, vo.getCode()).set(StoreCenter::getName, vo.getName())
-        .set(StoreCenter::getContact, !StringUtil.isBlank(vo.getContact()) ? vo.getContact() : null)
-        .set(StoreCenter::getTelephone,
-            !StringUtil.isBlank(vo.getTelephone()) ? vo.getTelephone() : null)
-        .set(StoreCenter::getAvailable, vo.getAvailable())
-        .set(StoreCenter::getAddress, !StringUtil.isBlank(vo.getAddress()) ? vo.getAddress() : null)
-        .set(StoreCenter::getDescription,
-            StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
-        .eq(StoreCenter::getId, vo.getId());
+    @CacheEvict(value = StoreCenter.CACHE_NAME, key = "#key")
+    @Override
+    public void cleanCacheByKey(String key) {
 
-    if (!StringUtil.isBlank(vo.getCityId())) {
-      DicCityDto city = dicCityService.getById(vo.getCityId());
-      if (!ObjectUtil.isNull(city)) {
-        updateWrapper.set(StoreCenter::getCityId, vo.getCityId());
-      }
-    } else {
-      updateWrapper.set(StoreCenter::getCityId, null);
     }
-
-    if (vo.getPeopleNum() != null) {
-      if (vo.getPeopleNum() < 0) {
-        throw new InputErrorException("仓库人数不允许小于0！");
-      }
-      updateWrapper.set(StoreCenter::getPeopleNum, vo.getPeopleNum());
-    } else {
-      updateWrapper.set(StoreCenter::getPeopleNum, null);
-    }
-
-    getBaseMapper().update(updateWrapper);
-
-    OpLogUtil.setVariable("id", data.getId());
-    OpLogUtil.setVariable("code", vo.getCode());
-    OpLogUtil.setExtra(vo);
-
-    IStoreCenterService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(data.getId());
-  }
-
-  @Override
-  public PageResult<StoreCenterDto> selector(Integer pageIndex, Integer pageSize,
-      QueryStoreCenterSelectorVo vo) {
-
-    Assert.greaterThanZero(pageIndex);
-    Assert.greaterThanZero(pageSize);
-
-    PageHelperUtil.startPage(pageIndex, pageSize);
-    List<StoreCenterDto> datas = getBaseMapper().selector(vo);
-
-    return PageResultUtil.convert(new PageInfo<>(datas));
-  }
-
-  @CacheEvict(value = StoreCenterDto.CACHE_NAME, key = "#key")
-  @Override
-  public void cleanCacheByKey(String key) {
-
-  }
 }

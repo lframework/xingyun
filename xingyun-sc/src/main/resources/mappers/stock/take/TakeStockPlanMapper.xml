@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.TakeStockPlanMapper">
 
-    <resultMap id="TakeStockPlanDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto">
+    <resultMap id="TakeStockPlan" type="com.lframework.xingyun.sc.entity.TakeStockPlan">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="sc_id" property="scId"/>
@@ -122,7 +122,7 @@
         WHERE tb.plan_id = #{id}
     </sql>
 
-    <select id="query" resultMap="TakeStockPlanDto">
+    <select id="query" resultMap="TakeStockPlan">
         <include refid="TakeStockPlanDto_sql"/>
         <where>
             <if test="vo.code != null and vo.code != ''">
@@ -160,12 +160,6 @@
         ORDER BY tb.update_time DESC
     </select>
 
-    <select id="getById" resultMap="TakeStockPlanDto">
-        <include refid="TakeStockPlanDto_sql"/>
-        <where>
-            AND tb.id = #{id}
-        </where>
-    </select>
     <select id="selector" resultMap="TakeStockPlanSelectorDto">
         <include refid="TakeStockPlanSelectorDto_sql"/>
         <where>

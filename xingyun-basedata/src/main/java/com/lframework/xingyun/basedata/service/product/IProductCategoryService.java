@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
@@ -16,7 +15,7 @@ public interface IProductCategoryService extends BaseMpService<ProductCategory> 
    *
    * @return
    */
-  List<ProductCategoryDto> getAllProductCategories();
+  List<ProductCategory> getAllProductCategories();
 
   /**
    * 根据ID查询
@@ -24,14 +23,14 @@ public interface IProductCategoryService extends BaseMpService<ProductCategory> 
    * @param id
    * @return
    */
-  ProductCategoryDto getById(String id);
+  ProductCategory findById(String id);
 
   /**
    * 选择器
    *
    * @return
    */
-  List<ProductCategoryDto> selector(QueryProductCategorySelectorVo vo);
+  List<ProductCategory> selector(QueryProductCategorySelectorVo vo);
 
   /**
    * 根据ID停用

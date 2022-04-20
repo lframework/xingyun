@@ -35,6 +35,7 @@ public class SysResourceController extends ControllerTools {
 
   @Resource
   SysResourceManager sysResourceManager;
+
   @Resource
   SubsystemManager subsystemManager;
 
@@ -50,6 +51,7 @@ public class SysResourceController extends ControllerTools {
   @RequestMapping("listJson")
   public PageResult listJson(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
+
     QueryFilter queryFilter = getQueryFilter(request);
     Page<SysResource> sysResourceList = (Page<SysResource>) sysResourceManager.query(queryFilter);
     return new PageResult(sysResourceList);
@@ -67,6 +69,7 @@ public class SysResourceController extends ControllerTools {
   @RequestMapping("getJson")
   public ResultMsg<SysResource> getJson(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
+
     String id = RequestUtil.getString(request, "id");
     if (StringUtil.isEmpty(id)) {
       String parentId = RequestUtil.getString(request, "parentId");
@@ -91,6 +94,7 @@ public class SysResourceController extends ControllerTools {
   @RequestMapping("save")
   @CatchErr
   public ResultMsg<String> save(@RequestBody SysResource sysResource) throws Exception {
+
     String resultMsg = null;
     String id = sysResource.getId();
     checkResouce(sysResource);
@@ -108,6 +112,7 @@ public class SysResourceController extends ControllerTools {
   }
 
   private void checkResouce(SysResource sysResource) {
+
     boolean isExist = sysResourceManager.isExist(sysResource);
     if (isExist) {
       throw new BusinessMessage("资源已经存在,请修改重新添加!");
@@ -141,6 +146,7 @@ public class SysResourceController extends ControllerTools {
   @RequestMapping("remove")
   public ResultMsg remove(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
+
     ResultMsg message = null;
     try {
       String id = RequestUtil.getString(request, "id");
@@ -156,7 +162,9 @@ public class SysResourceController extends ControllerTools {
   @RequestMapping("sysResourceGet")
   @CatchErr(value = "获取资源失败", write2response = true)
   public ResultMsg<SysResource> sysResourceGet(HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
+      HttpServletResponse response)
+      throws Exception {
+
     String id = request.getParameter("id");
     SysResource sysResource = sysResourceManager.get(id);
     return getSuccessResult(sysResource);
@@ -166,6 +174,7 @@ public class SysResourceController extends ControllerTools {
   @CatchErr
   public List<SysResource> getTreeData(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
+
     String systemId = RequestUtil.getString(request, "systemId");
     Subsystem subsystem = subsystemManager.get(systemId);
     List<SysResource> groupList = getGroupTree(systemId);
@@ -181,6 +190,7 @@ public class SysResourceController extends ControllerTools {
   }
 
   private List<SysResource> getGroupTree(String systemId) {
+
     List<SysResource> groupList = sysResourceManager.getBySystemId(systemId);
     return groupList;
   }

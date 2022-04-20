@@ -50,6 +50,7 @@ public class CreateTakeStockPlanVo implements BaseVo, Serializable {
 
   @Override
   public void validate() {
+
     TakeStockPlanType takeType = EnumUtil.getByCode(TakeStockPlanType.class, this.takeType);
     if (takeType == TakeStockPlanType.CATEGORY) {
       if (CollectionUtil.isEmpty(this.bizIds)) {

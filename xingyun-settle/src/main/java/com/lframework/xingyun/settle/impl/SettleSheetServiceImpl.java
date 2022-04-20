@@ -7,11 +7,7 @@ import com.lframework.common.constants.StringPool;
 import com.lframework.common.exceptions.ClientException;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.IdUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.common.utils.*;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
@@ -23,10 +19,9 @@ import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.web.common.security.AbstractUserDetails;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.settle.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.settle.dto.check.SettleCheckSheetDto;
 import com.lframework.xingyun.settle.dto.sheet.SettleBizItemDto;
-import com.lframework.xingyun.settle.dto.sheet.SettleSheetDto;
 import com.lframework.xingyun.settle.dto.sheet.SettleSheetFullDto;
+import com.lframework.xingyun.settle.entity.SettleCheckSheet;
 import com.lframework.xingyun.settle.entity.SettleSheet;
 import com.lframework.xingyun.settle.entity.SettleSheetDetail;
 import com.lframework.xingyun.settle.enums.SettleSheetStatus;
@@ -34,26 +29,19 @@ import com.lframework.xingyun.settle.mappers.SettleSheetMapper;
 import com.lframework.xingyun.settle.service.ISettleCheckSheetService;
 import com.lframework.xingyun.settle.service.ISettleSheetDetailService;
 import com.lframework.xingyun.settle.service.ISettleSheetService;
-import com.lframework.xingyun.settle.vo.sheet.ApprovePassSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.ApproveRefuseSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.BatchApprovePassSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.BatchApproveRefuseSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.CreateSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.QuerySettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.QueryUnSettleBizItemVo;
-import com.lframework.xingyun.settle.vo.sheet.SettleSheetItemVo;
-import com.lframework.xingyun.settle.vo.sheet.UpdateSettleSheetVo;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import com.lframework.xingyun.settle.vo.sheet.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
-public class SettleSheetServiceImpl extends
-    BaseMpServiceImpl<SettleSheetMapper, SettleSheet> implements ISettleSheetService {
+public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper, SettleSheet>
+    implements ISettleSheetService {
 
   @Autowired
   private ISettleSheetDetailService settleSheetDetailService;
@@ -65,28 +53,21 @@ public class SettleSheetServiceImpl extends
   private ISettleCheckSheetService settleCheckSheetService;
 
   @Override
-  public PageResult<SettleSheetDto> query(Integer pageIndex, Integer pageSize,
-      QuerySettleSheetVo vo) {
+  public PageResult<SettleSheet> query(Integer pageIndex, Integer pageSize, QuerySettleSheetVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SettleSheetDto> datas = this.query(vo);
+    List<SettleSheet> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<SettleSheetDto> query(QuerySettleSheetVo vo) {
+  public List<SettleSheet> query(QuerySettleSheetVo vo) {
 
     return getBaseMapper().query(vo);
-  }
-
-  @Override
-  public SettleSheetDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -160,7 +141,8 @@ public class SettleSheetServiceImpl extends
     Wrapper<SettleSheet> updateWrapper = Wrappers.lambdaUpdate(SettleSheet.class)
         .set(SettleSheet::getApproveBy, null).set(SettleSheet::getApproveTime, null)
         .set(SettleSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(SettleSheet::getId, sheet.getId()).in(SettleSheet::getStatus, statusList);
+        .eq(SettleSheet::getId, sheet.getId())
+        .in(SettleSheet::getStatus, statusList);
     if (getBaseMapper().update(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("供应商结算单信息已过期，请刷新重试！");
     }
@@ -370,7 +352,7 @@ public class SettleSheetServiceImpl extends
   @Override
   public SettleBizItemDto getBizItem(String id) {
 
-    SettleCheckSheetDto checkSheet = settleCheckSheetService.getById(id);
+    SettleCheckSheet checkSheet = settleCheckSheetService.getById(id);
 
     SettleBizItemDto result = new SettleBizItemDto();
     result.setId(checkSheet.getId());
@@ -390,7 +372,7 @@ public class SettleSheetServiceImpl extends
   @Override
   public void setBizItemUnSettle(String id) {
 
-    SettleCheckSheetDto item = settleCheckSheetService.getById(id);
+    SettleCheckSheet item = settleCheckSheetService.getById(id);
     int count = settleCheckSheetService.setUnSettle(id);
     if (count != 1) {
       throw new DefaultClientException("单号：" + item.getCode() + "已结算，业务无法进行！");
@@ -401,7 +383,7 @@ public class SettleSheetServiceImpl extends
   @Override
   public void setBizItemPartSettle(String id) {
 
-    SettleCheckSheetDto item = settleCheckSheetService.getById(id);
+    SettleCheckSheet item = settleCheckSheetService.getById(id);
     int count = settleCheckSheetService.setPartSettle(id);
     if (count != 1) {
       throw new DefaultClientException("单号：" + item.getCode() + "已结算，业务无法进行！");
@@ -412,7 +394,7 @@ public class SettleSheetServiceImpl extends
   @Override
   public void setBizItemSettled(String id) {
 
-    SettleCheckSheetDto item = settleCheckSheetService.getById(id);
+    SettleCheckSheet item = settleCheckSheetService.getById(id);
     int count = settleCheckSheetService.setSettled(id);
     if (count != 1) {
       throw new DefaultClientException("单号：" + item.getCode() + "已结算，无法重复结算！");
@@ -424,11 +406,11 @@ public class SettleSheetServiceImpl extends
 
     List<SettleBizItemDto> results = new ArrayList<>();
 
-    List<SettleCheckSheetDto> sheetList = settleCheckSheetService.getApprovedList(
-        vo.getSupplierId(), vo.getStartTime(), vo.getEndTime());
+    List<SettleCheckSheet> sheetList = settleCheckSheetService.getApprovedList(vo.getSupplierId(),
+        vo.getStartTime(), vo.getEndTime());
 
     if (!CollectionUtil.isEmpty(sheetList)) {
-      for (SettleCheckSheetDto item : sheetList) {
+      for (SettleCheckSheet item : sheetList) {
         SettleBizItemDto result = new SettleBizItemDto();
         result.setId(item.getId());
         result.setCode(item.getCode());

@@ -25,10 +25,10 @@ import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
+import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.entity.ProductPurchase;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
@@ -36,13 +36,12 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleReturnEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.sale.config.SaleConfigDto;
-import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailLotDto;
-import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDto;
-import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
-import com.lframework.xingyun.sc.dto.stock.ProductLotDto;
+import com.lframework.xingyun.sc.entity.ProductLot;
+import com.lframework.xingyun.sc.entity.SaleConfig;
+import com.lframework.xingyun.sc.entity.SaleOutSheet;
+import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
 import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.entity.SaleReturnDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
@@ -75,9 +74,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleReturnServiceImpl extends
-    BaseMpServiceImpl<SaleReturnMapper, SaleReturn> implements
-    ISaleReturnService {
+public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, SaleReturn>
+    implements ISaleReturnService {
 
   @Autowired
   private ISaleReturnDetailService saleReturnDetailService;
@@ -119,28 +117,21 @@ public class SaleReturnServiceImpl extends
   private IProductPurchaseService productPurchaseService;
 
   @Override
-  public PageResult<SaleReturnDto> query(Integer pageIndex, Integer pageSize,
-      QuerySaleReturnVo vo) {
+  public PageResult<SaleReturn> query(Integer pageIndex, Integer pageSize, QuerySaleReturnVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleReturnDto> datas = this.query(vo);
+    List<SaleReturn> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<SaleReturnDto> query(QuerySaleReturnVo vo) {
+  public List<SaleReturn> query(QuerySaleReturnVo vo) {
 
     return getBaseMapper().query(vo);
-  }
-
-  @Override
-  public SaleReturnDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -158,7 +149,7 @@ public class SaleReturnServiceImpl extends
     saleReturn.setId(IdUtil.getId());
     saleReturn.setCode(generateCodeService.generate(GenerateCodeTypePool.SALE_RETURN));
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     this.create(saleReturn, vo, saleConfig.getSaleReturnRequireOutStock());
 
@@ -224,7 +215,8 @@ public class SaleReturnServiceImpl extends
     Wrapper<SaleReturn> updateOrderWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
         .set(SaleReturn::getApproveBy, null).set(SaleReturn::getApproveTime, null)
         .set(SaleReturn::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(SaleReturn::getId, saleReturn.getId()).in(SaleReturn::getStatus, statusList);
+        .eq(SaleReturn::getId, saleReturn.getId())
+        .in(SaleReturn::getStatus, statusList);
     if (getBaseMapper().update(saleReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售退货单信息已过期，请刷新重试！");
     }
@@ -253,14 +245,14 @@ public class SaleReturnServiceImpl extends
       throw new DefaultClientException("销售退货单无法审核通过！");
     }
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     if (!saleConfig.getSaleReturnMultipleRelateOutStock()) {
       Wrapper<SaleReturn> checkWrapper = Wrappers.lambdaQuery(SaleReturn.class)
           .eq(SaleReturn::getOutSheetId, saleReturn.getOutSheetId())
           .ne(SaleReturn::getId, saleReturn.getId());
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
-        SaleOutSheetDto saleOutSheet = saleOutSheetService.getById(saleReturn.getOutSheetId());
+        SaleOutSheet saleOutSheet = saleOutSheetService.getById(saleReturn.getOutSheetId());
         throw new DefaultClientException(
             "销售出库单号：" + saleOutSheet.getCode() + "，已关联其他销售退货单，不允许关联多个销售退货单！");
       }
@@ -275,7 +267,8 @@ public class SaleReturnServiceImpl extends
     LambdaUpdateWrapper<SaleReturn> updateOrderWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
         .set(SaleReturn::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(SaleReturn::getApproveTime, LocalDateTime.now())
-        .eq(SaleReturn::getId, saleReturn.getId()).in(SaleReturn::getStatus, statusList);
+        .eq(SaleReturn::getId, saleReturn.getId())
+        .in(SaleReturn::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(SaleReturn::getDescription, vo.getDescription());
     }
@@ -288,7 +281,7 @@ public class SaleReturnServiceImpl extends
         .orderByAsc(SaleReturnDetail::getOrderNo);
     List<SaleReturnDetail> details = saleReturnDetailService.list(queryDetailWrapper);
     for (SaleReturnDetail detail : details) {
-      ProductPurchaseDto productPurchase = productPurchaseService.getById(detail.getProductId());
+      ProductPurchase productPurchase = productPurchaseService.getById(detail.getProductId());
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(saleReturn.getScId());
@@ -474,21 +467,21 @@ public class SaleReturnServiceImpl extends
 
   private void create(SaleReturn saleReturn, CreateSaleReturnVo vo, boolean requireOut) {
 
-    StoreCenterDto sc = storeCenterService.getById(vo.getScId());
+    StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
       throw new InputErrorException("仓库不存在！");
     }
 
     saleReturn.setScId(vo.getScId());
 
-    CustomerDto customer = customerService.getById(vo.getCustomerId());
+    Customer customer = customerService.findById(vo.getCustomerId());
     if (customer == null) {
       throw new InputErrorException("客户不存在！");
     }
     saleReturn.setCustomerId(vo.getCustomerId());
 
     if (!StringUtil.isBlank(vo.getSalerId())) {
-      UserDto saler = userService.getById(vo.getSalerId());
+      UserDto saler = userService.findById(vo.getSalerId());
       if (saler == null) {
         throw new InputErrorException("销售员不存在！");
       }
@@ -496,7 +489,7 @@ public class SaleReturnServiceImpl extends
       saleReturn.setSalerId(vo.getSalerId());
     }
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     GetPaymentDateDto paymentDate = saleOutSheetService.getPaymentDate(customer.getId());
 
@@ -505,7 +498,7 @@ public class SaleReturnServiceImpl extends
 
     if (requireOut) {
 
-      SaleOutSheetDto saleOutSheet = saleOutSheetService.getById(vo.getOutSheetId());
+      SaleOutSheet saleOutSheet = saleOutSheetService.getById(vo.getOutSheetId());
       if (saleOutSheet == null) {
         throw new DefaultClientException("销售出库单不存在！");
       }
@@ -532,10 +525,10 @@ public class SaleReturnServiceImpl extends
     for (SaleReturnProductVo productVo : vo.getProducts()) {
       if (requireOut) {
         if (!StringUtil.isBlank(productVo.getOutSheetDetailId())) {
-          SaleOutSheetDetailLotDto detailLot = saleOutSheetDetailLotService.getById(
+          SaleOutSheetDetailLotDto detailLot = saleOutSheetDetailLotService.findById(
               productVo.getOutSheetDetailId());
-          SaleOutSheetDetailDto detail = saleOutSheetDetailService.getById(detailLot.getDetailId());
-          ProductLotDto lot = productLotService.getById(detailLot.getLotId());
+          SaleOutSheetDetail detail = saleOutSheetDetailService.getById(detailLot.getDetailId());
+          ProductLot lot = productLotService.findById(detailLot.getLotId());
           productVo.setOriPrice(detail.getOriPrice());
           productVo.setTaxPrice(detail.getTaxPrice());
           productVo.setDiscountRate(detail.getDiscountRate());
@@ -569,7 +562,7 @@ public class SaleReturnServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setReturnId(saleReturn.getId());
 
-      ProductDto product = productService.getById(productVo.getProductId());
+      ProductDto product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -586,8 +579,9 @@ public class SaleReturnServiceImpl extends
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getPoly().getTaxRate());
-      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-          : productVo.getDescription());
+      detail.setDescription(
+          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+              : productVo.getDescription());
       detail.setOrderNo(orderNo);
       detail.setSettleStatus(this.getInitSettleStatus(customer));
       if (requireOut && !StringUtil.isBlank(productVo.getOutSheetDetailId())) {
@@ -613,7 +607,7 @@ public class SaleReturnServiceImpl extends
    * @param customer
    * @return
    */
-  private SettleStatus getInitSettleStatus(CustomerDto customer) {
+  private SettleStatus getInitSettleStatus(Customer customer) {
 
     return SettleStatus.UN_SETTLE;
   }

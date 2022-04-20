@@ -9,7 +9,6 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.xingyun.sc.dto.stock.ProductStockLogDto;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.mappers.ProductStockLogMapper;
@@ -24,23 +23,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductStockLogServiceImpl extends
-    BaseMpServiceImpl<ProductStockLogMapper, ProductStockLog> implements IProductStockLogService {
+    BaseMpServiceImpl<ProductStockLogMapper, ProductStockLog>
+    implements IProductStockLogService {
 
   @Override
-  public PageResult<ProductStockLogDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<ProductStockLog> query(Integer pageIndex, Integer pageSize,
       QueryProductStockLogVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ProductStockLogDto> datas = this.query(vo);
+    List<ProductStockLog> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<ProductStockLogDto> query(QueryProductStockLogVo vo) {
+  public List<ProductStockLog> query(QueryProductStockLogVo vo) {
 
     return getBaseMapper().query(vo);
   }
@@ -120,6 +120,7 @@ public class ProductStockLogServiceImpl extends
   @Transactional
   @Override
   public void addLogWithStockCostAdjust(AddLogWithStockCostAdjustVo vo) {
+
     ProductStockLog record = new ProductStockLog();
     record.setId(IdUtil.getId());
     record.setScId(vo.getScId());

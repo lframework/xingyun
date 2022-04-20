@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.settle.mappers.SettleCheckSheetMapper">
-    <resultMap id="SettleCheckSheetDto" type="com.lframework.xingyun.settle.dto.check.SettleCheckSheetDto">
+    <resultMap id="SettleCheckSheet" type="com.lframework.xingyun.settle.entity.SettleCheckSheet">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="supplier_id" property="supplierId"/>
@@ -110,7 +110,7 @@
         LEFT JOIN settle_check_sheet_detail AS d ON d.sheet_id = s.id
     </sql>
 
-    <select id="query" resultMap="SettleCheckSheetDto">
+    <select id="query" resultMap="SettleCheckSheet">
         <include refid="SettleCheckSheetDto_sql"/>
         <where>
             <if test="vo != null">
@@ -151,11 +151,6 @@
             </if>
         </where>
         ORDER BY s.create_time DESC
-    </select>
-
-    <select id="getById" resultMap="SettleCheckSheetDto">
-        <include refid="SettleCheckSheetDto_sql"/>
-        WHERE s.id = #{id}
     </select>
 
     <select id="getDetail" resultMap="SettleCheckSheetFullDto">
@@ -206,7 +201,7 @@
         </where>
         ORDER BY s.create_time DESC, d.order_no
     </select>
-    <select id="getApprovedList" resultMap="SettleCheckSheetDto">
+    <select id="getApprovedList" resultMap="SettleCheckSheet">
         <include refid="SettleCheckSheetDto_sql"/>
         WHERE s.supplier_id = #{supplierId}
         <if test="startTime != null">

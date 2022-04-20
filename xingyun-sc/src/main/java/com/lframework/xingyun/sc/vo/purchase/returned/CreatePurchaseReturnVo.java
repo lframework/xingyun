@@ -6,8 +6,8 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.xingyun.sc.dto.purchase.config.PurchaseConfigDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
+import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
 import io.swagger.annotations.ApiModelProperty;
@@ -79,9 +79,9 @@ public class CreatePurchaseReturnVo implements BaseVo, Serializable {
   @Override
   public void validate() {
 
-    IPurchaseConfigService purchaseConfigService = ApplicationUtil
-        .getBean(IPurchaseConfigService.class);
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    IPurchaseConfigService purchaseConfigService = ApplicationUtil.getBean(
+        IPurchaseConfigService.class);
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     if (!purchaseConfig.getPurchaseReturnRequireReceive().equals(this.required)) {
       throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");

@@ -3,7 +3,6 @@ package com.lframework.xingyun.sc.service.stock.take;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
@@ -27,7 +26,7 @@ public interface ITakeStockPlanService extends BaseMpService<TakeStockPlan> {
    *
    * @return
    */
-  PageResult<TakeStockPlanDto> query(Integer pageIndex, Integer pageSize, QueryTakeStockPlanVo vo);
+  PageResult<TakeStockPlan> query(Integer pageIndex, Integer pageSize, QueryTakeStockPlanVo vo);
 
   /**
    * 查询列表
@@ -35,7 +34,7 @@ public interface ITakeStockPlanService extends BaseMpService<TakeStockPlan> {
    * @param vo
    * @return
    */
-  List<TakeStockPlanDto> query(QueryTakeStockPlanVo vo);
+  List<TakeStockPlan> query(QueryTakeStockPlanVo vo);
 
   /**
    * 选择器
@@ -47,14 +46,6 @@ public interface ITakeStockPlanService extends BaseMpService<TakeStockPlan> {
    */
   PageResult<TakeStockPlanSelectorDto> selector(Integer pageIndex, Integer pageSize,
       TakeStockPlanSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  TakeStockPlanDto getById(String id);
 
   /**
    * 根据ID查询

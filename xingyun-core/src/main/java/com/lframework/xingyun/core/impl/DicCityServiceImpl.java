@@ -25,13 +25,14 @@ public class DicCityServiceImpl extends BaseMpServiceImpl<DicCityMapper, DicCity
 
   @Cacheable(value = DicCityDto.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
-  public DicCityDto getById(String id) {
+  public DicCityDto findById(String id) {
 
-    return getBaseMapper().getById(id);
+    return getBaseMapper().findById(id);
   }
 
   @Override
   public List<DicCityDto> getChainById(String id) {
+
     IDicCityService thisService = getThis(this.getClass());
     List<DicCityDto> all = thisService.getAll();
     List<DicCityDto> results = new ArrayList<>();

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -19,10 +20,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("tbl_pre_take_stock_sheet")
-public class PreTakeStockSheet extends BaseEntity {
+public class PreTakeStockSheet extends BaseEntity implements BaseDto {
 
+  public static final String CACHE_NAME = "PreTakeStockSheet";
   private static final long serialVersionUID = 1L;
-
   /**
    * ID
    */

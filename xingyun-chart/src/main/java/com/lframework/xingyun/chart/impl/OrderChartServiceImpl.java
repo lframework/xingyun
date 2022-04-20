@@ -25,8 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class OrderChartServiceImpl extends
-    BaseMpServiceImpl<OrderChartMapper, OrderChart> implements IOrderChartService {
+public class OrderChartServiceImpl extends BaseMpServiceImpl<OrderChartMapper, OrderChart>
+    implements IOrderChartService {
 
   @Transactional
   @Override
@@ -54,9 +54,9 @@ public class OrderChartServiceImpl extends
 
     LocalDate now = LocalDate.now();
 
-    OrderChartSumDto data = getBaseMapper()
-        .getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
-            DateUtil.toLocalDateTimeMax(now));
+    OrderChartSumDto data = getBaseMapper().getChartSum(vo.getBizTypes(),
+        DateUtil.toLocalDateTime(now),
+        DateUtil.toLocalDateTimeMax(now));
     if (data == null) {
       data = new OrderChartSumDto();
       data.setTotalAmount(BigDecimal.ZERO);
@@ -72,9 +72,9 @@ public class OrderChartServiceImpl extends
     LocalDate startDate = LocalDate.now().withDayOfMonth(1);
     LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
-    OrderChartSumDto data = getBaseMapper()
-        .getChartSum(vo.getBizTypes(), DateUtil.toLocalDateTime(startDate),
-            DateUtil.toLocalDateTimeMax(endDate));
+    OrderChartSumDto data = getBaseMapper().getChartSum(vo.getBizTypes(),
+        DateUtil.toLocalDateTime(startDate),
+        DateUtil.toLocalDateTimeMax(endDate));
     if (data == null) {
       data = new OrderChartSumDto();
       data.setTotalAmount(BigDecimal.ZERO);
@@ -89,17 +89,17 @@ public class OrderChartServiceImpl extends
 
     LocalDate now = LocalDate.now();
 
-    List<OrderChartTodayDto> results = getBaseMapper()
-        .queryToday(vo.getBizTypes(), DateUtil.toLocalDateTime(now),
-            DateUtil.toLocalDateTimeMax(now));
+    List<OrderChartTodayDto> results = getBaseMapper().queryToday(vo.getBizTypes(),
+        DateUtil.toLocalDateTime(now),
+        DateUtil.toLocalDateTimeMax(now));
 
     int offset = 24;
     List<OrderChartTodayDto> newResults = new ArrayList<>(offset);
 
     for (int i = 0; i < offset; i++) {
       LocalTime localTime = LocalTime.of(i, 0, 0);
-      String filterDateStr = DateUtil
-          .formatDateTime(LocalDateTime.of(now, localTime), StringPool.DATE_TIME_HOUR_PATTER);
+      String filterDateStr = DateUtil.formatDateTime(LocalDateTime.of(now, localTime),
+          StringPool.DATE_TIME_HOUR_PATTER);
       OrderChartTodayDto result = results.stream()
           .filter(t -> t.getCreateHour().equals(filterDateStr))
           .findFirst().orElse(null);
@@ -122,9 +122,8 @@ public class OrderChartServiceImpl extends
     LocalDate startDate = LocalDate.now().withDayOfMonth(1);
     LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
-    List<OrderChartSameMonthDto> results = getBaseMapper()
-        .querySameMonth(vo.getBizTypes(),
-            DateUtil.toLocalDateTime(startDate), DateUtil.toLocalDateTimeMax(endDate));
+    List<OrderChartSameMonthDto> results = getBaseMapper().querySameMonth(vo.getBizTypes(),
+        DateUtil.toLocalDateTime(startDate), DateUtil.toLocalDateTimeMax(endDate));
 
     LocalDate lastDate = startDate.plusMonths(1).minusDays(1);
     int offset = lastDate.getDayOfMonth() - startDate.getDayOfMonth() + 1;

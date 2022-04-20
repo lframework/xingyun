@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PurchaseReturnDetailServiceImpl extends
-    BaseMpServiceImpl<PurchaseReturnDetailMapper, PurchaseReturnDetail> implements
-    IPurchaseReturnDetailService {
+    BaseMpServiceImpl<PurchaseReturnDetailMapper, PurchaseReturnDetail>
+    implements IPurchaseReturnDetailService {
 
 }

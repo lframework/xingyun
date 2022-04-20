@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.ProductCategoryMapper">
 
-    <resultMap id="ProductCategoryDto" type="com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto">
+    <resultMap id="ProductCategory" type="com.lframework.xingyun.basedata.entity.ProductCategory">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -22,16 +22,12 @@
         FROM base_data_product_category
     </sql>
 
-    <select id="getAllProductCategories" resultMap="ProductCategoryDto">
+    <select id="getAllProductCategories" resultMap="ProductCategory">
         <include refid="ProductCategoryDto_sql"/>
         ORDER BY code
     </select>
 
-    <select id="getById" resultMap="ProductCategoryDto">
-        <include refid="ProductCategoryDto_sql"/>
-        WHERE id = #{id}
-    </select>
-    <select id="selector" resultMap="ProductCategoryDto">
+    <select id="selector" resultMap="ProductCategory">
         <include refid="ProductCategoryDto_sql"/>
         <where>
             <if test="vo != null">

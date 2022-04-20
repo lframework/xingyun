@@ -8,11 +8,11 @@ import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
-import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
 import com.lframework.xingyun.basedata.dto.product.poly.ProductPolyPropertyDto;
-import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyDto;
-import com.lframework.xingyun.basedata.dto.product.property.item.ProductPropertyItemDto;
+import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.entity.ProductPolyProperty;
+import com.lframework.xingyun.basedata.entity.ProductProperty;
+import com.lframework.xingyun.basedata.entity.ProductPropertyItem;
 import com.lframework.xingyun.basedata.enums.ColumnType;
 import com.lframework.xingyun.basedata.mappers.ProductPolyPropertyMapper;
 import com.lframework.xingyun.basedata.service.product.IProductCategoryPropertyService;
@@ -32,8 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductPolyPropertyServiceImpl extends
-    BaseMpServiceImpl<ProductPolyPropertyMapper, ProductPolyProperty> implements
-    IProductPolyPropertyService {
+    BaseMpServiceImpl<ProductPolyPropertyMapper, ProductPolyProperty>
+    implements IProductPolyPropertyService {
 
   @Autowired
   private IProductPropertyService productPropertyService;
@@ -83,12 +83,11 @@ public class ProductPolyPropertyServiceImpl extends
   @Override
   public void setCommonToAppoint(String propertyId) {
 
-    ProductPropertyDto productProperty = productPropertyService.getById(propertyId);
-    List<ProductCategoryPropertyDto> categoryList = productCategoryPropertyService
-        .getByPropertyId(propertyId);
-    for (ProductCategoryPropertyDto productCategoryPropertyDto : categoryList) {
-      getBaseMapper()
-          .setCommonToAppoint(propertyId, productCategoryPropertyDto.getCategoryId());
+    ProductProperty productProperty = productPropertyService.findById(propertyId);
+    List<ProductCategoryProperty> categoryList = productCategoryPropertyService.getByPropertyId(
+        propertyId);
+    for (ProductCategoryProperty productCategoryPropertyDto : categoryList) {
+      getBaseMapper().setCommonToAppoint(propertyId, productCategoryPropertyDto.getCategoryId());
     }
 
     List<ProductPolyPropertyDto> datas = getBaseMapper().getByPropertyId(propertyId);
@@ -103,10 +102,10 @@ public class ProductPolyPropertyServiceImpl extends
   @Override
   public void setAppointToCommon(String propertyId) {
 
-    List<ProductPropertyItemDto> propertyItems = productPropertyItemService
-        .getByPropertyId(propertyId);
+    List<ProductPropertyItem> propertyItems = productPropertyItemService.getByPropertyId(
+        propertyId);
     if (!CollectionUtil.isEmpty(propertyItems)) {
-      ProductPropertyItemDto propertyItem = propertyItems.get(0);
+      ProductPropertyItem propertyItem = propertyItems.get(0);
 
       List<String> polyIds = productPolyService.getIdNotInPolyProperty(propertyId);
       if (!CollectionUtil.isEmpty(polyIds)) {
@@ -134,22 +133,22 @@ public class ProductPolyPropertyServiceImpl extends
   @Override
   public void updateAppointCategoryId(String propertyId) {
 
-    List<ProductPropertyItemDto> propertyItems = productPropertyItemService
-        .getByPropertyId(propertyId);
+    List<ProductPropertyItem> propertyItems = productPropertyItemService.getByPropertyId(
+        propertyId);
     if (!CollectionUtil.isEmpty(propertyItems)) {
-      ProductPropertyItemDto propertyItem = propertyItems.get(0);
+      ProductPropertyItem propertyItem = propertyItems.get(0);
 
       Wrapper<ProductPolyProperty> deleteWrapper = Wrappers.lambdaQuery(ProductPolyProperty.class)
           .eq(ProductPolyProperty::getPropertyId, propertyId);
       getBaseMapper().delete(deleteWrapper);
 
-      ProductPropertyDto productProperty = productPropertyService.getById(propertyId);
+      ProductProperty productProperty = productPropertyService.findById(propertyId);
 
-      List<ProductCategoryPropertyDto> categoryList = productCategoryPropertyService
-          .getByPropertyId(propertyId);
-      for (ProductCategoryPropertyDto productCategoryPropertyDto : categoryList) {
-        List<String> polyIds = productPolyService
-            .getIdByCategoryId(productCategoryPropertyDto.getCategoryId());
+      List<ProductCategoryProperty> categoryList = productCategoryPropertyService.getByPropertyId(
+          propertyId);
+      for (ProductCategoryProperty productCategoryPropertyDto : categoryList) {
+        List<String> polyIds = productPolyService.getIdByCategoryId(
+            productCategoryPropertyDto.getCategoryId());
         if (!CollectionUtil.isEmpty(polyIds)) {
           for (String polyId : polyIds) {
             ProductPolyProperty data = new ProductPolyProperty();
@@ -176,7 +175,7 @@ public class ProductPolyPropertyServiceImpl extends
   @Override
   public String create(CreateProductPolyPropertyVo vo) {
 
-    ProductPropertyDto productProperty = productPropertyService.getById(vo.getPropertyId());
+    ProductProperty productProperty = productPropertyService.findById(vo.getPropertyId());
     if (productProperty == null) {
       throw new DefaultClientException("商品属性不存在！");
     }
@@ -187,8 +186,8 @@ public class ProductPolyPropertyServiceImpl extends
     data.setPropertyId(productProperty.getId());
 
     if (productProperty.getColumnType() != ColumnType.CUSTOM) {
-      ProductPropertyItemDto propertyItem = productPropertyItemService
-          .getById(vo.getPropertyItemId());
+      ProductPropertyItem propertyItem = productPropertyItemService.findById(
+          vo.getPropertyItemId());
 
       if (propertyItem == null) {
         throw new DefaultClientException("属性值不存在！");

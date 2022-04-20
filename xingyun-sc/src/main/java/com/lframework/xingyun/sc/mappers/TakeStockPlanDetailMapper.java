@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDetailDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -32,7 +31,7 @@ public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetai
    * @param planId
    * @return
    */
-  List<TakeStockPlanDetailDto> getDetailsByPlanId(String planId);
+  List<TakeStockPlanDetail> getDetailsByPlanId(String planId);
 
   /**
    * 更新盘点数量

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -20,10 +21,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("base_data_customer")
-public class Customer extends BaseEntity {
+public class Customer extends BaseEntity implements BaseDto {
 
+  public static final String CACHE_NAME = "CustomerDto";
   private static final long serialVersionUID = 1L;
-
   /**
    * ID
    */

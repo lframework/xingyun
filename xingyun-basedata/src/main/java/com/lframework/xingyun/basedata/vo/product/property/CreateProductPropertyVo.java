@@ -1,5 +1,6 @@
 package com.lframework.xingyun.basedata.vo.product.property;
 
+import com.lframework.starter.web.components.validation.IsCode;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.basedata.enums.ColumnDataType;
@@ -21,6 +22,7 @@ public class CreateProductPropertyVo implements BaseVo, Serializable {
    * 编号
    */
   @ApiModelProperty(value = "编号", required = true)
+  @IsCode
   @NotBlank(message = "请输入编号！")
   private String code;
 

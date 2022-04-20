@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.service.stock;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.stock.ProductLotStockDto;
 import com.lframework.xingyun.sc.entity.ProductLotStock;
 import com.lframework.xingyun.sc.vo.stock.lot.AddProductLotStockVo;
 import java.util.List;
@@ -17,7 +16,7 @@ public interface IProductLotStockService extends BaseMpService<ProductLotStock> 
    * @param num
    * @return 如果返回结果为空，则代表库存不足
    */
-  List<ProductLotStockDto> getWithSubStock(String productId, String scId, String supplierId,
+  List<ProductLotStock> getWithSubStock(String productId, String scId, String supplierId,
       Integer num);
 
   /**
@@ -29,21 +28,13 @@ public interface IProductLotStockService extends BaseMpService<ProductLotStock> 
   void subStockById(String id, Integer num);
 
   /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ProductLotStockDto getById(String id);
-
-  /**
    * 根据仓库ID、批次ID查询
    *
    * @param scId
    * @param lotId
    * @return
    */
-  ProductLotStockDto getByScIdAndLotId(String scId, String lotId);
+  ProductLotStock getByScIdAndLotId(String scId, String lotId);
 
   /**
    * 入库
@@ -60,5 +51,5 @@ public interface IProductLotStockService extends BaseMpService<ProductLotStock> 
    * @param scId
    * @return
    */
-  List<ProductLotStockDto> getAllHasStockLots(String productId, String scId);
+  List<ProductLotStock> getAllHasStockLots(String productId, String scId);
 }

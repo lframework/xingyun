@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
@@ -27,15 +26,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleOrderDto> query(@Param("vo") QuerySaleOrderVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  SaleOrderDto getById(String id);
+  List<SaleOrder> query(@Param("vo") QuerySaleOrderVo vo);
 
   /**
    * 根据ID查询
@@ -59,7 +50,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleOrderDto> selector(@Param("vo") SaleOrderSelectorVo vo);
+  List<SaleOrder> selector(@Param("vo") SaleOrderSelectorVo vo);
 
   /**
    * 根据ID查询（出库业务）
@@ -75,6 +66,6 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleOrderDto> queryWithOut(@Param("vo") QuerySaleOrderWithOutVo vo,
+  List<SaleOrder> queryWithOut(@Param("vo") QuerySaleOrderWithOutVo vo,
       @Param("multipleRelate") boolean multipleRelate);
 }

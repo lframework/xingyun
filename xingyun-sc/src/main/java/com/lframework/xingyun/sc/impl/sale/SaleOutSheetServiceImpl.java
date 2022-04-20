@@ -24,9 +24,9 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
+import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
@@ -35,12 +35,11 @@ import com.lframework.xingyun.core.dto.stock.ProductLotChangeDto;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDetailDto;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
-import com.lframework.xingyun.sc.dto.sale.config.SaleConfigDto;
-import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.SaleConfig;
+import com.lframework.xingyun.sc.entity.SaleOrder;
+import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetailLot;
@@ -76,8 +75,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleOutSheetServiceImpl extends
-    BaseMpServiceImpl<SaleOutSheetMapper, SaleOutSheet> implements ISaleOutSheetService {
+public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMapper, SaleOutSheet>
+    implements ISaleOutSheetService {
 
   @Autowired
   private ISaleOutSheetDetailService saleOutSheetDetailService;
@@ -113,41 +112,35 @@ public class SaleOutSheetServiceImpl extends
   private IProductStockService productStockService;
 
   @Override
-  public PageResult<SaleOutSheetDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<SaleOutSheet> query(Integer pageIndex, Integer pageSize,
       QuerySaleOutSheetVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOutSheetDto> datas = this.query(vo);
+    List<SaleOutSheet> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<SaleOutSheetDto> query(QuerySaleOutSheetVo vo) {
+  public List<SaleOutSheet> query(QuerySaleOutSheetVo vo) {
 
     return getBaseMapper().query(vo);
   }
 
   @Override
-  public PageResult<SaleOutSheetDto> selector(Integer pageIndex, Integer pageSize,
+  public PageResult<SaleOutSheet> selector(Integer pageIndex, Integer pageSize,
       SaleOutSheetSelectorVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOutSheetDto> datas = getBaseMapper().selector(vo);
+    List<SaleOutSheet> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
-  }
-
-  @Override
-  public SaleOutSheetDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -157,7 +150,7 @@ public class SaleOutSheetServiceImpl extends
     //（1）客户的结账方式为“任意指定”，则付款日期按照以上规则展示默认值，允许用户更改，但仅能选择当天及当天之后的日期。
     //（2）客户的结账方式为“货到付款”（这个参数的名字后期会改，如“货销付款”），则付款日期默认为此刻，且不允许修改，即出库单的创建时间，可能会遇到跨日的问题，但付款日期，均赋值为出库单的创建日期。
 
-    CustomerDto customer = customerService.getById(customerId);
+    Customer customer = customerService.findById(customerId);
 
     GetPaymentDateDto result = new GetPaymentDateDto();
     result.setAllowModify(customer.getSettleType() == SettleType.ARBITRARILY);
@@ -180,10 +173,10 @@ public class SaleOutSheetServiceImpl extends
   @Override
   public SaleOutSheetWithReturnDto getWithReturn(String id) {
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
-    SaleOutSheetWithReturnDto sheet = getBaseMapper()
-        .getWithReturn(id, saleConfig.getSaleReturnRequireOutStock());
+    SaleOutSheetWithReturnDto sheet = getBaseMapper().getWithReturn(id,
+        saleConfig.getSaleReturnRequireOutStock());
     if (sheet == null) {
       throw new InputErrorException("销售出库单不存在！");
     }
@@ -192,17 +185,17 @@ public class SaleOutSheetServiceImpl extends
   }
 
   @Override
-  public PageResult<SaleOutSheetDto> queryWithReturn(Integer pageIndex, Integer pageSize,
+  public PageResult<SaleOutSheet> queryWithReturn(Integer pageIndex, Integer pageSize,
       QuerySaleOutSheetWithReturnVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOutSheetDto> datas = getBaseMapper()
-        .queryWithReturn(vo, saleConfig.getSaleReturnMultipleRelateOutStock());
+    List<SaleOutSheet> datas = getBaseMapper().queryWithReturn(vo,
+        saleConfig.getSaleReturnMultipleRelateOutStock());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -216,7 +209,7 @@ public class SaleOutSheetServiceImpl extends
     sheet.setId(IdUtil.getId());
     sheet.setCode(generateCodeService.generate(GenerateCodeTypePool.SALE_OUT_SHEET));
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     this.create(sheet, vo, saleConfig.getOutStockRequireSale());
 
@@ -254,8 +247,8 @@ public class SaleOutSheetServiceImpl extends
 
     if (requireSale) {
       //查询出库单明细
-      Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers
-          .lambdaQuery(SaleOutSheetDetail.class)
+      Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+              SaleOutSheetDetail.class)
           .eq(SaleOutSheetDetail::getSheetId, sheet.getId());
       List<SaleOutSheetDetail> details = saleOutSheetDetailService.list(queryDetailWrapper);
       for (SaleOutSheetDetail detail : details) {
@@ -312,14 +305,14 @@ public class SaleOutSheetServiceImpl extends
       throw new DefaultClientException("销售出库单无法审核通过！");
     }
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     if (!saleConfig.getOutStockMultipleRelateSale()) {
       Wrapper<SaleOutSheet> checkWrapper = Wrappers.lambdaQuery(SaleOutSheet.class)
           .eq(SaleOutSheet::getSaleOrderId, sheet.getSaleOrderId())
           .ne(SaleOutSheet::getId, sheet.getId());
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
-        SaleOrderDto purchaseOrder = saleOrderService.getById(sheet.getSaleOrderId());
+        SaleOrder purchaseOrder = saleOrderService.getById(sheet.getSaleOrderId());
         throw new DefaultClientException(
             "销售订单号：" + purchaseOrder.getCode() + "，已关联其他销售出库单，不允许关联多个销售出库单！");
       }
@@ -501,8 +494,8 @@ public class SaleOutSheetServiceImpl extends
 
     if (!StringUtil.isBlank(sheet.getSaleOrderId())) {
       //查询销售出库单明细
-      Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers
-          .lambdaQuery(SaleOutSheetDetail.class)
+      Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+              SaleOutSheetDetail.class)
           .eq(SaleOutSheetDetail::getSheetId, sheet.getId());
       List<SaleOutSheetDetail> details = saleOutSheetDetailService.list(queryDetailWrapper);
       for (SaleOutSheetDetail detail : details) {
@@ -546,21 +539,21 @@ public class SaleOutSheetServiceImpl extends
 
   private void create(SaleOutSheet sheet, CreateSaleOutSheetVo vo, boolean requireSale) {
 
-    StoreCenterDto sc = storeCenterService.getById(vo.getScId());
+    StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
       throw new InputErrorException("仓库不存在！");
     }
 
     sheet.setScId(vo.getScId());
 
-    CustomerDto customer = customerService.getById(vo.getCustomerId());
+    Customer customer = customerService.findById(vo.getCustomerId());
     if (customer == null) {
       throw new InputErrorException("客户不存在！");
     }
     sheet.setCustomerId(vo.getCustomerId());
 
     if (!StringUtil.isBlank(vo.getSalerId())) {
-      UserDto saler = userService.getById(vo.getSalerId());
+      UserDto saler = userService.findById(vo.getSalerId());
       if (saler == null) {
         throw new InputErrorException("销售员不存在！");
       }
@@ -568,7 +561,7 @@ public class SaleOutSheetServiceImpl extends
       sheet.setSalerId(vo.getSalerId());
     }
 
-    SaleConfigDto saleConfig = saleConfigService.get();
+    SaleConfig saleConfig = saleConfigService.get();
 
     GetPaymentDateDto paymentDate = this.getPaymentDate(customer.getId());
 
@@ -577,7 +570,7 @@ public class SaleOutSheetServiceImpl extends
 
     if (requireSale) {
 
-      SaleOrderDto saleOrder = saleOrderService.getById(vo.getSaleOrderId());
+      SaleOrder saleOrder = saleOrderService.getById(vo.getSaleOrderId());
       if (saleOrder == null) {
         throw new DefaultClientException("销售订单不存在！");
       }
@@ -604,8 +597,8 @@ public class SaleOutSheetServiceImpl extends
     for (SaleOutProductVo productVo : vo.getProducts()) {
       if (requireSale) {
         if (!StringUtil.isBlank(productVo.getSaleOrderDetailId())) {
-          SaleOrderDetailDto orderDetail = saleOrderDetailService
-              .getById(productVo.getSaleOrderDetailId());
+          SaleOrderDetail orderDetail = saleOrderDetailService.getById(
+              productVo.getSaleOrderDetailId());
           productVo.setOriPrice(orderDetail.getOriPrice());
           productVo.setTaxPrice(orderDetail.getTaxPrice());
           productVo.setDiscountRate(orderDetail.getDiscountRate());
@@ -631,14 +624,14 @@ public class SaleOutSheetServiceImpl extends
         purchaseNum += productVo.getOrderNum();
       }
 
-      totalAmount = NumberUtil
-          .add(totalAmount, NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()));
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()));
 
       SaleOutSheetDetail detail = new SaleOutSheetDetail();
       detail.setId(IdUtil.getId());
       detail.setSheetId(sheet.getId());
 
-      ProductDto product = productService.getById(productVo.getProductId());
+      ProductDto product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -681,7 +674,7 @@ public class SaleOutSheetServiceImpl extends
    * @param customer
    * @return
    */
-  private SettleStatus getInitSettleStatus(CustomerDto customer) {
+  private SettleStatus getInitSettleStatus(Customer customer) {
 
     return SettleStatus.UN_SETTLE;
   }

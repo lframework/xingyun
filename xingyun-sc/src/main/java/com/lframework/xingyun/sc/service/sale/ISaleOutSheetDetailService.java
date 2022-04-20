@@ -1,19 +1,10 @@
 package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailDto;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
 import java.util.List;
 
 public interface ISaleOutSheetDetailService extends BaseMpService<SaleOutSheetDetail> {
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  SaleOutSheetDetailDto getById(String id);
 
   /**
    * 根据出库单ID查询
@@ -21,7 +12,7 @@ public interface ISaleOutSheetDetailService extends BaseMpService<SaleOutSheetDe
    * @param sheetId
    * @return
    */
-  List<SaleOutSheetDetailDto> getBySheetId(String sheetId);
+  List<SaleOutSheetDetail> getBySheetId(String sheetId);
 
   /**
    * 增加退货数量

@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.ProductSalePropGroupMapper">
 
-    <resultMap id="ProductSalePropGroupDto"
-               type="com.lframework.xingyun.basedata.dto.product.saleprop.ProductSalePropGroupDto">
+    <resultMap id="ProductSalePropGroup"
+               type="com.lframework.xingyun.basedata.entity.ProductSalePropGroup">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -28,7 +28,7 @@
             update_time
         FROM base_data_product_saleprop_group
     </sql>
-    <select id="query" resultMap="ProductSalePropGroupDto">
+    <select id="query" resultMap="ProductSalePropGroup">
         <include refid="ProductSalePropGroupDto_sql"/>
         <where>
             <if test="vo != null">
@@ -46,11 +46,7 @@
         ORDER BY code
     </select>
 
-    <select id="getById" resultMap="ProductSalePropGroupDto">
-        <include refid="ProductSalePropGroupDto_sql"/>
-        WHERE id = #{id}
-    </select>
-    <select id="selector" resultMap="ProductSalePropGroupDto">
+    <select id="selector" resultMap="ProductSalePropGroup">
         <include refid="ProductSalePropGroupDto_sql"/>
         AS g
         <where>

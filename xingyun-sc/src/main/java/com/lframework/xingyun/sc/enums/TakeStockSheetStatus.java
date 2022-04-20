@@ -19,11 +19,13 @@ public enum TakeStockSheetStatus implements BaseEnum<Integer> {
 
   @Override
   public Integer getCode() {
+
     return this.code;
   }
 
   @Override
   public String getDesc() {
+
     return this.desc;
   }
 }

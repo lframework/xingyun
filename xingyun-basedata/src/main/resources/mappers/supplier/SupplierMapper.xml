@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.SupplierMapper">
 
-    <resultMap id="SupplierDto" type="com.lframework.xingyun.basedata.dto.supplier.SupplierDto">
+    <resultMap id="Supplier" type="com.lframework.xingyun.basedata.entity.Supplier">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -62,7 +62,7 @@
         FROM base_data_supplier
     </sql>
 
-    <select id="query" resultMap="SupplierDto">
+    <select id="query" resultMap="Supplier">
         <include refid="SupplierDto_sql"/>
         <where>
             <if test="vo != null">
@@ -80,11 +80,7 @@
         ORDER BY code
     </select>
 
-    <select id="getById" resultMap="SupplierDto">
-        <include refid="SupplierDto_sql"/>
-        WHERE id = #{id}
-    </select>
-    <select id="selector" resultMap="SupplierDto">
+    <select id="selector" resultMap="Supplier">
         <include refid="SupplierDto_sql"/>
         <where>
             <if test="vo != null">

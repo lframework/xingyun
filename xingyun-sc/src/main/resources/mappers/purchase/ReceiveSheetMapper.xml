@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.ReceiveSheetMapper">
 
-    <resultMap id="ReceiveSheetDto" type="com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto">
+    <resultMap id="ReceiveSheet" type="com.lframework.xingyun.sc.entity.ReceiveSheet">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="sc_id" property="scId"/>
@@ -158,7 +158,7 @@
         LEFT JOIN tbl_receive_sheet_detail AS d ON d.sheet_id = s.id
     </sql>
 
-    <select id="query" resultMap="ReceiveSheetDto">
+    <select id="query" resultMap="ReceiveSheet">
         <include refid="ReceiveSheetDto_sql"/>
         <where>
             <if test="vo != null">
@@ -208,10 +208,6 @@
             </if>
         </where>
         ORDER BY r.create_time DESC
-    </select>
-    <select id="getById" resultMap="ReceiveSheetDto">
-        <include refid="ReceiveSheetDto_sql"/>
-        WHERE r.id = #{id}
     </select>
     <select id="getDetail" resultMap="ReceiveSheetFullDto">
         <include refid="ReceiveSheetFullDto_sql"/>
@@ -270,7 +266,7 @@
         </where>
         ORDER BY r.create_time DESC, d.order_no
     </select>
-    <select id="selector" resultMap="ReceiveSheetDto">
+    <select id="selector" resultMap="ReceiveSheet">
         <include refid="ReceiveSheetDto_sql"/>
         <where>
             <if test="vo != null">
@@ -314,7 +310,7 @@
         AND s.status = 3
         ORDER BY d.order_no
     </select>
-    <select id="queryWithReturn" resultMap="ReceiveSheetDto">
+    <select id="queryWithReturn" resultMap="ReceiveSheet">
         <include refid="ReceiveSheetDto_sql"/>
         <if test="!multipleRelate">LEFT JOIN tbl_purchase_return AS p ON p.receive_sheet_id = r.id</if>
         <where>
@@ -346,7 +342,7 @@
         <if test="!multipleRelate">GROUP BY r.id</if>
         ORDER BY r.create_time DESC
     </select>
-    <select id="getApprovedList" resultMap="ReceiveSheetDto">
+    <select id="getApprovedList" resultMap="ReceiveSheet">
         <include refid="ReceiveSheetDto_sql"/>
         WHERE r.supplier_id = #{supplierId}
         <if test="startTime != null">

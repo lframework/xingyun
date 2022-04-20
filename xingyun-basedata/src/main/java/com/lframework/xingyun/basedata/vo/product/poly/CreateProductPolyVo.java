@@ -1,7 +1,10 @@
 package com.lframework.xingyun.basedata.vo.product.poly;
 
+import com.lframework.common.constants.PatternPool;
 import com.lframework.common.exceptions.impl.InputErrorException;
+import com.lframework.common.utils.RegUtil;
 import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.web.components.validation.IsCode;
 import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -24,6 +27,7 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
    * 商品货号
    */
   @ApiModelProperty(value = "商品货号", required = true)
+  @IsCode
   @NotBlank(message = "商品货号不能为空！")
   private String code;
 
@@ -108,6 +112,10 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
 
       if (StringUtil.isBlank(product.getCode())) {
         throw new InputErrorException("第" + (orderNo) + "行商品编号不能为空！");
+      }
+
+      if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, product.getCode())) {
+        throw new InputErrorException("第" + (orderNo) + "行商品编号必须由字母或数字组成，长度不能超过20位！");
       }
 
       if (StringUtil.isBlank(product.getName())) {

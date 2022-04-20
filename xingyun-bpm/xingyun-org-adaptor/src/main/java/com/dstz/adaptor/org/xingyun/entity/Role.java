@@ -34,33 +34,38 @@ public class Role extends BaseModel implements IGroup {
    */
   protected String description = "";
 
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
   /**
    * 返回 角色名称
    *
    * @return
    */
   public String getName() {
+
     return this.name;
   }
 
+  public void setName(String name) {
+
+    this.name = name;
+  }
+
   public String getCode() {
+
     return code;
   }
 
   public void setCode(String code) {
+
     this.code = code;
   }
 
   public Integer getAvailable() {
+
     return available;
   }
 
   public void setAvailable(Integer available) {
+
     this.available = available;
   }
 
@@ -68,15 +73,14 @@ public class Role extends BaseModel implements IGroup {
    * @see Object#toString()
    */
   public String toString() {
-    return new ToStringBuilder(this)
-        .append("id", this.id)
-        .append("name", this.name)
+
+    return new ToStringBuilder(this).append("id", this.id).append("name", this.name)
         .append("code", this.code)
-        .append("available", this.available)
-        .toString();
+        .append("available", this.available).toString();
   }
 
   public String getGroupId() {
+
     return this.id;
   }
 
@@ -86,18 +90,22 @@ public class Role extends BaseModel implements IGroup {
   }
 
   public Long getSn() {
+
     return Long.valueOf(1);
   }
 
   public String getGroupType() {
+
     return GroupTypeConstant.ROLE.key();
   }
 
   public String getParentId() {
+
     return "";
   }
 
   public String getPath() {
+
     return this.name;
   }
 
@@ -107,15 +115,18 @@ public class Role extends BaseModel implements IGroup {
   }
 
   public String getDescription() {
+
     return description;
   }
 
   public void setDescription(String description) {
+
     this.description = description;
   }
 
   @Override
   public String getGroupName() {
+
     return this.name;
   }
 }

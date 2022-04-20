@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
@@ -27,7 +26,7 @@ public interface ISaleOrderService extends BaseMpService<SaleOrder> {
    * @param vo
    * @return
    */
-  PageResult<SaleOrderDto> query(Integer pageIndex, Integer pageSize, QuerySaleOrderVo vo);
+  PageResult<SaleOrder> query(Integer pageIndex, Integer pageSize, QuerySaleOrderVo vo);
 
   /**
    * 查询列表
@@ -35,7 +34,7 @@ public interface ISaleOrderService extends BaseMpService<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleOrderDto> query(QuerySaleOrderVo vo);
+  List<SaleOrder> query(QuerySaleOrderVo vo);
 
   /**
    * 选择器
@@ -45,15 +44,7 @@ public interface ISaleOrderService extends BaseMpService<SaleOrder> {
    * @param vo
    * @return
    */
-  PageResult<SaleOrderDto> selector(Integer pageIndex, Integer pageSize, SaleOrderSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  SaleOrderDto getById(String id);
+  PageResult<SaleOrder> selector(Integer pageIndex, Integer pageSize, SaleOrderSelectorVo vo);
 
   /**
    * 根据ID查询
@@ -79,7 +70,7 @@ public interface ISaleOrderService extends BaseMpService<SaleOrder> {
    * @param vo
    * @return
    */
-  PageResult<SaleOrderDto> queryWithOut(Integer pageIndex, Integer pageSize,
+  PageResult<SaleOrder> queryWithOut(Integer pageIndex, Integer pageSize,
       QuerySaleOrderWithOutVo vo);
 
   /**

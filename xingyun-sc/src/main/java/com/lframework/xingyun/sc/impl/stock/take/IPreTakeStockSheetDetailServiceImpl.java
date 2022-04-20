@@ -7,8 +7,8 @@ import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetDetailServ
 import org.springframework.stereotype.Service;
 
 @Service
-public class IPreTakeStockSheetDetailServiceImpl extends
-    BaseMpServiceImpl<PreTakeStockSheetDetailMapper, PreTakeStockSheetDetail> implements
-    IPreTakeStockSheetDetailService {
+public class IPreTakeStockSheetDetailServiceImpl
+    extends BaseMpServiceImpl<PreTakeStockSheetDetailMapper, PreTakeStockSheetDetail>
+    implements IPreTakeStockSheetDetailService {
 
 }

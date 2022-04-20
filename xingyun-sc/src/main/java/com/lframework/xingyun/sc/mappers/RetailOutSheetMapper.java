@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
@@ -27,7 +26,7 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  List<RetailOutSheetDto> query(@Param("vo") QueryRetailOutSheetVo vo);
+  List<RetailOutSheet> query(@Param("vo") QueryRetailOutSheetVo vo);
 
   /**
    * 选择器
@@ -35,15 +34,7 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  List<RetailOutSheetDto> selector(@Param("vo") RetailOutSheetSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  RetailOutSheetDto getById(String id);
+  List<RetailOutSheet> selector(@Param("vo") RetailOutSheetSelectorVo vo);
 
   /**
    * 根据ID查询
@@ -76,6 +67,6 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  List<RetailOutSheetDto> queryWithReturn(@Param("vo") QueryRetailOutSheetWithReturnVo vo,
+  List<RetailOutSheet> queryWithReturn(@Param("vo") QueryRetailOutSheetWithReturnVo vo,
       @Param("multipleRelate") boolean multipleRelate);
 }

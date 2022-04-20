@@ -26,22 +26,21 @@ import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
-import com.lframework.xingyun.basedata.dto.supplier.SupplierDto;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
+import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.ManageType;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseReturnEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.purchase.config.PurchaseConfigDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDetailDto;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
-import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
+import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.entity.PurchaseReturnDetail;
+import com.lframework.xingyun.sc.entity.ReceiveSheet;
+import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
@@ -71,7 +70,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PurchaseReturnServiceImpl extends
-    BaseMpServiceImpl<PurchaseReturnMapper, PurchaseReturn> implements IPurchaseReturnService {
+    BaseMpServiceImpl<PurchaseReturnMapper, PurchaseReturn>
+    implements IPurchaseReturnService {
 
   @Autowired
   private IPurchaseReturnDetailService purchaseReturnDetailService;
@@ -104,28 +104,22 @@ public class PurchaseReturnServiceImpl extends
   private IProductStockService productStockService;
 
   @Override
-  public PageResult<PurchaseReturnDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<PurchaseReturn> query(Integer pageIndex, Integer pageSize,
       QueryPurchaseReturnVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PurchaseReturnDto> datas = this.query(vo);
+    List<PurchaseReturn> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<PurchaseReturnDto> query(QueryPurchaseReturnVo vo) {
+  public List<PurchaseReturn> query(QueryPurchaseReturnVo vo) {
 
     return getBaseMapper().query(vo);
-  }
-
-  @Override
-  public PurchaseReturnDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -143,7 +137,7 @@ public class PurchaseReturnServiceImpl extends
     purchaseReturn.setId(IdUtil.getId());
     purchaseReturn.setCode(generateCodeService.generate(GenerateCodeTypePool.PURCHASE_RETURN));
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     this.create(purchaseReturn, vo, purchaseConfig.getPurchaseReturnRequireReceive());
 
@@ -182,7 +176,8 @@ public class PurchaseReturnServiceImpl extends
     if (requireReceive) {
       //查询采购退货单明细
       Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-          PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
+              PurchaseReturnDetail.class)
+          .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
       List<PurchaseReturnDetail> details = purchaseReturnDetailService.list(queryDetailWrapper);
       for (PurchaseReturnDetail detail : details) {
         if (!StringUtil.isBlank(detail.getReceiveSheetDetailId())) {
@@ -195,7 +190,8 @@ public class PurchaseReturnServiceImpl extends
 
     // 删除采购退货单明细
     Wrapper<PurchaseReturnDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
+            PurchaseReturnDetail.class)
+        .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
     purchaseReturnDetailService.remove(deleteDetailWrapper);
 
     this.create(purchaseReturn, vo, requireReceive);
@@ -239,15 +235,14 @@ public class PurchaseReturnServiceImpl extends
       throw new DefaultClientException("采购退货单无法审核通过！");
     }
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     if (!purchaseConfig.getPurchaseReturnMultipleRelateReceive()) {
       Wrapper<PurchaseReturn> checkWrapper = Wrappers.lambdaQuery(PurchaseReturn.class)
           .eq(PurchaseReturn::getReceiveSheetId, purchaseReturn.getReceiveSheetId())
           .ne(PurchaseReturn::getId, purchaseReturn.getId());
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
-        ReceiveSheetDto receiveSheet = receiveSheetService.getById(
-            purchaseReturn.getReceiveSheetId());
+        ReceiveSheet receiveSheet = receiveSheetService.getById(purchaseReturn.getReceiveSheetId());
         throw new DefaultClientException(
             "采购收货单号：" + receiveSheet.getCode() + "，已关联其他采购退货单，不允许关联多个采购退货单！");
       }
@@ -273,7 +268,8 @@ public class PurchaseReturnServiceImpl extends
     }
 
     Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId())
+            PurchaseReturnDetail.class)
+        .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId())
         .orderByAsc(PurchaseReturnDetail::getOrderNo);
     List<PurchaseReturnDetail> details = purchaseReturnDetailService.list(queryDetailWrapper);
     for (PurchaseReturnDetail detail : details) {
@@ -419,7 +415,8 @@ public class PurchaseReturnServiceImpl extends
     if (!StringUtil.isBlank(purchaseReturn.getReceiveSheetId())) {
       //查询采购退货单明细
       Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-          PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
+              PurchaseReturnDetail.class)
+          .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
       List<PurchaseReturnDetail> details = purchaseReturnDetailService.list(queryDetailWrapper);
       for (PurchaseReturnDetail detail : details) {
         if (!StringUtil.isBlank(detail.getReceiveSheetDetailId())) {
@@ -432,7 +429,8 @@ public class PurchaseReturnServiceImpl extends
 
     // 删除退货单明细
     Wrapper<PurchaseReturnDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        PurchaseReturnDetail.class).eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
+            PurchaseReturnDetail.class)
+        .eq(PurchaseReturnDetail::getReturnId, purchaseReturn.getId());
     purchaseReturnDetailService.remove(deleteDetailWrapper);
 
     // 删除退货单
@@ -508,8 +506,9 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @Override
-  public List<PurchaseReturnDto> getApprovedList(String supplierId, LocalDateTime startTime,
-      LocalDateTime endTime, SettleStatus settleStatus) {
+  public List<PurchaseReturn> getApprovedList(String supplierId, LocalDateTime startTime,
+      LocalDateTime endTime,
+      SettleStatus settleStatus) {
 
     return getBaseMapper().getApprovedList(supplierId, startTime, endTime, settleStatus);
   }
@@ -517,21 +516,21 @@ public class PurchaseReturnServiceImpl extends
   private void create(PurchaseReturn purchaseReturn, CreatePurchaseReturnVo vo,
       boolean requireReceive) {
 
-    StoreCenterDto sc = storeCenterService.getById(vo.getScId());
+    StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
       throw new InputErrorException("仓库不存在！");
     }
 
     purchaseReturn.setScId(vo.getScId());
 
-    SupplierDto supplier = supplierService.getById(vo.getSupplierId());
+    Supplier supplier = supplierService.findById(vo.getSupplierId());
     if (supplier == null) {
       throw new InputErrorException("供应商不存在！");
     }
     purchaseReturn.setSupplierId(vo.getSupplierId());
 
     if (!StringUtil.isBlank(vo.getPurchaserId())) {
-      UserDto purchaser = userService.getById(vo.getPurchaserId());
+      UserDto purchaser = userService.findById(vo.getPurchaserId());
       if (purchaser == null) {
         throw new InputErrorException("采购员不存在！");
       }
@@ -539,7 +538,7 @@ public class PurchaseReturnServiceImpl extends
       purchaseReturn.setPurchaserId(vo.getPurchaserId());
     }
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     GetPaymentDateDto paymentDate = receiveSheetService.getPaymentDate(supplier.getId());
 
@@ -548,7 +547,7 @@ public class PurchaseReturnServiceImpl extends
 
     if (requireReceive) {
 
-      ReceiveSheetDto receiveSheet = receiveSheetService.getById(vo.getReceiveSheetId());
+      ReceiveSheet receiveSheet = receiveSheetService.getById(vo.getReceiveSheetId());
       if (receiveSheet == null) {
         throw new DefaultClientException("采购收货单不存在！");
       }
@@ -575,7 +574,7 @@ public class PurchaseReturnServiceImpl extends
     for (ReturnProductVo productVo : vo.getProducts()) {
       if (requireReceive) {
         if (!StringUtil.isBlank(productVo.getReceiveSheetDetailId())) {
-          ReceiveSheetDetailDto detail = receiveSheetDetailService.getById(
+          ReceiveSheetDetail detail = receiveSheetDetailService.getById(
               productVo.getReceiveSheetDetailId());
           productVo.setPurchasePrice(detail.getTaxPrice());
         } else {
@@ -606,7 +605,7 @@ public class PurchaseReturnServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setReturnId(purchaseReturn.getId());
 
-      ProductDto product = productService.getById(productVo.getProductId());
+      ProductDto product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -620,8 +619,9 @@ public class PurchaseReturnServiceImpl extends
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getPoly().getTaxRate());
-      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-          : productVo.getDescription());
+      detail.setDescription(
+          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+              : productVo.getDescription());
       detail.setOrderNo(orderNo);
       if (requireReceive && !StringUtil.isBlank(productVo.getReceiveSheetDetailId())) {
         detail.setReceiveSheetDetailId(productVo.getReceiveSheetDetailId());
@@ -646,7 +646,7 @@ public class PurchaseReturnServiceImpl extends
    * @param supplier
    * @return
    */
-  private SettleStatus getInitSettleStatus(SupplierDto supplier) {
+  private SettleStatus getInitSettleStatus(Supplier supplier) {
 
     if (supplier.getManageType() == ManageType.DISTRIBUTION) {
       return SettleStatus.UN_SETTLE;

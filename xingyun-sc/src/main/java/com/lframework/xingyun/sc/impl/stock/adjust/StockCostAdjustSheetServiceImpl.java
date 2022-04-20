@@ -22,13 +22,12 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.product.purchase.ProductPurchaseDto;
+import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
+import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheetDetail;
 import com.lframework.xingyun.sc.enums.StockCostAdjustSheetStatus;
@@ -55,8 +54,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StockCostAdjustSheetServiceImpl extends
-    BaseMpServiceImpl<StockCostAdjustSheetMapper, StockCostAdjustSheet> implements
-    IStockCostAdjustSheetService {
+    BaseMpServiceImpl<StockCostAdjustSheetMapper, StockCostAdjustSheet>
+    implements IStockCostAdjustSheetService {
 
   @Autowired
   private IStockCostAdjustSheetDetailService stockCostAdjustSheetDetailService;
@@ -74,28 +73,22 @@ public class StockCostAdjustSheetServiceImpl extends
   private IProductService productService;
 
   @Override
-  public PageResult<StockCostAdjustSheetDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<StockCostAdjustSheet> query(Integer pageIndex, Integer pageSize,
       QueryStockCostAdjustSheetVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<StockCostAdjustSheetDto> datas = this.query(vo);
+    List<StockCostAdjustSheet> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<StockCostAdjustSheetDto> query(QueryStockCostAdjustSheetVo vo) {
+  public List<StockCostAdjustSheet> query(QueryStockCostAdjustSheetVo vo) {
 
     return getBaseMapper().query(vo);
-  }
-
-  @Override
-  public StockCostAdjustSheetDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -144,8 +137,8 @@ public class StockCostAdjustSheetServiceImpl extends
     }
 
     // 删除出库单明细
-    Wrapper<StockCostAdjustSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(StockCostAdjustSheetDetail.class)
+    Wrapper<StockCostAdjustSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+            StockCostAdjustSheetDetail.class)
         .eq(StockCostAdjustSheetDetail::getSheetId, data.getId());
     stockCostAdjustSheetDetailService.remove(deleteDetailWrapper);
 
@@ -157,8 +150,8 @@ public class StockCostAdjustSheetServiceImpl extends
     statusList.add(StockCostAdjustSheetStatus.CREATED);
     statusList.add(StockCostAdjustSheetStatus.APPROVE_REFUSE);
 
-    Wrapper<StockCostAdjustSheet> updateSheetWrapper = Wrappers
-        .lambdaUpdate(StockCostAdjustSheet.class)
+    Wrapper<StockCostAdjustSheet> updateSheetWrapper = Wrappers.lambdaUpdate(
+            StockCostAdjustSheet.class)
         .set(StockCostAdjustSheet::getApproveBy, null)
         .set(StockCostAdjustSheet::getApproveTime, null)
         .set(StockCostAdjustSheet::getRefuseReason, StringPool.EMPTY_STR)
@@ -176,6 +169,7 @@ public class StockCostAdjustSheetServiceImpl extends
   @Transactional
   @Override
   public void deleteById(String id) {
+
     StockCostAdjustSheet data = getBaseMapper().selectById(id);
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("库存成本调整单不存在！");
@@ -193,8 +187,8 @@ public class StockCostAdjustSheetServiceImpl extends
       throw new DefaultClientException("库存成本调整单信息已过期，请刷新重试！");
     }
 
-    Wrapper<StockCostAdjustSheetDetail> deleteDetailWrapper = Wrappers
-        .lambdaQuery(StockCostAdjustSheetDetail.class)
+    Wrapper<StockCostAdjustSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+            StockCostAdjustSheetDetail.class)
         .eq(StockCostAdjustSheetDetail::getSheetId, id);
     stockCostAdjustSheetDetailService.remove(deleteDetailWrapper);
   }
@@ -202,6 +196,7 @@ public class StockCostAdjustSheetServiceImpl extends
   @Transactional
   @Override
   public void deleteByIds(List<String> ids) {
+
     if (!CollectionUtil.isEmpty(ids)) {
       int orderNo = 1;
       for (String id : ids) {
@@ -222,6 +217,7 @@ public class StockCostAdjustSheetServiceImpl extends
   @Transactional
   @Override
   public void approvePass(ApprovePassStockCostAdjustSheetVo vo) {
+
     StockCostAdjustSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("库存成本调整单不存在！");
@@ -251,15 +247,15 @@ public class StockCostAdjustSheetServiceImpl extends
       throw new DefaultClientException("库存成本调整单信息已过期，请刷新重试！");
     }
 
-    Wrapper<StockCostAdjustSheetDetail> queryDetailWrapper = Wrappers
-        .lambdaQuery(StockCostAdjustSheetDetail.class)
+    Wrapper<StockCostAdjustSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            StockCostAdjustSheetDetail.class)
         .eq(StockCostAdjustSheetDetail::getSheetId, data.getId())
         .orderByAsc(StockCostAdjustSheetDetail::getOrderNo);
-    List<StockCostAdjustSheetDetail> details = stockCostAdjustSheetDetailService
-        .list(queryDetailWrapper);
+    List<StockCostAdjustSheetDetail> details = stockCostAdjustSheetDetailService.list(
+        queryDetailWrapper);
 
     for (StockCostAdjustSheetDetail detail : details) {
-      ProductDto product = productService.getById(detail.getProductId());
+      ProductDto product = productService.findById(detail.getProductId());
       StockCostAdjustVo adjustVo = new StockCostAdjustVo();
       adjustVo.setProductId(detail.getProductId());
       adjustVo.setScId(data.getScId());
@@ -277,6 +273,7 @@ public class StockCostAdjustSheetServiceImpl extends
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassStockCostAdjustSheetVo vo) {
+
     int orderNo = 1;
     for (String id : vo.getIds()) {
       ApprovePassStockCostAdjustSheetVo approvePassVo = new ApprovePassStockCostAdjustSheetVo();
@@ -295,6 +292,7 @@ public class StockCostAdjustSheetServiceImpl extends
 
   @Override
   public void directApprovePass(CreateStockCostAdjustSheetVo vo) {
+
     IStockCostAdjustSheetService thisService = getThis(this.getClass());
 
     String id = thisService.create(vo);
@@ -310,6 +308,7 @@ public class StockCostAdjustSheetServiceImpl extends
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseStockCostAdjustSheetVo vo) {
+
     StockCostAdjustSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("库存成本调整单不存在！");
@@ -343,6 +342,7 @@ public class StockCostAdjustSheetServiceImpl extends
 
   @Override
   public void batchApproveRefuse(BatchApproveRefuseStockCostAdjustSheetVo vo) {
+
     int orderNo = 1;
     for (String id : vo.getIds()) {
       ApproveRefuseStockCostAdjustSheetVo approveRefuseVo = new ApproveRefuseStockCostAdjustSheetVo();
@@ -366,6 +366,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   private void create(StockCostAdjustSheet data, CreateStockCostAdjustSheetVo vo) {
+
     data.setScId(vo.getScId());
     data.setStatus(StockCostAdjustSheetStatus.CREATED);
     data.setDescription(
@@ -379,18 +380,21 @@ public class StockCostAdjustSheetServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setSheetId(data.getId());
       detail.setProductId(product.getProductId());
-      ProductStockDto productStock = productStockService
-          .getByProductIdAndScId(product.getProductId(), data.getScId());
-      ProductPurchaseDto productPurchase = productPurchaseService.getById(product.getProductId());
+      ProductStock productStock = productStockService.getByProductIdAndScId(product.getProductId(),
+          data.getScId());
+      ProductPurchase productPurchase = productPurchaseService.getById(product.getProductId());
       detail.setStockNum(productStock == null ? 0 : productStock.getStockNum());
       detail.setPurchasePrice(productPurchase.getPrice());
-      detail.setOriPrice(productStock == null ? BigDecimal.ZERO
-          : NumberUtil.getNumber(productStock.getTaxPrice(), 2));
+      detail.setOriPrice(
+          productStock == null ? BigDecimal.ZERO
+              : NumberUtil.getNumber(productStock.getTaxPrice(), 2));
       detail.setPrice(product.getPrice());
-      detail.setDiffAmount(NumberUtil.getNumber(NumberUtil
-          .mul(NumberUtil.sub(detail.getPrice(), detail.getOriPrice()), detail.getStockNum()), 2));
-      detail.setDescription(StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
-          : product.getDescription());
+      detail.setDiffAmount(NumberUtil.getNumber(
+          NumberUtil.mul(NumberUtil.sub(detail.getPrice(), detail.getOriPrice()),
+              detail.getStockNum()), 2));
+      detail.setDescription(
+          StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
+              : product.getDescription());
       detail.setOrderNo(orderNo++);
       productNum++;
 

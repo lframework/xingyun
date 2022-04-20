@@ -25,16 +25,19 @@ public class SubsystemManagerImpl extends BaseManager<String, Subsystem> impleme
 
   @Override
   public boolean isExist(Subsystem subsystem) {
+
     return subsystemDao.isExist(subsystem) > 0;
   }
 
   @Override
   public List<Subsystem> getList() {
+
     return subsystemDao.getList();
   }
 
   @Override
   public Subsystem getDefaultSystem(String userId) {
+
     List<Subsystem> list = subsystemDao.getSystemByUser(userId);
     if (CollectionUtil.isEmpty(list)) {
       return null;
@@ -50,6 +53,7 @@ public class SubsystemManagerImpl extends BaseManager<String, Subsystem> impleme
 
   @Override
   public void setDefaultSystem(String systemId) {
+
     Subsystem subSystem = subsystemDao.get(systemId);
     if (subSystem.getIsDefault() == 1) {
       subSystem.setIsDefault(0);
@@ -63,6 +67,7 @@ public class SubsystemManagerImpl extends BaseManager<String, Subsystem> impleme
 
   @Override
   public List<Subsystem> getCuurentUserSystem() {
+
     IUser user = ContextUtil.getCurrentUser();
     if (ContextUtil.isAdmin(user)) {
       return subsystemDao.getList();
@@ -73,6 +78,7 @@ public class SubsystemManagerImpl extends BaseManager<String, Subsystem> impleme
 
   @Override
   public Subsystem getByAlias(String systemAlias) {
+
     return subsystemDao.getByAlias(systemAlias);
   }
 }

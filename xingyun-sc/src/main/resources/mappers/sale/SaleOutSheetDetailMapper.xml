@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.SaleOutSheetDetailMapper">
-    <resultMap id="SaleOutSheetDetailDto" type="com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailDto">
+    <resultMap id="SaleOutSheetDetail" type="com.lframework.xingyun.sc.entity.SaleOutSheetDetail">
         <id column="id" property="id"/>
         <result column="sheet_id" property="sheetId"/>
         <result column="product_id" property="productId"/>
@@ -44,11 +44,7 @@
         WHERE id = #{id}
         AND return_num >= #{num}
     </update>
-    <select id="getById" resultMap="SaleOutSheetDetailDto">
-        <include refid="SaleOutSheetDetailDto_sql"/>
-        WHERE d.id = #{id}
-    </select>
-    <select id="getBySheetId" resultMap="SaleOutSheetDetailDto">
+    <select id="getBySheetId" resultMap="SaleOutSheetDetail">
         <include refid="SaleOutSheetDetailDto_sql"/>
         WHERE d.sheet_id = #{sheetId}
         ORDER BY d.order_no

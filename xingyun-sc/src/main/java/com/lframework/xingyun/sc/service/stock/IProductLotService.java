@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.stock;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.stock.ProductLotDto;
 import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.entity.ProductLot;
 import com.lframework.xingyun.sc.vo.stock.lot.CreateProductLotVo;
@@ -36,7 +35,7 @@ public interface IProductLotService extends BaseMpService<ProductLot> {
    * @param id
    * @return
    */
-  ProductLotDto getById(String id);
+  ProductLot findById(String id);
 
   /**
    * 创建

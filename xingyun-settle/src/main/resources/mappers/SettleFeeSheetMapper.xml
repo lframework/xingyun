@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.settle.mappers.SettleFeeSheetMapper">
-    <resultMap id="SettleFeeSheetDto" type="com.lframework.xingyun.settle.dto.fee.SettleFeeSheetDto">
+    <resultMap id="SettleFeeSheet" type="com.lframework.xingyun.settle.entity.SettleFeeSheet">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="supplier_id" property="supplierId"/>
@@ -87,7 +87,7 @@
         LEFT JOIN settle_fee_sheet_detail AS d ON d.sheet_id = s.id
     </sql>
 
-    <select id="query" resultMap="SettleFeeSheetDto">
+    <select id="query" resultMap="SettleFeeSheet">
         <include refid="SettleFeeSheetDto_sql"/>
         <where>
             <if test="vo != null">
@@ -128,11 +128,6 @@
             </if>
         </where>
         ORDER BY s.create_time DESC
-    </select>
-
-    <select id="getById" resultMap="SettleFeeSheetDto">
-        <include refid="SettleFeeSheetDto_sql"/>
-        WHERE s.id = #{id}
     </select>
 
     <select id="getDetail" resultMap="SettleFeeSheetFullDto">
@@ -183,7 +178,7 @@
         </where>
         ORDER BY s.create_time DESC, d.order_no
     </select>
-    <select id="getApprovedList" resultMap="SettleFeeSheetDto">
+    <select id="getApprovedList" resultMap="SettleFeeSheet">
         <include refid="SettleFeeSheetDto_sql"/>
         WHERE s.supplier_id = #{supplierId}
         <if test="startTime != null">

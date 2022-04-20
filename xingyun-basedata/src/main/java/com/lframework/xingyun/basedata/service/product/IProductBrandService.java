@@ -2,7 +2,6 @@ package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.basedata.dto.product.brand.ProductBrandDto;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.vo.product.brand.CreateProductBrandVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
@@ -18,7 +17,7 @@ public interface IProductBrandService extends BaseMpService<ProductBrand> {
    *
    * @return
    */
-  PageResult<ProductBrandDto> query(Integer pageIndex, Integer pageSize, QueryProductBrandVo vo);
+  PageResult<ProductBrand> query(Integer pageIndex, Integer pageSize, QueryProductBrandVo vo);
 
   /**
    * 查询列表
@@ -26,7 +25,7 @@ public interface IProductBrandService extends BaseMpService<ProductBrand> {
    * @param vo
    * @return
    */
-  List<ProductBrandDto> query(QueryProductBrandVo vo);
+  List<ProductBrand> query(QueryProductBrandVo vo);
 
   /**
    * 选择器
@@ -34,7 +33,7 @@ public interface IProductBrandService extends BaseMpService<ProductBrand> {
    * @param vo
    * @return
    */
-  PageResult<ProductBrandDto> selector(Integer pageIndex, Integer pageSize,
+  PageResult<ProductBrand> selector(Integer pageIndex, Integer pageSize,
       QueryProductBrandSelectorVo vo);
 
   /**
@@ -43,7 +42,7 @@ public interface IProductBrandService extends BaseMpService<ProductBrand> {
    * @param id
    * @return
    */
-  ProductBrandDto getById(String id);
+  ProductBrand findById(String id);
 
   /**
    * 根据ID停用

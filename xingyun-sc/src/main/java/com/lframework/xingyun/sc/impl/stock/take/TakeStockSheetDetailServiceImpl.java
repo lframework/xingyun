@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TakeStockSheetDetailServiceImpl extends
-    BaseMpServiceImpl<TakeStockSheetDetailMapper, TakeStockSheetDetail> implements
-    ITakeStockSheetDetailService {
+    BaseMpServiceImpl<TakeStockSheetDetailMapper, TakeStockSheetDetail>
+    implements ITakeStockSheetDetailService {
 
 }

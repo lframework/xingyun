@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.stock.ProductStockLogDto;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
 import java.util.List;
@@ -23,5 +22,5 @@ public interface ProductStockLogMapper extends BaseMapper<ProductStockLog> {
    * @param vo
    * @return
    */
-  List<ProductStockLogDto> query(@Param("vo") QueryProductStockLogVo vo);
+  List<ProductStockLog> query(@Param("vo") QueryProductStockLogVo vo);
 }

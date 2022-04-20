@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
@@ -18,27 +17,19 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface StoreCenterMapper extends BaseMapper<StoreCenter> {
 
-  /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<StoreCenterDto> query(@Param("vo") QueryStoreCenterVo vo);
+    /**
+     * 查询列表
+     *
+     * @param vo
+     * @return
+     */
+    List<StoreCenter> query(@Param("vo") QueryStoreCenterVo vo);
 
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  StoreCenterDto getById(String id);
-
-  /**
-   * 选择器
-   *
-   * @param vo
-   * @return
-   */
-  List<StoreCenterDto> selector(@Param("vo") QueryStoreCenterSelectorVo vo);
+    /**
+     * 选择器
+     *
+     * @param vo
+     * @return
+     */
+    List<StoreCenter> selector(@Param("vo") QueryStoreCenterSelectorVo vo);
 }

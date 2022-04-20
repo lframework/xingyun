@@ -5,8 +5,10 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class UpdateRetailOutSheetVo extends CreateRetailOutSheetVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;

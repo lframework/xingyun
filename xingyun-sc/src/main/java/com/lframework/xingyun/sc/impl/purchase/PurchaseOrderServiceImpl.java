@@ -26,17 +26,16 @@ import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
-import com.lframework.xingyun.basedata.dto.supplier.SupplierDto;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
+import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseOrderEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
-import com.lframework.xingyun.sc.dto.purchase.config.PurchaseConfigDto;
+import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
@@ -63,8 +62,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PurchaseOrderServiceImpl extends
-    BaseMpServiceImpl<PurchaseOrderMapper, PurchaseOrder> implements IPurchaseOrderService {
+public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMapper, PurchaseOrder>
+    implements IPurchaseOrderService {
 
   @Autowired
   private IPurchaseOrderDetailService purchaseOrderDetailService;
@@ -88,41 +87,35 @@ public class PurchaseOrderServiceImpl extends
   private IPurchaseConfigService purchaseConfigService;
 
   @Override
-  public PageResult<PurchaseOrderDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<PurchaseOrder> query(Integer pageIndex, Integer pageSize,
       QueryPurchaseOrderVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PurchaseOrderDto> datas = this.query(vo);
+    List<PurchaseOrder> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<PurchaseOrderDto> query(QueryPurchaseOrderVo vo) {
+  public List<PurchaseOrder> query(QueryPurchaseOrderVo vo) {
 
     return getBaseMapper().query(vo);
   }
 
   @Override
-  public PageResult<PurchaseOrderDto> selector(Integer pageIndex, Integer pageSize,
+  public PageResult<PurchaseOrder> selector(Integer pageIndex, Integer pageSize,
       PurchaseOrderSelectorVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PurchaseOrderDto> datas = getBaseMapper().selector(vo);
+    List<PurchaseOrder> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
-  }
-
-  @Override
-  public PurchaseOrderDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -139,7 +132,7 @@ public class PurchaseOrderServiceImpl extends
   @Override
   public PurchaseOrderWithReceiveDto getWithReceive(String id) {
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     PurchaseOrderWithReceiveDto order = getBaseMapper().getWithReceive(id,
         purchaseConfig.getReceiveRequirePurchase());
@@ -150,16 +143,16 @@ public class PurchaseOrderServiceImpl extends
   }
 
   @Override
-  public PageResult<PurchaseOrderDto> queryWithReceive(Integer pageIndex, Integer pageSize,
+  public PageResult<PurchaseOrder> queryWithReceive(Integer pageIndex, Integer pageSize,
       QueryPurchaseOrderWithRecevieVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
-    PurchaseConfigDto purchaseConfig = purchaseConfigService.get();
+    PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PurchaseOrderDto> datas = getBaseMapper().queryWithReceive(vo,
+    List<PurchaseOrder> datas = getBaseMapper().queryWithReceive(vo,
         purchaseConfig.getReceiveMultipleRelatePurchase());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -208,7 +201,8 @@ public class PurchaseOrderServiceImpl extends
 
     // 删除订单明细
     Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        PurchaseOrderDetail.class).eq(PurchaseOrderDetail::getOrderId, order.getId());
+            PurchaseOrderDetail.class)
+        .eq(PurchaseOrderDetail::getOrderId, order.getId());
     purchaseOrderDetailService.remove(deleteDetailWrapper);
 
     this.create(order, vo);
@@ -222,7 +216,8 @@ public class PurchaseOrderServiceImpl extends
     Wrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(PurchaseOrder.class)
         .set(PurchaseOrder::getApproveBy, null).set(PurchaseOrder::getApproveTime, null)
         .set(PurchaseOrder::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(PurchaseOrder::getId, order.getId()).in(PurchaseOrder::getStatus, statusList);
+        .eq(PurchaseOrder::getId, order.getId())
+        .in(PurchaseOrder::getStatus, statusList);
     if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
@@ -258,9 +253,11 @@ public class PurchaseOrderServiceImpl extends
     statusList.add(PurchaseOrderStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
-            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
+            PurchaseOrder.class)
+        .set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
-        .eq(PurchaseOrder::getId, order.getId()).in(PurchaseOrder::getStatus, statusList);
+        .eq(PurchaseOrder::getId, order.getId())
+        .in(PurchaseOrder::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(PurchaseOrder::getDescription, vo.getDescription());
     }
@@ -335,7 +332,8 @@ public class PurchaseOrderServiceImpl extends
     order.setStatus(PurchaseOrderStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
-            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
+            PurchaseOrder.class)
+        .set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
         .set(PurchaseOrder::getRefuseReason, vo.getRefuseReason())
         .eq(PurchaseOrder::getId, order.getId())
@@ -392,7 +390,8 @@ public class PurchaseOrderServiceImpl extends
 
     // 删除订单明细
     Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        PurchaseOrderDetail.class).eq(PurchaseOrderDetail::getOrderId, order.getId());
+            PurchaseOrderDetail.class)
+        .eq(PurchaseOrderDetail::getOrderId, order.getId());
     purchaseOrderDetailService.remove(deleteDetailWrapper);
 
     // 删除订单
@@ -454,21 +453,21 @@ public class PurchaseOrderServiceImpl extends
 
   private void create(PurchaseOrder order, CreatePurchaseOrderVo vo) {
 
-    StoreCenterDto sc = storeCenterService.getById(vo.getScId());
+    StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
       throw new InputErrorException("仓库不存在！");
     }
 
     order.setScId(vo.getScId());
 
-    SupplierDto supplier = supplierService.getById(vo.getSupplierId());
+    Supplier supplier = supplierService.findById(vo.getSupplierId());
     if (supplier == null) {
       throw new InputErrorException("供应商不存在！");
     }
     order.setSupplierId(vo.getSupplierId());
 
     if (!StringUtil.isBlank(vo.getPurchaserId())) {
-      UserDto purchaser = userService.getById(vo.getPurchaserId());
+      UserDto purchaser = userService.findById(vo.getPurchaserId());
       if (purchaser == null) {
         throw new InputErrorException("采购员不存在！");
       }
@@ -499,7 +498,7 @@ public class PurchaseOrderServiceImpl extends
       orderDetail.setId(IdUtil.getId());
       orderDetail.setOrderId(order.getId());
 
-      ProductDto product = productService.getById(productVo.getProductId());
+      ProductDto product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }

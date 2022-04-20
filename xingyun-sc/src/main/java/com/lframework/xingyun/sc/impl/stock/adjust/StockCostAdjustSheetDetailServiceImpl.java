@@ -7,8 +7,8 @@ import com.lframework.xingyun.sc.service.stock.adjust.IStockCostAdjustSheetDetai
 import org.springframework.stereotype.Service;
 
 @Service
-public class StockCostAdjustSheetDetailServiceImpl extends
-    BaseMpServiceImpl<StockCostAdjustSheetDetailMapper, StockCostAdjustSheetDetail> implements
-    IStockCostAdjustSheetDetailService {
+public class StockCostAdjustSheetDetailServiceImpl
+    extends BaseMpServiceImpl<StockCostAdjustSheetDetailMapper, StockCostAdjustSheetDetail>
+    implements IStockCostAdjustSheetDetailService {
 
 }

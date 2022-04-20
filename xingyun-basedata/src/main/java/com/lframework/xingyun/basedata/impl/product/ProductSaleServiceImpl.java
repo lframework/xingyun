@@ -6,7 +6,6 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
-import com.lframework.xingyun.basedata.dto.product.sale.ProductSaleDto;
 import com.lframework.xingyun.basedata.entity.ProductSale;
 import com.lframework.xingyun.basedata.mappers.ProductSaleMapper;
 import com.lframework.xingyun.basedata.service.product.IProductSaleService;
@@ -16,14 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductSaleServiceImpl extends
-    BaseMpServiceImpl<ProductSaleMapper, ProductSale> implements IProductSaleService {
-
-  @Override
-  public ProductSaleDto getById(String id) {
-
-    return getBaseMapper().getById(id);
-  }
+public class ProductSaleServiceImpl extends BaseMpServiceImpl<ProductSaleMapper, ProductSale>
+    implements IProductSaleService {
 
   @OpLog(type = OpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
   @Transactional

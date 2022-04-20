@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDetailDto;
 import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -17,20 +16,12 @@ import org.apache.ibatis.annotations.Param;
 public interface ReceiveSheetDetailMapper extends BaseMapper<ReceiveSheetDetail> {
 
   /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ReceiveSheetDetailDto getById(String id);
-
-  /**
    * 根据收货单ID查询
    *
    * @param sheetId
    * @return
    */
-  List<ReceiveSheetDetailDto> getBySheetId(String sheetId);
+  List<ReceiveSheetDetail> getBySheetId(String sheetId);
 
   /**
    * 增加退货数量

@@ -22,11 +22,13 @@ public class RoleManagerImpl extends BaseManager<String, Role> implements RoleMa
   RoleDao roleDao;
 
   public Role getByAlias(String alias) {
+
     return roleDao.getByAlias(alias);
   }
 
   @Override
   public List<Role> getByUserId(String userId) {
+
     if (StringUtil.isEmpty(userId)) {
       return Collections.emptyList();
     }
@@ -35,6 +37,7 @@ public class RoleManagerImpl extends BaseManager<String, Role> implements RoleMa
 
   @Override
   public boolean isRoleExist(Role role) {
+
     return roleDao.isRoleExist(role) != 0;
   }
 

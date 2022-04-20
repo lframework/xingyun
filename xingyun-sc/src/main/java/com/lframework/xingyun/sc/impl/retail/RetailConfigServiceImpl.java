@@ -5,7 +5,6 @@ import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
-import com.lframework.xingyun.sc.dto.retail.config.RetailConfigDto;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.mappers.RetailConfigMapper;
 import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
@@ -16,22 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RetailConfigServiceImpl extends
-    BaseMpServiceImpl<RetailConfigMapper, RetailConfig> implements IRetailConfigService {
+public class RetailConfigServiceImpl extends BaseMpServiceImpl<RetailConfigMapper, RetailConfig>
+    implements IRetailConfigService {
 
-  @Cacheable(value = RetailConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Cacheable(value = RetailConfig.CACHE_NAME, key = "'config'", unless = "#result == null")
   @Override
-  public RetailConfigDto get() {
+  public RetailConfig get() {
 
     RetailConfig config = getBaseMapper().selectOne(Wrappers.query());
 
-    RetailConfigDto result = new RetailConfigDto();
-
-    result.setId(config.getId());
-    result.setRetailReturnRequireOutStock(config.getRetailReturnRequireOutStock());
-    result.setRetailReturnMultipleRelateOutStock(config.getRetailReturnMultipleRelateOutStock());
-
-    return result;
+    return config;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改零售参数设置")
@@ -51,7 +44,7 @@ public class RetailConfigServiceImpl extends
     thisService.cleanCacheByKey(config.getId());
   }
 
-  @CacheEvict(value = RetailConfigDto.CACHE_NAME, key = "'config'")
+  @CacheEvict(value = RetailConfig.CACHE_NAME, key = "'config'")
   @Override
   public void cleanCacheByKey(String key) {
 

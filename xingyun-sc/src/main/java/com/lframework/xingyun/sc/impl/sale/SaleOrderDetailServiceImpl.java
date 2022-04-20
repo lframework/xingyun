@@ -6,7 +6,6 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDetailDto;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.mappers.SaleOrderDetailMapper;
 import com.lframework.xingyun.sc.service.sale.ISaleOrderDetailService;
@@ -17,19 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SaleOrderDetailServiceImpl extends
-    BaseMpServiceImpl<SaleOrderDetailMapper, SaleOrderDetail> implements ISaleOrderDetailService {
+    BaseMpServiceImpl<SaleOrderDetailMapper, SaleOrderDetail>
+    implements ISaleOrderDetailService {
 
   @Autowired
   private IProductService productService;
 
   @Override
-  public SaleOrderDetailDto getById(String id) {
-
-    return getBaseMapper().getById(id);
-  }
-
-  @Override
-  public List<SaleOrderDetailDto> getByOrderId(String orderId) {
+  public List<SaleOrderDetail> getByOrderId(String orderId) {
 
     return getBaseMapper().getByOrderId(orderId);
   }
@@ -46,7 +40,7 @@ public class SaleOrderDetailServiceImpl extends
     Integer remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getOutNum())
         .intValue();
     if (NumberUtil.lt(remainNum, num)) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余出库数量为" + remainNum
@@ -55,7 +49,7 @@ public class SaleOrderDetailServiceImpl extends
     }
 
     if (getBaseMapper().addOutNum(orderDetail.getId(), num) != 1) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余出库数量不足，不允许继续出库！");
@@ -72,7 +66,7 @@ public class SaleOrderDetailServiceImpl extends
     SaleOrderDetail orderDetail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(orderDetail.getOutNum(), num)) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已出库数量为" + orderDetail.getOutNum()
@@ -80,7 +74,7 @@ public class SaleOrderDetailServiceImpl extends
     }
 
     if (getBaseMapper().subOutNum(orderDetail.getId(), num) != 1) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已出库数量不足，不允许取消出库！");

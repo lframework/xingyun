@@ -20,13 +20,7 @@ import com.lframework.xingyun.api.bo.settle.item.in.SettleInItemSelectorBo;
 import com.lframework.xingyun.api.bo.settle.item.out.SettleOutItemSelectorBo;
 import com.lframework.xingyun.api.bo.stock.take.plan.TakeStockPlanSelectorBo;
 import com.lframework.xingyun.api.bo.stock.take.pre.PreTakeStockSheetSelectorBo;
-import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
-import com.lframework.xingyun.basedata.dto.member.MemberDto;
-import com.lframework.xingyun.basedata.dto.product.brand.ProductBrandDto;
-import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
-import com.lframework.xingyun.basedata.dto.product.saleprop.ProductSalePropGroupDto;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
-import com.lframework.xingyun.basedata.dto.supplier.SupplierDto;
+import com.lframework.xingyun.basedata.entity.*;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.product.IProductBrandService;
@@ -43,10 +37,10 @@ import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierSelectorVo;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.IDicCityService;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
+import com.lframework.xingyun.sc.entity.PurchaseOrder;
+import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
 import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetService;
@@ -55,23 +49,24 @@ import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
-import com.lframework.xingyun.settle.dto.item.in.SettleInItemDto;
-import com.lframework.xingyun.settle.dto.item.out.SettleOutItemDto;
+import com.lframework.xingyun.settle.entity.SettleInItem;
+import com.lframework.xingyun.settle.entity.SettleOutItem;
 import com.lframework.xingyun.settle.service.ISettleInItemService;
 import com.lframework.xingyun.settle.service.ISettleOutItemService;
 import com.lframework.xingyun.settle.vo.item.in.SettleInItemSelectorVo;
 import com.lframework.xingyun.settle.vo.item.out.SettleOutItemSelectorVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 数据选择器
@@ -84,322 +79,305 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/selector")
 public class SelectorController extends DefaultBaseController {
 
-  @Autowired
-  private IProductBrandService productBrandService;
+    @Autowired
+    private IProductBrandService productBrandService;
 
-  @Autowired
-  private IProductCategoryService productCategoryService;
+    @Autowired
+    private IProductCategoryService productCategoryService;
 
-  @Autowired
-  private IProductSalePropGroupService productSalePropGroupService;
+    @Autowired
+    private IProductSalePropGroupService productSalePropGroupService;
 
-  @Autowired
-  private IMemberService memberService;
+    @Autowired
+    private IMemberService memberService;
 
-  @Autowired
-  private IStoreCenterService storeCenterService;
+    @Autowired
+    private IStoreCenterService storeCenterService;
 
-  @Autowired
-  private ISupplierService supplierService;
+    @Autowired
+    private ISupplierService supplierService;
 
-  @Autowired
-  private IPurchaseOrderService purchaseOrderService;
+    @Autowired
+    private IPurchaseOrderService purchaseOrderService;
 
-  @Autowired
-  private IReceiveSheetService receiveSheetService;
+    @Autowired
+    private IReceiveSheetService receiveSheetService;
 
-  @Autowired
-  private ICustomerService customerService;
+    @Autowired
+    private ICustomerService customerService;
 
-  @Autowired
-  private ISettleInItemService settleInItemService;
+    @Autowired
+    private ISettleInItemService settleInItemService;
 
-  @Autowired
-  private ISettleOutItemService settleOutItemService;
+    @Autowired
+    private ISettleOutItemService settleOutItemService;
 
-  @Autowired
-  private IDicCityService dicCityService;
+    @Autowired
+    private IDicCityService dicCityService;
 
-  @Autowired
-  private ITakeStockPlanService takeStockPlanService;
+    @Autowired
+    private ITakeStockPlanService takeStockPlanService;
 
-  @Autowired
-  private IPreTakeStockSheetService preTakeStockSheetService;
+    @Autowired
+    private IPreTakeStockSheetService preTakeStockSheetService;
 
-  /**
-   * 城市数据
-   */
-  @ApiOperation("城市数据")
-  @GetMapping("/city")
-  public InvokeResult<List<CitySelectorBo>> dicCity() {
+    /**
+     * 城市数据
+     */
+    @ApiOperation("城市数据")
+    @GetMapping("/city")
+    public InvokeResult<List<CitySelectorBo>> dicCity() {
 
-    List<DicCityDto> datas = dicCityService.getAll();
-    List<CitySelectorBo> results = Collections.EMPTY_LIST;
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(CitySelectorBo::new).collect(Collectors.toList());
+        List<DicCityDto> datas = dicCityService.getAll();
+        List<CitySelectorBo> results = Collections.EMPTY_LIST;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(CitySelectorBo::new).collect(Collectors.toList());
+        }
+
+        return InvokeResultBuilder.success(results);
     }
 
-    return InvokeResultBuilder.success(results);
-  }
+    /**
+     * 品牌
+     */
+    @ApiOperation("品牌")
+    @GetMapping("/brand")
+    public InvokeResult<PageResult<ProductBrandSelectorBo>> brand(@Valid QueryProductBrandSelectorVo vo) {
 
-  /**
-   * 品牌
-   */
-  @ApiOperation("品牌")
-  @GetMapping("/brand")
-  public InvokeResult<PageResult<ProductBrandSelectorBo>> brand(
-      @Valid QueryProductBrandSelectorVo vo) {
+        PageResult<ProductBrand> pageResult = productBrandService.selector(getPageIndex(vo), getPageSize(vo), vo);
+        List<ProductBrand> datas = pageResult.getDatas();
+        List<ProductBrandSelectorBo> results = null;
 
-    PageResult<ProductBrandDto> pageResult = productBrandService.selector(getPageIndex(vo),
-        getPageSize(vo), vo);
-    List<ProductBrandDto> datas = pageResult.getDatas();
-    List<ProductBrandSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(ProductBrandSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(ProductBrandSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 类目
+     */
+    @ApiOperation("类目")
+    @GetMapping("/category")
+    public InvokeResult<List<ProductCategorySelectorBo>> category(@Valid QueryProductCategorySelectorVo vo) {
 
-  /**
-   * 类目
-   */
-  @ApiOperation("类目")
-  @GetMapping("/category")
-  public InvokeResult<List<ProductCategorySelectorBo>> category(
-      @Valid QueryProductCategorySelectorVo vo) {
+        List<ProductCategory> datas = productCategoryService.selector(vo);
+        List<ProductCategorySelectorBo> results = Collections.EMPTY_LIST;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(ProductCategorySelectorBo::new).collect(Collectors.toList());
+        }
 
-    List<ProductCategoryDto> datas = productCategoryService.selector(vo);
-    List<ProductCategorySelectorBo> results = Collections.EMPTY_LIST;
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(ProductCategorySelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(results);
     }
 
-    return InvokeResultBuilder.success(results);
-  }
+    /**
+     * 销售属性组
+     */
+    @ApiOperation("销售属性组")
+    @GetMapping("/salepropgroup")
+    public InvokeResult<PageResult<ProductSalePropGroupSelectorBo>> salePropGroup(
+            @Valid QueryProductSalePropGroupSelectorVo vo) {
 
-  /**
-   * 销售属性组
-   */
-  @ApiOperation("销售属性组")
-  @GetMapping("/salepropgroup")
-  public InvokeResult<PageResult<ProductSalePropGroupSelectorBo>> salePropGroup(
-      @Valid QueryProductSalePropGroupSelectorVo vo) {
+        PageResult<ProductSalePropGroup> pageResult = productSalePropGroupService.selector(getPageIndex(vo),
+                getPageSize(vo), vo);
+        List<ProductSalePropGroup> datas = pageResult.getDatas();
+        List<ProductSalePropGroupSelectorBo> results = null;
 
-    PageResult<ProductSalePropGroupDto> pageResult = productSalePropGroupService.selector(
-        getPageIndex(vo), getPageSize(vo), vo);
-    List<ProductSalePropGroupDto> datas = pageResult.getDatas();
-    List<ProductSalePropGroupSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(ProductSalePropGroupSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(ProductSalePropGroupSelectorBo::new)
-          .collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 会员
+     */
+    @ApiOperation("会员")
+    @GetMapping("/member")
+    public InvokeResult<PageResult<MemberSelectorBo>> selector(@Valid QueryMemberSelectorVo vo) {
 
-  /**
-   * 会员
-   */
-  @ApiOperation("会员")
-  @GetMapping("/member")
-  public InvokeResult<PageResult<MemberSelectorBo>> selector(@Valid QueryMemberSelectorVo vo) {
+        PageResult<Member> pageResult = memberService.selector(getPageIndex(vo), getPageSize(vo), vo);
+        List<Member> datas = pageResult.getDatas();
+        List<MemberSelectorBo> results = null;
 
-    PageResult<MemberDto> pageResult = memberService.selector(getPageIndex(vo), getPageSize(vo),
-        vo);
-    List<MemberDto> datas = pageResult.getDatas();
-    List<MemberSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(MemberSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(MemberSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 仓库
+     */
+    @ApiOperation("仓库")
+    @GetMapping("/sc")
+    public InvokeResult<PageResult<StoreCenterSelectorBo>> selector(@Valid QueryStoreCenterSelectorVo vo) {
 
-  /**
-   * 仓库
-   */
-  @ApiOperation("仓库")
-  @GetMapping("/sc")
-  public InvokeResult<PageResult<StoreCenterSelectorBo>> selector(
-      @Valid QueryStoreCenterSelectorVo vo) {
+        PageResult<StoreCenter> pageResult = storeCenterService.selector(getPageIndex(vo), getPageSize(vo), vo);
+        List<StoreCenter> datas = pageResult.getDatas();
+        List<StoreCenterSelectorBo> results = null;
 
-    PageResult<StoreCenterDto> pageResult = storeCenterService.selector(getPageIndex(vo),
-        getPageSize(vo), vo);
-    List<StoreCenterDto> datas = pageResult.getDatas();
-    List<StoreCenterSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(StoreCenterSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(StoreCenterSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 供应商
+     */
+    @ApiOperation("供应商")
+    @GetMapping("/supplier")
+    public InvokeResult<PageResult<SupplierSelectorBo>> selector(@Valid QuerySupplierSelectorVo vo) {
 
-  /**
-   * 供应商
-   */
-  @ApiOperation("供应商")
-  @GetMapping("/supplier")
-  public InvokeResult<PageResult<SupplierSelectorBo>> selector(@Valid QuerySupplierSelectorVo vo) {
+        PageResult<Supplier> pageResult = supplierService.selector(getPageIndex(vo), getPageSize(vo), vo);
+        List<Supplier> datas = pageResult.getDatas();
+        List<SupplierSelectorBo> results = null;
 
-    PageResult<SupplierDto> pageResult = supplierService.selector(getPageIndex(vo), getPageSize(vo),
-        vo);
-    List<SupplierDto> datas = pageResult.getDatas();
-    List<SupplierSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(SupplierSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(SupplierSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 采购订单
+     */
+    @ApiOperation("采购订单")
+    @GetMapping("/purchaseorder")
+    public InvokeResult<PageResult<PurchaseOrderSelectorBo>> selector(@Valid PurchaseOrderSelectorVo vo) {
 
-  /**
-   * 采购订单
-   */
-  @ApiOperation("采购订单")
-  @GetMapping("/purchaseorder")
-  public InvokeResult<PageResult<PurchaseOrderSelectorBo>> selector(
-      @Valid PurchaseOrderSelectorVo vo) {
+        PageResult<PurchaseOrder> pageResult = purchaseOrderService.selector(getPageIndex(vo), getPageSize(vo), vo);
 
-    PageResult<PurchaseOrderDto> pageResult = purchaseOrderService.selector(getPageIndex(vo),
-        getPageSize(vo), vo);
+        List<PurchaseOrder> datas = pageResult.getDatas();
+        List<PurchaseOrderSelectorBo> results = null;
 
-    List<PurchaseOrderDto> datas = pageResult.getDatas();
-    List<PurchaseOrderSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(PurchaseOrderSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(PurchaseOrderSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 采购收货单
+     */
+    @ApiOperation("采购收货单")
+    @GetMapping("/receivesheet")
+    public InvokeResult<PageResult<ReceiveSheetSelectorBo>> selector(@Valid ReceiveSheetSelectorVo vo) {
 
-  /**
-   * 采购收货单
-   */
-  @ApiOperation("采购收货单")
-  @GetMapping("/receivesheet")
-  public InvokeResult<PageResult<ReceiveSheetSelectorBo>> selector(
-      @Valid ReceiveSheetSelectorVo vo) {
+        PageResult<ReceiveSheet> pageResult = receiveSheetService.selector(getPageIndex(vo), getPageSize(vo), vo);
 
-    PageResult<ReceiveSheetDto> pageResult = receiveSheetService.selector(getPageIndex(vo),
-        getPageSize(vo), vo);
+        List<ReceiveSheet> datas = pageResult.getDatas();
+        List<ReceiveSheetSelectorBo> results = null;
 
-    List<ReceiveSheetDto> datas = pageResult.getDatas();
-    List<ReceiveSheetSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(ReceiveSheetSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(ReceiveSheetSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 客户
+     */
+    @ApiOperation("客户")
+    @GetMapping("/customer")
+    public InvokeResult<PageResult<CustomerSelectorBo>> selector(@Valid QueryCustomerSelectorVo vo) {
 
-  /**
-   * 客户
-   */
-  @ApiOperation("客户")
-  @GetMapping("/customer")
-  public InvokeResult<PageResult<CustomerSelectorBo>> selector(@Valid QueryCustomerSelectorVo vo) {
+        PageResult<Customer> pageResult = customerService.selector(getPageIndex(vo), getPageSize(vo), vo);
 
-    PageResult<CustomerDto> pageResult = customerService.selector(getPageIndex(vo), getPageSize(vo),
-        vo);
+        List<Customer> datas = pageResult.getDatas();
+        List<CustomerSelectorBo> results = null;
 
-    List<CustomerDto> datas = pageResult.getDatas();
-    List<CustomerSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(CustomerSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(CustomerSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 收入项目
+     */
+    @ApiOperation("收入项目")
+    @GetMapping("/settle/item/in")
+    public InvokeResult<PageResult<SettleInItemSelectorBo>> selector(@Valid SettleInItemSelectorVo vo) {
 
-  /**
-   * 收入项目
-   */
-  @ApiOperation("收入项目")
-  @GetMapping("/settle/item/in")
-  public InvokeResult<PageResult<SettleInItemSelectorBo>> selector(
-      @Valid SettleInItemSelectorVo vo) {
+        PageResult<SettleInItem> pageResult = settleInItemService.selector(getPageIndex(vo), getPageSize(vo), vo);
 
-    PageResult<SettleInItemDto> pageResult = settleInItemService.selector(getPageIndex(vo),
-        getPageSize(vo), vo);
+        List<SettleInItem> datas = pageResult.getDatas();
+        List<SettleInItemSelectorBo> results = null;
 
-    List<SettleInItemDto> datas = pageResult.getDatas();
-    List<SettleInItemSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
 
-    if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(SettleInItemSelectorBo::new).collect(Collectors.toList());
+        }
 
-      results = datas.stream().map(SettleInItemSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 支出项目
+     */
+    @ApiOperation("支出项目")
+    @GetMapping("/settle/item/out")
+    public InvokeResult<PageResult<SettleOutItemSelectorBo>> selector(@Valid SettleOutItemSelectorVo vo) {
 
-  /**
-   * 支出项目
-   */
-  @ApiOperation("支出项目")
-  @GetMapping("/settle/item/out")
-  public InvokeResult<PageResult<SettleOutItemSelectorBo>> selector(
-      @Valid SettleOutItemSelectorVo vo) {
+        PageResult<SettleOutItem> pageResult = settleOutItemService.selector(getPageIndex(vo), getPageSize(vo), vo);
 
-    PageResult<SettleOutItemDto> pageResult = settleOutItemService.selector(getPageIndex(vo),
-        getPageSize(vo), vo);
+        List<SettleOutItem> datas = pageResult.getDatas();
+        List<SettleOutItemSelectorBo> results = null;
 
-    List<SettleOutItemDto> datas = pageResult.getDatas();
-    List<SettleOutItemSelectorBo> results = null;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(SettleOutItemSelectorBo::new).collect(Collectors.toList());
+        }
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(SettleOutItemSelectorBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 盘点任务
+     */
+    @ApiOperation("盘点任务")
+    @GetMapping("/takestock/plan")
+    public InvokeResult<PageResult<TakeStockPlanSelectorBo>> selector(@Valid TakeStockPlanSelectorVo vo) {
 
-  /**
-   * 盘点任务
-   */
-  @ApiOperation("盘点任务")
-  @GetMapping("/takestock/plan")
-  public InvokeResult<PageResult<TakeStockPlanSelectorBo>> selector(
-      @Valid TakeStockPlanSelectorVo vo) {
-    PageResult<TakeStockPlanSelectorDto> pageResult = takeStockPlanService.selector(
-        getPageIndex(vo), getPageSize(vo), vo);
+        PageResult<TakeStockPlanSelectorDto> pageResult = takeStockPlanService.selector(getPageIndex(vo),
+                getPageSize(vo), vo);
 
-    List<TakeStockPlanSelectorDto> datas = pageResult.getDatas();
-    List<TakeStockPlanSelectorBo> results = null;
+        List<TakeStockPlanSelectorDto> datas = pageResult.getDatas();
+        List<TakeStockPlanSelectorBo> results = null;
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(TakeStockPlanSelectorBo::new).collect(Collectors.toList());
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(TakeStockPlanSelectorBo::new).collect(Collectors.toList());
+        }
+
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 预先盘点单
+     */
+    @ApiOperation("预先盘点单")
+    @GetMapping("/takestock/pre")
+    public InvokeResult<PageResult<PreTakeStockSheetSelectorBo>> selector(@Valid PreTakeStockSheetSelectorVo vo) {
 
-  /**
-   * 预先盘点单
-   */
-  @ApiOperation("预先盘点单")
-  @GetMapping("/takestock/pre")
-  public InvokeResult<PageResult<PreTakeStockSheetSelectorBo>> selector(
-      @Valid PreTakeStockSheetSelectorVo vo) {
-    PageResult<PreTakeStockSheetSelectorDto> pageResult = preTakeStockSheetService.selector(
-        getPageIndex(vo), getPageSize(vo), vo);
+        PageResult<PreTakeStockSheetSelectorDto> pageResult = preTakeStockSheetService.selector(getPageIndex(vo),
+                getPageSize(vo), vo);
 
-    List<PreTakeStockSheetSelectorDto> datas = pageResult.getDatas();
-    List<PreTakeStockSheetSelectorBo> results = null;
+        List<PreTakeStockSheetSelectorDto> datas = pageResult.getDatas();
+        List<PreTakeStockSheetSelectorBo> results = null;
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(PreTakeStockSheetSelectorBo::new).collect(Collectors.toList());
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(PreTakeStockSheetSelectorBo::new).collect(Collectors.toList());
+        }
+
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
-
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
 }

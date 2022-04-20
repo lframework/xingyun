@@ -24,14 +24,14 @@ import org.springframework.stereotype.Service;
 @Service("defaultGroupService")
 public class GroupServiceImpl implements GroupService {
 
+  @Resource
+  UserService userService;
   @Autowired
   private GroupDao groupDao;
 
-  @Resource
-  UserService userService;
-
   @Override
   public List<? extends IGroup> getGroupsByGroupTypeUserId(String groupType, String userId) {
+
     List<? extends IGroup> listGroup = null;
 
     if (groupType.equals(GroupTypeConstant.ORG.key())) {
@@ -65,6 +65,7 @@ public class GroupServiceImpl implements GroupService {
 
   @Override
   public Map<String, List<? extends IGroup>> getAllGroupByUserId(String userId) {
+
     Map<String, List<? extends IGroup>> results = new HashMap<>();
 
     List<? extends IGroup> depts = this.getGroupsByGroupTypeUserId(GroupTypeConstant.ORG.key(),
@@ -93,6 +94,7 @@ public class GroupServiceImpl implements GroupService {
 
   @Override
   public List<? extends IGroup> getGroupsByUserId(String userId) {
+
     Map<String, List<? extends IGroup>> groups = this.getAllGroupByUserId(userId);
     if (CollectionUtil.isEmpty(groups)) {
       return Collections.EMPTY_LIST;
@@ -109,7 +111,8 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
-  public IGroup getById(String groupType, String groupId) {
+  public IGroup findById(String groupType, String groupId) {
+
     if (GroupTypeConstant.ORG.key().equals(groupType)) {
       DeptDTO dept = groupDao.getDeptById(groupId);
       if (dept != null) {
@@ -132,6 +135,7 @@ public class GroupServiceImpl implements GroupService {
 
   @Override
   public IGroup getByCode(String groupType, String code) {
+
     if (GroupTypeConstant.ORG.key().equals(groupType)) {
       DeptDTO dept = groupDao.getDeptByCode(code);
       if (dept != null) {
@@ -154,6 +158,7 @@ public class GroupServiceImpl implements GroupService {
 
   @Override
   public IGroup getMainGroup(String userId) {
+
     Map<String, List<? extends IGroup>> datas = this.getAllGroupByUserId(userId);
     if (CollectionUtil.isEmpty(datas)) {
       return null;

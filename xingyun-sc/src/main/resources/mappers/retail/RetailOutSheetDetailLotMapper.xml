@@ -38,7 +38,7 @@
         WHERE id = #{id}
           AND return_num >= #{num}
     </update>
-    <select id="getById" resultMap="RetailOutSheetDetailLotDto">
+    <select id="findById" resultMap="RetailOutSheetDetailLotDto">
         <include refid="RetailOutSheetDetailLotDto_sql"/>
         WHERE d.id = #{id}
     </select>

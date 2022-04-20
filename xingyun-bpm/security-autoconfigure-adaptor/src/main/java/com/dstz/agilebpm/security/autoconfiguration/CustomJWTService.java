@@ -9,6 +9,7 @@ public class CustomJWTService extends JWTService {
 
   @Override
   public String getValidSubjectFromRedisToken(String authToken) {
+
     if (StringUtil.isEmpty(authToken)) {
       return null;
     }
@@ -20,11 +21,13 @@ public class CustomJWTService extends JWTService {
 
   @Override
   public void logoutRedisToken(String authToken) {
+
     throw new RuntimeException("集成模式不需要退出登录");
   }
 
   @Override
   public String generateToken(String username, String audience) {
+
     throw new RuntimeException("集成模式不能自主生成token");
   }
 }

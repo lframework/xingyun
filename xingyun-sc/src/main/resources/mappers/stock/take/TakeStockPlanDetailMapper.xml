@@ -8,7 +8,7 @@
         <result column="stock_num" property="stockNum"/>
     </resultMap>
 
-    <resultMap id="TakeStockPlanDetailDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDetailDto">
+    <resultMap id="TakeStockPlanDetail" type="com.lframework.xingyun.sc.entity.TakeStockPlanDetail">
         <id column="id" property="id"/>
         <result column="product_id" property="productId"/>
         <result column="stock_num" property="stockNum"/>
@@ -56,7 +56,7 @@
         WHERE tb.plan_id = #{planId}
         AND tb.product_id = #{productId}
     </select>
-    <select id="getDetailsByPlanId" resultMap="TakeStockPlanDetailDto">
+    <select id="getDetailsByPlanId" resultMap="TakeStockPlanDetail">
         <include refid="TakeStockPlanDetailDto_sql"/>
         WHERE tb.plan_id = #{planId}
         ORDER BY tb.order_no

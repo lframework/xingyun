@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.stock.take;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
@@ -25,7 +24,7 @@ public interface IPreTakeStockSheetService extends BaseMpService<PreTakeStockShe
    *
    * @return
    */
-  PageResult<PreTakeStockSheetDto> query(Integer pageIndex, Integer pageSize,
+  PageResult<PreTakeStockSheet> query(Integer pageIndex, Integer pageSize,
       QueryPreTakeStockSheetVo vo);
 
   /**
@@ -34,7 +33,7 @@ public interface IPreTakeStockSheetService extends BaseMpService<PreTakeStockShe
    * @param vo
    * @return
    */
-  List<PreTakeStockSheetDto> query(QueryPreTakeStockSheetVo vo);
+  List<PreTakeStockSheet> query(QueryPreTakeStockSheetVo vo);
 
   /**
    * 选择器
@@ -44,14 +43,6 @@ public interface IPreTakeStockSheetService extends BaseMpService<PreTakeStockShe
    */
   PageResult<PreTakeStockSheetSelectorDto> selector(Integer pageIndex, Integer pageSize,
       PreTakeStockSheetSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  PreTakeStockSheetDto getById(String id);
 
   /**
    * 根据ID查询

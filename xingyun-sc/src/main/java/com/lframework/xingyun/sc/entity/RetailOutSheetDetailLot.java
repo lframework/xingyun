@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -18,7 +19,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("tbl_retail_out_sheet_detail_lot")
-public class RetailOutSheetDetailLot extends BaseEntity {
+public class RetailOutSheetDetailLot extends BaseEntity implements BaseDto {
 
   private static final long serialVersionUID = 1L;
 

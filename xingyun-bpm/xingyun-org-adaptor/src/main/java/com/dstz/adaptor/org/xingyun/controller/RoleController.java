@@ -14,6 +14,7 @@ public class RoleController extends BaseController<Role> {
 
   @Override
   protected String getModelDesc() {
+
     return "角色";
   }
 }

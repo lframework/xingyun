@@ -18,6 +18,7 @@ public class AuthController {
   @GetMapping("/url")
   public @ResponseBody
   Map<String, String> getLoginUrl() {
+
     return Collections.singletonMap("url", loginUrl);
   }
 }

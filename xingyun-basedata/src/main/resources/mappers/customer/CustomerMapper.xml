@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.CustomerMapper">
 
-    <resultMap id="CustomerDto" type="com.lframework.xingyun.basedata.dto.customer.CustomerDto">
+    <resultMap id="CustomerDto" type="com.lframework.xingyun.basedata.entity.Customer">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -80,10 +80,6 @@
         ORDER BY code
     </select>
 
-    <select id="getById" resultMap="CustomerDto">
-        <include refid="CustomerDto_sql"/>
-        WHERE id = #{id}
-    </select>
     <select id="selector" resultMap="CustomerDto">
         <include refid="CustomerDto_sql"/>
         <where>

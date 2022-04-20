@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.settle.mappers.SettleSheetMapper">
-    <resultMap id="SettleSheetDto" type="com.lframework.xingyun.settle.dto.sheet.SettleSheetDto">
+    <resultMap id="SettleSheet" type="com.lframework.xingyun.settle.entity.SettleSheet">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="supplier_id" property="supplierId"/>
@@ -96,7 +96,7 @@
         LEFT JOIN settle_sheet_detail AS d ON d.sheet_id = s.id
     </sql>
 
-    <select id="query" resultMap="SettleSheetDto">
+    <select id="query" resultMap="SettleSheet">
         <include refid="SettleSheetDto_sql"/>
         <where>
             <if test="vo != null">
@@ -134,11 +134,6 @@
             </if>
         </where>
         ORDER BY s.create_time DESC
-    </select>
-
-    <select id="getById" resultMap="SettleSheetDto">
-        <include refid="SettleSheetDto_sql"/>
-        WHERE s.id = #{id}
     </select>
 
     <select id="getDetail" resultMap="SettleSheetFullDto">

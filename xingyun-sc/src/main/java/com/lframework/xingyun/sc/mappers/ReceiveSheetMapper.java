@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
@@ -29,7 +28,7 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param vo
    * @return
    */
-  List<ReceiveSheetDto> query(@Param("vo") QueryReceiveSheetVo vo);
+  List<ReceiveSheet> query(@Param("vo") QueryReceiveSheetVo vo);
 
   /**
    * 选择器
@@ -37,15 +36,7 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param vo
    * @return
    */
-  List<ReceiveSheetDto> selector(@Param("vo") ReceiveSheetSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ReceiveSheetDto getById(String id);
+  List<ReceiveSheet> selector(@Param("vo") ReceiveSheetSelectorVo vo);
 
   /**
    * 根据ID查询
@@ -78,7 +69,7 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param vo
    * @return
    */
-  List<ReceiveSheetDto> queryWithReturn(@Param("vo") QueryReceiveSheetWithReturnVo vo,
+  List<ReceiveSheet> queryWithReturn(@Param("vo") QueryReceiveSheetWithReturnVo vo,
       @Param("multipleRelate") boolean multipleRelate);
 
   /**
@@ -89,7 +80,7 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param endTime
    * @return
    */
-  List<ReceiveSheetDto> getApprovedList(@Param("supplierId") String supplierId,
+  List<ReceiveSheet> getApprovedList(@Param("supplierId") String supplierId,
       @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime,
       @Param("settleStatus") SettleStatus settleStatus);
 }

@@ -13,10 +13,10 @@ import com.lframework.xingyun.basedata.dto.product.info.SaleProductDto;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDetailDto;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
-import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
+import com.lframework.xingyun.sc.entity.ProductStock;
+import com.lframework.xingyun.sc.entity.SaleOrder;
+import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.service.sale.ISaleOrderDetailService;
 import com.lframework.xingyun.sc.service.sale.ISaleOrderService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
@@ -194,26 +194,26 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
   protected void afterInit(SaleOutSheetFullDto dto) {
 
     IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-    this.scName = storeCenterService.getById(dto.getScId()).getName();
+    this.scName = storeCenterService.findById(dto.getScId()).getName();
 
     ICustomerService customerService = ApplicationUtil.getBean(ICustomerService.class);
-    this.customerName = customerService.getById(dto.getCustomerId()).getName();
+    this.customerName = customerService.findById(dto.getCustomerId()).getName();
 
     IUserService userService = ApplicationUtil.getBean(IUserService.class);
     if (!StringUtil.isBlank(dto.getSalerId())) {
-      this.salerName = userService.getById(dto.getSalerId()).getName();
+      this.salerName = userService.findById(dto.getSalerId()).getName();
     }
 
     ISaleOrderService saleOrderService = ApplicationUtil.getBean(ISaleOrderService.class);
     if (!StringUtil.isBlank(dto.getSaleOrderId())) {
-      SaleOrderDto saleOrder = saleOrderService.getById(dto.getSaleOrderId());
+      SaleOrder saleOrder = saleOrderService.getById(dto.getSaleOrderId());
       this.saleOrderCode = saleOrder.getCode();
     }
 
-    this.createBy = userService.getById(dto.getCreateBy()).getName();
+    this.createBy = userService.findById(dto.getCreateBy()).getName();
 
     if (!StringUtil.isBlank(dto.getApproveBy())) {
-      this.approveBy = userService.getById(dto.getApproveBy()).getName();
+      this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }
 
     this.status = dto.getStatus().getCode();
@@ -424,19 +424,19 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
       }
 
       if (!StringUtil.isBlank(dto.getSaleOrderDetailId())) {
-        ISaleOrderDetailService saleOrderDetailService = ApplicationUtil
-            .getBean(ISaleOrderDetailService.class);
-        SaleOrderDetailDto saleOrderDetail = saleOrderDetailService
-            .getById(dto.getSaleOrderDetailId());
+        ISaleOrderDetailService saleOrderDetailService = ApplicationUtil.getBean(
+            ISaleOrderDetailService.class);
+        SaleOrderDetail saleOrderDetail = saleOrderDetailService.getById(
+            dto.getSaleOrderDetailId());
         this.orderNum = saleOrderDetail.getOrderNum();
         this.remainNum = NumberUtil.sub(saleOrderDetail.getOrderNum(), saleOrderDetail.getOutNum())
             .intValue();
       }
 
-      IProductStockService productStockService = ApplicationUtil
-          .getBean(IProductStockService.class);
-      ProductStockDto productStock = productStockService
-          .getByProductIdAndScId(this.getProductId(), this.getScId());
+      IProductStockService productStockService = ApplicationUtil.getBean(
+          IProductStockService.class);
+      ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
+          this.getScId());
       this.stockNum = productStock == null ? 0 : productStock.getStockNum();
     }
   }

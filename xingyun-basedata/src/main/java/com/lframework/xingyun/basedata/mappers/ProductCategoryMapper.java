@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import java.util.List;
@@ -22,20 +21,12 @@ public interface ProductCategoryMapper extends BaseMapper<ProductCategory> {
    *
    * @return
    */
-  List<ProductCategoryDto> getAllProductCategories();
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ProductCategoryDto getById(String id);
+  List<ProductCategory> getAllProductCategories();
 
   /**
    * 选择器
    *
    * @return
    */
-  List<ProductCategoryDto> selector(@Param("vo") QueryProductCategorySelectorVo vo);
+  List<ProductCategory> selector(@Param("vo") QueryProductCategorySelectorVo vo);
 }

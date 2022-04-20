@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.basedata.dto.member.MemberDto;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
@@ -24,15 +23,7 @@ public interface MemberMapper extends BaseMapper<Member> {
    * @param vo
    * @return
    */
-  List<MemberDto> query(@Param("vo") QueryMemberVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  MemberDto getById(String id);
+  List<Member> query(@Param("vo") QueryMemberVo vo);
 
   /**
    * 选择器
@@ -40,5 +31,5 @@ public interface MemberMapper extends BaseMapper<Member> {
    * @param vo
    * @return
    */
-  List<MemberDto> selector(@Param("vo") QueryMemberSelectorVo vo);
+  List<Member> selector(@Param("vo") QueryMemberSelectorVo vo);
 }

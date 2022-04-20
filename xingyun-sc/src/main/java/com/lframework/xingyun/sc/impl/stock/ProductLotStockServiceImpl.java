@@ -6,8 +6,7 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.sc.dto.stock.ProductLotDto;
-import com.lframework.xingyun.sc.dto.stock.ProductLotStockDto;
+import com.lframework.xingyun.sc.entity.ProductLot;
 import com.lframework.xingyun.sc.entity.ProductLotStock;
 import com.lframework.xingyun.sc.mappers.ProductLotStockMapper;
 import com.lframework.xingyun.sc.service.stock.IProductLotService;
@@ -21,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductLotStockServiceImpl extends
-    BaseMpServiceImpl<ProductLotStockMapper, ProductLotStock> implements IProductLotStockService {
+    BaseMpServiceImpl<ProductLotStockMapper, ProductLotStock>
+    implements IProductLotStockService {
 
   @Autowired
   private IProductService productService;
@@ -30,14 +30,14 @@ public class ProductLotStockServiceImpl extends
   private IProductLotService productLotService;
 
   @Override
-  public List<ProductLotStockDto> getWithSubStock(String productId, String scId, String supplierId,
+  public List<ProductLotStock> getWithSubStock(String productId, String scId, String supplierId,
       Integer num) {
 
-    List<ProductLotStockDto> datas = getBaseMapper().getFifoList(productId, scId, supplierId);
+    List<ProductLotStock> datas = getBaseMapper().getFifoList(productId, scId, supplierId);
     int totalNum = 0;
 
-    List<ProductLotStockDto> results = new ArrayList<>();
-    for (ProductLotStockDto data : datas) {
+    List<ProductLotStock> results = new ArrayList<>();
+    for (ProductLotStock data : datas) {
       totalNum += data.getStockNum();
       results.add(data);
       if (totalNum >= num) {
@@ -58,30 +58,24 @@ public class ProductLotStockServiceImpl extends
   public void subStockById(String id, Integer num) {
 
     ProductLotStock lotStock = getBaseMapper().selectById(id);
-    ProductLotDto lot = productLotService.getById(lotStock.getLotId());
+    ProductLot lot = productLotService.findById(lotStock.getLotId());
 
     if (NumberUtil.lt(lotStock.getStockNum(), num)) {
-      ProductDto product = productService.getById(lot.getProductId());
+      ProductDto product = productService.findById(lot.getProductId());
       throw new DefaultClientException(
           "商品（" + product.getCode() + "）" + product.getName() + "当前库存不足，无法出库！");
     }
 
     int count = getBaseMapper().subStockById(id, num);
     if (count != 1) {
-      ProductDto product = productService.getById(lot.getProductId());
+      ProductDto product = productService.findById(lot.getProductId());
       throw new DefaultClientException(
           "商品（" + product.getCode() + "）" + product.getName() + "出库失败，请稍后重试！");
     }
   }
 
   @Override
-  public ProductLotStockDto getById(String id) {
-
-    return getBaseMapper().getById(id);
-  }
-
-  @Override
-  public ProductLotStockDto getByScIdAndLotId(String scId, String lotId) {
+  public ProductLotStock getByScIdAndLotId(String scId, String lotId) {
 
     return getBaseMapper().getByScIdAndLotId(scId, lotId);
   }
@@ -102,7 +96,8 @@ public class ProductLotStockServiceImpl extends
   }
 
   @Override
-  public List<ProductLotStockDto> getAllHasStockLots(String productId, String scId) {
+  public List<ProductLotStock> getAllHasStockLots(String productId, String scId) {
+
     return getBaseMapper().getAllHasStockLots(productId, scId);
   }
 }

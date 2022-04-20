@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.ProductStockMapper">
-    <resultMap id="ProductStockDto" type="com.lframework.xingyun.sc.dto.stock.ProductStockDto">
+    <resultMap id="ProductStock" type="com.lframework.xingyun.sc.entity.ProductStock">
         <id column="id" property="id"/>
         <result column="product_id" property="productId"/>
         <result column="sc_id" property="scId"/>
@@ -54,12 +54,12 @@
         WHERE product_id = #{productId}
         AND sc_id = #{scId}
     </update>
-    <select id="getByProductIdAndScId" resultMap="ProductStockDto">
+    <select id="getByProductIdAndScId" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
         WHERE product_id = #{productId}
         AND sc_id = #{scId}
     </select>
-    <select id="query" resultMap="ProductStockDto">
+    <select id="query" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
         INNER JOIN base_data_store_center AS sc ON sc.id = gs.sc_id
         INNER JOIN base_data_product AS product ON product.id = gs.product_id
@@ -86,7 +86,7 @@
         </where>
         ORDER BY sc.code, product.code
     </select>
-    <select id="getByProductIdsAndScId" resultMap="ProductStockDto">
+    <select id="getByProductIdsAndScId" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
         WHERE product_id IN <foreach collection="productIds" open="(" separator="," close=")" item="item">#{item}</foreach>
         AND sc_id = #{scId}

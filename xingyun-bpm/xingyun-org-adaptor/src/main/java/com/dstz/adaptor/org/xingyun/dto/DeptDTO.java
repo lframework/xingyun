@@ -32,46 +32,56 @@ public class DeptDTO implements IGroup {
 
   @Override
   public String getGroupId() {
+
     return groupId;
   }
 
   public void setGroupId(String groupId) {
+
     this.groupId = groupId;
   }
 
   @Override
   public String getGroupName() {
+
     return groupName;
   }
 
   public void setGroupName(String groupName) {
+
     this.groupName = groupName;
   }
 
   @Override
   public String getGroupCode() {
+
     return groupCode;
   }
 
   public void setGroupCode(String groupCode) {
+
     this.groupCode = groupCode;
   }
 
   @Override
   public String getGroupType() {
+
     return groupType;
   }
 
   public void setGroupType(String groupType) {
+
     this.groupType = groupType;
   }
 
   @Override
   public String getParentId() {
+
     return parentId;
   }
 
   public void setParentId(String parentId) {
+
     this.parentId = parentId;
   }
 }

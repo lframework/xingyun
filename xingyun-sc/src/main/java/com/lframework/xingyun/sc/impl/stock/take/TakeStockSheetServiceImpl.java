@@ -23,9 +23,8 @@ import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
-import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
+import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.entity.TakeStockSheetDetail;
 import com.lframework.xingyun.sc.enums.TakeStockPlanStatus;
@@ -55,7 +54,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TakeStockSheetServiceImpl extends
-    BaseMpServiceImpl<TakeStockSheetMapper, TakeStockSheet> implements ITakeStockSheetService {
+    BaseMpServiceImpl<TakeStockSheetMapper, TakeStockSheet>
+    implements ITakeStockSheetService {
 
   @Autowired
   private ITakeStockSheetDetailService takeStockSheetDetailService;
@@ -70,28 +70,22 @@ public class TakeStockSheetServiceImpl extends
   private ITakeStockPlanDetailService takeStockPlanDetailService;
 
   @Override
-  public PageResult<TakeStockSheetDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<TakeStockSheet> query(Integer pageIndex, Integer pageSize,
       QueryTakeStockSheetVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<TakeStockSheetDto> datas = this.query(vo);
+    List<TakeStockSheet> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<TakeStockSheetDto> query(QueryTakeStockSheetVo vo) {
+  public List<TakeStockSheet> query(QueryTakeStockSheetVo vo) {
 
     return getBaseMapper().query(vo);
-  }
-
-  @Override
-  public TakeStockSheetDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -116,7 +110,7 @@ public class TakeStockSheetServiceImpl extends
     data.setPlanId(vo.getPlanId());
     data.setPreSheetId(vo.getPreSheetId());
 
-    TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(vo.getPlanId());
+    TakeStockPlan takeStockPlan = takeStockPlanService.getById(vo.getPlanId());
     if (takeStockPlan == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -139,8 +133,9 @@ public class TakeStockSheetServiceImpl extends
       detail.setSheetId(data.getId());
       detail.setProductId(product.getProductId());
       detail.setTakeNum(product.getTakeNum());
-      detail.setDescription(StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
-          : product.getDescription());
+      detail.setDescription(
+          StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
+              : product.getDescription());
       detail.setOrderNo(orderNo++);
 
       takeStockSheetDetailService.save(detail);
@@ -169,7 +164,7 @@ public class TakeStockSheetServiceImpl extends
       throw new DefaultClientException("盘点单不存在！");
     }
 
-    TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(data.getPlanId());
+    TakeStockPlan takeStockPlan = takeStockPlanService.getById(data.getPlanId());
     if (takeStockPlan == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -194,7 +189,8 @@ public class TakeStockSheetServiceImpl extends
 
     // 删除明细
     Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId());
+            TakeStockSheetDetail.class)
+        .eq(TakeStockSheetDetail::getSheetId, data.getId());
     takeStockSheetDetailService.remove(deleteDetailWrapper);
 
     int orderNo = 1;
@@ -204,8 +200,9 @@ public class TakeStockSheetServiceImpl extends
       detail.setSheetId(data.getId());
       detail.setProductId(product.getProductId());
       detail.setTakeNum(product.getTakeNum());
-      detail.setDescription(StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
-          : product.getDescription());
+      detail.setDescription(
+          StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
+              : product.getDescription());
       detail.setOrderNo(orderNo++);
 
       takeStockSheetDetailService.save(detail);
@@ -232,7 +229,7 @@ public class TakeStockSheetServiceImpl extends
       throw new DefaultClientException("盘点单不存在！");
     }
 
-    TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(data.getPlanId());
+    TakeStockPlan takeStockPlan = takeStockPlanService.getById(data.getPlanId());
     if (takeStockPlan == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -253,7 +250,8 @@ public class TakeStockSheetServiceImpl extends
     }
 
     Wrapper<TakeStockSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId())
+            TakeStockSheetDetail.class)
+        .eq(TakeStockSheetDetail::getSheetId, data.getId())
         .orderByAsc(TakeStockSheetDetail::getOrderNo);
     List<TakeStockSheetDetail> details = takeStockSheetDetailService.list(queryDetailWrapper);
     for (TakeStockSheetDetail detail : details) {
@@ -268,6 +266,7 @@ public class TakeStockSheetServiceImpl extends
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassTakeStockSheetVo vo) {
+
     ITakeStockSheetService thisService = getThis(this.getClass());
     int orderNo = 1;
     for (String id : vo.getIds()) {
@@ -285,6 +284,7 @@ public class TakeStockSheetServiceImpl extends
   @Transactional
   @Override
   public void directApprovePass(CreateTakeStockSheetVo vo) {
+
     ITakeStockSheetService thisService = getThis(this.getClass());
 
     String id = thisService.create(vo);
@@ -299,12 +299,13 @@ public class TakeStockSheetServiceImpl extends
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseTakeStockSheetVo vo) {
+
     TakeStockSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点单不存在！");
     }
 
-    TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(data.getPlanId());
+    TakeStockPlan takeStockPlan = takeStockPlanService.getById(data.getPlanId());
     if (takeStockPlan == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -332,6 +333,7 @@ public class TakeStockSheetServiceImpl extends
   @Transactional
   @Override
   public void batchApproveRefuse(BatchApproveRefuseTakeStockSheetVo vo) {
+
     ITakeStockSheetService thisService = getThis(this.getClass());
     int orderNo = 1;
     for (String id : vo.getIds()) {
@@ -351,12 +353,13 @@ public class TakeStockSheetServiceImpl extends
   @Transactional
   @Override
   public void cancelApprovePass(String id) {
+
     TakeStockSheet data = getBaseMapper().selectById(id);
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点单不存在！");
     }
 
-    TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(data.getPlanId());
+    TakeStockPlan takeStockPlan = takeStockPlanService.getById(data.getPlanId());
     if (takeStockPlan == null) {
       throw new DefaultClientException("盘点任务不存在！");
     }
@@ -377,7 +380,8 @@ public class TakeStockSheetServiceImpl extends
     }
 
     Wrapper<TakeStockSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId())
+            TakeStockSheetDetail.class)
+        .eq(TakeStockSheetDetail::getSheetId, data.getId())
         .orderByAsc(TakeStockSheetDetail::getOrderNo);
     List<TakeStockSheetDetail> details = takeStockSheetDetailService.list(queryDetailWrapper);
     for (TakeStockSheetDetail detail : details) {
@@ -392,26 +396,30 @@ public class TakeStockSheetServiceImpl extends
   @Transactional
   @Override
   public void deleteById(String id) {
+
     TakeStockSheet data = getBaseMapper().selectById(id);
     if (ObjectUtil.isNull(data)) {
       throw new DefaultClientException("盘点单不存在！");
     }
 
     Wrapper<TakeStockSheet> deleteWrapper = Wrappers.lambdaQuery(TakeStockSheet.class)
-        .eq(TakeStockSheet::getId, id).in(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED,
+        .eq(TakeStockSheet::getId, id)
+        .in(TakeStockSheet::getStatus, TakeStockSheetStatus.CREATED,
             TakeStockSheetStatus.APPROVE_REFUSE);
     if (getBaseMapper().delete(deleteWrapper) != 1) {
       throw new DefaultClientException("盘点单信息已过期，请刷新重试！");
     }
 
     Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        TakeStockSheetDetail.class).eq(TakeStockSheetDetail::getSheetId, data.getId());
+            TakeStockSheetDetail.class)
+        .eq(TakeStockSheetDetail::getSheetId, data.getId());
     takeStockSheetDetailService.remove(deleteDetailWrapper);
   }
 
   @Transactional
   @Override
   public void batchDelete(List<String> ids) {
+
     ITakeStockSheetService thisService = getThis(this.getClass());
     int orderNo = 1;
     for (String id : ids) {
@@ -426,11 +434,13 @@ public class TakeStockSheetServiceImpl extends
 
   @Override
   public Boolean hasRelatePreTakeStockSheet(String preSheetId) {
+
     return getBaseMapper().hasRelatePreTakeStockSheet(preSheetId);
   }
 
   @Override
   public Boolean hasUnApprove(String planId) {
+
     return getBaseMapper().hasUnApprove(planId);
   }
 
@@ -453,6 +463,7 @@ public class TakeStockSheetServiceImpl extends
     @Transactional
     @Override
     public void onApplicationEvent(DeleteTakeStockPlanEvent deleteTakeStockPlanEvent) {
+
       Wrapper<TakeStockSheet> deleteWrapper = Wrappers.lambdaQuery(TakeStockSheet.class)
           .eq(TakeStockSheet::getPlanId, deleteTakeStockPlanEvent.getId());
       List<TakeStockSheet> sheets = takeStockSheetService.list(deleteWrapper);
@@ -462,7 +473,8 @@ public class TakeStockSheetServiceImpl extends
       if (!CollectionUtil.isEmpty(sheets)) {
         ids = sheets.stream().map(TakeStockSheet::getId).collect(Collectors.toList());
         Wrapper<TakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-            TakeStockSheetDetail.class).in(TakeStockSheetDetail::getSheetId, ids);
+                TakeStockSheetDetail.class)
+            .in(TakeStockSheetDetail::getSheetId, ids);
         takeStockSheetDetailService.remove(deleteDetailWrapper);
       }
 

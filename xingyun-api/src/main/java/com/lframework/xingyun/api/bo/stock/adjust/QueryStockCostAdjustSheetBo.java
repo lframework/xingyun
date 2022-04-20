@@ -6,14 +6,15 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto;
+import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetDto;
+import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -24,111 +25,111 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class QueryStockCostAdjustSheetBo extends BaseBo<StockCostAdjustSheetDto> {
+public class QueryStockCostAdjustSheetBo extends BaseBo<StockCostAdjustSheet> {
 
-  /**
-   * ID
-   */
-  @ApiModelProperty("ID")
-  private String id;
+    /**
+     * ID
+     */
+    @ApiModelProperty("ID")
+    private String id;
 
-  /**
-   * 业务单据号
-   */
-  @ApiModelProperty("业务单据号")
-  private String code;
+    /**
+     * 业务单据号
+     */
+    @ApiModelProperty("业务单据号")
+    private String code;
 
-  /**
-   * 仓库编号
-   */
-  @ApiModelProperty("仓库编号")
-  private String scCode;
+    /**
+     * 仓库编号
+     */
+    @ApiModelProperty("仓库编号")
+    private String scCode;
 
-  /**
-   * 仓库名称
-   */
-  @ApiModelProperty("仓库名称")
-  private String scName;
+    /**
+     * 仓库名称
+     */
+    @ApiModelProperty("仓库名称")
+    private String scName;
 
-  /**
-   * 调价品种数
-   */
-  @ApiModelProperty("调价品种数")
-  private Integer productNum;
+    /**
+     * 调价品种数
+     */
+    @ApiModelProperty("调价品种数")
+    private Integer productNum;
 
-  /**
-   * 库存调价差额
-   */
-  @ApiModelProperty("库存调价差额")
-  private BigDecimal diffAmount;
+    /**
+     * 库存调价差额
+     */
+    @ApiModelProperty("库存调价差额")
+    private BigDecimal diffAmount;
 
-  /**
-   * 状态
-   */
-  @ApiModelProperty("状态")
-  private Integer status;
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer status;
 
-  /**
-   * 备注
-   */
-  @ApiModelProperty("备注")
-  private String description;
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String description;
 
-  /**
-   * 修改人
-   */
-  @ApiModelProperty("修改人")
-  private String updateBy;
+    /**
+     * 修改人
+     */
+    @ApiModelProperty("修改人")
+    private String updateBy;
 
-  /**
-   * 修改时间
-   */
-  @ApiModelProperty("修改时间")
-  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-  private LocalDateTime updateTime;
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty("修改时间")
+    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+    private LocalDateTime updateTime;
 
-  /**
-   * 审核人
-   */
-  @ApiModelProperty("审核人")
-  private String approveBy;
+    /**
+     * 审核人
+     */
+    @ApiModelProperty("审核人")
+    private String approveBy;
 
-  /**
-   * 审核时间
-   */
-  @ApiModelProperty("审核时间")
-  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-  private LocalDateTime approveTime;
+    /**
+     * 审核时间
+     */
+    @ApiModelProperty("审核时间")
+    @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
+    private LocalDateTime approveTime;
 
-  public QueryStockCostAdjustSheetBo() {
+    public QueryStockCostAdjustSheetBo() {
 
-  }
-
-  public QueryStockCostAdjustSheetBo(StockCostAdjustSheetDto dto) {
-
-    super(dto);
-  }
-
-  @Override
-  public BaseBo<StockCostAdjustSheetDto> convert(StockCostAdjustSheetDto dto) {
-
-    return super.convert(dto, QueryStockCostAdjustSheetBo::getStatus);
-  }
-
-  @Override
-  protected void afterInit(StockCostAdjustSheetDto dto) {
-
-    this.status = dto.getStatus().getCode();
-
-    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-    StoreCenterDto sc = storeCenterService.getById(dto.getScId());
-    this.scCode = sc.getCode();
-    this.scName = sc.getName();
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    this.updateBy = userService.getById(dto.getUpdateBy()).getName();
-    if (!StringUtil.isBlank(dto.getApproveBy())) {
-      this.approveBy = userService.getById(dto.getApproveBy()).getName();
     }
-  }
+
+    public QueryStockCostAdjustSheetBo(StockCostAdjustSheet dto) {
+
+        super(dto);
+    }
+
+    @Override
+    public BaseBo<StockCostAdjustSheet> convert(StockCostAdjustSheet dto) {
+
+        return super.convert(dto, QueryStockCostAdjustSheetBo::getStatus);
+    }
+
+    @Override
+    protected void afterInit(StockCostAdjustSheet dto) {
+
+        this.status = dto.getStatus().getCode();
+
+        IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
+        StoreCenter sc = storeCenterService.findById(dto.getScId());
+        this.scCode = sc.getCode();
+        this.scName = sc.getName();
+
+        IUserService userService = ApplicationUtil.getBean(IUserService.class);
+        this.updateBy = userService.findById(dto.getUpdateBy()).getName();
+        if (!StringUtil.isBlank(dto.getApproveBy())) {
+            this.approveBy = userService.findById(dto.getApproveBy()).getName();
+        }
+    }
 }

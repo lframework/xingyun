@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.ProductPropertyItemMapper">
 
-    <resultMap id="ProductPropertyItemDto"
-               type="com.lframework.xingyun.basedata.dto.product.property.item.ProductPropertyItemDto">
+    <resultMap id="ProductPropertyItem"
+               type="com.lframework.xingyun.basedata.entity.ProductPropertyItem">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -30,7 +30,7 @@
             update_time
         FROM base_data_product_property_item
     </sql>
-    <select id="query" resultMap="ProductPropertyItemDto">
+    <select id="query" resultMap="ProductPropertyItem">
         <include refid="ProductPropertyItemDto_sql"/>
         <where>
             AND property_id = #{vo.propertyId}
@@ -48,12 +48,8 @@
         </where>
         ORDER BY code
     </select>
-    <select id="getByPropertyId" resultMap="ProductPropertyItemDto">
+    <select id="getByPropertyId" resultMap="ProductPropertyItem">
         <include refid="ProductPropertyItemDto_sql"/>
         ORDER BY code
-    </select>
-    <select id="getById" resultMap="ProductPropertyItemDto">
-        <include refid="ProductPropertyItemDto_sql"/>
-        WHERE id = #{id}
     </select>
 </mapper>

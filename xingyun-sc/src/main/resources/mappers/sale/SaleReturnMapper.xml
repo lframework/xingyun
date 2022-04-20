@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.SaleReturnMapper">
 
-    <resultMap id="SaleReturnDto" type="com.lframework.xingyun.sc.dto.sale.returned.SaleReturnDto">
+    <resultMap id="SaleReturn" type="com.lframework.xingyun.sc.entity.SaleReturn">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="sc_id" property="scId"/>
@@ -95,7 +95,7 @@
         LEFT JOIN tbl_sale_return_detail AS d ON d.return_id = r.id
     </sql>
 
-    <select id="query" resultMap="SaleReturnDto">
+    <select id="query" resultMap="SaleReturn">
         <include refid="SaleReturnDto_sql"/>
         <where>
             <if test="vo != null">
@@ -145,10 +145,6 @@
             </if>
         </where>
         ORDER BY r.create_time DESC
-    </select>
-    <select id="getById" resultMap="SaleReturnDto">
-        <include refid="SaleReturnDto_sql"/>
-        WHERE r.id = #{id}
     </select>
     <select id="getDetail" resultMap="SaleReturnFullDto">
         <include refid="SaleReturnFullDto_sql"/>

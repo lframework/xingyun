@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.vo.sale.returned.ApprovePassSaleReturnVo;
@@ -24,7 +23,7 @@ public interface ISaleReturnService extends BaseMpService<SaleReturn> {
    * @param vo
    * @return
    */
-  PageResult<SaleReturnDto> query(Integer pageIndex, Integer pageSize, QuerySaleReturnVo vo);
+  PageResult<SaleReturn> query(Integer pageIndex, Integer pageSize, QuerySaleReturnVo vo);
 
   /**
    * 查询列表
@@ -32,15 +31,7 @@ public interface ISaleReturnService extends BaseMpService<SaleReturn> {
    * @param vo
    * @return
    */
-  List<SaleReturnDto> query(QuerySaleReturnVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  SaleReturnDto getById(String id);
+  List<SaleReturn> query(QuerySaleReturnVo vo);
 
   /**
    * 根据ID查询

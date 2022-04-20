@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.sale.SaleOrderDetailDto;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -17,20 +16,12 @@ import org.apache.ibatis.annotations.Param;
 public interface SaleOrderDetailMapper extends BaseMapper<SaleOrderDetail> {
 
   /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  SaleOrderDetailDto getById(String id);
-
-  /**
    * 根据订单ID查询
    *
    * @param orderId
    * @return
    */
-  List<SaleOrderDetailDto> getByOrderId(String orderId);
+  List<SaleOrderDetail> getByOrderId(String orderId);
 
   /**
    * 增加出库数量

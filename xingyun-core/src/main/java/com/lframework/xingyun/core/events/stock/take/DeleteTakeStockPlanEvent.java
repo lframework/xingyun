@@ -20,6 +20,7 @@ public class DeleteTakeStockPlanEvent extends ApplicationEvent {
   }
 
   public String getId() {
+
     return id;
   }
 }

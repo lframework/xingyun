@@ -7,8 +7,7 @@ import com.lframework.xingyun.settle.service.ISettleFeeSheetDetailService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SettleFeeSheetDetailServiceImpl extends
-    BaseMpServiceImpl<SettleFeeSheetDetailMapper, SettleFeeSheetDetail> implements
-    ISettleFeeSheetDetailService {
+public class SettleFeeSheetDetailServiceImpl extends BaseMpServiceImpl<SettleFeeSheetDetailMapper, SettleFeeSheetDetail>
+        implements ISettleFeeSheetDetailService {
 
 }

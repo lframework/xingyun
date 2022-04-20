@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import java.util.List;
 
@@ -29,5 +28,5 @@ public interface IProductCategoryPropertyService extends BaseMpService<ProductCa
    * @param propertyId
    * @return
    */
-  List<ProductCategoryPropertyDto> getByPropertyId(String propertyId);
+  List<ProductCategoryProperty> getByPropertyId(String propertyId);
 }

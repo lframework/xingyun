@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.SaleOrderMapper">
 
-    <resultMap id="SaleOrderDto" type="com.lframework.xingyun.sc.dto.sale.SaleOrderDto">
+    <resultMap id="SaleOrder" type="com.lframework.xingyun.sc.entity.SaleOrder">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="sc_id" property="scId"/>
@@ -129,7 +129,7 @@
         LEFT JOIN tbl_sale_order_detail AS d ON d.order_id = o.id
     </sql>
 
-    <select id="query" resultMap="SaleOrderDto">
+    <select id="query" resultMap="SaleOrder">
         <include refid="SaleOrderDto_sql"/>
         <where>
             <if test="vo != null">
@@ -173,10 +173,6 @@
             </if>
         </where>
         ORDER BY o.create_time DESC
-    </select>
-    <select id="getById" resultMap="SaleOrderDto">
-        <include refid="SaleOrderDto_sql"/>
-        WHERE id = #{id}
     </select>
     <select id="getDetail" resultMap="SaleOrderFullDto">
         <include refid="SaleOrderFullDto_sql"/>
@@ -228,7 +224,7 @@
         </where>
         ORDER BY o.create_time DESC, d.order_no
     </select>
-    <select id="selector" resultMap="SaleOrderDto">
+    <select id="selector" resultMap="SaleOrder">
         <include refid="SaleOrderFullDto_sql"/>
         <where>
             <if test="vo != null">
@@ -272,7 +268,7 @@
         <if test="requireSale">AND d.order_num > d.out_num</if>
         WHERE o.id = #{id}
     </select>
-    <select id="queryWithOut" resultMap="SaleOrderDto">
+    <select id="queryWithOut" resultMap="SaleOrder">
         <include refid="SaleOrderDto_sql"/>
         <if test="!multipleRelate">LEFT JOIN tbl_sale_out_sheet AS s ON s.sale_order_id = o.id</if>
         <where>

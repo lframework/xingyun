@@ -22,10 +22,9 @@ import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.xingyun.basedata.dto.product.category.ProductCategoryDto;
-import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
-import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyDto;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
+import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.enums.ColumnDataType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
@@ -54,7 +53,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductPropertyServiceImpl extends
-    BaseMpServiceImpl<ProductPropertyMapper, ProductProperty> implements IProductPropertyService {
+    BaseMpServiceImpl<ProductPropertyMapper, ProductProperty>
+    implements IProductPropertyService {
 
   @Autowired
   private IProductPolyPropertyService productPolyPropertyService;
@@ -69,29 +69,29 @@ public class ProductPropertyServiceImpl extends
   private IProductCategoryPropertyService productCategoryPropertyService;
 
   @Override
-  public PageResult<ProductPropertyDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<ProductProperty> query(Integer pageIndex, Integer pageSize,
       QueryProductPropertyVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ProductPropertyDto> datas = this.query(vo);
+    List<ProductProperty> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<ProductPropertyDto> query(QueryProductPropertyVo vo) {
+  public List<ProductProperty> query(QueryProductPropertyVo vo) {
 
     return getBaseMapper().query(vo);
   }
 
-  @Cacheable(value = ProductPropertyDto.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Cacheable(value = ProductProperty.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
-  public ProductPropertyDto getById(String id) {
+  public ProductProperty findById(String id) {
 
-    return getBaseMapper().getById(id);
+    return getBaseMapper().selectById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用商品属性，ID：{}", params = "#ids", loopFormat = true)
@@ -143,8 +143,8 @@ public class ProductPropertyServiceImpl extends
 
     for (String categoryId : categoryIds) {
 
-      List<String> children = recursionMappingService
-          .getNodeChildIds(categoryId, ApplicationUtil.getBean(ProductCategoryNodeType.class));
+      List<String> children = recursionMappingService.getNodeChildIds(categoryId,
+          ApplicationUtil.getBean(ProductCategoryNodeType.class));
       if (!CollectionUtil.isEmpty(children)) {
         childCategoryIds.addAll(children);
       }
@@ -181,7 +181,7 @@ public class ProductPropertyServiceImpl extends
       }
 
       for (String categoryId : vo.getCategoryIds()) {
-        ProductCategoryDto productCategory = productCategoryService.getById(categoryId);
+        ProductCategory productCategory = productCategoryService.findById(categoryId);
         if (productCategory == null) {
           throw new InputErrorException("商品类目数据有误，请检查！");
         }
@@ -264,21 +264,21 @@ public class ProductPropertyServiceImpl extends
       }
     }
 
-    if (data.getColumnType() != ColumnType.CUSTOM && vo.getColumnType() == ColumnType.CUSTOM
-        .getCode().intValue()) {
+    if (data.getColumnType() != ColumnType.CUSTOM
+        && vo.getColumnType() == ColumnType.CUSTOM.getCode().intValue()) {
       //从其他类型更改为手动录入
       throw new InputErrorException("该属性不允许将字段类型修改为“" + ColumnType.CUSTOM.getDesc() + "”！");
     }
 
-    if (data.getPropertyType() != PropertyType.NONE && vo.getPropertyType() == PropertyType.NONE
-        .getCode()
+    if (data.getPropertyType() != PropertyType.NONE
+        && vo.getPropertyType() == PropertyType.NONE.getCode()
         .intValue()) {
       throw new InputErrorException(
-          "该属性的属性类别为“" + data.getPropertyType().getDesc() + "”，不允许修改为“" + PropertyType.NONE
-              .getDesc() + "”");
+          "该属性的属性类别为“" + data.getPropertyType().getDesc() + "”，不允许修改为“"
+              + PropertyType.NONE.getDesc() + "”");
     }
 
-    List<ProductCategoryPropertyDto> oldProductCategoryPropertyList = new ArrayList<>();
+    List<ProductCategoryProperty> oldProductCategoryPropertyList = new ArrayList<>();
 
     if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
       //如果是指定类目
@@ -287,7 +287,7 @@ public class ProductPropertyServiceImpl extends
       }
 
       for (String categoryId : vo.getCategoryIds()) {
-        ProductCategoryDto productCategory = productCategoryService.getById(categoryId);
+        ProductCategory productCategory = productCategoryService.findById(categoryId);
         if (productCategory == null) {
           throw new InputErrorException("商品类目数据有误，请检查！");
         }
@@ -302,8 +302,8 @@ public class ProductPropertyServiceImpl extends
       productCategoryPropertyService.deleteByPropertyId(data.getId());
     }
 
-    LambdaUpdateWrapper<ProductProperty> updateWrapper = Wrappers
-        .lambdaUpdate(ProductProperty.class)
+    LambdaUpdateWrapper<ProductProperty> updateWrapper = Wrappers.lambdaUpdate(
+            ProductProperty.class)
         .set(ProductProperty::getCode, vo.getCode()).set(ProductProperty::getName, vo.getName())
         .set(ProductProperty::getIsRequired, vo.getIsRequired())
         .set(ProductProperty::getColumnType, vo.getColumnType())
@@ -326,8 +326,8 @@ public class ProductPropertyServiceImpl extends
     getBaseMapper().update(updateWrapper);
 
     if (vo.getPropertyType() != PropertyType.NONE.getCode().intValue()) {
-      if (data.getColumnType() == ColumnType.MULTIPLE && vo.getColumnType() == ColumnType.SINGLE
-          .getCode()
+      if (data.getColumnType() == ColumnType.MULTIPLE
+          && vo.getColumnType() == ColumnType.SINGLE.getCode()
           .intValue()) {
         //从多选更改为单选
         productPolyPropertyService.setMultipleToSimple(data.getId());
@@ -340,15 +340,13 @@ public class ProductPropertyServiceImpl extends
         productPolyPropertyService.setCommonToAppoint(data.getId());
 
       } else if (data.getPropertyType() == PropertyType.APPOINT
-          && vo.getPropertyType() == PropertyType.COMMON
-          .getCode().intValue()) {
+          && vo.getPropertyType() == PropertyType.COMMON.getCode().intValue()) {
         //从指定类目改成通用
         productPolyPropertyService.setAppointToCommon(data.getId());
       } else if (data.getPropertyType() == PropertyType.APPOINT
-          && vo.getPropertyType() == PropertyType.APPOINT
-          .getCode().intValue()) {
+          && vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
         List<String> oldCategoryIds = oldProductCategoryPropertyList.stream()
-            .map(ProductCategoryPropertyDto::getCategoryId).collect(Collectors.toList());
+            .map(ProductCategoryProperty::getCategoryId).collect(Collectors.toList());
 
         boolean isUpdateCategory = CollectionUtil.isEqualList(oldCategoryIds, vo.getCategoryIds());
         if (isUpdateCategory) {
@@ -369,16 +367,15 @@ public class ProductPropertyServiceImpl extends
   @Override
   public List<ProductPropertyModelorDto> getModelorByCategoryId(String categoryId) {
 
-    List<String> parentCategoryIds = recursionMappingService
-        .getNodeParentIds(categoryId, ApplicationUtil.getBean(ProductCategoryNodeType.class));
+    List<String> parentCategoryIds = recursionMappingService.getNodeParentIds(categoryId,
+        ApplicationUtil.getBean(ProductCategoryNodeType.class));
     List<String> categoryIds = new ArrayList<>(parentCategoryIds);
     categoryIds.add(categoryId);
-    List<ProductPropertyModelorDto> datas = getBaseMapper()
-        .getModelorByCategoryId(categoryIds);
+    List<ProductPropertyModelorDto> datas = getBaseMapper().getModelorByCategoryId(categoryIds);
     return datas;
   }
 
-  @CacheEvict(value = ProductPropertyDto.CACHE_NAME, key = "#key")
+  @CacheEvict(value = ProductProperty.CACHE_NAME, key = "#key")
   @Override
   public void cleanCacheByKey(String key) {
 

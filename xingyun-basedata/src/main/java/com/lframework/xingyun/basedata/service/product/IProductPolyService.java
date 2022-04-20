@@ -14,7 +14,7 @@ public interface IProductPolyService extends BaseMpService<ProductPoly> {
    * @param id
    * @return
    */
-  ProductPolyDto getById(String id);
+  ProductPolyDto findById(String id);
 
   /**
    * 查询没有属性的ID

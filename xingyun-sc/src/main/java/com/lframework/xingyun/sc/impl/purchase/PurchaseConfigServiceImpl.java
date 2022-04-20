@@ -5,7 +5,6 @@ import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
-import com.lframework.xingyun.sc.dto.purchase.config.PurchaseConfigDto;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.mappers.PurchaseConfigMapper;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
@@ -17,22 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PurchaseConfigServiceImpl extends
-    BaseMpServiceImpl<PurchaseConfigMapper, PurchaseConfig> implements IPurchaseConfigService {
+    BaseMpServiceImpl<PurchaseConfigMapper, PurchaseConfig>
+    implements IPurchaseConfigService {
 
-  @Cacheable(value = PurchaseConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Cacheable(value = PurchaseConfig.CACHE_NAME, key = "'config'", unless = "#result == null")
   @Override
-  public PurchaseConfigDto get() {
+  public PurchaseConfig get() {
 
     PurchaseConfig config = getBaseMapper().selectOne(Wrappers.query());
 
-    PurchaseConfigDto result = new PurchaseConfigDto();
-    result.setId(config.getId());
-    result.setReceiveRequirePurchase(config.getReceiveRequirePurchase());
-    result.setReceiveMultipleRelatePurchase(config.getReceiveMultipleRelatePurchase());
-    result.setPurchaseReturnRequireReceive(config.getPurchaseReturnRequireReceive());
-    result.setPurchaseReturnMultipleRelateReceive(config.getPurchaseReturnMultipleRelateReceive());
-
-    return result;
+    return config;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改采购参数设置")
@@ -54,7 +47,7 @@ public class PurchaseConfigServiceImpl extends
     thisService.cleanCacheByKey(config.getId());
   }
 
-  @CacheEvict(value = PurchaseConfigDto.CACHE_NAME, key = "'config'")
+  @CacheEvict(value = PurchaseConfig.CACHE_NAME, key = "'config'")
   @Override
   public void cleanCacheByKey(String key) {
 

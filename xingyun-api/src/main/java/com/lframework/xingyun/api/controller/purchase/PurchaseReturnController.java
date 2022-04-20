@@ -13,36 +13,24 @@ import com.lframework.xingyun.api.bo.purchase.returned.PrintPurchaseReturnBo;
 import com.lframework.xingyun.api.bo.purchase.returned.QueryPurchaseReturnBo;
 import com.lframework.xingyun.api.model.purchase.returned.PurchaseReturnExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
-import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
+import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseReturnService;
-import com.lframework.xingyun.sc.vo.purchase.returned.ApprovePassPurchaseReturnVo;
-import com.lframework.xingyun.sc.vo.purchase.returned.ApproveRefusePurchaseReturnVo;
-import com.lframework.xingyun.sc.vo.purchase.returned.BatchApprovePassPurchaseReturnVo;
-import com.lframework.xingyun.sc.vo.purchase.returned.BatchApproveRefusePurchaseReturnVo;
-import com.lframework.xingyun.sc.vo.purchase.returned.CreatePurchaseReturnVo;
-import com.lframework.xingyun.sc.vo.purchase.returned.QueryPurchaseReturnVo;
-import com.lframework.xingyun.sc.vo.purchase.returned.UpdatePurchaseReturnVo;
+import com.lframework.xingyun.sc.vo.purchase.returned.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 采购退单管理
@@ -55,219 +43,215 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/purchase/return")
 public class PurchaseReturnController extends DefaultBaseController {
 
-  @Autowired
-  private IPurchaseReturnService purchaseReturnService;
+    @Autowired
+    private IPurchaseReturnService purchaseReturnService;
 
-  /**
-   * 打印
-   */
-  @ApiOperation("打印")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('purchase:return:query')")
-  @GetMapping("/print")
-  public InvokeResult<A4ExcelPortraitPrintBo<PrintPurchaseReturnBo>> print(
-      @NotBlank(message = "退单ID不能为空！") String id) {
+    /**
+     * 打印
+     */
+    @ApiOperation("打印")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('purchase:return:query')")
+    @GetMapping("/print")
+    public InvokeResult<A4ExcelPortraitPrintBo<PrintPurchaseReturnBo>> print(
+            @NotBlank(message = "退单ID不能为空！") String id) {
 
-    PurchaseReturnFullDto data = purchaseReturnService.getDetail(id);
+        PurchaseReturnFullDto data = purchaseReturnService.getDetail(id);
 
-    PrintPurchaseReturnBo result = new PrintPurchaseReturnBo(data);
-    A4ExcelPortraitPrintBo<PrintPurchaseReturnBo> printResult = new A4ExcelPortraitPrintBo<>(
-        "print/purchase-return.ftl", result);
+        PrintPurchaseReturnBo result = new PrintPurchaseReturnBo(data);
+        A4ExcelPortraitPrintBo<PrintPurchaseReturnBo> printResult = new A4ExcelPortraitPrintBo<>(
+                "print/purchase-return.ftl", result);
 
-    return InvokeResultBuilder.success(printResult);
-  }
-
-  /**
-   * 退单列表
-   */
-  @ApiOperation("退单列表")
-  @PreAuthorize("@permission.valid('purchase:return:query')")
-  @GetMapping("/query")
-  public InvokeResult<PageResult<QueryPurchaseReturnBo>> query(@Valid QueryPurchaseReturnVo vo) {
-
-    PageResult<PurchaseReturnDto> pageResult = purchaseReturnService.query(getPageIndex(vo),
-        getPageSize(vo), vo);
-
-    List<PurchaseReturnDto> datas = pageResult.getDatas();
-    List<QueryPurchaseReturnBo> results = null;
-
-    if (!CollectionUtil.isEmpty(datas)) {
-
-      results = datas.stream().map(QueryPurchaseReturnBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(printResult);
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 退单列表
+     */
+    @ApiOperation("退单列表")
+    @PreAuthorize("@permission.valid('purchase:return:query')")
+    @GetMapping("/query")
+    public InvokeResult<PageResult<QueryPurchaseReturnBo>> query(@Valid QueryPurchaseReturnVo vo) {
 
-  /**
-   * 导出
-   */
-  @ApiOperation("导出")
-  @PreAuthorize("@permission.valid('purchase:return:export')")
-  @PostMapping("/export")
-  public void export(@Valid QueryPurchaseReturnVo vo) {
+        PageResult<PurchaseReturn> pageResult = purchaseReturnService.query(getPageIndex(vo), getPageSize(vo), vo);
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("采购退货单信息",
-        PurchaseReturnExportModel.class);
+        List<PurchaseReturn> datas = pageResult.getDatas();
+        List<QueryPurchaseReturnBo> results = null;
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<PurchaseReturnDto> pageResult = purchaseReturnService.query(pageIndex,
-            getExportSize(), vo);
-        List<PurchaseReturnDto> datas = pageResult.getDatas();
-        List<PurchaseReturnExportModel> models = datas.stream().map(PurchaseReturnExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
+        if (!CollectionUtil.isEmpty(datas)) {
 
-        if (!pageResult.isHasNext()) {
-          break;
+            results = datas.stream().map(QueryPurchaseReturnBo::new).collect(Collectors.toList());
         }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
+
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
-  }
 
-  /**
-   * 根据ID查询
-   */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('purchase:return:query')")
-  @GetMapping
-  public InvokeResult<GetPurchaseReturnBo> getById(@NotBlank(message = "退单ID不能为空！") String id) {
+    /**
+     * 导出
+     */
+    @ApiOperation("导出")
+    @PreAuthorize("@permission.valid('purchase:return:export')")
+    @PostMapping("/export")
+    public void export(@Valid QueryPurchaseReturnVo vo) {
 
-    PurchaseReturnFullDto data = purchaseReturnService.getDetail(id);
+        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("采购退货单信息",
+                PurchaseReturnExportModel.class);
 
-    GetPurchaseReturnBo result = new GetPurchaseReturnBo(data);
+        try {
+            int pageIndex = 1;
+            while (true) {
+                PageResult<PurchaseReturn> pageResult = purchaseReturnService.query(pageIndex, getExportSize(), vo);
+                List<PurchaseReturn> datas = pageResult.getDatas();
+                List<PurchaseReturnExportModel> models = datas.stream().map(PurchaseReturnExportModel::new)
+                        .collect(Collectors.toList());
+                builder.doWrite(models);
 
-    return InvokeResultBuilder.success(result);
-  }
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
+            }
+        } finally {
+            builder.finish();
+        }
+    }
 
-  /**
-   * 创建
-   */
-  @ApiOperation("创建")
-  @PreAuthorize("@permission.valid('purchase:return:add')")
-  @PostMapping
-  public InvokeResult<String> create(@RequestBody @Valid CreatePurchaseReturnVo vo) {
+    /**
+     * 根据ID查询
+     */
+    @ApiOperation("根据ID查询")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('purchase:return:query')")
+    @GetMapping
+    public InvokeResult<GetPurchaseReturnBo> findById(@NotBlank(message = "退单ID不能为空！") String id) {
 
-    vo.validate();
+        PurchaseReturnFullDto data = purchaseReturnService.getDetail(id);
 
-    String id = purchaseReturnService.create(vo);
+        GetPurchaseReturnBo result = new GetPurchaseReturnBo(data);
 
-    return InvokeResultBuilder.success(id);
-  }
+        return InvokeResultBuilder.success(result);
+    }
 
-  /**
-   * 修改
-   */
-  @ApiOperation("修改")
-  @PreAuthorize("@permission.valid('purchase:return:modify')")
-  @PutMapping
-  public InvokeResult<Void> update(@RequestBody @Valid UpdatePurchaseReturnVo vo) {
+    /**
+     * 创建
+     */
+    @ApiOperation("创建")
+    @PreAuthorize("@permission.valid('purchase:return:add')")
+    @PostMapping
+    public InvokeResult<String> create(@RequestBody @Valid CreatePurchaseReturnVo vo) {
 
-    vo.validate();
+        vo.validate();
 
-    purchaseReturnService.update(vo);
+        String id = purchaseReturnService.create(vo);
 
-    return InvokeResultBuilder.success();
-  }
+        return InvokeResultBuilder.success(id);
+    }
 
-  /**
-   * 审核通过
-   */
-  @ApiOperation("审核通过")
-  @PreAuthorize("@permission.valid('purchase:return:approve')")
-  @PatchMapping("/approve/pass")
-  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassPurchaseReturnVo vo) {
+    /**
+     * 修改
+     */
+    @ApiOperation("修改")
+    @PreAuthorize("@permission.valid('purchase:return:modify')")
+    @PutMapping
+    public InvokeResult<Void> update(@RequestBody @Valid UpdatePurchaseReturnVo vo) {
 
-    purchaseReturnService.approvePass(vo);
+        vo.validate();
 
-    return InvokeResultBuilder.success();
-  }
+        purchaseReturnService.update(vo);
 
-  /**
-   * 批量审核通过
-   */
-  @ApiOperation("批量审核通过")
-  @PreAuthorize("@permission.valid('purchase:return:approve')")
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @RequestBody @Valid BatchApprovePassPurchaseReturnVo vo) {
+        return InvokeResultBuilder.success();
+    }
 
-    purchaseReturnService.batchApprovePass(vo);
+    /**
+     * 审核通过
+     */
+    @ApiOperation("审核通过")
+    @PreAuthorize("@permission.valid('purchase:return:approve')")
+    @PatchMapping("/approve/pass")
+    public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassPurchaseReturnVo vo) {
 
-    return InvokeResultBuilder.success();
-  }
+        purchaseReturnService.approvePass(vo);
 
-  /**
-   * 直接审核通过
-   */
-  @ApiOperation("直接审核通过")
-  @PreAuthorize("@permission.valid('purchase:return:approve')")
-  @PostMapping("/approve/pass/direct")
-  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreatePurchaseReturnVo vo) {
+        return InvokeResultBuilder.success();
+    }
 
-    purchaseReturnService.directApprovePass(vo);
+    /**
+     * 批量审核通过
+     */
+    @ApiOperation("批量审核通过")
+    @PreAuthorize("@permission.valid('purchase:return:approve')")
+    @PatchMapping("/approve/pass/batch")
+    public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassPurchaseReturnVo vo) {
 
-    return InvokeResultBuilder.success();
-  }
+        purchaseReturnService.batchApprovePass(vo);
 
-  /**
-   * 审核拒绝
-   */
-  @ApiOperation("审核拒绝")
-  @PreAuthorize("@permission.valid('purchase:return:approve')")
-  @PatchMapping("/approve/refuse")
-  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefusePurchaseReturnVo vo) {
+        return InvokeResultBuilder.success();
+    }
 
-    purchaseReturnService.approveRefuse(vo);
+    /**
+     * 直接审核通过
+     */
+    @ApiOperation("直接审核通过")
+    @PreAuthorize("@permission.valid('purchase:return:approve')")
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreatePurchaseReturnVo vo) {
 
-    return InvokeResultBuilder.success();
-  }
+        purchaseReturnService.directApprovePass(vo);
 
-  /**
-   * 批量审核拒绝
-   */
-  @ApiOperation("批量审核拒绝")
-  @PreAuthorize("@permission.valid('purchase:return:approve')")
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefusePurchaseReturnVo vo) {
+        return InvokeResultBuilder.success();
+    }
 
-    purchaseReturnService.batchApproveRefuse(vo);
+    /**
+     * 审核拒绝
+     */
+    @ApiOperation("审核拒绝")
+    @PreAuthorize("@permission.valid('purchase:return:approve')")
+    @PatchMapping("/approve/refuse")
+    public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefusePurchaseReturnVo vo) {
 
-    return InvokeResultBuilder.success();
-  }
+        purchaseReturnService.approveRefuse(vo);
 
-  /**
-   * 删除
-   */
-  @ApiOperation("删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('purchase:return:delete')")
-  @DeleteMapping
-  public InvokeResult<Void> deleteById(@NotBlank(message = "采购退货单ID不能为空！") String id) {
+        return InvokeResultBuilder.success();
+    }
 
-    purchaseReturnService.deleteById(id);
+    /**
+     * 批量审核拒绝
+     */
+    @ApiOperation("批量审核拒绝")
+    @PreAuthorize("@permission.valid('purchase:return:approve')")
+    @PatchMapping("/approve/refuse/batch")
+    public InvokeResult<Void> batchApproveRefuse(@RequestBody @Valid BatchApproveRefusePurchaseReturnVo vo) {
 
-    return InvokeResultBuilder.success();
-  }
+        purchaseReturnService.batchApproveRefuse(vo);
 
-  /**
-   * 批量删除
-   */
-  @ApiOperation("批量删除")
-  @PreAuthorize("@permission.valid('purchase:return:delete')")
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的采购退货单！") List<String> ids) {
+        return InvokeResultBuilder.success();
+    }
 
-    purchaseReturnService.deleteByIds(ids);
+    /**
+     * 删除
+     */
+    @ApiOperation("删除")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('purchase:return:delete')")
+    @DeleteMapping
+    public InvokeResult<Void> deleteById(@NotBlank(message = "采购退货单ID不能为空！") String id) {
 
-    return InvokeResultBuilder.success();
-  }
+        purchaseReturnService.deleteById(id);
+
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 批量删除
+     */
+    @ApiOperation("批量删除")
+    @PreAuthorize("@permission.valid('purchase:return:delete')")
+    @DeleteMapping("/batch")
+    public InvokeResult<Void> deleteByIds(
+            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的采购退货单！") List<String> ids) {
+
+        purchaseReturnService.deleteByIds(ids);
+
+        return InvokeResultBuilder.success();
+    }
 }

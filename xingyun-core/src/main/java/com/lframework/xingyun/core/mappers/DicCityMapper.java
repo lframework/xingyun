@@ -28,5 +28,5 @@ public interface DicCityMapper extends BaseMapper<DicCity> {
    * @param id
    * @return
    */
-  DicCityDto getById(String id);
+  DicCityDto findById(String id);
 }

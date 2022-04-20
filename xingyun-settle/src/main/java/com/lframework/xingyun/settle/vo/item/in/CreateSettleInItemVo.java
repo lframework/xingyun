@@ -1,5 +1,6 @@
 package com.lframework.xingyun.settle.vo.item.in;
 
+import com.lframework.starter.web.components.validation.IsCode;
 import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -15,6 +16,7 @@ public class CreateSettleInItemVo implements BaseVo, Serializable {
    * 编号
    */
   @ApiModelProperty(value = "编号", required = true)
+  @IsCode
   @NotBlank(message = "请输入编号！")
   private String code;
 

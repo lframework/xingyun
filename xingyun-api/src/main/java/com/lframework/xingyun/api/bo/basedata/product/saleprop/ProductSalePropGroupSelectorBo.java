@@ -1,45 +1,45 @@
 package com.lframework.xingyun.api.bo.basedata.product.saleprop;
 
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.xingyun.basedata.dto.product.saleprop.ProductSalePropGroupDto;
+import com.lframework.xingyun.basedata.entity.ProductSalePropGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ProductSalePropGroupSelectorBo extends BaseBo<ProductSalePropGroupDto> {
+public class ProductSalePropGroupSelectorBo extends BaseBo<ProductSalePropGroup> {
 
-  /**
-   * ID
-   */
-  @ApiModelProperty("ID")
-  private String id;
+    /**
+     * ID
+     */
+    @ApiModelProperty("ID")
+    private String id;
 
-  /**
-   * 编号
-   */
-  @ApiModelProperty("编号")
-  private String code;
+    /**
+     * 编号
+     */
+    @ApiModelProperty("编号")
+    private String code;
 
-  /**
-   * 名称
-   */
-  @ApiModelProperty("名称")
-  private String name;
+    /**
+     * 名称
+     */
+    @ApiModelProperty("名称")
+    private String name;
 
-  /**
-   * 状态
-   */
-  @ApiModelProperty("状态")
-  private Boolean available;
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Boolean available;
 
-  public ProductSalePropGroupSelectorBo() {
+    public ProductSalePropGroupSelectorBo() {
 
-  }
+    }
 
-  public ProductSalePropGroupSelectorBo(ProductSalePropGroupDto dto) {
+    public ProductSalePropGroupSelectorBo(ProductSalePropGroup dto) {
 
-    super(dto);
-  }
+        super(dto);
+    }
 }

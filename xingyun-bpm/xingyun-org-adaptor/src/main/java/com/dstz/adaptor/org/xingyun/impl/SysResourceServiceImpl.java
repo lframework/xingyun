@@ -21,35 +21,42 @@ public class SysResourceServiceImpl implements SysResourceService {
 
   @Resource
   SysResourceManager sysResourceManager;
+
   @Resource
   SubsystemManager sybSystemManager;
+
   @Resource
   ResRoleManager resRoleManager;
 
 
   @Override
   public List<ISubsystem> getCuurentUserSystem() {
+
     return (List) sybSystemManager.getCuurentUserSystem();
   }
 
   @Override
   public ISubsystem getDefaultSystem(String currentUserId) {
+
     return sybSystemManager.getDefaultSystem(currentUserId);
   }
 
   @Override
   public List<ISysResource> getBySystemId(String systemId) {
+
     return (List) sysResourceManager.getBySystemId(systemId);
   }
 
   @Override
   public List<ISysResource> getBySystemAndUser(String systemId, String userId) {
+
     return (List) sysResourceManager.getBySystemAndUser(systemId, userId);
   }
 
 
   @Override
   public Set<String> getAccessRoleByUrl(String url) {
+
     return resRoleManager.getAccessRoleByUrl(url);
   }
 

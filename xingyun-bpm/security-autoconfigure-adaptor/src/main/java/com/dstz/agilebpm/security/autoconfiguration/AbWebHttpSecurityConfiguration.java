@@ -52,11 +52,13 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
 
   @Bean
   public LoginContext loginContext() {
+
     return new LoginContext();
   }
 
   @Bean
   public ContextUtil contextUtil(ICurrentContext loginContext) {
+
     ContextUtil context = new ContextUtil();
     context.setCurrentContext(loginContext);
     return context;
@@ -68,6 +70,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
    * @return 实例
    */
   public XssFilter xssFilter() {
+
     XssFilter xssFilter = new XssFilter();
     List<String> ingores = new ArrayList<>();
 
@@ -86,6 +89,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
    * @return 实例
    */
   public RefererCsrfFilter csrfFilter() {
+
     RefererCsrfFilter filter = new RefererCsrfFilter();
     List<String> ingores = new ArrayList<>();
 
@@ -104,6 +108,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
    * @return
    */
   public DefualtLogoutSuccessHandler logoutSuccessHandler() {
+
     return new DefualtLogoutSuccessHandler();
   }
 
@@ -111,6 +116,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
    * 无权限处理器 返回resultMsg
    **/
   public DefaultAccessDeniedHandler accessDeniedHandler() {
+
     return new DefaultAccessDeniedHandler();
   }
 
@@ -118,6 +124,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
    * 访问超时
    **/
   public DefualtAuthenticationEntryPoint authenticationLoginEntry() {
+
     return new DefualtAuthenticationEntryPoint();
   }
 
@@ -126,6 +133,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
    */
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+
     http.exceptionHandling().authenticationEntryPoint(new DefualtAuthenticationEntryPoint());
     http.rememberMe().key("rememberPrivateKey");
     http.logout().logoutSuccessHandler(new DefualtLogoutSuccessHandler());
@@ -150,12 +158,14 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
 
   @Bean("abJWTAuthenticationFilter")
   protected JWTAuthenticationFilter JWTAuthenticationFilter() {
+
     JWTAuthenticationFilter abJWTAuthenticationFilter = new JWTAuthenticationFilter();
     return abJWTAuthenticationFilter;
   }
 
   @Bean("abJWTService")
   protected JWTService abJWTService() {
+
     CustomJWTService jWTService = new CustomJWTService();
     return jWTService;
   }
@@ -165,6 +175,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
    ***/
   @Bean
   protected AccessDecisionManager accessDecisionManager() {
+
     AccessDecisionManager decisionManager = new AccessDecisionManagerImpl();
     return decisionManager;
   }
@@ -172,6 +183,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
   //获取 URL 对应的角色
   @Bean
   protected FilterInvocationSecurityMetadataSource securityMetadataSource() {
+
     FilterInvocationSecurityMetadataSourceImpl securityMetadataSource = new FilterInvocationSecurityMetadataSourceImpl();
 
     List<String> ingores = new ArrayList<>();
@@ -187,17 +199,20 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
 
   @Bean("userDetailsService")
   public UserDetailsService userDetailsService() {
+
     UserDetailsService userDetailsService = new UserDetailsServiceImpl();
     return userDetailsService;
   }
 
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
     auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
   }
 
   @Bean("authenticationManager")
   public AuthenticationManager authenticationManagerBean() throws Exception {
+
     AuthenticationManager authenticationManager = super.authenticationManagerBean();
     return authenticationManager;
   }
@@ -209,9 +224,10 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
    * @return
    */
   protected SecurityInterceptor abSecurityInterceptor() {
+
     SecurityInterceptor intercept = new SecurityInterceptor();
 
-//		intercept.setAuthenticationManager(authenticationManager);
+    //		intercept.setAuthenticationManager(authenticationManager);
     intercept.setAccessDecisionManager(new AccessDecisionManagerImpl());
     intercept.setSecurityMetadataSource(securityMetadataSource());
 
@@ -220,6 +236,7 @@ public class AbWebHttpSecurityConfiguration extends WebSecurityConfigurerAdapter
 
   @Bean("localeResolver")
   public CookieLocaleResolver cookieLocaleResolver() {
+
     CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
     cookieLocaleResolver.setDefaultLocale(Locale.CHINA);
     return cookieLocaleResolver;

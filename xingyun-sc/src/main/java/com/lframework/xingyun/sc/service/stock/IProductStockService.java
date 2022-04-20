@@ -3,7 +3,6 @@ package com.lframework.xingyun.sc.service.stock;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
@@ -21,7 +20,7 @@ public interface IProductStockService extends BaseMpService<ProductStock> {
    * @param vo
    * @return
    */
-  PageResult<ProductStockDto> query(Integer pageIndex, Integer pageSize, QueryProductStockVo vo);
+  PageResult<ProductStock> query(Integer pageIndex, Integer pageSize, QueryProductStockVo vo);
 
   /**
    * 查询列表
@@ -29,7 +28,7 @@ public interface IProductStockService extends BaseMpService<ProductStock> {
    * @param vo
    * @return
    */
-  List<ProductStockDto> query(QueryProductStockVo vo);
+  List<ProductStock> query(QueryProductStockVo vo);
 
   /**
    * 根据商品ID、仓库ID查询
@@ -38,7 +37,7 @@ public interface IProductStockService extends BaseMpService<ProductStock> {
    * @param scId
    * @return
    */
-  ProductStockDto getByProductIdAndScId(String productId, String scId);
+  ProductStock getByProductIdAndScId(String productId, String scId);
 
   /**
    * 根据商品ID、仓库ID查询
@@ -47,7 +46,7 @@ public interface IProductStockService extends BaseMpService<ProductStock> {
    * @param scId
    * @return
    */
-  List<ProductStockDto> getByProductIdsAndScId(List<String> productIds, String scId);
+  List<ProductStock> getByProductIdsAndScId(List<String> productIds, String scId);
 
   /**
    * 入库

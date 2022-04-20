@@ -20,7 +20,6 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
@@ -43,8 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PreTakeStockSheetServiceImpl extends
-    BaseMpServiceImpl<PreTakeStockSheetMapper, PreTakeStockSheet> implements
-    IPreTakeStockSheetService {
+    BaseMpServiceImpl<PreTakeStockSheetMapper, PreTakeStockSheet>
+    implements IPreTakeStockSheetService {
 
   @Autowired
   private IPreTakeStockSheetDetailService preTakeStockSheetDetailService;
@@ -56,20 +55,20 @@ public class PreTakeStockSheetServiceImpl extends
   private ITakeStockSheetService takeStockSheetService;
 
   @Override
-  public PageResult<PreTakeStockSheetDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<PreTakeStockSheet> query(Integer pageIndex, Integer pageSize,
       QueryPreTakeStockSheetVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PreTakeStockSheetDto> datas = this.query(vo);
+    List<PreTakeStockSheet> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<PreTakeStockSheetDto> query(QueryPreTakeStockSheetVo vo) {
+  public List<PreTakeStockSheet> query(QueryPreTakeStockSheetVo vo) {
 
     return getBaseMapper().query(vo);
   }
@@ -85,12 +84,6 @@ public class PreTakeStockSheetServiceImpl extends
     List<PreTakeStockSheetSelectorDto> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
-  }
-
-  @Override
-  public PreTakeStockSheetDto getById(String id) {
-
-    return getBaseMapper().getById(id);
   }
 
   @Override
@@ -156,8 +149,8 @@ public class PreTakeStockSheetServiceImpl extends
     }
 
     LambdaUpdateWrapper<PreTakeStockSheet> updateWrapper = Wrappers.lambdaUpdate(
-            PreTakeStockSheet.class).set(PreTakeStockSheet::getScId, vo.getScId())
-        .set(PreTakeStockSheet::getDescription,
+            PreTakeStockSheet.class)
+        .set(PreTakeStockSheet::getScId, vo.getScId()).set(PreTakeStockSheet::getDescription,
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .set(PreTakeStockSheet::getTakeStatus,
             EnumUtil.getByCode(PreTakeStockSheetStatus.class, vo.getTakeStatus()))
@@ -166,7 +159,8 @@ public class PreTakeStockSheetServiceImpl extends
     getBaseMapper().update(updateWrapper);
 
     Wrapper<PreTakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        PreTakeStockSheetDetail.class).eq(PreTakeStockSheetDetail::getSheetId, data.getId());
+            PreTakeStockSheetDetail.class)
+        .eq(PreTakeStockSheetDetail::getSheetId, data.getId());
     preTakeStockSheetDetailService.remove(deleteDetailWrapper);
 
     int orderNo = 1;
@@ -199,13 +193,15 @@ public class PreTakeStockSheetServiceImpl extends
     getBaseMapper().deleteById(id);
 
     Wrapper<PreTakeStockSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-        PreTakeStockSheetDetail.class).eq(PreTakeStockSheetDetail::getSheetId, id);
+            PreTakeStockSheetDetail.class)
+        .eq(PreTakeStockSheetDetail::getSheetId, id);
     preTakeStockSheetDetailService.remove(deleteDetailWrapper);
   }
 
   @Transactional
   @Override
   public void batchDelete(List<String> ids) {
+
     for (String id : ids) {
       getThis(this.getClass()).deleteById(id);
     }

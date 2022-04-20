@@ -2,13 +2,15 @@ package com.lframework.xingyun.sc.vo.purchase.receive;
 
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
+import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class UpdateReceiveSheetVo extends CreateReceiveSheetVo {
 
   private static final long serialVersionUID = 1L;
@@ -24,7 +26,7 @@ public class UpdateReceiveSheetVo extends CreateReceiveSheetVo {
   public void validate() {
 
     IReceiveSheetService receiveSheetService = ApplicationUtil.getBean(IReceiveSheetService.class);
-    ReceiveSheetDto receiveSheet = receiveSheetService.getById(this.getId());
+    ReceiveSheet receiveSheet = receiveSheetService.getById(this.getId());
 
     this.validate(!StringUtil.isBlank(receiveSheet.getPurchaseOrderId()));
   }

@@ -82,22 +82,19 @@ public class SysResource implements ISysResource, IDModel {
    */
   protected boolean checked = false;
 
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   /**
    * 返回 主键
    *
    * @return
    */
   public String getId() {
+
     return this.id;
   }
 
-  public void setSystemId(String systemId) {
-    this.systemId = systemId;
+  public void setId(String id) {
+
+    this.id = id;
   }
 
   /**
@@ -106,14 +103,17 @@ public class SysResource implements ISysResource, IDModel {
    * @return
    */
   public String getSystemId() {
+
     return this.systemId;
   }
 
-  public void setAlias(String alias) {
-    this.alias = alias;
+  public void setSystemId(String systemId) {
+
+    this.systemId = systemId;
   }
 
   public String getTitle() {
+
     return this.name;
   }
 
@@ -123,11 +123,13 @@ public class SysResource implements ISysResource, IDModel {
    * @return
    */
   public String getAlias() {
+
     return this.alias;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setAlias(String alias) {
+
+    this.alias = alias;
   }
 
   /**
@@ -136,12 +138,13 @@ public class SysResource implements ISysResource, IDModel {
    * @return
    */
   public String getName() {
+
     return this.name;
   }
 
+  public void setName(String name) {
 
-  public void setOpened(Integer opened) {
-    this.opened = opened;
+    this.name = name;
   }
 
   /**
@@ -150,11 +153,13 @@ public class SysResource implements ISysResource, IDModel {
    * @return
    */
   public Integer getOpened() {
+
     return this.opened;
   }
 
-  public void setIcon(String icon) {
-    this.icon = icon;
+  public void setOpened(Integer opened) {
+
+    this.opened = opened;
   }
 
   /**
@@ -163,11 +168,13 @@ public class SysResource implements ISysResource, IDModel {
    * @return
    */
   public String getIcon() {
+
     return this.icon;
   }
 
-  public void setSn(Integer sn) {
-    this.sn = sn;
+  public void setIcon(String icon) {
+
+    this.icon = icon;
   }
 
   /**
@@ -176,39 +183,52 @@ public class SysResource implements ISysResource, IDModel {
    * @return
    */
   public Integer getSn() {
+
     return this.sn;
   }
 
+  public void setSn(Integer sn) {
+
+    this.sn = sn;
+  }
 
   public String getUrl() {
+
     return url;
   }
 
   public void setUrl(String url) {
+
     this.url = url;
   }
 
   public Integer getEnable() {
+
     return enable;
   }
 
   public void setEnable(Integer enable) {
+
     this.enable = enable;
   }
 
   public String getType() {
+
     return type;
   }
 
   public void setType(String type) {
+
     this.type = type;
   }
 
   public String getParentId() {
+
     return parentId;
   }
 
   public void setParentId(String parentId) {
+
     this.parentId = parentId;
   }
 
@@ -216,33 +236,40 @@ public class SysResource implements ISysResource, IDModel {
    * @return the checked
    */
   public boolean isChecked() {
+
     return checked;
   }
 
   public void setChecked(boolean checked) {
+
     this.checked = checked;
   }
 
 
   public Date getCreateTime() {
+
     return createTime;
   }
 
   public void setCreateTime(Date createTime) {
+
     this.createTime = createTime;
   }
 
   public List getChildren() {
+
     return children;
   }
 
   @Override
   public void setChildren(List list) {
+
     this.children = list;
   }
 
   @Override
   public String getKey() {
+
     return alias;
   }
 

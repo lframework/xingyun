@@ -38,7 +38,7 @@
         FROM base_data_product_poly AS p
     </sql>
 
-    <select id="getById" resultMap="ProductPolyDto">
+    <select id="findById" resultMap="ProductPolyDto">
         <include refid="ProductPolyDto_sql"/>
         WHERE p.id = #{id}
     </select>

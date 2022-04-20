@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.basedata.dto.product.brand.ProductBrandDto;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandVo;
@@ -24,7 +23,7 @@ public interface ProductBrandMapper extends BaseMapper<ProductBrand> {
    * @param vo
    * @return
    */
-  List<ProductBrandDto> query(@Param("vo") QueryProductBrandVo vo);
+  List<ProductBrand> query(@Param("vo") QueryProductBrandVo vo);
 
   /**
    * 选择器
@@ -32,13 +31,5 @@ public interface ProductBrandMapper extends BaseMapper<ProductBrand> {
    * @param vo
    * @return
    */
-  List<ProductBrandDto> selector(@Param("vo") QueryProductBrandSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ProductBrandDto getById(String id);
+  List<ProductBrand> selector(@Param("vo") QueryProductBrandSelectorVo vo);
 }

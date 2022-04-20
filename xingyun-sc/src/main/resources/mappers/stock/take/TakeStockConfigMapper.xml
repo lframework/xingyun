@@ -2,27 +2,4 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.TakeStockConfigMapper">
 
-    <resultMap id="TakeStockConfigDto" type="com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto">
-        <id column="id" property="id"/>
-        <result column="show_product" property="showProduct"/>
-        <result column="show_stock" property="showStock"/>
-        <result column="auto_change_stock" property="autoChangeStock"/>
-        <result column="allow_change_num" property="allowChangeNum"/>
-        <result column="cancel_hours" property="cancelHours"/>
-    </resultMap>
-
-    <sql id="TakeStockConfigDto_sql">
-        SELECT
-            tb.id,
-            tb.show_product,
-            tb.show_stock,
-            tb.auto_change_stock,
-            tb.allow_change_num,
-            tb.cancel_hours
-        FROM tbl_take_stock_config AS tb
-    </sql>
-
-    <select id="get" resultMap="TakeStockConfigDto">
-        <include refid="TakeStockConfigDto_sql"/>
-    </select>
 </mapper>

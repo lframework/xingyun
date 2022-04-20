@@ -14,11 +14,13 @@ public class AddStockEvent extends ApplicationEvent {
   private ProductStockChangeDto change;
 
   public AddStockEvent(Object source, ProductStockChangeDto change) {
+
     super(source);
     this.change = change;
   }
 
   public ProductStockChangeDto getChange() {
+
     return change;
   }
 }

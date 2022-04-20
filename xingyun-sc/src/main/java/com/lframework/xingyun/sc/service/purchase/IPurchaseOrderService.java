@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
@@ -27,7 +26,7 @@ public interface IPurchaseOrderService extends BaseMpService<PurchaseOrder> {
    * @param vo
    * @return
    */
-  PageResult<PurchaseOrderDto> query(Integer pageIndex, Integer pageSize, QueryPurchaseOrderVo vo);
+  PageResult<PurchaseOrder> query(Integer pageIndex, Integer pageSize, QueryPurchaseOrderVo vo);
 
   /**
    * 查询列表
@@ -35,7 +34,7 @@ public interface IPurchaseOrderService extends BaseMpService<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseOrderDto> query(QueryPurchaseOrderVo vo);
+  List<PurchaseOrder> query(QueryPurchaseOrderVo vo);
 
   /**
    * 选择器
@@ -45,16 +44,8 @@ public interface IPurchaseOrderService extends BaseMpService<PurchaseOrder> {
    * @param vo
    * @return
    */
-  PageResult<PurchaseOrderDto> selector(Integer pageIndex, Integer pageSize,
+  PageResult<PurchaseOrder> selector(Integer pageIndex, Integer pageSize,
       PurchaseOrderSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  PurchaseOrderDto getById(String id);
 
   /**
    * 根据ID查询
@@ -80,7 +71,7 @@ public interface IPurchaseOrderService extends BaseMpService<PurchaseOrder> {
    * @param vo
    * @return
    */
-  PageResult<PurchaseOrderDto> queryWithReceive(Integer pageIndex, Integer pageSize,
+  PageResult<PurchaseOrder> queryWithReceive(Integer pageIndex, Integer pageSize,
       QueryPurchaseOrderWithRecevieVo vo);
 
   /**

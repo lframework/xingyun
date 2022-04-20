@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.ProductSalePropItemMapper">
 
-    <resultMap id="ProductSalePropItemDto"
-               type="com.lframework.xingyun.basedata.dto.product.saleprop.item.ProductSalePropItemDto">
+    <resultMap id="ProductSalePropItem"
+               type="com.lframework.xingyun.basedata.entity.ProductSalePropItem">
         <id column="id" property="id"/>
         <result column="group_id" property="groupId"/>
         <result column="code" property="code"/>
@@ -47,7 +47,7 @@
         INNER JOIN base_data_product_saleprop_group AS gp ON gp.id = item.group_id
     </sql>
 
-    <select id="query" resultMap="ProductSalePropItemDto">
+    <select id="query" resultMap="ProductSalePropItem">
         <include refid="ProductSalePropItemDto_sql"/>
         <where>
             AND group_id = #{vo.groupId}
@@ -66,17 +66,12 @@
         ORDER BY code
     </select>
 
-    <select id="getById" resultMap="ProductSalePropItemDto">
-        <include refid="ProductSalePropItemDto_sql"/>
-        WHERE id = #{id}
-    </select>
-
-    <select id="getByGroupId" resultMap="ProductSalePropItemDto">
+    <select id="getByGroupId" resultMap="ProductSalePropItem">
         <include refid="ProductSalePropItemDto_sql"/>
         WHERE group_id = #{groupId}
         ORDER BY code
     </select>
-    <select id="getEnablesByGroupId" resultMap="ProductSalePropItemDto">
+    <select id="getEnablesByGroupId" resultMap="ProductSalePropItem">
         <include refid="ProductSalePropItemDto_sql"/>
         WHERE group_id = #{groupId}
         AND available = TRUE

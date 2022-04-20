@@ -36,55 +36,67 @@ public class UserRoleDTO implements IUserRole {
 
   @Override
   public String getAlias() {
+
     return alias;
   }
 
   public void setAlias(String alias) {
+
     this.alias = alias;
   }
 
   @Override
   public String getFullname() {
+
     return fullname;
   }
 
   public void setFullname(String fullname) {
+
     this.fullname = fullname;
   }
 
   @Override
   public String getRoleName() {
+
     return roleName;
   }
 
   public void setRoleName(String roleName) {
+
     this.roleName = roleName;
   }
 
   @Override
   public String getRoleId() {
+
     return roleId;
   }
 
   public void setRoleId(String roleId) {
+
     this.roleId = roleId;
   }
 
   @Override
   public String getUserId() {
+
     return userId;
   }
 
   public void setUserId(String userId) {
+
     this.userId = userId;
   }
 
   @Override
   public String getAccount() {
+
     return account;
   }
 
   public void setAccount(String account) {
+
     this.account = account;
   }
 }

@@ -65,8 +65,8 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
   @Override
   public void validate() {
 
-    IRetailOutSheetService retailOutSheetService = ApplicationUtil
-        .getBean(IRetailOutSheetService.class);
+    IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
+        IRetailOutSheetService.class);
     GetPaymentDateDto paymentDate = retailOutSheetService.getPaymentDate(this.getMemberId());
     if (paymentDate.getAllowModify()) {
       if (this.getPaymentDate() == null) {

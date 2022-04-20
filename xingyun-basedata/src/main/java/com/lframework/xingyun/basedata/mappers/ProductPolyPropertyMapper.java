@@ -16,29 +16,28 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ProductPolyPropertyMapper extends BaseMapper<ProductPolyProperty> {
 
-  /**
-   * 根据polyId查询
-   *
-   * @param polyId
-   * @return
-   */
-  List<ProductPolyPropertyDto> getByPolyId(String polyId);
+    /**
+     * 根据polyId查询
+     *
+     * @param polyId
+     * @return
+     */
+    List<ProductPolyPropertyDto> getByPolyId(String polyId);
 
-  /**
-   * 根据属性ID查询
-   *
-   * @param propertyId
-   * @return
-   */
-  List<ProductPolyPropertyDto> getByPropertyId(String propertyId);
+    /**
+     * 根据属性ID查询
+     *
+     * @param propertyId
+     * @return
+     */
+    List<ProductPolyPropertyDto> getByPropertyId(String propertyId);
 
-  /**
-   * 将通用更改为指定类目
-   *
-   * @param propertyId
-   * @param categoryId
-   */
-  void setCommonToAppoint(@Param("propertyId") String propertyId,
-      @Param("categoryId") String categoryId);
+    /**
+     * 将通用更改为指定类目
+     *
+     * @param propertyId
+     * @param categoryId
+     */
+    void setCommonToAppoint(@Param("propertyId") String propertyId, @Param("categoryId") String categoryId);
 
 }

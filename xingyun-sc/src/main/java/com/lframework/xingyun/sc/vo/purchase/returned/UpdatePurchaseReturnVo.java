@@ -2,13 +2,15 @@ package com.lframework.xingyun.sc.vo.purchase.returned;
 
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnDto;
+import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseReturnService;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class UpdatePurchaseReturnVo extends CreatePurchaseReturnVo {
 
   private static final long serialVersionUID = 1L;
@@ -23,9 +25,9 @@ public class UpdatePurchaseReturnVo extends CreatePurchaseReturnVo {
   @Override
   public void validate() {
 
-    IPurchaseReturnService purchaseReturnService = ApplicationUtil
-        .getBean(IPurchaseReturnService.class);
-    PurchaseReturnDto purchaseReturn = purchaseReturnService.getById(this.getId());
+    IPurchaseReturnService purchaseReturnService = ApplicationUtil.getBean(
+        IPurchaseReturnService.class);
+    PurchaseReturn purchaseReturn = purchaseReturnService.getById(this.getId());
 
     this.validate(!StringUtil.isBlank(purchaseReturn.getReceiveSheetId()));
   }

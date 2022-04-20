@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.basedata.dto.customer.CustomerDto;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
@@ -24,15 +23,7 @@ public interface CustomerMapper extends BaseMapper<Customer> {
    * @param vo
    * @return
    */
-  List<CustomerDto> query(@Param("vo") QueryCustomerVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  CustomerDto getById(String id);
+  List<Customer> query(@Param("vo") QueryCustomerVo vo);
 
   /**
    * 选择器
@@ -40,5 +31,5 @@ public interface CustomerMapper extends BaseMapper<Customer> {
    * @param vo
    * @return
    */
-  List<CustomerDto> selector(@Param("vo") QueryCustomerSelectorVo vo);
+  List<Customer> selector(@Param("vo") QueryCustomerSelectorVo vo);
 }

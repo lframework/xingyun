@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.dto.BaseDto;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,10 +20,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("base_data_product_property_item")
-public class ProductPropertyItem extends BaseEntity {
+public class ProductPropertyItem extends BaseEntity implements BaseDto {
 
+  public static final String CACHE_NAME = "ProductPropertyItem";
   private static final long serialVersionUID = 1L;
-
   /**
    * ID
    */

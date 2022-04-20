@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.service.stock.take;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.vo.stock.take.config.UpdateTakeStockConfigVo;
 
@@ -17,7 +16,7 @@ public interface ITakeStockConfigService extends BaseMpService<TakeStockConfig> 
    *
    * @return
    */
-  TakeStockConfigDto get();
+  TakeStockConfig get();
 
 
   /**

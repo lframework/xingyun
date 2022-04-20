@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.StoreCenterMapper">
 
-    <resultMap id="StoreCenterDto" type="com.lframework.xingyun.basedata.dto.storecenter.StoreCenterDto">
+    <resultMap id="StoreCenter" type="com.lframework.xingyun.basedata.entity.StoreCenter">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -38,7 +38,7 @@
         FROM base_data_store_center
     </sql>
 
-    <select id="query" resultMap="StoreCenterDto">
+    <select id="query" resultMap="StoreCenter">
         <include refid="StoreCenterDto_sql"/>
         <where>
             <if test="vo != null">
@@ -56,11 +56,7 @@
         ORDER BY code
     </select>
 
-    <select id="getById" resultMap="StoreCenterDto">
-        <include refid="StoreCenterDto_sql"/>
-        WHERE id = #{id}
-    </select>
-    <select id="selector" resultMap="StoreCenterDto">
+    <select id="selector" resultMap="StoreCenter">
         <include refid="StoreCenterDto_sql"/>
         <where>
             <if test="vo != null">

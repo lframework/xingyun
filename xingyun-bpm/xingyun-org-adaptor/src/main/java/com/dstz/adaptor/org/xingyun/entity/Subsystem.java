@@ -48,22 +48,19 @@ public class Subsystem extends BaseModel implements ISubsystem {
 
   protected String config;
 
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   /**
    * 返回 主键
    *
    * @return
    */
   public String getId() {
+
     return this.id;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setId(String id) {
+
+    this.id = id;
   }
 
   /**
@@ -72,11 +69,13 @@ public class Subsystem extends BaseModel implements ISubsystem {
    * @return
    */
   public String getName() {
+
     return this.name;
   }
 
-  public void setAlias(String alias) {
-    this.alias = alias;
+  public void setName(String name) {
+
+    this.name = name;
   }
 
   /**
@@ -85,28 +84,33 @@ public class Subsystem extends BaseModel implements ISubsystem {
    * @return
    */
   public String getAlias() {
+
     return this.alias;
   }
 
+  public void setAlias(String alias) {
+
+    this.alias = alias;
+  }
 
   public String getUrl() {
+
     return url;
   }
 
   public void setUrl(String url) {
+
     this.url = url;
   }
 
   public String getOpenType() {
+
     return openType;
   }
 
   public void setOpenType(String openType) {
-    this.openType = openType;
-  }
 
-  public void setEnabled(Integer enabled) {
-    this.enabled = enabled;
+    this.openType = openType;
   }
 
   /**
@@ -115,31 +119,43 @@ public class Subsystem extends BaseModel implements ISubsystem {
    * @return
    */
   public Integer getEnabled() {
+
     return this.enabled;
   }
 
+  public void setEnabled(Integer enabled) {
+
+    this.enabled = enabled;
+  }
+
   public String getDesc() {
+
     return desc;
   }
 
   public void setDesc(String desc) {
+
     this.desc = desc;
   }
 
-  public void setConfig(String config) {
-    this.config = config;
-  }
-
   public int getIsDefault() {
+
     return isDefault;
   }
 
   public void setIsDefault(int isDefault) {
+
     this.isDefault = isDefault;
   }
 
   @Override
   public String getConfig() {
+
     return config;
+  }
+
+  public void setConfig(String config) {
+
+    this.config = config;
   }
 }

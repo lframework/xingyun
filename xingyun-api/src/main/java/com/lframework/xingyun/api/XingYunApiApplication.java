@@ -30,18 +30,22 @@ public class XingYunApiApplication {
 
     @Bean(value = "defaultApi")
     public Docket defaultApi(OpenApiExtensionResolver openApiExtensionResolver) {
+
       Docket docket = new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).groupName("星云ERP")
-          .select().apis(RequestHandlerSelectors.basePackage("com.lframework.xingyun"))
-          .paths(PathSelectors.any()).build()
-          .extensions(openApiExtensionResolver.buildSettingExtensions());
+          .select()
+          .apis(RequestHandlerSelectors.basePackage("com.lframework.xingyun"))
+          .paths(PathSelectors.any())
+          .build().extensions(openApiExtensionResolver.buildSettingExtensions());
       return docket;
     }
 
     // 可以修改内容 但是不要删除这个Bean
     @Bean
     public ApiInfo apiInfo() {
+
       return new ApiInfoBuilder().title("星云ERP接口文档").description("# 星云ERP接口文档")
-          .contact("lframework@163.com").build();
+          .contact("lframework@163.com")
+          .build();
     }
   }
 }

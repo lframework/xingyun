@@ -3,7 +3,6 @@ package com.lframework.xingyun.sc.service.sale;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
@@ -28,7 +27,7 @@ public interface ISaleOutSheetService extends BaseMpService<SaleOutSheet> {
    * @param vo
    * @return
    */
-  PageResult<SaleOutSheetDto> query(Integer pageIndex, Integer pageSize, QuerySaleOutSheetVo vo);
+  PageResult<SaleOutSheet> query(Integer pageIndex, Integer pageSize, QuerySaleOutSheetVo vo);
 
   /**
    * 查询列表
@@ -36,7 +35,7 @@ public interface ISaleOutSheetService extends BaseMpService<SaleOutSheet> {
    * @param vo
    * @return
    */
-  List<SaleOutSheetDto> query(QuerySaleOutSheetVo vo);
+  List<SaleOutSheet> query(QuerySaleOutSheetVo vo);
 
   /**
    * 选择器
@@ -46,16 +45,7 @@ public interface ISaleOutSheetService extends BaseMpService<SaleOutSheet> {
    * @param vo
    * @return
    */
-  PageResult<SaleOutSheetDto> selector(Integer pageIndex, Integer pageSize,
-      SaleOutSheetSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  SaleOutSheetDto getById(String id);
+  PageResult<SaleOutSheet> selector(Integer pageIndex, Integer pageSize, SaleOutSheetSelectorVo vo);
 
   /**
    * 根据客户ID查询默认付款日期
@@ -88,7 +78,7 @@ public interface ISaleOutSheetService extends BaseMpService<SaleOutSheet> {
    * @param vo
    * @return
    */
-  PageResult<SaleOutSheetDto> queryWithReturn(Integer pageIndex, Integer pageSize,
+  PageResult<SaleOutSheet> queryWithReturn(Integer pageIndex, Integer pageSize,
       QuerySaleOutSheetWithReturnVo vo);
 
   /**

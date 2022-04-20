@@ -7,7 +7,7 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.retail.config.RetailConfigDto;
+import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
@@ -81,7 +81,7 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
   public void validate() {
 
     IRetailConfigService retailConfigService = ApplicationUtil.getBean(IRetailConfigService.class);
-    RetailConfigDto retailConfig = retailConfigService.get();
+    RetailConfig retailConfig = retailConfigService.get();
 
     if (!retailConfig.getRetailReturnRequireOutStock().equals(this.required)) {
       throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");
@@ -92,8 +92,8 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
 
   protected void validate(boolean requireOut) {
 
-    IRetailOutSheetService retailOutSheetService = ApplicationUtil
-        .getBean(IRetailOutSheetService.class);
+    IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
+        IRetailOutSheetService.class);
     GetPaymentDateDto paymentDate = retailOutSheetService.getPaymentDate(this.getMemberId());
     if (paymentDate.getAllowModify()) {
       if (this.getPaymentDate() == null) {
@@ -145,8 +145,8 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
 
         if (!NumberUtil.equal(product.getOriPrice(), 0D)) {
           BigDecimal diffPrice = NumberUtil.sub(NumberUtil.getNumber(
-                  NumberUtil
-                      .mul(product.getOriPrice(), NumberUtil.div(product.getDiscountRate(), 100D)), 2),
+                  NumberUtil.mul(product.getOriPrice(),
+                      NumberUtil.div(product.getDiscountRate(), 100D)), 2),
               product.getTaxPrice());
           if (!NumberUtil.le(diffPrice.abs(), 0.01D)) {
             throw new InputErrorException("第" + orderNo + "行商品折扣率不正确！");

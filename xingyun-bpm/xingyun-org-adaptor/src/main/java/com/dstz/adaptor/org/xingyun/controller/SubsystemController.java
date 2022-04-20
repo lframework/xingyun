@@ -37,6 +37,7 @@ public class SubsystemController extends BaseController<Subsystem> {
   public @ResponseBody
   ResultMsg<List> getUserSystem(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
+
     List Subsystem = subsystemManager.getAll();
     return getSuccessResult(Subsystem);
   }
@@ -52,6 +53,7 @@ public class SubsystemController extends BaseController<Subsystem> {
   @RequestMapping("getJson")
   public @ResponseBody
   Subsystem getJson(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
     String id = RequestUtil.getString(request, "id");
     if (StringUtil.isEmpty(id)) {
       return null;
@@ -70,6 +72,7 @@ public class SubsystemController extends BaseController<Subsystem> {
   @CatchErr
   @Override
   public ResultMsg<String> save(@RequestBody Subsystem subsystem) throws Exception {
+
     String resultMsg = null;
 
     boolean isExist = subsystemManager.isExist(subsystem);
@@ -92,6 +95,7 @@ public class SubsystemController extends BaseController<Subsystem> {
 
   @Override
   protected String getModelDesc() {
+
     return "子系统定义";
   }
 }

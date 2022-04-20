@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.mybatis.enums.Gender;
+import com.lframework.starter.web.dto.BaseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -21,10 +22,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("base_data_member")
-public class Member extends BaseEntity {
+public class Member extends BaseEntity implements BaseDto {
 
+  public static final String CACHE_NAME = "Member";
   private static final long serialVersionUID = 1L;
-
   /**
    * ID
    */

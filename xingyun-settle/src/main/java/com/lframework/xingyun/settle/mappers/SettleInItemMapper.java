@@ -1,12 +1,12 @@
 package com.lframework.xingyun.settle.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.settle.dto.item.in.SettleInItemDto;
 import com.lframework.xingyun.settle.entity.SettleInItem;
 import com.lframework.xingyun.settle.vo.item.in.QuerySettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.SettleInItemSelectorVo;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,27 +18,19 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SettleInItemMapper extends BaseMapper<SettleInItem> {
 
-  /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<SettleInItemDto> query(@Param("vo") QuerySettleInItemVo vo);
+    /**
+     * 查询列表
+     *
+     * @param vo
+     * @return
+     */
+    List<SettleInItem> query(@Param("vo") QuerySettleInItemVo vo);
 
-  /**
-   * 选择器
-   *
-   * @param vo
-   * @return
-   */
-  List<SettleInItemDto> selector(@Param("vo") SettleInItemSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  SettleInItemDto getById(String id);
+    /**
+     * 选择器
+     *
+     * @param vo
+     * @return
+     */
+    List<SettleInItem> selector(@Param("vo") SettleInItemSelectorVo vo);
 }

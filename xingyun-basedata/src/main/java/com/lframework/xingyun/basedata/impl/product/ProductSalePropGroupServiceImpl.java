@@ -18,7 +18,6 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.xingyun.basedata.dto.product.saleprop.ProductSalePropGroupDto;
 import com.lframework.xingyun.basedata.entity.ProductSalePropGroup;
 import com.lframework.xingyun.basedata.mappers.ProductSalePropGroupMapper;
 import com.lframework.xingyun.basedata.service.product.IProductSalePropGroupService;
@@ -35,46 +34,46 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductSalePropGroupServiceImpl extends
-    BaseMpServiceImpl<ProductSalePropGroupMapper, ProductSalePropGroup> implements
-    IProductSalePropGroupService {
+    BaseMpServiceImpl<ProductSalePropGroupMapper, ProductSalePropGroup>
+    implements IProductSalePropGroupService {
 
   @Override
-  public PageResult<ProductSalePropGroupDto> query(Integer pageIndex, Integer pageSize,
+  public PageResult<ProductSalePropGroup> query(Integer pageIndex, Integer pageSize,
       QueryProductSalePropGroupVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ProductSalePropGroupDto> datas = this.query(vo);
+    List<ProductSalePropGroup> datas = this.query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<ProductSalePropGroupDto> query(QueryProductSalePropGroupVo vo) {
+  public List<ProductSalePropGroup> query(QueryProductSalePropGroupVo vo) {
 
     return getBaseMapper().query(vo);
   }
 
   @Override
-  public PageResult<ProductSalePropGroupDto> selector(Integer pageIndex, Integer pageSize,
+  public PageResult<ProductSalePropGroup> selector(Integer pageIndex, Integer pageSize,
       QueryProductSalePropGroupSelectorVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ProductSalePropGroupDto> datas = getBaseMapper().selector(vo);
+    List<ProductSalePropGroup> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @Cacheable(value = ProductSalePropGroupDto.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Cacheable(value = ProductSalePropGroup.CACHE_NAME, key = "#id", unless = "#result == null")
   @Override
-  public ProductSalePropGroupDto getById(String id) {
+  public ProductSalePropGroup findById(String id) {
 
-    return getBaseMapper().getById(id);
+    return getBaseMapper().selectById(id);
   }
 
   @OpLog(type = OpLogType.OTHER, name = "停用商品销售属性，ID：{}", params = "#ids", loopFormat = true)
@@ -174,8 +173,8 @@ public class ProductSalePropGroupServiceImpl extends
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
-    LambdaUpdateWrapper<ProductSalePropGroup> updateWrapper = Wrappers
-        .lambdaUpdate(ProductSalePropGroup.class)
+    LambdaUpdateWrapper<ProductSalePropGroup> updateWrapper = Wrappers.lambdaUpdate(
+            ProductSalePropGroup.class)
         .set(ProductSalePropGroup::getCode, vo.getCode())
         .set(ProductSalePropGroup::getName, vo.getName())
         .set(ProductSalePropGroup::getAvailable, vo.getAvailable())
@@ -193,7 +192,7 @@ public class ProductSalePropGroupServiceImpl extends
     thisService.cleanCacheByKey(data.getId());
   }
 
-  @CacheEvict(value = ProductSalePropGroupDto.CACHE_NAME, key = "#key")
+  @CacheEvict(value = ProductSalePropGroup.CACHE_NAME, key = "#key")
   @Override
   public void cleanCacheByKey(String key) {
 

@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.stock.ProductStockDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
 import java.math.BigDecimal;
@@ -24,7 +23,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @param vo
    * @return
    */
-  List<ProductStockDto> query(@Param("vo") QueryProductStockVo vo);
+  List<ProductStock> query(@Param("vo") QueryProductStockVo vo);
 
   /**
    * 根据商品ID、仓库ID查询
@@ -33,7 +32,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @param scId
    * @return
    */
-  ProductStockDto getByProductIdAndScId(@Param("productId") String productId,
+  ProductStock getByProductIdAndScId(@Param("productId") String productId,
       @Param("scId") String scId);
 
   /**
@@ -43,7 +42,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @param scId
    * @return
    */
-  List<ProductStockDto> getByProductIdsAndScId(@Param("productIds") List<String> productIds,
+  List<ProductStock> getByProductIdsAndScId(@Param("productIds") List<String> productIds,
       @Param("scId") String scId);
 
   /**
@@ -89,5 +88,6 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @param unTaxPrice
    */
   void stockCostAdjust(@Param("productId") String productId, @Param("scId") String scId,
-      BigDecimal taxPrice, BigDecimal unTaxPrice);
+      BigDecimal taxPrice,
+      BigDecimal unTaxPrice);
 }

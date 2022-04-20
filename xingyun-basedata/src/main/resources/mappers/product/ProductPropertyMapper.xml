@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.basedata.mappers.ProductPropertyMapper">
 
-    <resultMap id="ProductPropertyDto" type="com.lframework.xingyun.basedata.dto.product.property.ProductPropertyDto">
+    <resultMap id="ProductProperty" type="com.lframework.xingyun.basedata.entity.ProductProperty">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -52,7 +52,7 @@
         FROM base_data_product_property AS p
     </sql>
 
-    <select id="query" resultMap="ProductPropertyDto">
+    <select id="query" resultMap="ProductProperty">
         <include refid="ProductPropertyDto_sql"/>
         <where>
             <if test="vo != null">
@@ -68,10 +68,6 @@
             </if>
         </where>
         ORDER BY p.code
-    </select>
-    <select id="getById" resultMap="ProductPropertyDto">
-        <include refid="ProductPropertyDto_sql"/>
-        WHERE p.id = #{id}
     </select>
     <select id="getModelorByCategoryId" resultMap="ProductPropertyModelorDto">
         SELECT

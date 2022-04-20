@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.purchase.config.PurchaseConfigDto;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.vo.purchase.config.UpdatePurchaseConfigVo;
 
@@ -12,7 +11,7 @@ public interface IPurchaseConfigService extends BaseMpService<PurchaseConfig> {
    *
    * @return
    */
-  PurchaseConfigDto get();
+  PurchaseConfig get();
 
   /**
    * 修改

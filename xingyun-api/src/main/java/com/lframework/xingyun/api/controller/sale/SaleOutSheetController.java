@@ -10,46 +10,29 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.receive.GetPaymentDateBo;
-import com.lframework.xingyun.api.bo.sale.out.GetSaleOutSheetBo;
-import com.lframework.xingyun.api.bo.sale.out.PrintSaleOutSheetBo;
-import com.lframework.xingyun.api.bo.sale.out.QuerySaleOutSheetBo;
-import com.lframework.xingyun.api.bo.sale.out.QuerySaleOutSheetWithReturnBo;
-import com.lframework.xingyun.api.bo.sale.out.SaleOutSheetWithReturnBo;
+import com.lframework.xingyun.api.bo.sale.out.*;
 import com.lframework.xingyun.api.model.sale.out.SaleOutSheetExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.service.sale.ISaleOutSheetService;
-import com.lframework.xingyun.sc.vo.sale.out.ApprovePassSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.ApproveRefuseSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.BatchApprovePassSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.BatchApproveRefuseSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.CreateSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetWithReturnVo;
-import com.lframework.xingyun.sc.vo.sale.out.UpdateSaleOutSheetVo;
+import com.lframework.xingyun.sc.vo.sale.out.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 销售出库单管理
@@ -62,277 +45,270 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/sale/out/sheet")
 public class SaleOutSheetController extends DefaultBaseController {
 
-  @Autowired
-  private ISaleOutSheetService saleOutSheetService;
+    @Autowired
+    private ISaleOutSheetService saleOutSheetService;
 
-  /**
-   * 打印
-   */
-  @ApiOperation("打印")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('sale:out:query')")
-  @GetMapping("/print")
-  public InvokeResult<A4ExcelPortraitPrintBo<PrintSaleOutSheetBo>> print(
-      @NotBlank(message = "订单ID不能为空！") String id) {
+    /**
+     * 打印
+     */
+    @ApiOperation("打印")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('sale:out:query')")
+    @GetMapping("/print")
+    public InvokeResult<A4ExcelPortraitPrintBo<PrintSaleOutSheetBo>> print(@NotBlank(message = "订单ID不能为空！") String id) {
 
-    SaleOutSheetFullDto data = saleOutSheetService.getDetail(id);
-    if (data == null) {
-      throw new DefaultClientException("销售出库单不存在！");
-    }
-
-    PrintSaleOutSheetBo result = new PrintSaleOutSheetBo(data);
-
-    A4ExcelPortraitPrintBo<PrintSaleOutSheetBo> printResult = new A4ExcelPortraitPrintBo<>(
-        "print/sale-out-sheet.ftl", result);
-
-    return InvokeResultBuilder.success(printResult);
-  }
-
-  /**
-   * 订单列表
-   */
-  @ApiOperation("订单列表")
-  @PreAuthorize("@permission.valid('sale:out:query')")
-  @GetMapping("/query")
-  public InvokeResult<PageResult<QuerySaleOutSheetBo>> query(@Valid QuerySaleOutSheetVo vo) {
-
-    PageResult<SaleOutSheetDto> pageResult = saleOutSheetService.query(getPageIndex(vo),
-        getPageSize(vo), vo);
-
-    List<SaleOutSheetDto> datas = pageResult.getDatas();
-    List<QuerySaleOutSheetBo> results = null;
-
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(QuerySaleOutSheetBo::new).collect(Collectors.toList());
-    }
-
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
-
-  /**
-   * 导出
-   */
-  @ApiOperation("导出")
-  @PreAuthorize("@permission.valid('sale:out:export')")
-  @PostMapping("/export")
-  public void export(@Valid QuerySaleOutSheetVo vo) {
-
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售出库单信息",
-        SaleOutSheetExportModel.class);
-
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<SaleOutSheetDto> pageResult = saleOutSheetService.query(pageIndex,
-            getExportSize(), vo);
-        List<SaleOutSheetDto> datas = pageResult.getDatas();
-        List<SaleOutSheetExportModel> models = datas.stream().map(SaleOutSheetExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
+        SaleOutSheetFullDto data = saleOutSheetService.getDetail(id);
+        if (data == null) {
+            throw new DefaultClientException("销售出库单不存在！");
         }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
-  }
 
-  /**
-   * 根据ID查询
-   */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('sale:out:query')")
-  @GetMapping
-  public InvokeResult<GetSaleOutSheetBo> getById(@NotBlank(message = "订单ID不能为空！") String id) {
+        PrintSaleOutSheetBo result = new PrintSaleOutSheetBo(data);
 
-    SaleOutSheetFullDto data = saleOutSheetService.getDetail(id);
+        A4ExcelPortraitPrintBo<PrintSaleOutSheetBo> printResult = new A4ExcelPortraitPrintBo<>(
+                "print/sale-out-sheet.ftl", result);
 
-    GetSaleOutSheetBo result = new GetSaleOutSheetBo(data);
-
-    return InvokeResultBuilder.success(result);
-  }
-
-  /**
-   * 根据客户ID查询默认付款日期
-   */
-  @ApiOperation("根据客户ID查询默认付款日期")
-  @ApiImplicitParam(value = "客户ID", name = "customerId", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
-  @GetMapping("/paymentdate")
-  public InvokeResult<GetPaymentDateBo> getPaymentDate(
-      @NotBlank(message = "客户ID不能为空！") String customerId) {
-
-    GetPaymentDateDto data = saleOutSheetService.getPaymentDate(customerId);
-
-    GetPaymentDateBo result = new GetPaymentDateBo(data);
-
-    return InvokeResultBuilder.success(result);
-  }
-
-  /**
-   * 根据ID查询（销售退货业务）
-   */
-  @ApiOperation("根据ID查询（销售退货业务）")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('sale:return:add', 'sale:return:modify')")
-  @GetMapping("/return")
-  public InvokeResult<SaleOutSheetWithReturnBo> getWithReturn(
-      @NotBlank(message = "出库单ID不能为空！") String id) {
-
-    SaleOutSheetWithReturnDto data = saleOutSheetService.getWithReturn(id);
-    SaleOutSheetWithReturnBo result = new SaleOutSheetWithReturnBo(data);
-
-    return InvokeResultBuilder.success(result);
-  }
-
-  /**
-   * 查询列表（销售退货业务）
-   */
-  @ApiOperation("查询列表（销售退货业务）")
-  @PreAuthorize("@permission.valid('sale:return:add', 'sale:return:modify')")
-  @GetMapping("/query/return")
-  public InvokeResult<PageResult<QuerySaleOutSheetWithReturnBo>> queryWithReturn(
-      @Valid QuerySaleOutSheetWithReturnVo vo) {
-
-    PageResult<SaleOutSheetDto> pageResult = saleOutSheetService.queryWithReturn(getPageIndex(vo),
-        getPageSize(vo), vo);
-    List<SaleOutSheetDto> datas = pageResult.getDatas();
-
-    List<QuerySaleOutSheetWithReturnBo> results = null;
-
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(QuerySaleOutSheetWithReturnBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(printResult);
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 订单列表
+     */
+    @ApiOperation("订单列表")
+    @PreAuthorize("@permission.valid('sale:out:query')")
+    @GetMapping("/query")
+    public InvokeResult<PageResult<QuerySaleOutSheetBo>> query(@Valid QuerySaleOutSheetVo vo) {
 
-  /**
-   * 创建
-   */
-  @ApiOperation("创建")
-  @PreAuthorize("@permission.valid('sale:out:add')")
-  @PostMapping
-  public InvokeResult<String> create(@RequestBody @Valid CreateSaleOutSheetVo vo) {
+        PageResult<SaleOutSheet> pageResult = saleOutSheetService.query(getPageIndex(vo), getPageSize(vo), vo);
 
-    vo.validate();
+        List<SaleOutSheet> datas = pageResult.getDatas();
+        List<QuerySaleOutSheetBo> results = null;
 
-    String id = saleOutSheetService.create(vo);
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(QuerySaleOutSheetBo::new).collect(Collectors.toList());
+        }
 
-    return InvokeResultBuilder.success(id);
-  }
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+    }
 
-  /**
-   * 修改
-   */
-  @ApiOperation("修改")
-  @PreAuthorize("@permission.valid('sale:out:modify')")
-  @PutMapping
-  public InvokeResult<Void> update(@RequestBody @Valid UpdateSaleOutSheetVo vo) {
+    /**
+     * 导出
+     */
+    @ApiOperation("导出")
+    @PreAuthorize("@permission.valid('sale:out:export')")
+    @PostMapping("/export")
+    public void export(@Valid QuerySaleOutSheetVo vo) {
 
-    vo.validate();
+        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售出库单信息",
+                SaleOutSheetExportModel.class);
 
-    saleOutSheetService.update(vo);
+        try {
+            int pageIndex = 1;
+            while (true) {
+                PageResult<SaleOutSheet> pageResult = saleOutSheetService.query(pageIndex, getExportSize(), vo);
+                List<SaleOutSheet> datas = pageResult.getDatas();
+                List<SaleOutSheetExportModel> models = datas.stream().map(SaleOutSheetExportModel::new)
+                        .collect(Collectors.toList());
+                builder.doWrite(models);
 
-    return InvokeResultBuilder.success();
-  }
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
+            }
+        } finally {
+            builder.finish();
+        }
+    }
 
-  /**
-   * 审核通过
-   */
-  @ApiOperation("审核通过")
-  @PreAuthorize("@permission.valid('sale:out:approve')")
-  @PatchMapping("/approve/pass")
-  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleOutSheetVo vo) {
+    /**
+     * 根据ID查询
+     */
+    @ApiOperation("根据ID查询")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('sale:out:query')")
+    @GetMapping
+    public InvokeResult<GetSaleOutSheetBo> findById(@NotBlank(message = "订单ID不能为空！") String id) {
 
-    saleOutSheetService.approvePass(vo);
+        SaleOutSheetFullDto data = saleOutSheetService.getDetail(id);
 
-    return InvokeResultBuilder.success();
-  }
+        GetSaleOutSheetBo result = new GetSaleOutSheetBo(data);
 
-  /**
-   * 批量审核通过
-   */
-  @ApiOperation("批量审核通过")
-  @PreAuthorize("@permission.valid('sale:out:approve')")
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @RequestBody @Valid BatchApprovePassSaleOutSheetVo vo) {
+        return InvokeResultBuilder.success(result);
+    }
 
-    saleOutSheetService.batchApprovePass(vo);
+    /**
+     * 根据客户ID查询默认付款日期
+     */
+    @ApiOperation("根据客户ID查询默认付款日期")
+    @ApiImplicitParam(value = "客户ID", name = "customerId", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('sale:out:add', 'sale:out:modify')")
+    @GetMapping("/paymentdate")
+    public InvokeResult<GetPaymentDateBo> getPaymentDate(@NotBlank(message = "客户ID不能为空！") String customerId) {
 
-    return InvokeResultBuilder.success();
-  }
+        GetPaymentDateDto data = saleOutSheetService.getPaymentDate(customerId);
 
-  /**
-   * 直接审核通过
-   */
-  @ApiOperation("直接审核通过")
-  @PreAuthorize("@permission.valid('sale:out:approve')")
-  @PostMapping("/approve/pass/direct")
-  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSaleOutSheetVo vo) {
+        GetPaymentDateBo result = new GetPaymentDateBo(data);
 
-    saleOutSheetService.directApprovePass(vo);
+        return InvokeResultBuilder.success(result);
+    }
 
-    return InvokeResultBuilder.success();
-  }
+    /**
+     * 根据ID查询（销售退货业务）
+     */
+    @ApiOperation("根据ID查询（销售退货业务）")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('sale:return:add', 'sale:return:modify')")
+    @GetMapping("/return")
+    public InvokeResult<SaleOutSheetWithReturnBo> getWithReturn(@NotBlank(message = "出库单ID不能为空！") String id) {
 
-  /**
-   * 审核拒绝
-   */
-  @ApiOperation("审核拒绝")
-  @PreAuthorize("@permission.valid('sale:out:approve')")
-  @PatchMapping("/approve/refuse")
-  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleOutSheetVo vo) {
+        SaleOutSheetWithReturnDto data = saleOutSheetService.getWithReturn(id);
+        SaleOutSheetWithReturnBo result = new SaleOutSheetWithReturnBo(data);
 
-    saleOutSheetService.approveRefuse(vo);
+        return InvokeResultBuilder.success(result);
+    }
 
-    return InvokeResultBuilder.success();
-  }
+    /**
+     * 查询列表（销售退货业务）
+     */
+    @ApiOperation("查询列表（销售退货业务）")
+    @PreAuthorize("@permission.valid('sale:return:add', 'sale:return:modify')")
+    @GetMapping("/query/return")
+    public InvokeResult<PageResult<QuerySaleOutSheetWithReturnBo>> queryWithReturn(
+            @Valid QuerySaleOutSheetWithReturnVo vo) {
 
-  /**
-   * 批量审核拒绝
-   */
-  @ApiOperation("批量审核拒绝")
-  @PreAuthorize("@permission.valid('sale:out:approve')")
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefuseSaleOutSheetVo vo) {
+        PageResult<SaleOutSheet> pageResult = saleOutSheetService.queryWithReturn(getPageIndex(vo), getPageSize(vo),
+                vo);
+        List<SaleOutSheet> datas = pageResult.getDatas();
 
-    saleOutSheetService.batchApproveRefuse(vo);
+        List<QuerySaleOutSheetWithReturnBo> results = null;
 
-    return InvokeResultBuilder.success();
-  }
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(QuerySaleOutSheetWithReturnBo::new).collect(Collectors.toList());
+        }
 
-  /**
-   * 删除
-   */
-  @ApiOperation("删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('sale:out:delete')")
-  @DeleteMapping
-  public InvokeResult<Void> deleteById(@NotBlank(message = "销售出库单ID不能为空！") String id) {
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+    }
 
-    saleOutSheetService.deleteById(id);
+    /**
+     * 创建
+     */
+    @ApiOperation("创建")
+    @PreAuthorize("@permission.valid('sale:out:add')")
+    @PostMapping
+    public InvokeResult<String> create(@RequestBody @Valid CreateSaleOutSheetVo vo) {
 
-    return InvokeResultBuilder.success();
-  }
+        vo.validate();
 
-  /**
-   * 批量删除
-   */
-  @ApiOperation("批量删除")
-  @PreAuthorize("@permission.valid('sale:out:delete')")
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的销售出库单！") List<String> ids) {
+        String id = saleOutSheetService.create(vo);
 
-    saleOutSheetService.deleteByIds(ids);
+        return InvokeResultBuilder.success(id);
+    }
 
-    return InvokeResultBuilder.success();
-  }
+    /**
+     * 修改
+     */
+    @ApiOperation("修改")
+    @PreAuthorize("@permission.valid('sale:out:modify')")
+    @PutMapping
+    public InvokeResult<Void> update(@RequestBody @Valid UpdateSaleOutSheetVo vo) {
+
+        vo.validate();
+
+        saleOutSheetService.update(vo);
+
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 审核通过
+     */
+    @ApiOperation("审核通过")
+    @PreAuthorize("@permission.valid('sale:out:approve')")
+    @PatchMapping("/approve/pass")
+    public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleOutSheetVo vo) {
+
+        saleOutSheetService.approvePass(vo);
+
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 批量审核通过
+     */
+    @ApiOperation("批量审核通过")
+    @PreAuthorize("@permission.valid('sale:out:approve')")
+    @PatchMapping("/approve/pass/batch")
+    public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassSaleOutSheetVo vo) {
+
+        saleOutSheetService.batchApprovePass(vo);
+
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 直接审核通过
+     */
+    @ApiOperation("直接审核通过")
+    @PreAuthorize("@permission.valid('sale:out:approve')")
+    @PostMapping("/approve/pass/direct")
+    public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSaleOutSheetVo vo) {
+
+        saleOutSheetService.directApprovePass(vo);
+
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 审核拒绝
+     */
+    @ApiOperation("审核拒绝")
+    @PreAuthorize("@permission.valid('sale:out:approve')")
+    @PatchMapping("/approve/refuse")
+    public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleOutSheetVo vo) {
+
+        saleOutSheetService.approveRefuse(vo);
+
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 批量审核拒绝
+     */
+    @ApiOperation("批量审核拒绝")
+    @PreAuthorize("@permission.valid('sale:out:approve')")
+    @PatchMapping("/approve/refuse/batch")
+    public InvokeResult<Void> batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSaleOutSheetVo vo) {
+
+        saleOutSheetService.batchApproveRefuse(vo);
+
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 删除
+     */
+    @ApiOperation("删除")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('sale:out:delete')")
+    @DeleteMapping
+    public InvokeResult<Void> deleteById(@NotBlank(message = "销售出库单ID不能为空！") String id) {
+
+        saleOutSheetService.deleteById(id);
+
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 批量删除
+     */
+    @ApiOperation("批量删除")
+    @PreAuthorize("@permission.valid('sale:out:delete')")
+    @DeleteMapping("/batch")
+    public InvokeResult<Void> deleteByIds(
+            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的销售出库单！") List<String> ids) {
+
+        saleOutSheetService.deleteByIds(ids);
+
+        return InvokeResultBuilder.success();
+    }
 }

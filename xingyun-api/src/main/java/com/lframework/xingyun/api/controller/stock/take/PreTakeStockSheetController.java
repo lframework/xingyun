@@ -18,37 +18,28 @@ import com.lframework.xingyun.api.model.stock.take.pre.PreTakeStockSheetExportMo
 import com.lframework.xingyun.basedata.dto.product.info.PreTakeStockProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryPreTakeStockProductVo;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDto;
-import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
+import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
+import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 预先盘点单 Controller
@@ -61,212 +52,209 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/stock/take/pre")
 public class PreTakeStockSheetController extends DefaultBaseController {
 
-  @Autowired
-  private IPreTakeStockSheetService preTakeStockSheetService;
+    @Autowired
+    private IPreTakeStockSheetService preTakeStockSheetService;
 
-  @Autowired
-  private IProductService productService;
+    @Autowired
+    private IProductService productService;
 
-  @Autowired
-  private ITakeStockPlanService takeStockPlanService;
+    @Autowired
+    private ITakeStockPlanService takeStockPlanService;
 
-  /**
-   * 查询列表
-   */
-  @ApiOperation("查询列表")
-  @PreAuthorize("@permission.valid('stock:take:pre:query')")
-  @GetMapping("/query")
-  public InvokeResult<PageResult<QueryPreTakeStockSheetBo>> query(
-      @Valid QueryPreTakeStockSheetVo vo) {
+    /**
+     * 查询列表
+     */
+    @ApiOperation("查询列表")
+    @PreAuthorize("@permission.valid('stock:take:pre:query')")
+    @GetMapping("/query")
+    public InvokeResult<PageResult<QueryPreTakeStockSheetBo>> query(@Valid QueryPreTakeStockSheetVo vo) {
 
-    PageResult<PreTakeStockSheetDto> pageResult = preTakeStockSheetService.query(getPageIndex(vo),
-        getPageSize(vo), vo);
+        PageResult<PreTakeStockSheet> pageResult = preTakeStockSheetService.query(getPageIndex(vo), getPageSize(vo),
+                vo);
 
-    List<PreTakeStockSheetDto> datas = pageResult.getDatas();
-    List<QueryPreTakeStockSheetBo> results = null;
+        List<PreTakeStockSheet> datas = pageResult.getDatas();
+        List<QueryPreTakeStockSheetBo> results = null;
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(QueryPreTakeStockSheetBo::new).collect(Collectors.toList());
-    }
-
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
-
-  /**
-   * 导出列表
-   */
-  @ApiOperation("导出列表")
-  @PreAuthorize("@permission.valid('stock:take:pre:export')")
-  @PostMapping("/export")
-  public void export(@Valid QueryPreTakeStockSheetVo vo) {
-
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("预先盘点单信息",
-        PreTakeStockSheetExportModel.class);
-
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<PreTakeStockSheetDto> pageResult = preTakeStockSheetService.query(pageIndex,
-            getExportSize(), vo);
-        List<PreTakeStockSheetDto> datas = pageResult.getDatas();
-        List<PreTakeStockSheetExportModel> models = datas.stream()
-            .map(PreTakeStockSheetExportModel::new).collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(QueryPreTakeStockSheetBo::new).collect(Collectors.toList());
         }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
-  }
 
-  /**
-   * 根据关键字查询商品列表
-   */
-  @ApiOperation("根据关键字查询商品列表")
-  @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('stock:take:pre:add', 'stock:take:pre:modify')")
-  @GetMapping("/product/search")
-  public InvokeResult<List<PreTakeStockProductBo>> searchProducts(String condition) {
-    if (StringUtil.isBlank(condition)) {
-      return InvokeResultBuilder.success(Collections.EMPTY_LIST);
-    }
-    PageResult<PreTakeStockProductDto> pageResult = productService.queryPreTakeStockByCondition(
-        getPageIndex(), getPageSize(), condition);
-    List<PreTakeStockProductBo> results = Collections.EMPTY_LIST;
-    List<PreTakeStockProductDto> datas = pageResult.getDatas();
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(PreTakeStockProductBo::new).collect(Collectors.toList());
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    return InvokeResultBuilder.success(results);
-  }
+    /**
+     * 导出列表
+     */
+    @ApiOperation("导出列表")
+    @PreAuthorize("@permission.valid('stock:take:pre:export')")
+    @PostMapping("/export")
+    public void export(@Valid QueryPreTakeStockSheetVo vo) {
 
-  /**
-   * 查询商品列表
-   */
-  @ApiOperation("查询商品列表")
-  @PreAuthorize("@permission.valid('stock:take:pre:add', 'stock:take:pre:modify')")
-  @GetMapping("/product/list")
-  public InvokeResult<PageResult<PreTakeStockProductBo>> queryProductList(
-      @Valid QueryPreTakeStockProductVo vo) {
+        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("预先盘点单信息",
+                PreTakeStockSheetExportModel.class);
 
-    PageResult<PreTakeStockProductDto> pageResult = productService.queryPreTakeStockList(
-        getPageIndex(), getPageSize(), vo);
-    List<PreTakeStockProductBo> results = null;
-    List<PreTakeStockProductDto> datas = pageResult.getDatas();
+        try {
+            int pageIndex = 1;
+            while (true) {
+                PageResult<PreTakeStockSheet> pageResult = preTakeStockSheetService.query(pageIndex, getExportSize(),
+                        vo);
+                List<PreTakeStockSheet> datas = pageResult.getDatas();
+                List<PreTakeStockSheetExportModel> models = datas.stream().map(PreTakeStockSheetExportModel::new)
+                        .collect(Collectors.toList());
+                builder.doWrite(models);
 
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(PreTakeStockProductBo::new).collect(Collectors.toList());
+                if (!pageResult.isHasNext()) {
+                    break;
+                }
+                pageIndex++;
+            }
+        } finally {
+            builder.finish();
+        }
     }
 
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
+    /**
+     * 根据关键字查询商品列表
+     */
+    @ApiOperation("根据关键字查询商品列表")
+    @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('stock:take:pre:add', 'stock:take:pre:modify')")
+    @GetMapping("/product/search")
+    public InvokeResult<List<PreTakeStockProductBo>> searchProducts(String condition) {
 
-  /**
-   * 根据ID查询
-   */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('stock:take:pre:query')")
-  @GetMapping
-  public InvokeResult<GetPreTakeStockSheetBo> getDetail(@NotBlank(message = "id不能为空！") String id) {
+        if (StringUtil.isBlank(condition)) {
+            return InvokeResultBuilder.success(Collections.EMPTY_LIST);
+        }
+        PageResult<PreTakeStockProductDto> pageResult = productService.queryPreTakeStockByCondition(getPageIndex(),
+                getPageSize(), condition);
+        List<PreTakeStockProductBo> results = Collections.EMPTY_LIST;
+        List<PreTakeStockProductDto> datas = pageResult.getDatas();
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(PreTakeStockProductBo::new).collect(Collectors.toList());
+        }
 
-    PreTakeStockSheetFullDto data = preTakeStockSheetService.getDetail(id);
-    if (data == null) {
-      throw new DefaultClientException("预先盘点单不存在！");
+        return InvokeResultBuilder.success(results);
     }
 
-    GetPreTakeStockSheetBo result = new GetPreTakeStockSheetBo(data);
+    /**
+     * 查询商品列表
+     */
+    @ApiOperation("查询商品列表")
+    @PreAuthorize("@permission.valid('stock:take:pre:add', 'stock:take:pre:modify')")
+    @GetMapping("/product/list")
+    public InvokeResult<PageResult<PreTakeStockProductBo>> queryProductList(@Valid QueryPreTakeStockProductVo vo) {
 
-    return InvokeResultBuilder.success(result);
-  }
+        PageResult<PreTakeStockProductDto> pageResult = productService.queryPreTakeStockList(getPageIndex(),
+                getPageSize(), vo);
+        List<PreTakeStockProductBo> results = null;
+        List<PreTakeStockProductDto> datas = pageResult.getDatas();
 
-  /**
-   * 根据预先盘点单、盘点任务查询商品信息
-   */
-  @ApiOperation("根据预先盘点单、盘点任务查询商品信息")
-  @ApiImplicitParams({
-      @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true),
-      @ApiImplicitParam(value = "盘点任务ID", name = "planId", paramType = "query", required = true)})
-  @PreAuthorize("@permission.valid('stock:take:sheet:add', 'stock:take:sheet:modify')")
-  @GetMapping("/products")
-  public InvokeResult<List<QueryPreTakeStockSheetProductBo>> getProducts(
-      @NotBlank(message = "ID不能为空！") String id, @NotBlank(message = "盘点任务ID不能为空！") String planId) {
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(PreTakeStockProductBo::new).collect(Collectors.toList());
+        }
 
-    TakeStockPlanDto takeStockPlan = takeStockPlanService.getById(planId);
-    if (takeStockPlan.getTakeType() == TakeStockPlanType.SIMPLE) {
-      planId = null;
+        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
-    List<QueryPreTakeStockSheetProductDto> datas = preTakeStockSheetService.getProducts(id, planId);
-    List<QueryPreTakeStockSheetProductBo> results = Collections.EMPTY_LIST;
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream()
-          .map(t -> new QueryPreTakeStockSheetProductBo(t, takeStockPlan.getScId()))
-          .collect(Collectors.toList());
+    /**
+     * 根据ID查询
+     */
+    @ApiOperation("根据ID查询")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('stock:take:pre:query')")
+    @GetMapping
+    public InvokeResult<GetPreTakeStockSheetBo> getDetail(@NotBlank(message = "id不能为空！") String id) {
+
+        PreTakeStockSheetFullDto data = preTakeStockSheetService.getDetail(id);
+        if (data == null) {
+            throw new DefaultClientException("预先盘点单不存在！");
+        }
+
+        GetPreTakeStockSheetBo result = new GetPreTakeStockSheetBo(data);
+
+        return InvokeResultBuilder.success(result);
     }
 
-    return InvokeResultBuilder.success(results);
-  }
+    /**
+     * 根据预先盘点单、盘点任务查询商品信息
+     */
+    @ApiOperation("根据预先盘点单、盘点任务查询商品信息")
+    @ApiImplicitParams({@ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true),
+            @ApiImplicitParam(value = "盘点任务ID", name = "planId", paramType = "query", required = true)})
+    @PreAuthorize("@permission.valid('stock:take:sheet:add', 'stock:take:sheet:modify')")
+    @GetMapping("/products")
+    public InvokeResult<List<QueryPreTakeStockSheetProductBo>> getProducts(@NotBlank(message = "ID不能为空！") String id,
+            @NotBlank(message = "盘点任务ID不能为空！") String planId) {
 
-  /**
-   * 新增
-   */
-  @ApiOperation("新增")
-  @PreAuthorize("@permission.valid('stock:take:pre:add')")
-  @PostMapping
-  public InvokeResult<Void> create(@Valid @RequestBody CreatePreTakeStockSheetVo vo) {
+        TakeStockPlan takeStockPlan = takeStockPlanService.getById(planId);
+        if (takeStockPlan.getTakeType() == TakeStockPlanType.SIMPLE) {
+            planId = null;
+        }
 
-    vo.validate();
+        List<QueryPreTakeStockSheetProductDto> datas = preTakeStockSheetService.getProducts(id, planId);
+        List<QueryPreTakeStockSheetProductBo> results = Collections.EMPTY_LIST;
+        if (!CollectionUtil.isEmpty(datas)) {
+            results = datas.stream().map(t -> new QueryPreTakeStockSheetProductBo(t, takeStockPlan.getScId()))
+                    .collect(Collectors.toList());
+        }
 
-    preTakeStockSheetService.create(vo);
+        return InvokeResultBuilder.success(results);
+    }
 
-    return InvokeResultBuilder.success();
-  }
+    /**
+     * 新增
+     */
+    @ApiOperation("新增")
+    @PreAuthorize("@permission.valid('stock:take:pre:add')")
+    @PostMapping
+    public InvokeResult<Void> create(@Valid @RequestBody CreatePreTakeStockSheetVo vo) {
 
-  /**
-   * 修改
-   */
-  @ApiOperation("修改")
-  @PreAuthorize("@permission.valid('stock:take:pre:modify')")
-  @PutMapping
-  public InvokeResult<Void> update(@Valid @RequestBody UpdatePreTakeStockSheetVo vo) {
+        vo.validate();
 
-    vo.validate();
+        preTakeStockSheetService.create(vo);
 
-    preTakeStockSheetService.update(vo);
+        return InvokeResultBuilder.success();
+    }
 
-    return InvokeResultBuilder.success();
-  }
+    /**
+     * 修改
+     */
+    @ApiOperation("修改")
+    @PreAuthorize("@permission.valid('stock:take:pre:modify')")
+    @PutMapping
+    public InvokeResult<Void> update(@Valid @RequestBody UpdatePreTakeStockSheetVo vo) {
 
-  /**
-   * 根据ID删除
-   */
-  @ApiOperation("根据ID删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @PreAuthorize("@permission.valid('stock:take:pre:delete')")
-  @DeleteMapping
-  public InvokeResult<Void> deleteById(@NotBlank(message = "ID不能为空！") String id) {
+        vo.validate();
 
-    preTakeStockSheetService.deleteById(id);
+        preTakeStockSheetService.update(vo);
 
-    return InvokeResultBuilder.success();
-  }
+        return InvokeResultBuilder.success();
+    }
 
-  /**
-   * 批量删除
-   */
-  @PreAuthorize("@permission.valid('stock:take:pre:delete')")
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> batchDelete(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择要执行操作的预先盘点单！") @RequestBody List<String> ids) {
+    /**
+     * 根据ID删除
+     */
+    @ApiOperation("根据ID删除")
+    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+    @PreAuthorize("@permission.valid('stock:take:pre:delete')")
+    @DeleteMapping
+    public InvokeResult<Void> deleteById(@NotBlank(message = "ID不能为空！") String id) {
 
-    preTakeStockSheetService.batchDelete(ids);
+        preTakeStockSheetService.deleteById(id);
 
-    return InvokeResultBuilder.success();
-  }
+        return InvokeResultBuilder.success();
+    }
+
+    /**
+     * 批量删除
+     */
+    @PreAuthorize("@permission.valid('stock:take:pre:delete')")
+    @DeleteMapping("/batch")
+    public InvokeResult<Void> batchDelete(
+            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择要执行操作的预先盘点单！") @RequestBody List<String> ids) {
+
+        preTakeStockSheetService.batchDelete(ids);
+
+        return InvokeResultBuilder.success();
+    }
 }

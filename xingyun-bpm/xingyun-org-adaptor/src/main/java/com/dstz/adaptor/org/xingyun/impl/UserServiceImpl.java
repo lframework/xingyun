@@ -24,11 +24,13 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public IUser getUserById(String userId) {
+
     return userDao.getUserById(userId);
   }
 
   @Override
   public IUser getUserByAccount(String account) {
+
     return userDao.getUserByAccount(account);
   }
 
@@ -78,6 +80,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public List<? extends IUserRole> getUserRole(String userId) {
+
     return userDao.getUserRole(userId);
   }
 }

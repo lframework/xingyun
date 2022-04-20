@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.stock.ProductLotDto;
 import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.entity.ProductLot;
 import com.lframework.xingyun.sc.vo.stock.lot.QueryProductLotVo;
@@ -27,14 +26,6 @@ public interface ProductLotMapper extends BaseMapper<ProductLot> {
   List<ProductLotWithStockDto> query(@Param("vo") QueryProductLotVo vo);
 
   /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ProductLotDto getById(String id);
-
-  /**
    * 查询末次采购入库的批次信息
    *
    * @param productId
@@ -43,5 +34,6 @@ public interface ProductLotMapper extends BaseMapper<ProductLot> {
    * @return
    */
   ProductLotWithStockDto getLastPurchaseLot(@Param("productId") String productId,
-      @Param("scId") String scId, @Param("supplierId") String supplierId);
+      @Param("scId") String scId,
+      @Param("supplierId") String supplierId);
 }

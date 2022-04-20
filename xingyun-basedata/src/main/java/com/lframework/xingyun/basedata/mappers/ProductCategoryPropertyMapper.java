@@ -1,7 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import java.util.List;
 
@@ -21,5 +20,5 @@ public interface ProductCategoryPropertyMapper extends BaseMapper<ProductCategor
    * @param propertyId
    * @return
    */
-  List<ProductCategoryPropertyDto> getByPropertyId(String propertyId);
+  List<ProductCategoryProperty> getByPropertyId(String propertyId);
 }

@@ -20,7 +20,7 @@ public interface IDicCityService extends BaseMpService<DicCity> {
    * @param id
    * @return
    */
-  DicCityDto getById(String id);
+  DicCityDto findById(String id);
 
   /**
    * 根据ID查询链路数据

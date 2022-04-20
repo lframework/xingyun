@@ -59,7 +59,9 @@ public class ResRoleController extends ControllerTools {
    */
   @RequestMapping("listJson")
   public @ResponseBody
-  PageResult listJson(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  PageResult listJson(HttpServletRequest request, HttpServletResponse response)
+      throws Exception {
+
     QueryFilter queryFilter = getQueryFilter(request);
     Page<ResRole> resRoleList = (Page<ResRole>) resRoleManager.query(queryFilter);
     return new PageResult(resRoleList);
@@ -77,6 +79,7 @@ public class ResRoleController extends ControllerTools {
   @RequestMapping("getJson")
   public @ResponseBody
   ResRole getJson(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
     String id = RequestUtil.getString(request, "id");
     if (StringUtil.isEmpty(id)) {
       return null;
@@ -97,6 +100,7 @@ public class ResRoleController extends ControllerTools {
   @CatchErr("对角色资源分配操作失败")
   public ResultMsg<String> save(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
+
     String roleId = RequestUtil.getString(request, "roleId");
     String systemId = RequestUtil.getString(request, "systemId");
     String resIds = RequestUtil.getString(request, "resIds");
@@ -116,6 +120,7 @@ public class ResRoleController extends ControllerTools {
   @RequestMapping("remove")
   public ResultMsg remove(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
+
     ResultMsg message = null;
     try {
       String[] aryIds = RequestUtil.getStringAryByStr(request, "id");
@@ -131,7 +136,9 @@ public class ResRoleController extends ControllerTools {
   @RequestMapping("getTreeData")
   @CatchErr
   public ResultMsg<List<SysResource>> getTreeData(HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
+      HttpServletResponse response)
+      throws Exception {
+
     String roleId = RequestUtil.getRQString(request, "roleId");
     String systemId = RequestUtil.getRQString(request, "systemId");
 
@@ -163,7 +170,9 @@ public class ResRoleController extends ControllerTools {
   @RequestMapping("getRoleResTreeData")
   @CatchErr
   public ResultMsg<List<SysResource>> getRoleResTreeData(HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
+      HttpServletResponse response)
+      throws Exception {
+
     String roleId = RequestUtil.getRQString(request, "roleId");
     String systemAlias = RequestUtil.getRQString(request, "systemAlias");
 

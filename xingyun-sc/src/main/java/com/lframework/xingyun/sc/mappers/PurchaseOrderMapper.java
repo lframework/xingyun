@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
@@ -27,15 +26,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseOrderDto> query(@Param("vo") QueryPurchaseOrderVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  PurchaseOrderDto getById(String id);
+  List<PurchaseOrder> query(@Param("vo") QueryPurchaseOrderVo vo);
 
   /**
    * 根据ID查询
@@ -59,7 +50,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseOrderDto> selector(@Param("vo") PurchaseOrderSelectorVo vo);
+  List<PurchaseOrder> selector(@Param("vo") PurchaseOrderSelectorVo vo);
 
   /**
    * 根据ID查询（收货业务）
@@ -76,6 +67,6 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseOrderDto> queryWithReceive(@Param("vo") QueryPurchaseOrderWithRecevieVo vo,
+  List<PurchaseOrder> queryWithReceive(@Param("vo") QueryPurchaseOrderWithRecevieVo vo,
       @Param("multipleRelate") boolean multipleRelate);
 }

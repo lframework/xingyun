@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.ProductLotMapper">
-    <resultMap id="ProductLotDto" type="com.lframework.xingyun.sc.dto.stock.ProductLotDto">
+    <resultMap id="ProductLot" type="com.lframework.xingyun.sc.entity.ProductLot">
         <id column="id" property="id"/>
         <result column="lot_code" property="lotCode"/>
         <result column="product_id" property="productId"/>
@@ -102,10 +102,6 @@
             </if>
         </where>
         ORDER BY l.create_time DESC, sc.code, supplier.code, product.code
-    </select>
-    <select id="getById" resultMap="ProductLotDto">
-        <include refid="ProductLotDto_sql"/>
-        WHERE l.id = #{id}
     </select>
     <select id="getLastPurchaseLot" resultMap="ProductLotWithStockDto">
         <include refid="ProductLotWithStockDto_sql"/>

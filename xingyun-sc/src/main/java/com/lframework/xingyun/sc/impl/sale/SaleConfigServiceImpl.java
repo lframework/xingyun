@@ -5,7 +5,6 @@ import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
-import com.lframework.xingyun.sc.dto.sale.config.SaleConfigDto;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.mappers.SaleConfigMapper;
 import com.lframework.xingyun.sc.service.sale.ISaleConfigService;
@@ -16,24 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleConfigServiceImpl extends
-    BaseMpServiceImpl<SaleConfigMapper, SaleConfig> implements ISaleConfigService {
+public class SaleConfigServiceImpl extends BaseMpServiceImpl<SaleConfigMapper, SaleConfig>
+    implements ISaleConfigService {
 
-  @Cacheable(value = SaleConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Cacheable(value = SaleConfig.CACHE_NAME, key = "'config'", unless = "#result == null")
   @Override
-  public SaleConfigDto get() {
+  public SaleConfig get() {
 
     SaleConfig config = getBaseMapper().selectOne(Wrappers.query());
 
-    SaleConfigDto result = new SaleConfigDto();
-
-    result.setId(config.getId());
-    result.setOutStockRequireSale(config.getOutStockRequireSale());
-    result.setOutStockMultipleRelateSale(config.getOutStockMultipleRelateSale());
-    result.setSaleReturnRequireOutStock(config.getSaleReturnRequireOutStock());
-    result.setSaleReturnMultipleRelateOutStock(config.getSaleReturnMultipleRelateOutStock());
-
-    return result;
+    return config;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改销售参数设置")
@@ -55,7 +46,7 @@ public class SaleConfigServiceImpl extends
     thisService.cleanCacheByKey(config.getId());
   }
 
-  @CacheEvict(value = SaleConfigDto.CACHE_NAME, key = "'config'")
+  @CacheEvict(value = SaleConfig.CACHE_NAME, key = "'config'")
   @Override
   public void cleanCacheByKey(String key) {
 

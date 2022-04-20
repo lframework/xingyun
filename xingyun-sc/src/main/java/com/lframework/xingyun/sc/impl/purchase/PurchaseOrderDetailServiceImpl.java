@@ -6,7 +6,6 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDetailDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.mappers.PurchaseOrderDetailMapper;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderDetailService;
@@ -17,20 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PurchaseOrderDetailServiceImpl extends
-    BaseMpServiceImpl<PurchaseOrderDetailMapper, PurchaseOrderDetail> implements
-    IPurchaseOrderDetailService {
+    BaseMpServiceImpl<PurchaseOrderDetailMapper, PurchaseOrderDetail>
+    implements IPurchaseOrderDetailService {
 
   @Autowired
   private IProductService productService;
 
   @Override
-  public PurchaseOrderDetailDto getById(String id) {
-
-    return getBaseMapper().getById(id);
-  }
-
-  @Override
-  public List<PurchaseOrderDetailDto> getByOrderId(String orderId) {
+  public List<PurchaseOrderDetail> getByOrderId(String orderId) {
 
     return getBaseMapper().getByOrderId(orderId);
   }
@@ -47,7 +40,7 @@ public class PurchaseOrderDetailServiceImpl extends
     Integer remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getReceiveNum())
         .intValue();
     if (NumberUtil.lt(remainNum, num)) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余收货数量为" + remainNum
@@ -56,7 +49,7 @@ public class PurchaseOrderDetailServiceImpl extends
     }
 
     if (getBaseMapper().addReceiveNum(orderDetail.getId(), num) != 1) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余收货数量不足，不允许继续收货！");
@@ -73,7 +66,7 @@ public class PurchaseOrderDetailServiceImpl extends
     PurchaseOrderDetail orderDetail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(orderDetail.getReceiveNum(), num)) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已收货数量为" + orderDetail.getReceiveNum()
@@ -81,7 +74,7 @@ public class PurchaseOrderDetailServiceImpl extends
     }
 
     if (getBaseMapper().subReceiveNum(orderDetail.getId(), num) != 1) {
-      ProductDto product = productService.getById(orderDetail.getProductId());
+      ProductDto product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已收货数量不足，不允许取消收货！");

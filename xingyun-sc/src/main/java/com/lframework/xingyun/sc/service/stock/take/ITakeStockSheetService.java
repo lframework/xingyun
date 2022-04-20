@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.stock.take;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApprovePassTakeStockSheetVo;
@@ -26,8 +25,7 @@ public interface ITakeStockSheetService extends BaseMpService<TakeStockSheet> {
    *
    * @return
    */
-  PageResult<TakeStockSheetDto> query(Integer pageIndex, Integer pageSize,
-      QueryTakeStockSheetVo vo);
+  PageResult<TakeStockSheet> query(Integer pageIndex, Integer pageSize, QueryTakeStockSheetVo vo);
 
   /**
    * 查询列表
@@ -35,15 +33,7 @@ public interface ITakeStockSheetService extends BaseMpService<TakeStockSheet> {
    * @param vo
    * @return
    */
-  List<TakeStockSheetDto> query(QueryTakeStockSheetVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  TakeStockSheetDto getById(String id);
+  List<TakeStockSheet> query(QueryTakeStockSheetVo vo);
 
   /**
    * 根据ID查询详情

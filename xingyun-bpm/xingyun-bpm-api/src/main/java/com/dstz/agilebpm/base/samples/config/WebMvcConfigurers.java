@@ -23,6 +23,7 @@ public class WebMvcConfigurers {
   //自定义字符串转换器
   @Bean
   public StringHttpMessageConverter stringHttpMessageConverter() {
+
     StringHttpMessageConverter converter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
     return converter;
   }

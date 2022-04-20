@@ -3,7 +3,6 @@ package com.lframework.xingyun.sc.service.purchase;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
@@ -30,7 +29,7 @@ public interface IReceiveSheetService extends BaseMpService<ReceiveSheet> {
    * @param vo
    * @return
    */
-  PageResult<ReceiveSheetDto> query(Integer pageIndex, Integer pageSize, QueryReceiveSheetVo vo);
+  PageResult<ReceiveSheet> query(Integer pageIndex, Integer pageSize, QueryReceiveSheetVo vo);
 
   /**
    * 查询列表
@@ -38,7 +37,7 @@ public interface IReceiveSheetService extends BaseMpService<ReceiveSheet> {
    * @param vo
    * @return
    */
-  List<ReceiveSheetDto> query(QueryReceiveSheetVo vo);
+  List<ReceiveSheet> query(QueryReceiveSheetVo vo);
 
   /**
    * 选择器
@@ -48,16 +47,7 @@ public interface IReceiveSheetService extends BaseMpService<ReceiveSheet> {
    * @param vo
    * @return
    */
-  PageResult<ReceiveSheetDto> selector(Integer pageIndex, Integer pageSize,
-      ReceiveSheetSelectorVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ReceiveSheetDto getById(String id);
+  PageResult<ReceiveSheet> selector(Integer pageIndex, Integer pageSize, ReceiveSheetSelectorVo vo);
 
   /**
    * 根据供应商ID查询默认付款日期
@@ -90,7 +80,7 @@ public interface IReceiveSheetService extends BaseMpService<ReceiveSheet> {
    * @param vo
    * @return
    */
-  PageResult<ReceiveSheetDto> queryWithReturn(Integer pageIndex, Integer pageSize,
+  PageResult<ReceiveSheet> queryWithReturn(Integer pageIndex, Integer pageSize,
       QueryReceiveSheetWithReturnVo vo);
 
   /**
@@ -189,7 +179,7 @@ public interface IReceiveSheetService extends BaseMpService<ReceiveSheet> {
    * @param endTime
    * @return
    */
-  List<ReceiveSheetDto> getApprovedList(String supplierId, LocalDateTime startTime,
+  List<ReceiveSheet> getApprovedList(String supplierId, LocalDateTime startTime,
       LocalDateTime endTime,
       SettleStatus settleStatus);
 }

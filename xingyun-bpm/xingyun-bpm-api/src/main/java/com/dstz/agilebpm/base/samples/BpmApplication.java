@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class BpmApplication {
 
   public static void main(String[] args) {
+
     SpringApplication.run(BpmApplication.class, args);
   }
 }

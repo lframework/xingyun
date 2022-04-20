@@ -35,6 +35,7 @@ public class ResRole implements IDModel {
    * 角色别名。
    */
   protected String roleAlias;
+
   /**
    * 资源url连接。
    */
@@ -46,11 +47,8 @@ public class ResRole implements IDModel {
   protected String resAlias;
 
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public ResRole(String systemId, String resId, String roleId) {
+
     super();
     this.systemId = systemId;
     this.resId = resId;
@@ -58,6 +56,7 @@ public class ResRole implements IDModel {
   }
 
   public ResRole() {
+
   }
 
   /**
@@ -66,11 +65,13 @@ public class ResRole implements IDModel {
    * @return
    */
   public String getId() {
+
     return this.id;
   }
 
-  public void setSystemId(String systemId) {
-    this.systemId = systemId;
+  public void setId(String id) {
+
+    this.id = id;
   }
 
   /**
@@ -79,11 +80,13 @@ public class ResRole implements IDModel {
    * @return
    */
   public String getSystemId() {
+
     return this.systemId;
   }
 
-  public void setResId(String resId) {
-    this.resId = resId;
+  public void setSystemId(String systemId) {
+
+    this.systemId = systemId;
   }
 
   /**
@@ -92,11 +95,13 @@ public class ResRole implements IDModel {
    * @return
    */
   public String getResId() {
+
     return this.resId;
   }
 
-  public void setRoleId(String roleId) {
-    this.roleId = roleId;
+  public void setResId(String resId) {
+
+    this.resId = resId;
   }
 
   /**
@@ -105,30 +110,42 @@ public class ResRole implements IDModel {
    * @return
    */
   public String getRoleId() {
+
     return this.roleId;
   }
 
+  public void setRoleId(String roleId) {
+
+    this.roleId = roleId;
+  }
+
   public String getRoleAlias() {
+
     return roleAlias;
   }
 
   public void setRoleAlias(String roleAlias) {
+
     this.roleAlias = roleAlias;
   }
 
   public String getUrl() {
+
     return url;
   }
 
   public void setUrl(String url) {
+
     this.url = url;
   }
 
   public String getResAlias() {
+
     return resAlias;
   }
 
   public void setResAlias(String resAlias) {
+
     this.resAlias = resAlias;
   }
 
@@ -136,11 +153,8 @@ public class ResRole implements IDModel {
    * @see Object#toString()
    */
   public String toString() {
-    return new ToStringBuilder(this)
-        .append("id", this.id)
-        .append("systemId", this.systemId)
-        .append("resId", this.resId)
-        .append("roleId", this.roleId)
-        .toString();
+
+    return new ToStringBuilder(this).append("id", this.id).append("systemId", this.systemId)
+        .append("resId", this.resId).append("roleId", this.roleId).toString();
   }
 }

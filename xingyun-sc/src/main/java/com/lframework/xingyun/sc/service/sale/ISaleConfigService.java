@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.sale.config.SaleConfigDto;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.vo.sale.config.UpdateSaleConfigVo;
 
@@ -12,7 +11,7 @@ public interface ISaleConfigService extends BaseMpService<SaleConfig> {
    *
    * @return
    */
-  SaleConfigDto get();
+  SaleConfig get();
 
   /**
    * 修改

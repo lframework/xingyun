@@ -6,8 +6,8 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailLotDto;
+import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetailLot;
 import com.lframework.xingyun.sc.mappers.SaleOutSheetDetailLotMapper;
 import com.lframework.xingyun.sc.service.sale.ISaleOutSheetDetailLotService;
@@ -17,9 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleOutSheetDetailLotServiceImpl extends
-    BaseMpServiceImpl<SaleOutSheetDetailLotMapper, SaleOutSheetDetailLot> implements
-    ISaleOutSheetDetailLotService {
+public class SaleOutSheetDetailLotServiceImpl
+    extends BaseMpServiceImpl<SaleOutSheetDetailLotMapper, SaleOutSheetDetailLot>
+    implements ISaleOutSheetDetailLotService {
 
   @Autowired
   private IProductService productService;
@@ -28,9 +28,9 @@ public class SaleOutSheetDetailLotServiceImpl extends
   private ISaleOutSheetDetailService saleOutSheetDetailService;
 
   @Override
-  public SaleOutSheetDetailLotDto getById(String id) {
+  public SaleOutSheetDetailLotDto findById(String id) {
 
-    return getBaseMapper().getById(id);
+    return getBaseMapper().findById(id);
   }
 
   @Transactional
@@ -44,9 +44,9 @@ public class SaleOutSheetDetailLotServiceImpl extends
 
     Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
     if (NumberUtil.lt(remainNum, num)) {
-      SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
+      SaleOutSheetDetail sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
-      ProductDto product = productService.getById(sheetDetail.getProductId());
+      ProductDto product = productService.findById(sheetDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余退货数量为" + remainNum
@@ -55,9 +55,9 @@ public class SaleOutSheetDetailLotServiceImpl extends
     }
 
     if (getBaseMapper().addReturnNum(detail.getId(), num) != 1) {
-      SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
+      SaleOutSheetDetail sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
-      ProductDto product = productService.getById(sheetDetail.getProductId());
+      ProductDto product = productService.findById(sheetDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余退货数量不足，不允许继续退货！");
@@ -76,9 +76,9 @@ public class SaleOutSheetDetailLotServiceImpl extends
     SaleOutSheetDetailLot detail = getBaseMapper().selectById(id);
 
     if (NumberUtil.lt(detail.getReturnNum(), num)) {
-      SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
+      SaleOutSheetDetail sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
-      ProductDto product = productService.getById(sheetDetail.getProductId());
+      ProductDto product = productService.findById(sheetDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已退货数量为" + detail.getReturnNum()
@@ -86,9 +86,9 @@ public class SaleOutSheetDetailLotServiceImpl extends
     }
 
     if (getBaseMapper().subReturnNum(detail.getId(), num) != 1) {
-      SaleOutSheetDetailDto sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
+      SaleOutSheetDetail sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
-      ProductDto product = productService.getById(sheetDetail.getProductId());
+      ProductDto product = productService.findById(sheetDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已退货数量不足，不允许取消退货！");

@@ -1,19 +1,10 @@
 package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetDetailDto;
 import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import java.util.List;
 
 public interface IReceiveSheetDetailService extends BaseMpService<ReceiveSheetDetail> {
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  ReceiveSheetDetailDto getById(String id);
 
   /**
    * 根据收货单ID查询
@@ -21,7 +12,7 @@ public interface IReceiveSheetDetailService extends BaseMpService<ReceiveSheetDe
    * @param sheetId
    * @return
    */
-  List<ReceiveSheetDetailDto> getBySheetId(String sheetId);
+  List<ReceiveSheetDetail> getBySheetId(String sheetId);
 
   /**
    * 增加退货数量

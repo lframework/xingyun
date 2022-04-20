@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.PurchaseOrderMapper">
 
-    <resultMap id="PurchaseOrderDto" type="com.lframework.xingyun.sc.dto.purchase.PurchaseOrderDto">
+    <resultMap id="PurchaseOrder" type="com.lframework.xingyun.sc.entity.PurchaseOrder">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="sc_id" property="scId"/>
@@ -127,7 +127,7 @@
         LEFT JOIN tbl_purchase_order_detail AS d ON d.order_id = o.id
     </sql>
 
-    <select id="query" resultMap="PurchaseOrderDto">
+    <select id="query" resultMap="PurchaseOrder">
         <include refid="PurchaseOrderDto_sql"/>
         <where>
             <if test="vo != null">
@@ -222,11 +222,7 @@
         </where>
         ORDER BY o.create_time DESC, d.order_no
     </select>
-    <select id="getById" resultMap="PurchaseOrderDto">
-        <include refid="PurchaseOrderDto_sql"/>
-        WHERE o.id = #{id}
-    </select>
-    <select id="selector" resultMap="PurchaseOrderDto">
+    <select id="selector" resultMap="PurchaseOrder">
         <include refid="PurchaseOrderDto_sql"/>
         <where>
             <if test="vo != null">
@@ -269,7 +265,7 @@
         <if test="requirePurchase">AND d.order_num > d.receive_num</if>
         WHERE o.id = #{id}
     </select>
-    <select id="queryWithReceive" resultMap="PurchaseOrderDto">
+    <select id="queryWithReceive" resultMap="PurchaseOrder">
         <include refid="PurchaseOrderDto_sql"/>
         <if test="!multipleRelate">LEFT JOIN tbl_receive_sheet AS s ON s.purchase_order_id = o.id</if>
         <where>

@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.stock.take;
 
 import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanDetailDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public interface ITakeStockPlanDetailService extends BaseMpService<TakeStockPlan
    * @param planId
    * @return
    */
-  List<TakeStockPlanDetailDto> getDetailsByPlanId(String planId);
+  List<TakeStockPlanDetail> getDetailsByPlanId(String planId);
 
   /**
    * 更新盘点数量

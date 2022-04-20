@@ -40,6 +40,7 @@ public class CreateStockCostAdjustSheetVo implements BaseVo, Serializable {
 
   @Override
   public void validate() {
+
     int orderNo = 1;
     for (StockCostAdjustProductVo product : this.products) {
       if (NumberUtil.lt(product.getPrice(), BigDecimal.ZERO)) {

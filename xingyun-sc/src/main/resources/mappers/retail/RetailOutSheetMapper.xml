@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.RetailOutSheetMapper">
 
-    <resultMap id="RetailOutSheetDto" type="com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDto">
+    <resultMap id="RetailOutSheet" type="com.lframework.xingyun.sc.entity.RetailOutSheet">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="sc_id" property="scId"/>
@@ -134,7 +134,7 @@
         LEFT JOIN tbl_retail_out_sheet_detail AS d ON d.sheet_id = s.id
     </sql>
 
-    <select id="query" resultMap="RetailOutSheetDto">
+    <select id="query" resultMap="RetailOutSheet">
         <include refid="RetailOutSheetDto_sql"/>
         <where>
             <if test="vo != null">
@@ -182,7 +182,7 @@
         </where>
         ORDER BY s.create_time DESC
     </select>
-    <select id="selector" resultMap="RetailOutSheetDto">
+    <select id="selector" resultMap="RetailOutSheet">
         <include refid="RetailOutSheetDto_sql"/>
         <where>
             <if test="vo != null">
@@ -212,10 +212,6 @@
             </if>
         </where>
         ORDER BY s.create_time DESC
-    </select>
-    <select id="getById" resultMap="RetailOutSheetDto">
-        <include refid="RetailOutSheetDto_sql"/>
-        WHERE s.id = #{id}
     </select>
     <select id="getDetail" resultMap="RetailOutSheetFullDto">
         <include refid="RetailOutSheetFullDto_sql"/>
@@ -273,7 +269,7 @@
         AND s.status = 3
         order by d.order_no, d.lot_order_no
     </select>
-    <select id="queryWithReturn" resultMap="RetailOutSheetDto">
+    <select id="queryWithReturn" resultMap="RetailOutSheet">
         <include refid="RetailOutSheetDto_sql"/>
         <if test="!multipleRelate">LEFT JOIN tbl_retail_return AS p ON p.out_sheet_id = s.id</if>
         <where>

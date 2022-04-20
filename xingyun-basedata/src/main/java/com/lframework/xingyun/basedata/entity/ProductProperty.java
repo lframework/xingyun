@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.basedata.enums.ColumnDataType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
 import com.lframework.xingyun.basedata.enums.PropertyType;
@@ -22,10 +23,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("base_data_product_property")
-public class ProductProperty extends BaseEntity {
+public class ProductProperty extends BaseEntity implements BaseDto {
 
+  public static final String CACHE_NAME = "ProductProperty";
   private static final long serialVersionUID = 1L;
-
   /**
    * ID
    */

@@ -6,44 +6,20 @@ import com.dstz.org.api.constant.GroupTypeConstant;
  * 组织级别
  */
 public enum RelationTypeConstant {
-  GROUP_USER("groupUser", "用户与组"),
-  POST("groupRole", "岗位"),
-  USER_ROLE("userRole", "用户与角色"),
-  POST_USER("groupUserRole", "岗位用户");
+  GROUP_USER("groupUser", "用户与组"), POST("groupRole", "岗位"), USER_ROLE("userRole",
+      "用户与角色"), POST_USER("groupUserRole",
+      "岗位用户");
 
   private String key;
+
   private String label;
 
 
   RelationTypeConstant(String key, String label) {
+
     this.setKey(key);
     this.label = label;
   }
-
-
-  public String label() {
-    return label;
-  }
-
-  public String getLabel() {
-    return label;
-  }
-
-
-  public void setLabel(String label) {
-    this.label = label;
-  }
-
-
-  public String getKey() {
-    return key;
-  }
-
-
-  public void setKey(String key) {
-    this.key = key;
-  }
-
 
   /**
    * 通过组类型转换成与用户的关系类型
@@ -52,6 +28,7 @@ public enum RelationTypeConstant {
    * @return
    */
   public static RelationTypeConstant getUserRelationTypeByGroupType(String groupType) {
+
     GroupTypeConstant type = GroupTypeConstant.fromStr(groupType);
 
     switch (type) {
@@ -67,6 +44,31 @@ public enum RelationTypeConstant {
     }
 
     return null;
+  }
+
+  public String label() {
+
+    return label;
+  }
+
+  public String getLabel() {
+
+    return label;
+  }
+
+  public void setLabel(String label) {
+
+    this.label = label;
+  }
+
+  public String getKey() {
+
+    return key;
+  }
+
+  public void setKey(String key) {
+
+    this.key = key;
   }
 
 }

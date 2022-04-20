@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.ProductLotStockMapper">
-    <resultMap id="ProductLotStockDto" type="com.lframework.xingyun.sc.dto.stock.ProductLotStockDto">
+    <resultMap id="ProductLotStock" type="com.lframework.xingyun.sc.entity.ProductLotStock">
         <id column="id" property="id"/>
         <result column="sc_id" property="scId"/>
         <result column="lot_id" property="lotId"/>
@@ -23,7 +23,7 @@
         AND stock_num >= #{num}
     </update>
 
-    <select id="getFifoList" resultMap="ProductLotStockDto">
+    <select id="getFifoList" resultMap="ProductLotStock">
         <include refid="ProductLotStockDto_sql"/>
         WHERE s.sc_id = #{scId}
         AND l.product_id = #{productId}
@@ -33,16 +33,12 @@
         AND s.stock_num > 0
         ORDER BY l.create_time
     </select>
-    <select id="getById" resultMap="ProductLotStockDto">
-        <include refid="ProductLotStockDto_sql"/>
-        WHERE s.id = #{id}
-    </select>
-    <select id="getByScIdAndLotId" resultMap="ProductLotStockDto">
+    <select id="getByScIdAndLotId" resultMap="ProductLotStock">
         <include refid="ProductLotStockDto_sql"/>
         WHERE s.sc_id = #{scId}
         AND s.lot_id = #{lotId}
     </select>
-    <select id="getAllHasStockLots" resultMap="ProductLotStockDto">
+    <select id="getAllHasStockLots" resultMap="ProductLotStock">
         <include refid="ProductLotStockDto_sql"/>
         WHERE s.sc_id = #{scId}
         AND l.product_id = #{productId}

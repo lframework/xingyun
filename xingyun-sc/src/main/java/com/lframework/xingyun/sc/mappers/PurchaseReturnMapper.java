@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
 import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.enums.SettleStatus;
@@ -26,15 +25,7 @@ public interface PurchaseReturnMapper extends BaseMapper<PurchaseReturn> {
    * @param vo
    * @return
    */
-  List<PurchaseReturnDto> query(@Param("vo") QueryPurchaseReturnVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  PurchaseReturnDto getById(String id);
+  List<PurchaseReturn> query(@Param("vo") QueryPurchaseReturnVo vo);
 
   /**
    * 根据ID查询
@@ -60,7 +51,7 @@ public interface PurchaseReturnMapper extends BaseMapper<PurchaseReturn> {
    * @param endTime
    * @return
    */
-  List<PurchaseReturnDto> getApprovedList(@Param("supplierId") String supplierId,
+  List<PurchaseReturn> getApprovedList(@Param("supplierId") String supplierId,
       @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime,
       @Param("settleStatus") SettleStatus settleStatus);
 }

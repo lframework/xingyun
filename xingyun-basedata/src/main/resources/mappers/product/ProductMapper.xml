@@ -371,7 +371,7 @@
         ORDER BY p.code, g.code
     </select>
 
-    <select id="getById" resultMap="ProductDto">
+    <select id="findById" resultMap="ProductDto">
         <include refid="ProductDto_sql"/>
         WHERE g.id = #{id}
     </select>

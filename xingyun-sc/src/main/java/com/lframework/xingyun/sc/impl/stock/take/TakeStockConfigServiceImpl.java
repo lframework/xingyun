@@ -8,7 +8,6 @@ import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
-import com.lframework.xingyun.sc.dto.stock.take.config.TakeStockConfigDto;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.mappers.TakeStockConfigMapper;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
@@ -20,13 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TakeStockConfigServiceImpl extends
-    BaseMpServiceImpl<TakeStockConfigMapper, TakeStockConfig> implements ITakeStockConfigService {
+    BaseMpServiceImpl<TakeStockConfigMapper, TakeStockConfig>
+    implements ITakeStockConfigService {
 
-  @Cacheable(value = TakeStockConfigDto.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Cacheable(value = TakeStockConfig.CACHE_NAME, key = "'config'", unless = "#result == null")
   @Override
-  public TakeStockConfigDto get() {
+  public TakeStockConfig get() {
 
-    return getBaseMapper().get();
+    return getBaseMapper().selectOne(Wrappers.query());
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改盘点参数，ID：{}", params = {"#id"})
@@ -39,8 +39,8 @@ public class TakeStockConfigServiceImpl extends
       throw new DefaultClientException("盘点参数不存在！");
     }
 
-    LambdaUpdateWrapper<TakeStockConfig> updateWrapper = Wrappers
-        .lambdaUpdate(TakeStockConfig.class)
+    LambdaUpdateWrapper<TakeStockConfig> updateWrapper = Wrappers.lambdaUpdate(
+            TakeStockConfig.class)
         .set(TakeStockConfig::getShowProduct, vo.getShowProduct())
         .set(TakeStockConfig::getShowStock, vo.getShowStock())
         .set(TakeStockConfig::getAutoChangeStock, vo.getAutoChangeStock())
@@ -58,7 +58,7 @@ public class TakeStockConfigServiceImpl extends
 
   }
 
-  @CacheEvict(value = TakeStockConfigDto.CACHE_NAME, key = "'config'")
+  @CacheEvict(value = TakeStockConfig.CACHE_NAME, key = "'config'")
   @Override
   public void cleanCacheByKey(String key) {
 

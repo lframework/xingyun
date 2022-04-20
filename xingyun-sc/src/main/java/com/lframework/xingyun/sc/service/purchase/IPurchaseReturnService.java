@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
 import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.enums.SettleStatus;
@@ -26,8 +25,7 @@ public interface IPurchaseReturnService extends BaseMpService<PurchaseReturn> {
    * @param vo
    * @return
    */
-  PageResult<PurchaseReturnDto> query(Integer pageIndex, Integer pageSize,
-      QueryPurchaseReturnVo vo);
+  PageResult<PurchaseReturn> query(Integer pageIndex, Integer pageSize, QueryPurchaseReturnVo vo);
 
   /**
    * 查询列表
@@ -35,15 +33,7 @@ public interface IPurchaseReturnService extends BaseMpService<PurchaseReturn> {
    * @param vo
    * @return
    */
-  List<PurchaseReturnDto> query(QueryPurchaseReturnVo vo);
-
-  /**
-   * 根据ID查询
-   *
-   * @param id
-   * @return
-   */
-  PurchaseReturnDto getById(String id);
+  List<PurchaseReturn> query(QueryPurchaseReturnVo vo);
 
   /**
    * 根据ID查询
@@ -149,7 +139,7 @@ public interface IPurchaseReturnService extends BaseMpService<PurchaseReturn> {
    * @param endTime
    * @return
    */
-  List<PurchaseReturnDto> getApprovedList(String supplierId, LocalDateTime startTime,
+  List<PurchaseReturn> getApprovedList(String supplierId, LocalDateTime startTime,
       LocalDateTime endTime,
       SettleStatus settleStatus);
 }

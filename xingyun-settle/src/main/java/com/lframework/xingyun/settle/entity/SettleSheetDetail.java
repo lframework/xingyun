@@ -2,9 +2,11 @@ package com.lframework.xingyun.settle.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
-import java.math.BigDecimal;
+import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -17,44 +19,44 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("settle_sheet_detail")
-public class SettleSheetDetail extends BaseEntity {
+public class SettleSheetDetail extends BaseEntity implements BaseDto {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * ID
-   */
-  private String id;
+    /**
+     * ID
+     */
+    private String id;
 
-  /**
-   * 结算单ID
-   */
-  private String sheetId;
+    /**
+     * 结算单ID
+     */
+    private String sheetId;
 
-  /**
-   * 单据ID
-   */
-  private String bizId;
+    /**
+     * 单据ID
+     */
+    private String bizId;
 
-  /**
-   * 实付金额
-   */
-  private BigDecimal payAmount;
+    /**
+     * 实付金额
+     */
+    private BigDecimal payAmount;
 
-  /**
-   * 优惠金额
-   */
-  private BigDecimal discountAmount;
+    /**
+     * 优惠金额
+     */
+    private BigDecimal discountAmount;
 
-  /**
-   * 备注
-   */
-  private String description;
+    /**
+     * 备注
+     */
+    private String description;
 
-  /**
-   * 排序编号
-   */
-  private Integer orderNo;
+    /**
+     * 排序编号
+     */
+    private Integer orderNo;
 
 
 }

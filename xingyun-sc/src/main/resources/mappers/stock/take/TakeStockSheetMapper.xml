@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.sc.mappers.TakeStockSheetMapper">
 
-    <resultMap id="TakeStockSheetDto" type="com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetDto">
+    <resultMap id="TakeStockSheet" type="com.lframework.xingyun.sc.entity.TakeStockSheet">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="plan_id" property="planId"/>
@@ -84,7 +84,7 @@
         LEFT JOIN tbl_take_stock_sheet_detail AS d ON d.sheet_id = tb.id
     </sql>
 
-    <select id="query" resultMap="TakeStockSheetDto">
+    <select id="query" resultMap="TakeStockSheet">
         <include refid="TakeStockSheetDto_sql"/>
         <where>
             <if test="vo.code != null and vo.code != ''">
@@ -131,12 +131,6 @@
         ORDER BY tb.update_time DESC
     </select>
 
-    <select id="getById" resultMap="TakeStockSheetDto">
-        <include refid="TakeStockSheetDto_sql"/>
-        <where>
-            AND tb.id = #{id}
-        </where>
-    </select>
     <select id="getDetail" resultMap="TakeStockSheetFullDto">
         <include refid="TakeStockSheetFullDto_sql"/>
         WHERE tb.id = #{id}

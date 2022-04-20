@@ -34,7 +34,7 @@
     <ab.platform.version>1.3.7</ab.platform.version>
     <ab.busform.version>1.3.7</ab.busform.version>
     <ab.staters.version>1.2.3</ab.staters.version>
-    <jugg.version>2.1.2</jugg.version>
+    <jugg.version>2.1.3</jugg.version>
   </properties>
 
   <repositories>

@@ -111,7 +111,7 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
-  public IGroup findById(String groupType, String groupId) {
+  public IGroup getById(String groupType, String groupId) {
 
     if (GroupTypeConstant.ORG.key().equals(groupType)) {
       DeptDTO dept = groupDao.getDeptById(groupId);

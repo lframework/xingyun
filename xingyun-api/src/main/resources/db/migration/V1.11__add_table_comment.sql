@@ -94,6 +94,3 @@ CREATE TABLE `sys_user_telephone`
     PRIMARY KEY (`id`),
     UNIQUE KEY `telephone` (`telephone`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户绑定手机号表';
-
-SET
-FOREIGN_KEY_CHECKS = 1;

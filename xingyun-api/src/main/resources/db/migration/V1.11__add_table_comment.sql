@@ -85,4 +85,15 @@ ALTER TABLE `tbl_take_stock_sheet_detail` COMMENT = '库存盘点单明细';
 ALTER TABLE `tbl_stock_cost_adjust_sheet` COMMENT = '库存成本调整单';
 ALTER TABLE `tbl_stock_cost_adjust_sheet_detail` COMMENT = '库存成本调整单明细';
 ALTER TABLE `sys_config` COMMENT = '系统设置';
-ALTER TABLE `sys_user_telephone` COMMENT = '用户绑定手机号表';
+DROP TABLE IF EXISTS `sys_user_telephone`;
+CREATE TABLE `sys_user_telephone`
+(
+    `id`        varchar(32) NOT NULL COMMENT 'ID',
+    `telephone` varchar(11) NOT NULL COMMENT '手机号',
+    `user_id`   varchar(32) DEFAULT NULL COMMENT '用户ID',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `telephone` (`telephone`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户绑定手机号表';
+
+SET
+FOREIGN_KEY_CHECKS = 1;

@@ -24,7 +24,6 @@ import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
-import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.enums.ColumnDataType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
@@ -278,7 +277,7 @@ public class ProductPropertyServiceImpl extends
               + PropertyType.NONE.getDesc() + "”");
     }
 
-    List<ProductCategoryProperty> oldProductCategoryPropertyList = new ArrayList<>();
+    // List<ProductCategoryProperty> oldProductCategoryPropertyList = new ArrayList<>();
 
     if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
       //如果是指定类目
@@ -298,7 +297,7 @@ public class ProductPropertyServiceImpl extends
 
     if (data.getPropertyType() == PropertyType.APPOINT) {
       //删除关系
-      oldProductCategoryPropertyList = productCategoryPropertyService.getByPropertyId(data.getId());
+      // oldProductCategoryPropertyList = productCategoryPropertyService.getByPropertyId(data.getId());
       productCategoryPropertyService.deleteByPropertyId(data.getId());
     }
 
@@ -325,7 +324,7 @@ public class ProductPropertyServiceImpl extends
 
     getBaseMapper().update(updateWrapper);
 
-    if (vo.getPropertyType() != PropertyType.NONE.getCode().intValue()) {
+    /*if (vo.getPropertyType() != PropertyType.NONE.getCode().intValue()) {
       if (data.getColumnType() == ColumnType.MULTIPLE
           && vo.getColumnType() == ColumnType.SINGLE.getCode()
           .intValue()) {
@@ -354,7 +353,7 @@ public class ProductPropertyServiceImpl extends
           productPolyPropertyService.updateAppointCategoryId(data.getId());
         }
       }
-    }
+    }*/
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());

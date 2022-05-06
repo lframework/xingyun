@@ -7,7 +7,9 @@
         <result column="poly_id" property="polyId"/>
         <result column="property_id" property="propertyId"/>
         <result column="property_item_id" property="propertyItemId"/>
+        <result column="property_column_type" property="propertyColumnType"/>
         <result column="property_name" property="propertyName"/>
+        <result column="property_text" property="propertyText"/>
     </resultMap>
 
     <sql id="ProductPolyPropertyDto_sql">
@@ -16,7 +18,9 @@
             pp.poly_id,
             p.id AS property_id,
             t.id AS property_item_id,
-            IF(p.column_type = 3, pp.property_text, t.name) AS property_name
+            p.column_type AS property_column_type,
+            p.name AS property_name,
+            IF(p.column_type = 3, pp.property_text, t.name) AS property_text
         FROM base_data_product_poly_property AS pp
         INNER JOIN base_data_product_property AS p ON p.id = pp.property_id
         LEFT JOIN base_data_product_property_item AS t ON t.id = pp.property_item_id

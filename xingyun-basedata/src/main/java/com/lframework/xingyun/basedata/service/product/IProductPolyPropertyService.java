@@ -51,4 +51,10 @@ public interface IProductPolyPropertyService extends BaseMpService<ProductPolyPr
    * @return
    */
   String create(CreateProductPolyPropertyVo vo);
+
+  /**
+   * 根据SPU Id删除
+   * @param polyId
+   */
+  void deleteByPolyId(String polyId);
 }

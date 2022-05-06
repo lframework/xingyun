@@ -2,12 +2,15 @@ package com.lframework.xingyun.api.controller.basedata.product;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
+import com.lframework.starter.mybatis.service.system.IRecursionMappingService;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.api.bo.basedata.product.category.GetProductCategoryBo;
 import com.lframework.xingyun.api.bo.basedata.product.category.ProductCategoryTreeBo;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.service.product.IProductCategoryService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
@@ -15,17 +18,22 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 类目管理
@@ -40,6 +48,9 @@ public class ProductCategoryController extends DefaultBaseController {
 
     @Autowired
     private IProductCategoryService productCategoryService;
+
+    @Autowired
+    private IRecursionMappingService recursionMappingService;
 
     /**
      * 类目列表
@@ -102,6 +113,11 @@ public class ProductCategoryController extends DefaultBaseController {
             @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的类目！") @RequestBody List<String> ids) {
 
         productCategoryService.batchEnable(ids);
+
+        for (String id : ids) {
+            productCategoryService.cleanCacheByKey(id);
+        }
+
         return InvokeResultBuilder.success();
     }
 
@@ -127,6 +143,33 @@ public class ProductCategoryController extends DefaultBaseController {
     public InvokeResult<Void> update(@Valid UpdateProductCategoryVo vo) {
 
         productCategoryService.update(vo);
+
+        productCategoryService.cleanCacheByKey(vo.getId());
+
+        ProductCategory data = productCategoryService.findById(vo.getId());
+        if (!vo.getAvailable()) {
+            if (data.getAvailable()) {
+                //如果是停用 子节点全部停用
+                List<String> childrenIds = recursionMappingService.getNodeChildIds(data.getId(),
+                    ApplicationUtil.getBean(ProductCategoryNodeType.class));
+                if (!CollectionUtil.isEmpty(childrenIds)) {
+                    for (String childrenId : childrenIds) {
+                        productCategoryService.cleanCacheByKey(childrenId);
+                    }
+                }
+            }
+        } else {
+            if (!data.getAvailable()) {
+                //如果是启用 父节点全部启用
+                List<String> parentIds = recursionMappingService.getNodeParentIds(data.getId(),
+                    ApplicationUtil.getBean(ProductCategoryNodeType.class));
+                if (!CollectionUtil.isEmpty(parentIds)) {
+                    for (String parentId : parentIds) {
+                        productCategoryService.cleanCacheByKey(parentId);
+                    }
+                }
+            }
+        }
 
         return InvokeResultBuilder.success();
     }

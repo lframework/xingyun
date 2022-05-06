@@ -7,7 +7,6 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
@@ -35,139 +34,143 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductSalePropItemServiceImpl extends BaseMpServiceImpl<ProductSalePropItemMapper, ProductSalePropItem>
-        implements IProductSalePropItemService {
+public class ProductSalePropItemServiceImpl extends
+    BaseMpServiceImpl<ProductSalePropItemMapper, ProductSalePropItem> implements
+    IProductSalePropItemService {
 
-    @Autowired
-    private IProductSalePropGroupService productSalePropGroupService;
+  @Autowired
+  private IProductSalePropGroupService productSalePropGroupService;
 
-    @Override
-    public PageResult<ProductSalePropItem> query(Integer pageIndex, Integer pageSize, QueryProductSalePropItemVo vo) {
+  @Override
+  public PageResult<ProductSalePropItem> query(Integer pageIndex, Integer pageSize,
+      QueryProductSalePropItemVo vo) {
 
-        Assert.greaterThanZero(pageIndex);
-        Assert.greaterThanZero(pageSize);
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
 
-        PageHelperUtil.startPage(pageIndex, pageSize);
-        List<ProductSalePropItem> datas = this.query(vo);
+    PageHelperUtil.startPage(pageIndex, pageSize);
+    List<ProductSalePropItem> datas = this.query(vo);
 
-        return PageResultUtil.convert(new PageInfo<>(datas));
+    return PageResultUtil.convert(new PageInfo<>(datas));
+  }
+
+  @Override
+  public List<ProductSalePropItem> query(QueryProductSalePropItemVo vo) {
+
+    return getBaseMapper().query(vo);
+  }
+
+  @Cacheable(value = ProductSalePropItem.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Override
+  public ProductSalePropItem findById(String id) {
+
+    return getBaseMapper().selectById(id);
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "新增商品销售属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @Transactional
+  @Override
+  public String create(CreateProductSalePropItemVo vo) {
+
+    Wrapper<ProductSalePropItem> checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
+        .eq(ProductSalePropItem::getGroupId, vo.getGroupId())
+        .eq(ProductSalePropItem::getCode, vo.getCode());
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
+      throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    @Override
-    public List<ProductSalePropItem> query(QueryProductSalePropItemVo vo) {
-
-        return getBaseMapper().query(vo);
+    checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
+        .eq(ProductSalePropItem::getGroupId, vo.getGroupId())
+        .eq(ProductSalePropItem::getName, vo.getName());
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
+      throw new DefaultClientException("名称重复，请重新输入！");
     }
 
-    @Cacheable(value = ProductSalePropItem.CACHE_NAME, key = "#id", unless = "#result == null")
-    @Override
-    public ProductSalePropItem findById(String id) {
-
-        return getBaseMapper().selectById(id);
+    ProductSalePropGroup productSalePropGroup = productSalePropGroupService.findById(
+        vo.getGroupId());
+    if (ObjectUtil.isNull(productSalePropGroup)) {
+      throw new DefaultClientException("销售属性组不存在！");
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增商品销售属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
-    @Override
-    public String create(CreateProductSalePropItemVo vo) {
+    ProductSalePropItem data = new ProductSalePropItem();
+    data.setId(IdUtil.getId());
+    data.setCode(vo.getCode());
+    data.setName(vo.getName());
+    data.setGroupId(vo.getGroupId());
+    data.setAvailable(Boolean.TRUE);
+    data.setDescription(
+        StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-        Wrapper<ProductSalePropItem> checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
-                .eq(ProductSalePropItem::getGroupId, vo.getGroupId()).eq(ProductSalePropItem::getCode, vo.getCode());
-        if (getBaseMapper().selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("编号重复，请重新输入！");
-        }
+    getBaseMapper().insert(data);
 
-        checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
-                .eq(ProductSalePropItem::getGroupId, vo.getGroupId()).eq(ProductSalePropItem::getName, vo.getName());
-        if (getBaseMapper().selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("名称重复，请重新输入！");
-        }
+    OpLogUtil.setVariable("id", data.getId());
+    OpLogUtil.setVariable("code", vo.getCode());
+    OpLogUtil.setExtra(vo);
 
-        ProductSalePropGroup productSalePropGroup = productSalePropGroupService.findById(vo.getGroupId());
-        if (ObjectUtil.isNull(productSalePropGroup)) {
-            throw new DefaultClientException("销售属性组不存在！");
-        }
+    return data.getId();
+  }
 
-        ProductSalePropItem data = new ProductSalePropItem();
-        data.setId(IdUtil.getId());
-        data.setCode(vo.getCode());
-        data.setName(vo.getName());
-        data.setGroupId(vo.getGroupId());
-        data.setAvailable(Boolean.TRUE);
-        data.setDescription(StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+  @OpLog(type = OpLogType.OTHER, name = "修改商品销售属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @Transactional
+  @Override
+  public void update(UpdateProductSalePropItemVo vo) {
 
-        getBaseMapper().insert(data);
-
-        OpLogUtil.setVariable("id", data.getId());
-        OpLogUtil.setVariable("code", vo.getCode());
-        OpLogUtil.setExtra(vo);
-
-        return data.getId();
+    ProductSalePropItem data = getBaseMapper().selectById(vo.getId());
+    if (ObjectUtil.isNull(data)) {
+      throw new DefaultClientException("销售属性值不存在！");
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改商品销售属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
-    @Override
-    public void update(UpdateProductSalePropItemVo vo) {
-
-        ProductSalePropItem data = getBaseMapper().selectById(vo.getId());
-        if (ObjectUtil.isNull(data)) {
-            throw new DefaultClientException("销售属性值不存在！");
-        }
-
-        Wrapper<ProductSalePropItem> checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
-                .eq(ProductSalePropItem::getGroupId, data.getGroupId()).eq(ProductSalePropItem::getCode, vo.getCode())
-                .ne(ProductSalePropItem::getId, vo.getId());
-        if (getBaseMapper().selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("编号重复，请重新输入！");
-        }
-
-        checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
-                .eq(ProductSalePropItem::getGroupId, data.getGroupId()).eq(ProductSalePropItem::getName, vo.getName())
-                .ne(ProductSalePropItem::getId, vo.getId());
-        if (getBaseMapper().selectCount(checkWrapper) > 0) {
-            throw new DefaultClientException("名称重复，请重新输入！");
-        }
-
-        LambdaUpdateWrapper<ProductSalePropItem> updateWrapper = Wrappers.lambdaUpdate(ProductSalePropItem.class)
-                .set(ProductSalePropItem::getCode, vo.getCode()).set(ProductSalePropItem::getName, vo.getName())
-                .set(ProductSalePropItem::getAvailable, vo.getAvailable()).set(ProductSalePropItem::getDescription,
-                        StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
-                .eq(ProductSalePropItem::getId, vo.getId());
-
-        getBaseMapper().update(updateWrapper);
-
-        OpLogUtil.setVariable("id", data.getId());
-        OpLogUtil.setVariable("code", vo.getCode());
-        OpLogUtil.setExtra(vo);
-
-        IProductSalePropItemService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
-
-        List<String> productIdList = getBaseMapper().getProductIdById(data.getId());
-        if (!CollectionUtil.isEmpty(productIdList)) {
-            for (String productId : productIdList) {
-                thisService.cleanCacheByKey(productId);
-            }
-        }
+    Wrapper<ProductSalePropItem> checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
+        .eq(ProductSalePropItem::getGroupId, data.getGroupId())
+        .eq(ProductSalePropItem::getCode, vo.getCode()).ne(ProductSalePropItem::getId, vo.getId());
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
+      throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    @Override
-    public List<ProductSalePropItem> getEnablesByGroupId(String groupId) {
-
-        return getBaseMapper().getEnablesByGroupId(groupId);
+    checkWrapper = Wrappers.lambdaQuery(ProductSalePropItem.class)
+        .eq(ProductSalePropItem::getGroupId, data.getGroupId())
+        .eq(ProductSalePropItem::getName, vo.getName()).ne(ProductSalePropItem::getId, vo.getId());
+    if (getBaseMapper().selectCount(checkWrapper) > 0) {
+      throw new DefaultClientException("名称重复，请重新输入！");
     }
 
-    @Cacheable(value = ProductSalePropItem.CACHE_NAME_BY_PRODUCT_ID, key = "#productId", unless = "#result == null || #result.size() == 0")
-    @Override
-    public List<SalePropItemByProductDto> getByProductId(String productId) {
+    LambdaUpdateWrapper<ProductSalePropItem> updateWrapper = Wrappers.lambdaUpdate(
+            ProductSalePropItem.class).set(ProductSalePropItem::getCode, vo.getCode())
+        .set(ProductSalePropItem::getName, vo.getName())
+        .set(ProductSalePropItem::getAvailable, vo.getAvailable())
+        .set(ProductSalePropItem::getDescription,
+            StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
+        .eq(ProductSalePropItem::getId, vo.getId());
 
-        return getBaseMapper().getByProductId(productId);
-    }
+    getBaseMapper().update(updateWrapper);
 
-    @CacheEvict(value = {ProductSalePropItem.CACHE_NAME, ProductSalePropItem.CACHE_NAME_BY_PRODUCT_ID}, key = "#key")
-    @Override
-    public void cleanCacheByKey(String key) {
+    OpLogUtil.setVariable("id", data.getId());
+    OpLogUtil.setVariable("code", vo.getCode());
+    OpLogUtil.setExtra(vo);
+  }
 
-    }
+  @Override
+  public List<ProductSalePropItem> getEnablesByGroupId(String groupId) {
+
+    return getBaseMapper().getEnablesByGroupId(groupId);
+  }
+
+  @Cacheable(value = ProductSalePropItem.CACHE_NAME_BY_PRODUCT_ID, key = "#productId", unless = "#result == null || #result.size() == 0")
+  @Override
+  public List<SalePropItemByProductDto> getByProductId(String productId) {
+
+    return getBaseMapper().getByProductId(productId);
+  }
+
+  @Override
+  public List<String> getProductIdById(String id) {
+    return getBaseMapper().getProductIdById(id);
+  }
+
+  @CacheEvict(value = {ProductSalePropItem.CACHE_NAME,
+      ProductSalePropItem.CACHE_NAME_BY_PRODUCT_ID}, key = "#key")
+  @Override
+  public void cleanCacheByKey(String key) {
+
+  }
 }

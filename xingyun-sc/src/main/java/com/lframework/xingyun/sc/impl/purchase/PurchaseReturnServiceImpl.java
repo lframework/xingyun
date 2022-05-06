@@ -468,9 +468,6 @@ public class PurchaseReturnServiceImpl extends
         .eq(PurchaseReturn::getSettleStatus, SettleStatus.PART_SETTLE);
     int count = getBaseMapper().update(updateWrapper);
 
-    IPurchaseReturnService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(id);
-
     return count;
   }
 
@@ -484,9 +481,6 @@ public class PurchaseReturnServiceImpl extends
         .in(PurchaseReturn::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
     int count = getBaseMapper().update(updateWrapper);
 
-    IPurchaseReturnService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(id);
-
     return count;
   }
 
@@ -498,9 +492,6 @@ public class PurchaseReturnServiceImpl extends
         .set(PurchaseReturn::getSettleStatus, SettleStatus.SETTLED).eq(PurchaseReturn::getId, id)
         .in(PurchaseReturn::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
     int count = getBaseMapper().update(updateWrapper);
-
-    IPurchaseReturnService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(id);
 
     return count;
   }

@@ -529,9 +529,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         .eq(ReceiveSheet::getSettleStatus, SettleStatus.PART_SETTLE);
     int count = getBaseMapper().update(updateWrapper);
 
-    IReceiveSheetService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(id);
-
     return count;
   }
 
@@ -544,9 +541,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         .in(ReceiveSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
     int count = getBaseMapper().update(updateWrapper);
 
-    IReceiveSheetService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(id);
-
     return count;
   }
 
@@ -558,9 +552,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         .set(ReceiveSheet::getSettleStatus, SettleStatus.SETTLED).eq(ReceiveSheet::getId, id)
         .in(ReceiveSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
     int count = getBaseMapper().update(updateWrapper);
-
-    IReceiveSheetService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(id);
 
     return count;
   }

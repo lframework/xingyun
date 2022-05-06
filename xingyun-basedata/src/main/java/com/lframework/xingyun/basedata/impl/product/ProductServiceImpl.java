@@ -145,11 +145,6 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         Wrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class).set(Product::getAvailable, Boolean.FALSE)
                 .in(Product::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        IProductService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "启用商品，ID：{}", params = "#ids", loopFormat = true)
@@ -164,11 +159,6 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         Wrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class).set(Product::getAvailable, Boolean.TRUE)
                 .in(Product::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        IProductService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "新增商品，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -324,9 +314,6 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         OpLogUtil.setVariable("id", data.getId());
         OpLogUtil.setVariable("code", vo.getCode());
         OpLogUtil.setExtra(vo);
-
-        IProductService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
     }
 
     @Override

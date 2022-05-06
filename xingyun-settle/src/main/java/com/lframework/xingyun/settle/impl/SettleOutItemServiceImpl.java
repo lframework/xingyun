@@ -6,7 +6,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.*;
+import com.lframework.common.utils.Assert;
+import com.lframework.common.utils.CollectionUtil;
+import com.lframework.common.utils.IdUtil;
+import com.lframework.common.utils.ObjectUtil;
+import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
@@ -21,13 +25,12 @@ import com.lframework.xingyun.settle.vo.item.out.CreateSettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.QuerySettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.SettleOutItemSelectorVo;
 import com.lframework.xingyun.settle.vo.item.out.UpdateSettleOutItemVo;
+import java.util.Collection;
+import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.List;
 
 @Service
 public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMapper, SettleOutItem>
@@ -82,11 +85,6 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         Wrapper<SettleOutItem> updateWrapper = Wrappers.lambdaUpdate(SettleOutItem.class)
                 .set(SettleOutItem::getAvailable, Boolean.FALSE).in(SettleOutItem::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        ISettleOutItemService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "启用支出项目，ID：{}", params = "#ids", loopFormat = true)
@@ -101,11 +99,6 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         Wrapper<SettleOutItem> updateWrapper = Wrappers.lambdaUpdate(SettleOutItem.class)
                 .set(SettleOutItem::getAvailable, Boolean.TRUE).in(SettleOutItem::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        ISettleOutItemService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "新增支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -162,9 +155,6 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         OpLogUtil.setVariable("id", data.getId());
         OpLogUtil.setVariable("code", vo.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISettleOutItemService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
     }
 
     @CacheEvict(value = SettleOutItem.CACHE_NAME, key = "#key")

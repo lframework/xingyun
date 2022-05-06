@@ -74,11 +74,6 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         Wrapper<Member> updateWrapper = Wrappers.lambdaUpdate(Member.class).set(Member::getAvailable, Boolean.FALSE)
                 .in(Member::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        IMemberService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "启用会员，ID：{}", params = "#ids", loopFormat = true)
@@ -93,11 +88,6 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         Wrapper<Member> updateWrapper = Wrappers.lambdaUpdate(Member.class).set(Member::getAvailable, Boolean.TRUE)
                 .in(Member::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        IMemberService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "新增会员，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -171,9 +161,6 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         OpLogUtil.setVariable("id", data.getId());
         OpLogUtil.setVariable("code", vo.getCode());
         OpLogUtil.setExtra(vo);
-
-        IMemberService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
     }
 
     @Override

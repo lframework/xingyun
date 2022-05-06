@@ -16,6 +16,10 @@ import com.lframework.xingyun.basedata.vo.product.info.UpdateProductVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -23,11 +27,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 商品管理
@@ -89,6 +88,8 @@ public class ProductController extends DefaultBaseController {
     public InvokeResult<Void> update(@Valid UpdateProductVo vo) {
 
         productService.update(vo);
+
+        productService.cleanCacheByKey(vo.getId());
 
         return InvokeResultBuilder.success();
     }

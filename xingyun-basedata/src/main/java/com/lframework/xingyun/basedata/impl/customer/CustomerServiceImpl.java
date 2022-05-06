@@ -93,11 +93,6 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         Wrapper<Customer> updateWrapper = Wrappers.lambdaUpdate(Customer.class)
                 .set(Customer::getAvailable, Boolean.FALSE).in(Customer::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        ICustomerService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "启用客户，ID：{}", params = "#ids", loopFormat = true)
@@ -112,11 +107,6 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         Wrapper<Customer> updateWrapper = Wrappers.lambdaUpdate(Customer.class)
                 .set(Customer::getAvailable, Boolean.TRUE).in(Customer::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        ICustomerService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "新增客户，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -253,9 +243,6 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         OpLogUtil.setVariable("id", data.getId());
         OpLogUtil.setVariable("code", vo.getCode());
         OpLogUtil.setExtra(vo);
-
-        ICustomerService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
     }
 
     @CacheEvict(value = Customer.CACHE_NAME, key = "#key")

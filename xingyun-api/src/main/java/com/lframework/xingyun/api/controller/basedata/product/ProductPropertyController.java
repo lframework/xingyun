@@ -20,17 +20,22 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 属性管理
@@ -96,6 +101,11 @@ public class ProductPropertyController extends DefaultBaseController {
             @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的属性！") @RequestBody List<String> ids) {
 
         productPropertyService.batchUnable(ids);
+
+        for (String id : ids) {
+            productPropertyService.cleanCacheByKey(id);
+        }
+
         return InvokeResultBuilder.success();
     }
 
@@ -109,6 +119,11 @@ public class ProductPropertyController extends DefaultBaseController {
             @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的属性！") @RequestBody List<String> ids) {
 
         productPropertyService.batchEnable(ids);
+
+        for (String id : ids) {
+            productPropertyService.cleanCacheByKey(id);
+        }
+
         return InvokeResultBuilder.success();
     }
 
@@ -134,6 +149,8 @@ public class ProductPropertyController extends DefaultBaseController {
     public InvokeResult<Void> update(@Valid UpdateProductPropertyVo vo) {
 
         productPropertyService.update(vo);
+
+        productPropertyService.cleanCacheByKey(vo.getId());
 
         return InvokeResultBuilder.success();
     }

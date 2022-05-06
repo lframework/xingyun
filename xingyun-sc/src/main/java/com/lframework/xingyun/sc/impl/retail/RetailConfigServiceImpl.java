@@ -39,9 +39,6 @@ public class RetailConfigServiceImpl extends BaseMpServiceImpl<RetailConfigMappe
     getBaseMapper().updateById(config);
 
     OpLogUtil.setExtra(vo);
-
-    IRetailConfigService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(config.getId());
   }
 
   @CacheEvict(value = RetailConfig.CACHE_NAME, key = "'config'")

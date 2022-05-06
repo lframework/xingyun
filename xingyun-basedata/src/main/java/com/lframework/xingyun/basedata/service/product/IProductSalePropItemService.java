@@ -64,4 +64,12 @@ public interface IProductSalePropItemService extends BaseMpService<ProductSalePr
      * @return
      */
     List<SalePropItemByProductDto> getByProductId(String productId);
+
+    /**
+     * 根据ID查询商品ID
+     *
+     * @param id
+     * @return
+     */
+    List<String> getProductIdById(String id);
 }

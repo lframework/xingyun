@@ -18,16 +18,19 @@ import com.lframework.xingyun.basedata.vo.product.saleprop.item.UpdateProductSal
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 销售属性管理
@@ -106,6 +109,15 @@ public class ProductSalePropItemController extends DefaultBaseController {
     public InvokeResult<Void> update(@Valid UpdateProductSalePropItemVo vo) {
 
         productSalePropItemService.update(vo);
+
+        productSalePropItemService.cleanCacheByKey(vo.getId());
+
+        List<String> productIdList = productSalePropItemService.getProductIdById(vo.getId());
+        if (!CollectionUtil.isEmpty(productIdList)) {
+            for (String productId : productIdList) {
+                productSalePropItemService.cleanCacheByKey(productId);
+            }
+        }
 
         return InvokeResultBuilder.success();
     }

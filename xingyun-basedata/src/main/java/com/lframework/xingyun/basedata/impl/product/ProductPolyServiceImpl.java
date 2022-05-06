@@ -1,17 +1,24 @@
 package com.lframework.xingyun.basedata.impl.product;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.pagehelper.PageInfo;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.exceptions.ClientException;
 import com.lframework.common.exceptions.impl.DefaultClientException;
+import com.lframework.common.utils.Assert;
 import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.IdUtil;
+import com.lframework.common.utils.ObjectUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.OpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
+import com.lframework.starter.mybatis.utils.PageHelperUtil;
+import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.CacheUtil;
 import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.xingyun.basedata.dto.product.poly.ProductPolyDto;
@@ -31,6 +38,8 @@ import com.lframework.xingyun.basedata.service.product.IProductPropertyService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
 import com.lframework.xingyun.basedata.vo.product.poly.CreateProductPolyVo;
+import com.lframework.xingyun.basedata.vo.product.poly.QueryProductPolyVo;
+import com.lframework.xingyun.basedata.vo.product.poly.UpdateProductPolyVo;
 import com.lframework.xingyun.basedata.vo.product.poly.property.CreateProductPolyPropertyVo;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +71,25 @@ public class ProductPolyServiceImpl extends BaseMpServiceImpl<ProductPolyMapper,
 
     @Autowired
     private IProductService productService;
+
+    @Override
+    public PageResult<ProductPoly> query(Integer pageIndex, Integer pageSize,
+        QueryProductPolyVo vo) {
+
+        Assert.greaterThanZero(pageIndex);
+        Assert.greaterThanZero(pageSize);
+
+        PageHelperUtil.startPage(pageIndex, pageSize);
+        List<ProductPoly> datas = this.query(vo);
+
+        return PageResultUtil.convert(new PageInfo<>(datas));
+    }
+
+    @Override
+    public List<ProductPoly> query(QueryProductPolyVo vo) {
+
+        return getBaseMapper().query(vo);
+    }
 
     @Override
     public ProductPolyDto findById(String id) {
@@ -214,6 +242,78 @@ public class ProductPolyServiceImpl extends BaseMpServiceImpl<ProductPolyMapper,
         OpLogUtil.setExtra(vo);
 
         return poly.getId();
+    }
+
+    @OpLog(type = OpLogType.OTHER, name = "修改商品SPU，ID：{}", params = {"#id"})
+    @Transactional
+    @Override
+    public void update(UpdateProductPolyVo vo) {
+
+        ProductPoly data = getBaseMapper().selectById(vo.getId());
+        if (ObjectUtil.isNull(data)) {
+            throw new DefaultClientException("商品SPU不存在！");
+        }
+
+        LambdaUpdateWrapper<ProductPoly> updateWrapper = Wrappers.lambdaUpdate(ProductPoly.class)
+            .set(ProductPoly::getCode, vo.getCode())
+            .set(ProductPoly::getName, vo.getName())
+            .set(ProductPoly::getShortName, vo.getShortName())
+            .set(ProductPoly::getCategoryId, vo.getCategoryId())
+            .set(ProductPoly::getBrandId, vo.getBrandId())
+            .set(ProductPoly::getTaxRate, vo.getTaxRate())
+            .set(ProductPoly::getSaleTaxRate, vo.getSaleTaxRate())
+            .eq(ProductPoly::getId, vo.getId());
+
+        getBaseMapper().update(updateWrapper);
+
+        productPolyPropertyService.deleteByPolyId(data.getId());
+
+        //建立poly和属性值的关系
+        if (!CollectionUtil.isEmpty(vo.getProperties())) {
+            for (UpdateProductPolyVo.PropertyVo property : vo.getProperties()) {
+                ProductProperty productProperty = productPropertyService.getById(property.getId());
+                if (productProperty == null) {
+                    throw new DefaultClientException("商品属性不存在！");
+                }
+                if (productProperty.getColumnType() == ColumnType.SINGLE) {
+                    ProductPropertyItem propertyItem = productPropertyItemService.findById(property.getText());
+                    if (propertyItem == null) {
+                        throw new DefaultClientException("商品属性值不存在！");
+                    }
+
+                    CreateProductPolyPropertyVo createProductPolyPropertyVo = new CreateProductPolyPropertyVo();
+                    createProductPolyPropertyVo.setPolyId(data.getId());
+                    createProductPolyPropertyVo.setPropertyId(productProperty.getId());
+                    createProductPolyPropertyVo.setPropertyItemId(propertyItem.getId());
+
+                    productPolyPropertyService.create(createProductPolyPropertyVo);
+                } else if (productProperty.getColumnType() == ColumnType.MULTIPLE) {
+
+                    List<String> propertyItemIds = JsonUtil.parseList(property.getText(), String.class);
+                    for (String propertyItemId : propertyItemIds) {
+                        CreateProductPolyPropertyVo createProductPolyPropertyVo = new CreateProductPolyPropertyVo();
+                        createProductPolyPropertyVo.setPolyId(data.getId());
+                        createProductPolyPropertyVo.setPropertyId(productProperty.getId());
+                        createProductPolyPropertyVo.setPropertyItemId(propertyItemId);
+
+                        productPolyPropertyService.create(createProductPolyPropertyVo);
+                    }
+
+                } else if (productProperty.getColumnType() == ColumnType.CUSTOM) {
+
+                    CreateProductPolyPropertyVo createProductPolyPropertyVo = new CreateProductPolyPropertyVo();
+                    createProductPolyPropertyVo.setPolyId(data.getId());
+                    createProductPolyPropertyVo.setPropertyId(productProperty.getId());
+                    createProductPolyPropertyVo.setPropertyText(property.getText());
+                    productPolyPropertyService.create(createProductPolyPropertyVo);
+                } else {
+                    throw new DefaultClientException("商品属性字段类型不存在！");
+                }
+            }
+        }
+
+        OpLogUtil.setVariable("id", data.getId());
+        OpLogUtil.setExtra(vo);
     }
 
     private ProductPolyDto convertDto(ProductPolyDto dto) {

@@ -81,11 +81,6 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         Wrapper<Supplier> updateWrapper = Wrappers.lambdaUpdate(Supplier.class)
                 .set(Supplier::getAvailable, Boolean.FALSE).in(Supplier::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        ISupplierService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "启用供应商，ID：{}", params = "#ids", loopFormat = true)
@@ -100,11 +95,6 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         Wrapper<Supplier> updateWrapper = Wrappers.lambdaUpdate(Supplier.class)
                 .set(Supplier::getAvailable, Boolean.TRUE).in(Supplier::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        ISupplierService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "新增供应商，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -239,9 +229,6 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         OpLogUtil.setVariable("id", data.getId());
         OpLogUtil.setVariable("code", vo.getCode());
         OpLogUtil.setExtra(vo);
-
-        ISupplierService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
     }
 
     @Override

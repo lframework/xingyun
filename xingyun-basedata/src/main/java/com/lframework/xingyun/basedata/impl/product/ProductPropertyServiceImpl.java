@@ -105,11 +105,6 @@ public class ProductPropertyServiceImpl extends
     Wrapper<ProductProperty> updateWrapper = Wrappers.lambdaUpdate(ProductProperty.class)
         .set(ProductProperty::getAvailable, Boolean.FALSE).in(ProductProperty::getId, ids);
     getBaseMapper().update(updateWrapper);
-
-    IProductPropertyService thisService = getThis(this.getClass());
-    for (String id : ids) {
-      thisService.cleanCacheByKey(id);
-    }
   }
 
   @OpLog(type = OpLogType.OTHER, name = "启用商品属性，ID：{}", params = "#ids", loopFormat = true)
@@ -124,11 +119,6 @@ public class ProductPropertyServiceImpl extends
     Wrapper<ProductProperty> updateWrapper = Wrappers.lambdaUpdate(ProductProperty.class)
         .set(ProductProperty::getAvailable, Boolean.TRUE).in(ProductProperty::getId, ids);
     getBaseMapper().update(updateWrapper);
-
-    IProductPropertyService thisService = getThis(this.getClass());
-    for (String id : ids) {
-      thisService.cleanCacheByKey(id);
-    }
   }
 
   private List<String> calcCategoryIds(List<String> categoryIds) {
@@ -358,9 +348,6 @@ public class ProductPropertyServiceImpl extends
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
     OpLogUtil.setExtra(vo);
-
-    IProductPropertyService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(data.getId());
   }
 
   @Override

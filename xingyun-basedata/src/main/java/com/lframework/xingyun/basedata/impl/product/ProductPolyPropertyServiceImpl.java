@@ -72,29 +72,16 @@ public class ProductPolyPropertyServiceImpl extends
         }
       }
     }
-
-    IProductPolyPropertyService thisService = getThis(this.getClass());
-    for (ProductPolyPropertyDto data : datas) {
-      thisService.cleanCacheByKey(data.getPolyId());
-    }
   }
 
   @Transactional
   @Override
   public void setCommonToAppoint(String propertyId) {
 
-    ProductProperty productProperty = productPropertyService.findById(propertyId);
     List<ProductCategoryProperty> categoryList = productCategoryPropertyService.getByPropertyId(
         propertyId);
     for (ProductCategoryProperty productCategoryPropertyDto : categoryList) {
       getBaseMapper().setCommonToAppoint(propertyId, productCategoryPropertyDto.getCategoryId());
-    }
-
-    List<ProductPolyPropertyDto> datas = getBaseMapper().getByPropertyId(propertyId);
-
-    IProductPolyPropertyService thisService = getThis(this.getClass());
-    for (ProductPolyPropertyDto data : datas) {
-      thisService.cleanCacheByKey(data.getPolyId());
     }
   }
 
@@ -120,13 +107,6 @@ public class ProductPolyPropertyServiceImpl extends
         }
       }
     }
-
-    List<ProductPolyPropertyDto> datas = getBaseMapper().getByPropertyId(propertyId);
-
-    IProductPolyPropertyService thisService = getThis(this.getClass());
-    for (ProductPolyPropertyDto data : datas) {
-      thisService.cleanCacheByKey(data.getPolyId());
-    }
   }
 
   @Transactional
@@ -141,8 +121,6 @@ public class ProductPolyPropertyServiceImpl extends
       Wrapper<ProductPolyProperty> deleteWrapper = Wrappers.lambdaQuery(ProductPolyProperty.class)
           .eq(ProductPolyProperty::getPropertyId, propertyId);
       getBaseMapper().delete(deleteWrapper);
-
-      ProductProperty productProperty = productPropertyService.findById(propertyId);
 
       List<ProductCategoryProperty> categoryList = productCategoryPropertyService.getByPropertyId(
           propertyId);
@@ -161,13 +139,6 @@ public class ProductPolyPropertyServiceImpl extends
           }
         }
       }
-    }
-
-    List<ProductPolyPropertyDto> datas = getBaseMapper().getByPropertyId(propertyId);
-
-    IProductPolyPropertyService thisService = getThis(this.getClass());
-    for (ProductPolyPropertyDto data : datas) {
-      thisService.cleanCacheByKey(data.getPolyId());
     }
   }
 
@@ -207,6 +178,13 @@ public class ProductPolyPropertyServiceImpl extends
     getBaseMapper().insert(data);
 
     return data.getId();
+  }
+
+  @Transactional
+  @Override
+  public void deleteByPolyId(String polyId) {
+    Wrapper<ProductPolyProperty> deleteWrapper = Wrappers.lambdaQuery(ProductPolyProperty.class).eq(ProductPolyProperty::getPolyId, polyId);
+    getBaseMapper().delete(deleteWrapper);
   }
 
   @CacheEvict(value = ProductPolyPropertyDto.CACHE_NAME, key = "#key")

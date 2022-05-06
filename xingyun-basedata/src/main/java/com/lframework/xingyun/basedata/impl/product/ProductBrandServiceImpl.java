@@ -85,11 +85,6 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         Wrapper<ProductBrand> updateWrapper = Wrappers.lambdaUpdate(ProductBrand.class)
                 .set(ProductBrand::getAvailable, Boolean.FALSE).in(ProductBrand::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        IProductBrandService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "启用商品品牌，ID：{}", params = "#ids", loopFormat = true)
@@ -104,11 +99,6 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         Wrapper<ProductBrand> updateWrapper = Wrappers.lambdaUpdate(ProductBrand.class)
                 .set(ProductBrand::getAvailable, Boolean.TRUE).in(ProductBrand::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        IProductBrandService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "新增商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -187,9 +177,6 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         OpLogUtil.setVariable("id", data.getId());
         OpLogUtil.setVariable("code", vo.getCode());
         OpLogUtil.setExtra(vo);
-
-        IProductBrandService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
     }
 
     @CacheEvict(value = ProductBrand.CACHE_NAME, key = "#key")

@@ -1,14 +1,17 @@
 package com.lframework.xingyun.basedata.dto.product.poly;
 
 import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.xingyun.basedata.enums.ColumnType;
 import java.io.Serializable;
 import lombok.Data;
 
 @Data
 public class ProductPolyPropertyDto implements BaseDto, Serializable {
 
-  public static final String CACHE_NAME = "ProductPolyPropertyDto";
   private static final long serialVersionUID = 1L;
+
+  public static final String CACHE_NAME = "ProductPolyPropertyDto";
+
   /**
    * ID
    */
@@ -30,7 +33,17 @@ public class ProductPolyPropertyDto implements BaseDto, Serializable {
   private String propertyItemId;
 
   /**
+   * 字段类型
+   */
+  private ColumnType propertyColumnType;
+
+  /**
    * 属性名称
    */
   private String propertyName;
+
+  /**
+   * 属性值
+   */
+  private String propertyText;
 }

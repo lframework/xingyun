@@ -74,11 +74,6 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
         Wrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
                 .set(StoreCenter::getAvailable, Boolean.FALSE).in(StoreCenter::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        IStoreCenterService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "启用仓库，ID：{}", params = "#ids", loopFormat = true)
@@ -93,11 +88,6 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
         Wrapper<StoreCenter> updateWrapper = Wrappers.lambdaUpdate(StoreCenter.class)
                 .set(StoreCenter::getAvailable, Boolean.TRUE).in(StoreCenter::getId, ids);
         getBaseMapper().update(updateWrapper);
-
-        IStoreCenterService thisService = getThis(this.getClass());
-        for (String id : ids) {
-            thisService.cleanCacheByKey(id);
-        }
     }
 
     @OpLog(type = OpLogType.OTHER, name = "新增仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -200,9 +190,6 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
         OpLogUtil.setVariable("id", data.getId());
         OpLogUtil.setVariable("code", vo.getCode());
         OpLogUtil.setExtra(vo);
-
-        IStoreCenterService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
     }
 
     @Override

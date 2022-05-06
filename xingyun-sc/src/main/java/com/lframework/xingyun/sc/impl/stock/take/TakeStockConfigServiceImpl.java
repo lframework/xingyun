@@ -52,10 +52,6 @@ public class TakeStockConfigServiceImpl extends
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setExtra(vo);
-
-    ITakeStockConfigService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(data.getId());
-
   }
 
   @CacheEvict(value = TakeStockConfig.CACHE_NAME, key = "'config'")

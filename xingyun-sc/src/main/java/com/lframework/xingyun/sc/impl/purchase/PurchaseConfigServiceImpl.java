@@ -42,9 +42,6 @@ public class PurchaseConfigServiceImpl extends
     getBaseMapper().updateById(config);
 
     OpLogUtil.setExtra(vo);
-
-    IPurchaseConfigService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(config.getId());
   }
 
   @CacheEvict(value = PurchaseConfig.CACHE_NAME, key = "'config'")

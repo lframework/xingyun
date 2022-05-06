@@ -82,11 +82,6 @@ public class ProductCategoryServiceImpl extends
     Wrapper<ProductCategory> updateWrapper = Wrappers.lambdaUpdate(ProductCategory.class)
         .set(ProductCategory::getAvailable, Boolean.FALSE).in(ProductCategory::getId, batchIds);
     getBaseMapper().update(updateWrapper);
-
-    IProductCategoryService thisService = getThis(this.getClass());
-    for (String id : ids) {
-      thisService.cleanCacheByKey(id);
-    }
   }
 
   @OpLog(type = OpLogType.OTHER, name = "启用商品类目，ID：{}", params = "#ids", loopFormat = true)
@@ -114,11 +109,6 @@ public class ProductCategoryServiceImpl extends
     Wrapper<ProductCategory> updateWrapper = Wrappers.lambdaUpdate(ProductCategory.class)
         .set(ProductCategory::getAvailable, Boolean.TRUE).in(ProductCategory::getId, batchIds);
     getBaseMapper().update(updateWrapper);
-
-    IProductCategoryService thisService = getThis(this.getClass());
-    for (String id : ids) {
-      thisService.cleanCacheByKey(id);
-    }
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -215,10 +205,10 @@ public class ProductCategoryServiceImpl extends
     } else {
       if (!data.getAvailable()) {
         //如果是启用 父节点全部启用
-        List<String> parentIs = recursionMappingService.getNodeParentIds(data.getId(),
+        List<String> parentIds = recursionMappingService.getNodeParentIds(data.getId(),
             ApplicationUtil.getBean(ProductCategoryNodeType.class));
-        if (!CollectionUtil.isEmpty(parentIs)) {
-          this.batchEnable(parentIs);
+        if (!CollectionUtil.isEmpty(parentIds)) {
+          this.batchEnable(parentIds);
         }
       }
     }
@@ -226,9 +216,6 @@ public class ProductCategoryServiceImpl extends
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
     OpLogUtil.setExtra(vo);
-
-    IProductCategoryService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(data.getId());
   }
 
   /**

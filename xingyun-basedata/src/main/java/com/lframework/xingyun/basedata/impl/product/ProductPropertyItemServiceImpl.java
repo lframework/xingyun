@@ -144,9 +144,6 @@ public class ProductPropertyItemServiceImpl extends BaseMpServiceImpl<ProductPro
         OpLogUtil.setVariable("id", data.getId());
         OpLogUtil.setVariable("code", vo.getCode());
         OpLogUtil.setExtra(vo);
-
-        IProductPropertyItemService thisService = getThis(this.getClass());
-        thisService.cleanCacheByKey(data.getId());
     }
 
     @CacheEvict(value = ProductPropertyItem.CACHE_NAME, key = "#key")

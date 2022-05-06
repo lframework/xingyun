@@ -3,7 +3,9 @@ package com.lframework.xingyun.basedata.mappers;
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.dto.product.poly.ProductPolyDto;
 import com.lframework.xingyun.basedata.entity.ProductPoly;
+import com.lframework.xingyun.basedata.vo.product.poly.QueryProductPolyVo;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -14,6 +16,13 @@ import java.util.List;
  * @since 2021-08-05
  */
 public interface ProductPolyMapper extends BaseMapper<ProductPoly> {
+
+  /**
+   * 查询列表
+   * @param vo
+   * @return
+   */
+  List<ProductPoly> query(@Param("vo") QueryProductPolyVo vo);
 
   /**
    * 根据ID查询

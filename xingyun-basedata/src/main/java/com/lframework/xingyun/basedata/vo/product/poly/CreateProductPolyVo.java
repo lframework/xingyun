@@ -88,7 +88,6 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "商品属性", required = true)
   @Valid
-  @NotEmpty
   private List<PropertyVo> properties;
 
   /**

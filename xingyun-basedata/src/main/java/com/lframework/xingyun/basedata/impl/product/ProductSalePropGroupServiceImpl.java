@@ -89,11 +89,6 @@ public class ProductSalePropGroupServiceImpl extends
         .set(ProductSalePropGroup::getAvailable, Boolean.FALSE)
         .in(ProductSalePropGroup::getId, ids);
     getBaseMapper().update(updateWrapper);
-
-    IProductSalePropGroupService thisService = getThis(this.getClass());
-    for (String id : ids) {
-      thisService.cleanCacheByKey(id);
-    }
   }
 
   @OpLog(type = OpLogType.OTHER, name = "启用商品销售属性，ID：{}", params = "#ids", loopFormat = true)
@@ -108,11 +103,6 @@ public class ProductSalePropGroupServiceImpl extends
     Wrapper<ProductSalePropGroup> updateWrapper = Wrappers.lambdaUpdate(ProductSalePropGroup.class)
         .set(ProductSalePropGroup::getAvailable, Boolean.TRUE).in(ProductSalePropGroup::getId, ids);
     getBaseMapper().update(updateWrapper);
-
-    IProductSalePropGroupService thisService = getThis(this.getClass());
-    for (String id : ids) {
-      thisService.cleanCacheByKey(id);
-    }
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增商品销售属性组，ID：{}, 编号：{}", params = {"#id", "#code"})
@@ -187,9 +177,6 @@ public class ProductSalePropGroupServiceImpl extends
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
     OpLogUtil.setExtra(vo);
-
-    IProductSalePropGroupService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(data.getId());
   }
 
   @CacheEvict(value = ProductSalePropGroup.CACHE_NAME, key = "#key")

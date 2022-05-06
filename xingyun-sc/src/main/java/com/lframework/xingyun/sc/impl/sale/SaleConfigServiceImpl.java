@@ -41,9 +41,6 @@ public class SaleConfigServiceImpl extends BaseMpServiceImpl<SaleConfigMapper, S
     getBaseMapper().updateById(config);
 
     OpLogUtil.setExtra(vo);
-
-    ISaleConfigService thisService = getThis(this.getClass());
-    thisService.cleanCacheByKey(config.getId());
   }
 
   @CacheEvict(value = SaleConfig.CACHE_NAME, key = "'config'")

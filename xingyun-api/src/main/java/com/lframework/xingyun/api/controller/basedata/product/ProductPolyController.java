@@ -47,6 +47,7 @@ public class ProductPolyController extends DefaultBaseController {
     @Autowired
     private IProductPolyService productPolyService;
 
+    @Autowired
     private IProductPolyPropertyService productPolyPropertyService;
 
     /**

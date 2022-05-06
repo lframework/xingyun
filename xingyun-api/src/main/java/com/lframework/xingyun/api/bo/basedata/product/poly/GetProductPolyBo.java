@@ -130,18 +130,23 @@ public class GetProductPolyBo extends BaseBo<ProductPolyDto> {
       }
     }
 
-    IProductPropertyService productPropertyService = ApplicationUtil.getBean(IProductPropertyService.class);
-    List<ProductPropertyModelorDto> modelors = productPropertyService.getModelorByCategoryId(this.categoryId);
+    IProductPropertyService productPropertyService = ApplicationUtil.getBean(
+        IProductPropertyService.class);
+    List<ProductPropertyModelorDto> modelors = productPropertyService.getModelorByCategoryId(
+        this.categoryId);
     if (!CollectionUtil.isEmpty(modelors)) {
-      this.modelors = modelors.stream().map(ProductPropertyModelorBo::new).collect(Collectors.toList());
+      this.modelors = modelors.stream().map(ProductPropertyModelorBo::new)
+          .collect(Collectors.toList());
       if (!CollectionUtil.isEmpty(this.properties)) {
         for (ProductPropertyModelorBo modelor : this.modelors) {
-          PropertyBo property = this.properties.stream().filter(t -> t.getId().equals(modelor.getId())).findFirst().orElse(null);
+          PropertyBo property = this.properties.stream()
+              .filter(t -> t.getId().equals(modelor.getId())).findFirst().orElse(null);
           if (property == null) {
             continue;
           }
 
-          modelor.setText(property.getText());
+          modelor.setText(property.getColumnType() == ColumnType.CUSTOM.getCode().intValue()
+              ? property.getText() : property.getItemId());
         }
       }
     }
@@ -170,6 +175,12 @@ public class GetProductPolyBo extends BaseBo<ProductPolyDto> {
     private Integer columnType;
 
     /**
+     * 属性值ID
+     */
+    @ApiModelProperty("属性值ID")
+    private String itemId;
+
+    /**
      * 属性文本
      */
     @ApiModelProperty("属性文本")
@@ -195,6 +206,7 @@ public class GetProductPolyBo extends BaseBo<ProductPolyDto> {
 
       this.id = dto.getPropertyId();
       this.name = dto.getPropertyName();
+      this.itemId = dto.getPropertyItemId();
       this.text = dto.getPropertyText();
       this.columnType = dto.getPropertyColumnType().getCode();
     }

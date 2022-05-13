@@ -11,7 +11,7 @@
 
     <groupId>com.lframework</groupId>
     <artifactId>xingyun</artifactId>
-    <name>【${artifactId}】星云ERP</name>
+    <name>【${project.artifactId}】星云ERP</name>
     <version>1.0.0-SNAPSHOT</version>
 
     <modelVersion>4.0.0</modelVersion>

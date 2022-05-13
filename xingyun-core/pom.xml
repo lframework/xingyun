@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xingyun-core</artifactId>
-    <name>【${artifactId}】基础依赖</name>
+    <name>【${project.artifactId}】基础依赖</name>
 
     <dependencies>
         <dependency>

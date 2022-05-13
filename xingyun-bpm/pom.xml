@@ -22,7 +22,7 @@
   <artifactId>xingyun-bpm</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 
-  <name>【${artifactId}】BPM流程管理平台（独立部署），Maven版本需要低于3.8.1</name>
+  <name>【${project.artifactId}】BPM流程管理平台（独立部署），Maven版本需要低于3.8.1</name>
   <description>整合AgileBPM工作流管理平台，由于AgileBPM的Licence是GPL，所以使用这部分功能需要遵守GPL许可证的限制条件</description>
 
   <properties>

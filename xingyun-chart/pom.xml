@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xingyun-chart</artifactId>
-    <name>【${artifactId}】图表服务层</name>
+    <name>【${project.artifactId}】图表服务层</name>
 
     <dependencies>
         <dependency>

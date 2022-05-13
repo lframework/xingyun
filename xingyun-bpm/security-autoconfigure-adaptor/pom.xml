@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>security-autoconfigure-adaptor</artifactId>
-  <name>【${artifactId}】Security自动配置适配器</name>
+  <name>【${project.artifactId}】Security自动配置适配器</name>
 
   <dependencies>
     <dependency>

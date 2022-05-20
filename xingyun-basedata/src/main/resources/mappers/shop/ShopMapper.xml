@@ -17,6 +17,23 @@
     <result column="update_time" property="updateTime"/>
   </resultMap>
 
+  <sql id="Shop_sql">
+    SELECT
+      tb.id,
+      tb.code,
+      tb.name,
+      tb.dept_id,
+      tb.lon,
+      tb.lat,
+      tb.description,
+      tb.available,
+      tb.create_by,
+      tb.create_time,
+      tb.update_by,
+      tb.update_time
+    FROM tbl_shop AS tb
+  </sql>
+
   <select id="query" resultMap="Shop">
     <include refid="Shop_sql"/>
     <where>
@@ -43,21 +60,4 @@
     </where>
     ORDER BY tb.code ASC
   </select>
-
-  <sql id="Shop_sql">
-    SELECT
-      tb.id,
-      tb.code,
-      tb.name,
-      tb.dept_id,
-      tb.lon,
-      tb.lat,
-      tb.description,
-      tb.available,
-      tb.create_by,
-      tb.create_time,
-      tb.update_by,
-      tb.update_time
-    FROM tbl_shop AS tb
-  </sql>
 </mapper>

@@ -15,7 +15,7 @@ CREATE TABLE `sys_parameter`
 
 INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_time`,
                              `update_by`, `update_time`)
-VALUES (1, 'tx-map.key', 'key', '腾讯地图Key', '1', '2022-05-22 04:18:59', '1', '2022-05-22 04:18:59');
+VALUES (1, 'tx-map.key', 'OLJBZ-ZFJK6-QWUSK-MB7XT-6UTN2-AWBSY', '腾讯地图Key', '1', '2022-05-22 04:18:59', '1', '2022-05-22 04:18:59');
 INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_time`,
                              `update_by`, `update_time`)
 VALUES (2, 'tx-map.secret', 'secret', '腾讯地图Secret', '1', '2022-05-22 04:18:59', '1',
@@ -44,8 +44,3 @@ INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `component`, `parent_id`,
 VALUES ('1000007003', '1000007003', '', '删除系统参数', '', '1000007', '', 0, 2, 0,
         'system:parameter:delete', 1, 1, '', '1', '2021-05-12 23:24:36', '1',
         '2021-07-04 00:34:23');
-
-ALTER TABLE `sys_parameter`
-    ADD COLUMN `show_digest` tinyint(1) NOT NULL DEFAULT 0 COMMENT '显示是否加密' AFTER `pm_value`;
-
-UPDATE `sys_parameter` SET `show_digest` = 1 where `id` IN (1, 2);

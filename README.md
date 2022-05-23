@@ -72,6 +72,8 @@ BPM工作流目前是整合AgileBPM工作流管理平台，由于AgileBPM的Lice
 
 <a href="https://gitee.com/ld/J2Cache" target="_blank">J2Cache</a> 基于内存和Redis的两级Java缓存框架
 
+<a href="https://gitee.com/xiaoym/knife4j" target="_blank">knife4j</a> knife4j是为Java MVC框架集成Swagger生成Api文档的工具
+
 ### 系统展示
 
 * 首页

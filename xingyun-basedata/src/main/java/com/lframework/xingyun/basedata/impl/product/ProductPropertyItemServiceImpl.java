@@ -24,6 +24,7 @@ import com.lframework.xingyun.basedata.service.product.IProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.item.CreateProductPropertyItemVo;
 import com.lframework.xingyun.basedata.vo.product.property.item.QueryProductPropertyItemVo;
 import com.lframework.xingyun.basedata.vo.product.property.item.UpdateProductPropertyItemVo;
+import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -148,7 +149,7 @@ public class ProductPropertyItemServiceImpl extends BaseMpServiceImpl<ProductPro
 
     @CacheEvict(value = ProductPropertyItem.CACHE_NAME, key = "#key")
     @Override
-    public void cleanCacheByKey(String key) {
+    public void cleanCacheByKey(Serializable key) {
 
     }
 }

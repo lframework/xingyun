@@ -25,6 +25,7 @@ import com.lframework.xingyun.settle.vo.item.in.CreateSettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.QuerySettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.SettleInItemSelectorVo;
 import com.lframework.xingyun.settle.vo.item.in.UpdateSettleInItemVo;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
@@ -159,7 +160,7 @@ public class SettleInItemServiceImpl extends BaseMpServiceImpl<SettleInItemMappe
 
     @CacheEvict(value = SettleInItem.CACHE_NAME, key = "#key")
     @Override
-    public void cleanCacheByKey(String key) {
+    public void cleanCacheByKey(Serializable key) {
 
     }
 }

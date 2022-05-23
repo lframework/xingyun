@@ -56,7 +56,7 @@ public class GetShopBo extends BaseBo<Shop> {
    * 经度
    */
   @ApiModelProperty("经度")
-  private BigDecimal lon;
+  private BigDecimal lng;
 
   /**
    * 纬度

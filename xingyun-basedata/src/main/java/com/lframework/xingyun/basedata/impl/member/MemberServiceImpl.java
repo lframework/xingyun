@@ -27,6 +27,7 @@ import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
 import com.lframework.xingyun.basedata.vo.member.UpdateMemberVo;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
@@ -176,7 +177,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
 
     @CacheEvict(value = Member.CACHE_NAME, key = "#key")
     @Override
-    public void cleanCacheByKey(String key) {
+    public void cleanCacheByKey(Serializable key) {
 
     }
 }

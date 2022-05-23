@@ -44,6 +44,7 @@ import com.lframework.xingyun.sc.vo.stock.adjust.CreateStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.StockCostAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.UpdateStockCostAdjustSheetVo;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -361,7 +362,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 

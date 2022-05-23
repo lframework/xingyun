@@ -41,6 +41,7 @@ import com.lframework.xingyun.basedata.vo.product.poly.CreateProductPolyVo;
 import com.lframework.xingyun.basedata.vo.product.poly.QueryProductPolyVo;
 import com.lframework.xingyun.basedata.vo.product.poly.UpdateProductPolyVo;
 import com.lframework.xingyun.basedata.vo.product.poly.property.CreateProductPolyPropertyVo;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -335,7 +336,7 @@ public class ProductPolyServiceImpl extends BaseMpServiceImpl<ProductPolyMapper,
 
     @CacheEvict(value = ProductPolyDto.CACHE_NAME, key = "#key")
     @Override
-    public void cleanCacheByKey(String key) {
+    public void cleanCacheByKey(Serializable key) {
 
     }
 }

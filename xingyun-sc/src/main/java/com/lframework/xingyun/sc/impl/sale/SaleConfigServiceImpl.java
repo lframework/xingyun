@@ -9,6 +9,7 @@ import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.mappers.SaleConfigMapper;
 import com.lframework.xingyun.sc.service.sale.ISaleConfigService;
 import com.lframework.xingyun.sc.vo.sale.config.UpdateSaleConfigVo;
+import java.io.Serializable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class SaleConfigServiceImpl extends BaseMpServiceImpl<SaleConfigMapper, S
 
   @CacheEvict(value = SaleConfig.CACHE_NAME, key = "'config'")
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 }

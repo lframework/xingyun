@@ -9,6 +9,7 @@ import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.mappers.PurchaseConfigMapper;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
 import com.lframework.xingyun.sc.vo.purchase.config.UpdatePurchaseConfigVo;
+import java.io.Serializable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class PurchaseConfigServiceImpl extends
 
   @CacheEvict(value = PurchaseConfig.CACHE_NAME, key = "'config'")
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 }

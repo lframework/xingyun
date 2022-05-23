@@ -25,6 +25,7 @@ import com.lframework.xingyun.basedata.vo.product.brand.CreateProductBrandVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandVo;
 import com.lframework.xingyun.basedata.vo.product.brand.UpdateProductBrandVo;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
@@ -181,7 +182,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
 
     @CacheEvict(value = ProductBrand.CACHE_NAME, key = "#key")
     @Override
-    public void cleanCacheByKey(String key) {
+    public void cleanCacheByKey(Serializable key) {
 
     }
 }

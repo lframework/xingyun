@@ -21,6 +21,7 @@ import com.lframework.xingyun.basedata.service.shop.IShopService;
 import com.lframework.xingyun.basedata.vo.shop.CreateShopVo;
 import com.lframework.xingyun.basedata.vo.shop.QueryShopVo;
 import com.lframework.xingyun.basedata.vo.shop.UpdateShopVo;
+import java.io.Serializable;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -67,8 +68,8 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
     if (!StringUtil.isBlank(vo.getDeptId())) {
       data.setDeptId(vo.getDeptId());
     }
-    if (vo.getLon() != null) {
-      data.setLon(vo.getLon());
+    if (vo.getLng() != null) {
+      data.setLng(vo.getLng());
     }
     if (vo.getLat() != null) {
       data.setLat(vo.getLat());
@@ -99,7 +100,7 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
         .set(Shop::getCode, vo.getCode())
         .set(Shop::getName, vo.getName())
         .set(Shop::getDeptId, StringUtil.isBlank(vo.getDeptId()) ? null : vo.getDeptId())
-        .set(Shop::getLon, vo.getLon() == null ? null : vo.getLon())
+        .set(Shop::getLng, vo.getLng() == null ? null : vo.getLng())
         .set(Shop::getLat, vo.getLat() == null ? null : vo.getLat())
         .set(Shop::getAvailable, vo.getAvailable())
         .set(Shop::getDescription, StringUtil.isBlank(vo.getDescription()) ? null : vo.getDescription())
@@ -113,7 +114,7 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
 
   @CacheEvict(value = Shop.CACHE_NAME, key = "#key")
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 }

@@ -26,6 +26,7 @@ import com.lframework.xingyun.basedata.service.product.IProductSalePropItemServi
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.CreateProductSalePropItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.QueryProductSalePropItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.UpdateProductSalePropItemVo;
+import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -170,7 +171,7 @@ public class ProductSalePropItemServiceImpl extends
   @CacheEvict(value = {ProductSalePropItem.CACHE_NAME,
       ProductSalePropItem.CACHE_NAME_BY_PRODUCT_ID}, key = "#key")
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 }

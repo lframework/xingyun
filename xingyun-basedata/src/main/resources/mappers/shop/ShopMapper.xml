@@ -7,7 +7,7 @@
     <result column="code" property="code"/>
     <result column="name" property="name"/>
     <result column="dept_id" property="deptId"/>
-    <result column="lon" property="lon"/>
+    <result column="lng" property="lng"/>
     <result column="lat" property="lat"/>
     <result column="description" property="description"/>
     <result column="available" property="available"/>
@@ -23,7 +23,7 @@
       tb.code,
       tb.name,
       tb.dept_id,
-      tb.lon,
+      tb.lng,
       tb.lat,
       tb.description,
       tb.available,

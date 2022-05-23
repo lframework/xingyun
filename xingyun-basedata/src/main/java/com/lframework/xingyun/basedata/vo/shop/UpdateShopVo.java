@@ -46,7 +46,7 @@ public class UpdateShopVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("经度")
   @TypeMismatch(message = "经度格式有误！")
-  private BigDecimal lon;
+  private BigDecimal lng;
 
   /**
    * 纬度

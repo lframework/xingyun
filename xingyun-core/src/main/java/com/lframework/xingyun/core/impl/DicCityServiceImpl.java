@@ -5,6 +5,7 @@ import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.entity.DicCity;
 import com.lframework.xingyun.core.mappers.DicCityMapper;
 import com.lframework.xingyun.core.service.IDicCityService;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +56,7 @@ public class DicCityServiceImpl extends BaseMpServiceImpl<DicCityMapper, DicCity
 
   @CacheEvict(value = DicCityDto.CACHE_NAME, key = "#key")
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 }

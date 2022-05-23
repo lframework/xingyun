@@ -12,6 +12,7 @@ import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.mappers.TakeStockConfigMapper;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
 import com.lframework.xingyun.sc.vo.stock.take.config.UpdateTakeStockConfigVo;
+import java.io.Serializable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ public class TakeStockConfigServiceImpl extends
 
   @CacheEvict(value = TakeStockConfig.CACHE_NAME, key = "'config'")
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 }

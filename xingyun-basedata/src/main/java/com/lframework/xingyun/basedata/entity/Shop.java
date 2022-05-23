@@ -47,7 +47,7 @@ public class Shop extends BaseEntity implements BaseDto {
   /**
    * 经度
    */
-  private BigDecimal lon;
+  private BigDecimal lng;
 
   /**
    * 纬度

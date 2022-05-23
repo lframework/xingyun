@@ -21,6 +21,7 @@ import com.lframework.xingyun.basedata.service.product.IProductPolyService;
 import com.lframework.xingyun.basedata.service.product.IProductPropertyItemService;
 import com.lframework.xingyun.basedata.service.product.IProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.poly.property.CreateProductPolyPropertyVo;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -189,7 +190,7 @@ public class ProductPolyPropertyServiceImpl extends
 
   @CacheEvict(value = ProductPolyPropertyDto.CACHE_NAME, key = "#key")
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 }

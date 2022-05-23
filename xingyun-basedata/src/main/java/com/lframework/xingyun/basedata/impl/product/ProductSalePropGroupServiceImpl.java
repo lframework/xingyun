@@ -25,6 +25,7 @@ import com.lframework.xingyun.basedata.vo.product.saleprop.CreateProductSaleProp
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.UpdateProductSalePropGroupVo;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
@@ -181,7 +182,7 @@ public class ProductSalePropGroupServiceImpl extends
 
   @CacheEvict(value = ProductSalePropGroup.CACHE_NAME, key = "#key")
   @Override
-  public void cleanCacheByKey(String key) {
+  public void cleanCacheByKey(Serializable key) {
 
   }
 }

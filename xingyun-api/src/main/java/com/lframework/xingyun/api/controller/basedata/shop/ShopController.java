@@ -73,7 +73,7 @@ public class ShopController extends DefaultBaseController {
   @GetMapping
   public InvokeResult<GetShopBo> get(@NotBlank(message = "id不能为空！") String id) {
 
-    Shop data = shopService.getById(id);
+    Shop data = shopService.findById(id);
     if (data == null) {
       throw new DefaultClientException("门店不存在！");
     }

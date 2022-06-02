@@ -118,6 +118,12 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         if (vo.getJoinDay() != null) {
             data.setJoinDay(vo.getJoinDay());
         }
+        if (!StringUtil.isBlank(vo.getShopId())) {
+            data.setShopId(vo.getShopId());
+        }
+        if (!StringUtil.isBlank(vo.getGuiderId())) {
+            data.setGuiderId(vo.getGuiderId());
+        }
         data.setAvailable(Boolean.TRUE);
         data.setDescription(StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
@@ -153,6 +159,8 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
                 .set(Member::getEmail, !StringUtil.isBlank(vo.getEmail()) ? vo.getEmail() : null)
                 .set(Member::getBirthday, vo.getBirthday() != null ? vo.getBirthday() : null)
                 .set(Member::getJoinDay, vo.getJoinDay() != null ? vo.getJoinDay() : null)
+                .set(Member::getShopId, !StringUtil.isBlank(vo.getShopId()) ? vo.getShopId() : null)
+                .set(Member::getGuiderId, !StringUtil.isBlank(vo.getGuiderId()) ? vo.getGuiderId() : null)
                 .set(Member::getAvailable, vo.getAvailable()).set(Member::getDescription,
                         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
                 .eq(Member::getId, vo.getId());

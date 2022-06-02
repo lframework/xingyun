@@ -59,12 +59,25 @@ public class CreateMemberVo implements BaseVo, Serializable {
   @ApiModelProperty("出生日期")
   private LocalDate birthday;
 
+
   /**
    * 入会日期
    */
   @ApiModelProperty(value = "入会日期", required = true)
   @NotNull(message = "入会日期不能为空！")
   private LocalDate joinDay;
+
+  /**
+   * 所属门店ID
+   */
+  @ApiModelProperty("所属门店ID")
+  private String shopId;
+
+  /**
+   * 所属导购ID
+   */
+  @ApiModelProperty("所属导购ID")
+  private String guiderId;
 
   /**
    * 备注

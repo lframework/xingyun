@@ -2,8 +2,14 @@ package com.lframework.xingyun.api.bo.basedata.member;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
+import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.dto.UserDto;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Member;
+import com.lframework.xingyun.basedata.entity.Shop;
+import com.lframework.xingyun.basedata.service.shop.IShopService;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -65,6 +71,30 @@ public class GetMemberBo extends BaseBo<Member> {
     private LocalDate joinDay;
 
     /**
+     * 所属门店ID
+     */
+    @ApiModelProperty("所属门店ID")
+    private String shopId;
+
+    /**
+     * 所属门店名称
+     */
+    @ApiModelProperty("所属门店名称")
+    private String shopName;
+
+    /**
+     * 所属导购ID
+     */
+    @ApiModelProperty("所属导购ID")
+    private String guiderId;
+
+    /**
+     * 所属导购名称
+     */
+    @ApiModelProperty("所属导购名称")
+    private String guiderName;
+
+    /**
      * 状态
      */
     @ApiModelProperty("状态")
@@ -95,5 +125,17 @@ public class GetMemberBo extends BaseBo<Member> {
     protected void afterInit(Member dto) {
 
         this.gender = dto.getGender().getCode();
+
+        if (!StringUtil.isBlank(dto.getShopId())) {
+            IShopService shopService = ApplicationUtil.getBean(IShopService.class);
+            Shop shop = shopService.findById(dto.getShopId());
+            this.shopName = shop.getName();
+        }
+
+        if (!StringUtil.isBlank(dto.getGuiderId())) {
+            IUserService userService = ApplicationUtil.getBean(IUserService.class);
+            UserDto guider = userService.findById(dto.getGuiderId());
+            this.guiderName = guider.getName();
+        }
     }
 }

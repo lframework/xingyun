@@ -74,6 +74,18 @@ public class UpdateMemberVo implements BaseVo, Serializable {
   private LocalDate joinDay;
 
   /**
+   * 所属门店ID
+   */
+  @ApiModelProperty("所属门店ID")
+  private String shopId;
+
+  /**
+   * 所属导购ID
+   */
+  @ApiModelProperty("所属导购ID")
+  private String guiderId;
+
+  /**
    * 状态
    */
   @ApiModelProperty(value = "状态", required = true)

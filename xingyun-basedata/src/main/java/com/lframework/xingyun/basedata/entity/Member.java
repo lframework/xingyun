@@ -67,6 +67,16 @@ public class Member extends BaseEntity implements BaseDto {
   private LocalDate joinDay;
 
   /**
+   * 所属门店
+   */
+  private String shopId;
+
+  /**
+   * 所属导购
+   */
+  private String guiderId;
+
+  /**
    * 状态
    */
   private Boolean available;

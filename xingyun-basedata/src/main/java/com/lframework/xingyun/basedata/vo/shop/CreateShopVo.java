@@ -1,5 +1,6 @@
 package com.lframework.xingyun.basedata.vo.shop;
 
+import com.lframework.starter.web.components.validation.IsCode;
 import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,6 +19,7 @@ public class CreateShopVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "编号", required = true)
   @NotBlank(message = "请输入编号！")
+  @IsCode
   private String code;
 
   /**

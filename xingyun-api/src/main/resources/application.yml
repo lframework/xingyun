@@ -184,3 +184,13 @@ bpm:
 #会话配置
 session:
   token-key: X-Auth-Token
+
+#缓存TTL配置 单位：秒
+cache:
+  #公共缓存过期时间
+  ttl: 1800
+  #特殊指定缓存过期时间，以下示例为cacheName的过期时间是3600秒、cacheName2的过期是7200秒。cacheName、cacheName2对应的是@Cacheable的Value属性
+  #regions:
+  #  cacheName: 3600
+  #  cacheName2: 7200
+

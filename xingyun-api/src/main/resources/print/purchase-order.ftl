@@ -19,61 +19,61 @@
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
             单据号
         </td>
-        <td colspan="10" class="et3" style="border-width: 1px; border-style: solid;">${code}</td>
+        <td colspan="10" class="et3" style="border-width: 1px; border-style: solid;">${code!''}</td>
     </tr>
     <tr height="24" style="height:14.40pt;">
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
             仓库编号
         </td>
-        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${scCode}</td>
+        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${scCode!''}</td>
         <td class="et2" x:str="" style="border-width: 1px; border-style: solid;">
             仓库名称
         </td>
-        <td colspan="3" class="et3" style="border-width: 1px; border-style: solid;">${scName}</td>
+        <td colspan="3" class="et3" style="border-width: 1px; border-style: solid;">${scName!''}</td>
         <td colspan="2" class="et2" x:str="" style="border-width: 1px; border-style: solid;">
             预计到货日期
         </td>
-        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${expectArriveDate}</td>
+        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${expectArriveDate!''}</td>
     </tr>
     <tr height="24" style="height:14.40pt;">
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
             供应商编号
         </td>
-        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${supplierCode}</td>
+        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${supplierCode!''}</td>
         <td class="et2" x:str="" style="border-width: 1px; border-style: solid;">
             供应商名称
         </td>
-        <td colspan="3" class="et3" style="border-width: 1px; border-style: solid;">${supplierName}</td>
+        <td colspan="3" class="et3" style="border-width: 1px; border-style: solid;">${supplierName!''}</td>
         <td colspan="2" class="et2" x:str="" style="border-width: 1px; border-style: solid;">
             采购员
         </td>
-        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${purchaserName}</td>
+        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${purchaserName!''}</td>
     </tr>
     <tr height="24" style="height:14.40pt;">
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
             创建人
         </td>
-        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${createBy}</td>
+        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${createBy!''}</td>
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
             创建时间
         </td>
-        <td colspan="7" class="et3" style="border-width: 1px; border-style: solid;">${createTime}</td>
+        <td colspan="7" class="et3" style="border-width: 1px; border-style: solid;">${createTime!''}</td>
     </tr>
     <tr height="24" style="height:14.40pt;">
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
             审核人
         </td>
-        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${approveBy}</td>
+        <td colspan="2" class="et3" style="border-width: 1px; border-style: solid;">${approveBy!''}</td>
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
             审核时间
         </td>
-        <td colspan="7" class="et3" style="border-width: 1px; border-style: solid;">${approveTime}</td>
+        <td colspan="7" class="et3" style="border-width: 1px; border-style: solid;">${approveTime!''}</td>
     </tr>
     <tr height="24" style="height:14.40pt;">
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
             备注
         </td>
-        <td colspan="10" class="et3" style="border-width: 1px; border-style: solid;">${description}</td>
+        <td colspan="10" class="et3" style="border-width: 1px; border-style: solid;">${description!''}</td>
     </tr>
     <tr height="24" style="height:14.40pt;">
         <td class="et2" height="14" x:str="" style="border-width: 1px; border-style: solid;">
@@ -101,13 +101,13 @@
     <#if details??>
         <#list details as detail>
     <tr height="24" style="height:14.40pt;">
-        <td class="et5" height="14" style="border-width: 1px; border-style: solid;">${detail.productCode}</td>
-        <td colspan="3" class="et6" style="border-width: 1px; border-style: solid; border-right-color: rgb(0, 0, 0);">${detail.productName}</td>
-        <td colspan="2" class="et6" style="border-width: 1px; border-style: solid; border-right-color: rgb(0, 0, 0);">${detail.skuCode}</td>
-        <td colspan="2" class="et6" style="border-width: 1px; border-style: solid; border-right-color: rgb(0, 0, 0);">${detail.externalCode}</td>
-        <td class="et5" style="border-width: 1px; border-style: solid;">${detail.purchasePrice}</td>
-        <td class="et5" style="border-width: 1px; border-style: solid;">${detail.purchaseNum}</td>
-        <td class="et5" style="border-width: 1px; border-style: solid;">${detail.purchaseAmount}</td>
+        <td class="et5" height="14" style="border-width: 1px; border-style: solid;">${detail.productCode!''}</td>
+        <td colspan="3" class="et6" style="border-width: 1px; border-style: solid; border-right-color: rgb(0, 0, 0);">${detail.productName!''}</td>
+        <td colspan="2" class="et6" style="border-width: 1px; border-style: solid; border-right-color: rgb(0, 0, 0);">${detail.skuCode!''}</td>
+        <td colspan="2" class="et6" style="border-width: 1px; border-style: solid; border-right-color: rgb(0, 0, 0);">${detail.externalCode!''}</td>
+        <td class="et5" style="border-width: 1px; border-style: solid;">${detail.purchasePrice!''}</td>
+        <td class="et5" style="border-width: 1px; border-style: solid;">${detail.purchaseNum!''}</td>
+        <td class="et5" style="border-width: 1px; border-style: solid;">${detail.purchaseAmount!''}</td>
     </tr>
         </#list>
     </#if>

@@ -42,12 +42,6 @@
             <groupId>com.lframework</groupId>
             <artifactId>gen</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.lframework</groupId>
-            <artifactId>xingyun-demo</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
 
     <build>

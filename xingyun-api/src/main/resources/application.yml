@@ -52,7 +52,7 @@ knife4j:
     # 是否自定义Footer
     enableFooterCustom: true
     # 自定义Footer内容(支持Markdown语法)
-    footerCustomContent: GNU Lesser General Public License v3.0 | Copyright  2019-[星云ERP](https://gitee.com/lframework/xingyun)
+    footerCustomContent: Apache License 2.0 | Copyright  2019-[星云ERP](https://gitee.com/lframework/xingyun)
     # 是否开启调试
     enableDebug: true
     # 是否显示OpenAPI原始结构的Tab框，默认显示
@@ -76,7 +76,6 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: false
-
 
 #默认配置
 default-setting:

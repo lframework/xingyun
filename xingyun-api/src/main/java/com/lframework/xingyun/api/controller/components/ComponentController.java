@@ -3,11 +3,10 @@ package com.lframework.xingyun.api.controller.components;
 import cn.hutool.crypto.SecureUtil;
 import com.lframework.common.exceptions.ClientException;
 import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.starter.mybatis.entity.SysParameter;
-import com.lframework.starter.mybatis.service.system.ISysParameterService;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.service.SysParameterService;
 import com.lframework.starter.web.utils.HttpUtil;
 import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.xingyun.api.bo.components.MapLocationBo;
@@ -35,27 +34,27 @@ import org.springframework.web.bind.annotation.RestController;
 public class ComponentController extends DefaultBaseController {
 
   @Autowired
-  private ISysParameterService sysParameterService;
+  private SysParameterService sysParameterService;
 
   @ApiOperation("根据地址查询经纬度")
   @GetMapping("/map/location")
   public InvokeResult<MapLocationBo> getMapLocation(@NotEmpty(message = "地址不能为空！") String address) {
 
-    SysParameter key = sysParameterService.findRequiredByKey("tx-map.key");
-    SysParameter secret = sysParameterService.findRequiredByKey("tx-map.secret");
+    String key = sysParameterService.findRequiredByKey("tx-map.key");
+    String secret = sysParameterService.findRequiredByKey("tx-map.secret");
 
     // 请求腾讯地图WebService Api
     // Api文档地址：https://lbs.qq.com/service/webService/webServiceGuide/webServiceGeocoder
     String baseUrl = "https://apis.map.qq.com/";
     String uri = "/ws/geocoder/v1/";
-    String reqParams = "?address=" + address + "&key=" + key.getPmValue();
+    String reqParams = "?address=" + address + "&key=" + key;
 
     // Api使用签名方式
     // 签名文档：https://lbs.qq.com/faq/serverFaq/webServiceKey
-    String sign = SecureUtil.md5(uri + reqParams + secret.getPmValue());
+    String sign = SecureUtil.md5(uri + reqParams + secret);
     Map<String, Object> reqMap = new HashMap<>();
     reqMap.put("address", address);
-    reqMap.put("key", key.getPmValue());
+    reqMap.put("key", key);
     reqMap.put("sig", sign);
 
     try {

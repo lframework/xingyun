@@ -7,9 +7,9 @@ public enum ColumnType implements BaseEnum<Integer> {
   MULTIPLE(1, "多选"), SINGLE(2, "单选"), CUSTOM(3, "手动录入");
 
   @EnumValue
-  private Integer code;
+  private final Integer code;
 
-  private String desc;
+  private final String desc;
 
   ColumnType(Integer code, String desc) {
 

@@ -8,11 +8,13 @@ import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.receive.GetPaymentDateBo;
 import com.lframework.xingyun.api.bo.retail.out.*;
 import com.lframework.xingyun.api.model.retail.out.RetailOutSheetExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.events.member.MemberConsumeEvent;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
@@ -229,6 +231,13 @@ public class RetailOutSheetController extends DefaultBaseController {
     public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassRetailOutSheetVo vo) {
 
         retailOutSheetService.approvePass(vo);
+
+        RetailOutSheet outSheet = retailOutSheetService.getById(vo.getId());
+
+        MemberConsumeEvent event = new MemberConsumeEvent(this);
+        event.setId(vo.getId());
+        event.setAmount(outSheet.getTotalAmount());
+        ApplicationUtil.publishEvent(event);
 
         return InvokeResultBuilder.success();
     }

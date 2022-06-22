@@ -7,6 +7,7 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.api.bo.basedata.member.GetMemberBo;
 import com.lframework.xingyun.api.bo.basedata.member.QueryMemberBo;
 import com.lframework.xingyun.basedata.entity.Member;
@@ -14,6 +15,8 @@ import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
 import com.lframework.xingyun.basedata.vo.member.UpdateMemberVo;
+import com.lframework.xingyun.core.events.member.CreateMemberEvent;
+import com.lframework.xingyun.core.events.member.UpdateMemberEvent;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -131,7 +134,11 @@ public class MemberController extends DefaultBaseController {
     @PostMapping
     public InvokeResult<Void> create(@Valid CreateMemberVo vo) {
 
-        memberService.create(vo);
+        String id = memberService.create(vo);
+
+        CreateMemberEvent event = new CreateMemberEvent(this);
+        event.setId(id);
+        ApplicationUtil.publishEvent(event);
 
         return InvokeResultBuilder.success();
     }
@@ -147,6 +154,10 @@ public class MemberController extends DefaultBaseController {
         memberService.update(vo);
 
         memberService.cleanCacheByKey(vo.getId());
+
+        UpdateMemberEvent event = new UpdateMemberEvent(this);
+        event.setId(vo.getId());
+        ApplicationUtil.publishEvent(event);
 
         return InvokeResultBuilder.success();
     }

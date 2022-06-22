@@ -8,9 +8,9 @@ public enum ColumnDataType implements BaseEnum<Integer> {
       "日期时间型");
 
   @EnumValue
-  private Integer code;
+  private final Integer code;
 
-  private String desc;
+  private final String desc;
 
   ColumnDataType(Integer code, String desc) {
 

@@ -7,9 +7,9 @@ public enum SettleType implements BaseEnum<Integer> {
   ARBITRARILY(1, "任意指定"), CASH_ON_DELIVERY(2, "货到付款");
 
   @EnumValue
-  private Integer code;
+  private final Integer code;
 
-  private String desc;
+  private final String desc;
 
   SettleType(Integer code, String desc) {
 

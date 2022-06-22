@@ -8,12 +8,14 @@ import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.retail.returned.GetRetailReturnBo;
 import com.lframework.xingyun.api.bo.retail.returned.PrintRetailReturnBo;
 import com.lframework.xingyun.api.bo.retail.returned.QueryRetailReturnBo;
 import com.lframework.xingyun.api.model.retail.returned.RetailReturnExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.events.member.MemberReturnEvent;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.RetailReturn;
 import com.lframework.xingyun.sc.service.retail.IRetailReturnService;
@@ -174,6 +176,13 @@ public class RetailReturnController extends DefaultBaseController {
     public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassRetailReturnVo vo) {
 
         retailReturnService.approvePass(vo);
+
+        RetailReturn r = retailReturnService.getById(vo.getId());
+
+        MemberReturnEvent event = new MemberReturnEvent(this);
+        event.setId(r.getId());
+        event.setAmount(r.getTotalAmount());
+        ApplicationUtil.publishEvent(event);
 
         return InvokeResultBuilder.success();
     }

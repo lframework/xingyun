@@ -172,7 +172,7 @@ public class MemberLevelServiceImpl extends
     List<MemberLevel> levelList = this.list(queryWrapper);
 
     // 有默认等级，一定不会为空的
-    if(levelList.size() == 1) {
+    if (levelList.size() == 1) {
       return levelList.get(0);
     }
 

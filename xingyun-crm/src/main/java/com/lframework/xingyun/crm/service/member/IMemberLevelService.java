@@ -6,7 +6,6 @@ import com.lframework.xingyun.crm.entity.MemberLevel;
 import com.lframework.xingyun.crm.vo.member.level.CreateMemberLevelVo;
 import com.lframework.xingyun.crm.vo.member.level.QueryMemberLevelVo;
 import com.lframework.xingyun.crm.vo.member.level.UpdateMemberLevelVo;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -56,12 +55,14 @@ public interface IMemberLevelService extends BaseMpService<MemberLevel> {
 
   /**
    * 获取默认会员等级
+   *
    * @return
    */
   MemberLevel getDefaultLevel();
 
   /**
    * 根据经验值匹配当前等级
+   *
    * @param exp
    * @return
    */

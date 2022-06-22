@@ -8,6 +8,7 @@ public interface CrmMemberMapper extends BaseMapper<CrmMember> {
 
   /**
    * 增加经验值
+   *
    * @param memberId
    * @param exp
    */
@@ -15,6 +16,7 @@ public interface CrmMemberMapper extends BaseMapper<CrmMember> {
 
   /**
    * 减少经验值
+   *
    * @param memberId
    * @param exp
    */

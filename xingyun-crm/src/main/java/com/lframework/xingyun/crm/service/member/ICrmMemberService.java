@@ -13,6 +13,7 @@ public interface ICrmMemberService extends BaseMpService<CrmMember> {
 
   /**
    * 提升等级
+   *
    * @param memberId
    * @param amount
    */
@@ -20,6 +21,7 @@ public interface ICrmMemberService extends BaseMpService<CrmMember> {
 
   /**
    * 降级等级
+   *
    * @param memberId
    * @param amount
    */
@@ -27,6 +29,7 @@ public interface ICrmMemberService extends BaseMpService<CrmMember> {
 
   /**
    * 提升等级
+   *
    * @param memberId
    * @param exp
    */
@@ -34,6 +37,7 @@ public interface ICrmMemberService extends BaseMpService<CrmMember> {
 
   /**
    * 降级等级
+   *
    * @param memberId
    * @param exp
    */

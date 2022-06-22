@@ -1,7 +1,6 @@
 package com.lframework.xingyun.crm.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data

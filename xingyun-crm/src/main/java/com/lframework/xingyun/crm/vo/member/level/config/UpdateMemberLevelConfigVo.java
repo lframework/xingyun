@@ -20,7 +20,7 @@ public class UpdateMemberLevelConfigVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("每消费1元获得的经验值")
   @NotNull(message = "每消费1元获得的经验值不能为空！")
-  @TypeMismatch(message = "每消费1元获得的经验值必须为数字！")
+  @TypeMismatch(message = "每消费1元获得的经验值必须为整数！")
   @Min(value = 0, message = "每消费1元获得的经验值不允许小于0！")
   private Integer exp;
 

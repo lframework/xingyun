@@ -8,8 +8,11 @@ import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.basedata.member.GetMemberBo;
 import com.lframework.xingyun.api.bo.basedata.member.QueryMemberBo;
+import com.lframework.xingyun.api.excel.basedata.member.MemberImportListener;
+import com.lframework.xingyun.api.excel.basedata.member.MemberImportModel;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +40,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 会员管理
@@ -48,117 +53,137 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/basedata/member")
 public class MemberController extends DefaultBaseController {
 
-    @Autowired
-    private IMemberService memberService;
+  @Autowired
+  private IMemberService memberService;
 
-    /**
-     * 会员列表
-     */
-    @ApiOperation("会员列表")
-    @PreAuthorize("@permission.valid('base-data:member:query','base-data:member:add','base-data:member:modify')")
-    @GetMapping("/query")
-    public InvokeResult<PageResult<QueryMemberBo>> query(@Valid QueryMemberVo vo) {
+  /**
+   * 会员列表
+   */
+  @ApiOperation("会员列表")
+  @PreAuthorize("@permission.valid('base-data:member:query','base-data:member:add','base-data:member:modify')")
+  @GetMapping("/query")
+  public InvokeResult<PageResult<QueryMemberBo>> query(@Valid QueryMemberVo vo) {
 
-        PageResult<Member> pageResult = memberService.query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<Member> pageResult = memberService.query(getPageIndex(vo), getPageSize(vo), vo);
 
-        List<Member> datas = pageResult.getDatas();
-        List<QueryMemberBo> results = null;
+    List<Member> datas = pageResult.getDatas();
+    List<QueryMemberBo> results = null;
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(QueryMemberBo::new).collect(Collectors.toList());
-        }
-
-        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(QueryMemberBo::new).collect(Collectors.toList());
     }
 
-    /**
-     * 查询会员
-     */
-    @ApiOperation("查询会员")
-    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-    @PreAuthorize("@permission.valid('base-data:member:query','base-data:member:add','base-data:member:modify')")
-    @GetMapping
-    public InvokeResult<GetMemberBo> get(@NotBlank(message = "ID不能为空！") String id) {
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
 
-        Member data = memberService.findById(id);
-        if (data == null) {
-            throw new DefaultClientException("会员不存在！");
-        }
+  /**
+   * 查询会员
+   */
+  @ApiOperation("查询会员")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @PreAuthorize("@permission.valid('base-data:member:query','base-data:member:add','base-data:member:modify')")
+  @GetMapping
+  public InvokeResult<GetMemberBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
-        GetMemberBo result = new GetMemberBo(data);
-
-        return InvokeResultBuilder.success(result);
+    Member data = memberService.findById(id);
+    if (data == null) {
+      throw new DefaultClientException("会员不存在！");
     }
 
-    /**
-     * 批量停用会员
-     */
-    @ApiOperation("批量停用会员")
-    @PreAuthorize("@permission.valid('base-data:member:modify')")
-    @PatchMapping("/unable/batch")
-    public InvokeResult<Void> batchUnable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的会员！") @RequestBody List<String> ids) {
+    GetMemberBo result = new GetMemberBo(data);
 
-        memberService.batchUnable(ids);
+    return InvokeResultBuilder.success(result);
+  }
 
-        for (String id : ids) {
-            memberService.cleanCacheByKey(id);
-        }
+  /**
+   * 批量停用会员
+   */
+  @ApiOperation("批量停用会员")
+  @PreAuthorize("@permission.valid('base-data:member:modify')")
+  @PatchMapping("/unable/batch")
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的会员！") @RequestBody List<String> ids) {
 
-        return InvokeResultBuilder.success();
+    memberService.batchUnable(ids);
+
+    for (String id : ids) {
+      memberService.cleanCacheByKey(id);
     }
 
-    /**
-     * 批量启用会员
-     */
-    @ApiOperation("批量启用会员")
-    @PreAuthorize("@permission.valid('base-data:member:modify')")
-    @PatchMapping("/enable/batch")
-    public InvokeResult<Void> batchEnable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的会员！") @RequestBody List<String> ids) {
+    return InvokeResultBuilder.success();
+  }
 
-        memberService.batchEnable(ids);
+  /**
+   * 批量启用会员
+   */
+  @ApiOperation("批量启用会员")
+  @PreAuthorize("@permission.valid('base-data:member:modify')")
+  @PatchMapping("/enable/batch")
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的会员！") @RequestBody List<String> ids) {
 
-        for (String id : ids) {
-            memberService.cleanCacheByKey(id);
-        }
+    memberService.batchEnable(ids);
 
-        return InvokeResultBuilder.success();
+    for (String id : ids) {
+      memberService.cleanCacheByKey(id);
     }
 
-    /**
-     * 新增会员
-     */
-    @ApiOperation("新增会员")
-    @PreAuthorize("@permission.valid('base-data:member:add')")
-    @PostMapping
-    public InvokeResult<Void> create(@Valid CreateMemberVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        String id = memberService.create(vo);
+  /**
+   * 新增会员
+   */
+  @ApiOperation("新增会员")
+  @PreAuthorize("@permission.valid('base-data:member:add')")
+  @PostMapping
+  public InvokeResult<Void> create(@Valid CreateMemberVo vo) {
 
-        CreateMemberEvent event = new CreateMemberEvent(this);
-        event.setId(id);
-        ApplicationUtil.publishEvent(event);
+    String id = memberService.create(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    CreateMemberEvent event = new CreateMemberEvent(this);
+    event.setId(id);
+    ApplicationUtil.publishEvent(event);
 
-    /**
-     * 修改会员
-     */
-    @ApiOperation("修改会员")
-    @PreAuthorize("@permission.valid('base-data:member:modify')")
-    @PutMapping
-    public InvokeResult<Void> update(@Valid UpdateMemberVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        memberService.update(vo);
+  /**
+   * 修改会员
+   */
+  @ApiOperation("修改会员")
+  @PreAuthorize("@permission.valid('base-data:member:modify')")
+  @PutMapping
+  public InvokeResult<Void> update(@Valid UpdateMemberVo vo) {
 
-        memberService.cleanCacheByKey(vo.getId());
+    memberService.update(vo);
 
-        UpdateMemberEvent event = new UpdateMemberEvent(this);
-        event.setId(vo.getId());
-        ApplicationUtil.publishEvent(event);
+    memberService.cleanCacheByKey(vo.getId());
 
-        return InvokeResultBuilder.success();
-    }
+    UpdateMemberEvent event = new UpdateMemberEvent(this);
+    event.setId(vo.getId());
+    ApplicationUtil.publishEvent(event);
+
+    return InvokeResultBuilder.success();
+  }
+
+  @ApiOperation("下载导入模板")
+  @PreAuthorize("@permission.valid('base-data:member:import')")
+  @GetMapping("/import/template")
+  public void downloadImportTemplate() {
+    ExcelUtil.exportXls("会员导入模板", MemberImportModel.class);
+  }
+
+  @ApiOperation("导入")
+  @PreAuthorize("@permission.valid('base-data:member:import')")
+  @PostMapping("/import")
+  public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,
+      @NotNull(message = "请上传文件") MultipartFile file) {
+
+    MemberImportListener listener = new MemberImportListener();
+    listener.setTaskId(id);
+    ExcelUtil.read(file, MemberImportModel.class, listener).sheet().doRead();
+
+    return InvokeResultBuilder.success();
+  }
 }

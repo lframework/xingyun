@@ -14,7 +14,7 @@ import com.lframework.xingyun.api.bo.stock.take.pre.GetPreTakeStockSheetBo;
 import com.lframework.xingyun.api.bo.stock.take.pre.PreTakeStockProductBo;
 import com.lframework.xingyun.api.bo.stock.take.pre.QueryPreTakeStockSheetBo;
 import com.lframework.xingyun.api.bo.stock.take.pre.QueryPreTakeStockSheetProductBo;
-import com.lframework.xingyun.api.model.stock.take.pre.PreTakeStockSheetExportModel;
+import com.lframework.xingyun.api.excel.stock.take.pre.PreTakeStockSheetExportModel;
 import com.lframework.xingyun.basedata.dto.product.info.PreTakeStockProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryPreTakeStockProductVo;
@@ -28,18 +28,27 @@ import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
-import io.swagger.annotations.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 预先盘点单 Controller

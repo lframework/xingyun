@@ -9,22 +9,21 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.stock.product.log.QueryProductStockLogBo;
-import com.lframework.xingyun.api.model.stock.ProductStockLogExportModel;
+import com.lframework.xingyun.api.excel.stock.ProductStockLogExportModel;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.service.stock.IProductStockLogService;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 商品库存变动记录

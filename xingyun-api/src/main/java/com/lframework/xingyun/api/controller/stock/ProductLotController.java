@@ -9,22 +9,21 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.stock.lot.QueryProductLotBo;
-import com.lframework.xingyun.api.model.stock.ProductLotExportModel;
+import com.lframework.xingyun.api.excel.stock.ProductLotExportModel;
 import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.service.stock.IProductLotService;
 import com.lframework.xingyun.sc.vo.stock.lot.QueryProductLotVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 商品批次

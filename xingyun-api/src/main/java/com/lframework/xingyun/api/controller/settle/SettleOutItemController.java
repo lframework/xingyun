@@ -11,7 +11,7 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.settle.item.out.GetSettleOutItemBo;
 import com.lframework.xingyun.api.bo.settle.item.out.QuerySettleOutItemBo;
-import com.lframework.xingyun.api.model.settle.item.out.SettleOutItemExportModel;
+import com.lframework.xingyun.api.excel.settle.item.out.SettleOutItemExportModel;
 import com.lframework.xingyun.settle.entity.SettleOutItem;
 import com.lframework.xingyun.settle.service.ISettleOutItemService;
 import com.lframework.xingyun.settle.vo.item.out.CreateSettleOutItemVo;

@@ -4,9 +4,11 @@ import cn.hutool.crypto.SecureUtil;
 import com.lframework.common.exceptions.ClientException;
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.security.controller.DefaultBaseController;
+import com.lframework.starter.web.bo.ExcelImportBo;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.service.SysParameterService;
+import com.lframework.starter.web.utils.ExcelImportUtil;
 import com.lframework.starter.web.utils.HttpUtil;
 import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.xingyun.api.bo.components.MapLocationBo;
@@ -15,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,13 @@ public class ComponentController extends DefaultBaseController {
 
   @Autowired
   private SysParameterService sysParameterService;
+
+  @ApiOperation("查询导入Excel任务")
+  @GetMapping("/import/task")
+  public InvokeResult<ExcelImportBo> getExcelImportTask(@NotBlank(message = "ID不能为空！") String id) {
+
+    return InvokeResultBuilder.success(ExcelImportUtil.getTask(id));
+  }
 
   @ApiOperation("根据地址查询经纬度")
   @GetMapping("/map/location")

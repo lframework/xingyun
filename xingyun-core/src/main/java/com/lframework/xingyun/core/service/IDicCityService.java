@@ -25,8 +25,8 @@ public interface IDicCityService extends BaseMpService<DicCity> {
   /**
    * 根据ID查询链路数据
    *
-   * @param id
-   * @return
+   * @param id 末级ID
+   * @return 返回值顺序：省、市、区
    */
   List<DicCityDto> getChainById(String id);
 }

@@ -1,27 +1,30 @@
-package com.lframework.xingyun.api.excel.basedata.storecenter;
+package com.lframework.xingyun.api.excel.basedata.customer;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.common.constants.PatternPool;
 import com.lframework.common.exceptions.impl.DefaultClientException;
+import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.RegUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.components.excel.ExcelImportListener;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.starter.web.utils.EnumUtil;
+import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.enums.SettleType;
+import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.IDicCityService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class StoreCenterImportListener extends ExcelImportListener<StoreCenterImportModel> {
+public class CustomerImportListener extends ExcelImportListener<CustomerImportModel> {
 
   @Override
-  protected void doInvoke(StoreCenterImportModel data, AnalysisContext context) {
+  protected void doInvoke(CustomerImportModel data, AnalysisContext context) {
     if (StringUtil.isBlank(data.getCode())) {
       throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“编号”不能为空");
     }
@@ -32,6 +35,20 @@ public class StoreCenterImportListener extends ExcelImportListener<StoreCenterIm
     if (StringUtil.isBlank(data.getName())) {
       throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
     }
+    if (StringUtil.isBlank(data.getMnemonicCode())) {
+      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“助记码”不能为空");
+    }
+    if (StringUtil.isBlank(data.getSettleType())) {
+      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“结账方式”不能为空");
+    }
+    SettleType settleType = EnumUtil.getByDesc(SettleType.class, data.getSettleType());
+    if (settleType == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“结账方式”只能填写“" + CollectionUtil.join(
+              EnumUtil.getDescs(SettleType.class), "、") + "”");
+    }
+    data.setSettleTypeEnum(settleType);
+
     if (!StringUtil.isBlank(data.getCity())) {
       String[] arr = data.getCity().split("/");
       if (arr.length != 3) {
@@ -66,10 +83,10 @@ public class StoreCenterImportListener extends ExcelImportListener<StoreCenterIm
       data.setAreaId(area.getId());
     }
 
-    if (data.getPeopleNum() != null) {
-      if (data.getPeopleNum() < 0) {
+    if (!StringUtil.isEmpty(data.getEmail())) {
+      if (!RegUtil.isMatch(PatternPool.EMAIL, data.getEmail())) {
         throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“仓库人数”不允许小于0");
+            "第" + context.readRowHolder().getRowIndex() + "行“电子邮箱”格式有误");
       }
     }
   }
@@ -77,47 +94,59 @@ public class StoreCenterImportListener extends ExcelImportListener<StoreCenterIm
   @Override
   protected void afterAllAnalysed(AnalysisContext context) {
 
-    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-    List<StoreCenterImportModel> datas = this.getDatas();
+    ICustomerService customerService = ApplicationUtil.getBean(ICustomerService.class);
+
+    List<CustomerImportModel> datas = this.getDatas();
     for (int i = 0; i < datas.size(); i++) {
-      StoreCenterImportModel data = datas.get(i);
+      CustomerImportModel data = datas.get(i);
 
-      Wrapper<StoreCenter> queryWrapper = Wrappers.lambdaQuery(StoreCenter.class)
-          .eq(StoreCenter::getCode, data.getCode());
-      StoreCenter record = storeCenterService.getOne(queryWrapper);
       boolean isInsert = false;
+      Wrapper<Customer> queryWrapper = Wrappers.lambdaQuery(Customer.class)
+          .eq(Customer::getCode, data.getCode());
+      Customer record = customerService.getOne(queryWrapper);
       if (record == null) {
-        record = new StoreCenter();
+        record = new Customer();
         record.setId(IdUtil.getId());
-
         isInsert = true;
       }
 
       record.setCode(data.getCode());
       record.setName(data.getName());
+      record.setMnemonicCode(data.getMnemonicCode());
       record.setContact(data.getContact());
       record.setTelephone(data.getTelephone());
+      record.setEmail(data.getEmail());
+      record.setZipCode(data.getZipCode());
+      record.setFax(data.getFax());
       record.setCityId(data.getAreaId());
       record.setAddress(data.getAddress());
-      record.setPeopleNum(data.getPeopleNum());
+      record.setReceiver(data.getReceiver());
+      record.setReceiveTelephone(data.getReceiveTelephone());
+      record.setReceiveAddress(data.getReceiveAddress());
+      record.setSettleType(data.getSettleTypeEnum());
+      record.setCreditCode(data.getCreditCode());
+      record.setTaxIdentifyNo(data.getTaxIdentifyNo());
+      record.setBankName(data.getBankName());
+      record.setAccountName(data.getAccountName());
+      record.setAccountNo(data.getAccountNo());
       record.setDescription(data.getDescription());
 
       if (isInsert) {
         record.setAvailable(Boolean.TRUE);
       }
 
-      storeCenterService.saveOrUpdate(record);
+      customerService.saveOrUpdate(record);
       data.setId(record.getId());
 
-      this.setSuccessProcessByIndex(i);
+      this.setSuccessProcess(i);
     }
   }
 
   @Override
   protected void doComplete() {
-    IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
-    for (StoreCenterImportModel data : this.getDatas()) {
-      storeCenterService.cleanCacheByKey(data.getId());
+    ICustomerService customerService = ApplicationUtil.getBean(ICustomerService.class);
+    for (CustomerImportModel data : this.getDatas()) {
+      customerService.cleanCacheByKey(data.getId());
     }
   }
 }

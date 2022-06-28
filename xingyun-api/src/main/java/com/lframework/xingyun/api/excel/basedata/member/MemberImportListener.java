@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.common.constants.PatternPool;
 import com.lframework.common.exceptions.impl.DefaultClientException;
+import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.DateUtil;
 import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.RegUtil;
@@ -14,12 +15,14 @@ import com.lframework.starter.mybatis.entity.DefaultSysUser;
 import com.lframework.starter.mybatis.enums.Gender;
 import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.shop.IShopService;
 import com.lframework.xingyun.core.events.member.CreateMemberEvent;
 import com.lframework.xingyun.core.events.member.UpdateMemberEvent;
+import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,20 +45,13 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
       throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“性别”不能为空");
     }
 
-    if (!Gender.UNKNOWN.getDesc().equals(data.getGender()) && !Gender.MAN.getDesc()
-        .equals(data.getGender()) && !Gender.FEMALE.getDesc().equals(data.getGender())) {
+    Gender gender = EnumUtil.getByDesc(Gender.class, data.getGender());
+    if (gender == null) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“性别”只能填写“" + Gender.UNKNOWN.getDesc()
-              + "、" + Gender.MAN.getDesc() + "、" + Gender.FEMALE.getDesc() + "”");
+          "第" + context.readRowHolder().getRowIndex() + "行“性别”只能填写“" + CollectionUtil.join(
+              EnumUtil.getDescs(Gender.class), "、") + "”");
     }
-
-    if (Gender.UNKNOWN.getDesc().equals(data.getGender())) {
-      data.setGenderEnum(Gender.UNKNOWN);
-    } else if (Gender.MAN.getDesc().equals(data.getGender())) {
-      data.setGenderEnum(Gender.MAN);
-    } else if (Gender.FEMALE.getDesc().equals(data.getGender())) {
-      data.setGenderEnum(Gender.FEMALE);
-    }
+    data.setGenderEnum(gender);
 
     if (!StringUtil.isEmpty(data.getEmail())) {
       if (!RegUtil.isMatch(PatternPool.EMAIL, data.getEmail())) {
@@ -87,6 +83,10 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
       }
       data.setGuiderId(guider.getId());
     }
+
+    if (data.getJoinDay() == null) {
+      data.setJoinDay(new Date());
+    }
   }
 
   @Override
@@ -95,7 +95,8 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
     IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
 
     List<MemberImportModel> datas = this.getDatas();
-    for (MemberImportModel data : datas) {
+    for (int i = 0; i < datas.size(); i++) {
+      MemberImportModel data = datas.get(i);
 
       boolean isInsert = false;
       Wrapper<Member> queryWrapper = Wrappers.lambdaQuery(Member.class)
@@ -125,12 +126,18 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
       data.setIsInsert(isInsert);
 
       memberService.saveOrUpdate(record);
+
+      this.setSuccessProcess(i);
     }
   }
 
   @Override
   protected void doComplete() {
+    IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
     List<MemberImportModel> datas = this.getDatas();
+    for (MemberImportModel data : datas) {
+      memberService.cleanCacheByKey(data.getId());
+    }
     for (MemberImportModel data : datas) {
       if (data.getIsInsert()) {
         CreateMemberEvent event = new CreateMemberEvent(this);

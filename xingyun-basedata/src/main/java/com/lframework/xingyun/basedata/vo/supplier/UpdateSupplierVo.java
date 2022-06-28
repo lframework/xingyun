@@ -42,7 +42,8 @@ public class UpdateSupplierVo implements BaseVo, Serializable {
   /**
    * 助记码
    */
-  @ApiModelProperty("助记码")
+  @ApiModelProperty(value = "助记码", required = true)
+  @NotBlank(message = "请输入助记码！")
   private String mnemonicCode;
 
   /**

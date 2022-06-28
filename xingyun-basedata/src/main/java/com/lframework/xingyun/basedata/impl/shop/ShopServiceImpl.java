@@ -1,5 +1,6 @@
 package com.lframework.xingyun.basedata.impl.shop;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
@@ -61,6 +62,11 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
   @Override
   public String create(CreateShopVo vo) {
 
+    Wrapper<Shop> checkWrapper = Wrappers.lambdaQuery(Shop.class).eq(Shop::getCode, vo.getCode());
+    if (this.count(checkWrapper) > 0) {
+      throw new DefaultClientException("编号重复，请重新输入！");
+    }
+
     Shop data = new Shop();
     data.setId(IdUtil.getId());
     data.setCode(vo.getCode());
@@ -96,6 +102,12 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
       throw new DefaultClientException("门店不存在！");
     }
 
+    Wrapper<Shop> checkWrapper = Wrappers.lambdaQuery(Shop.class).eq(Shop::getCode, vo.getCode())
+        .ne(Shop::getId, vo.getId());
+    if (this.count(checkWrapper) > 0) {
+      throw new DefaultClientException("编号重复，请重新输入！");
+    }
+
     LambdaUpdateWrapper<Shop> updateWrapper = Wrappers.lambdaUpdate(Shop.class)
         .set(Shop::getCode, vo.getCode())
         .set(Shop::getName, vo.getName())
@@ -103,7 +115,8 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
         .set(Shop::getLng, vo.getLng() == null ? null : vo.getLng())
         .set(Shop::getLat, vo.getLat() == null ? null : vo.getLat())
         .set(Shop::getAvailable, vo.getAvailable())
-        .set(Shop::getDescription, StringUtil.isBlank(vo.getDescription()) ? null : vo.getDescription())
+        .set(Shop::getDescription,
+            StringUtil.isBlank(vo.getDescription()) ? null : vo.getDescription())
         .eq(Shop::getId, vo.getId());
 
     getBaseMapper().update(updateWrapper);

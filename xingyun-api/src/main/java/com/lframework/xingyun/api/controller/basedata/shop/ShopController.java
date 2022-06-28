@@ -7,8 +7,11 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.basedata.shop.GetShopBo;
 import com.lframework.xingyun.api.bo.basedata.shop.QueryShopBo;
+import com.lframework.xingyun.api.excel.basedata.shop.ShopImportListener;
+import com.lframework.xingyun.api.excel.basedata.shop.ShopImportModel;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.shop.IShopService;
 import com.lframework.xingyun.basedata.vo.shop.CreateShopVo;
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 门店 Controller
@@ -107,6 +112,26 @@ public class ShopController extends DefaultBaseController {
     shopService.update(vo);
 
     shopService.cleanCacheByKey(vo.getId());
+
+    return InvokeResultBuilder.success();
+  }
+
+  @ApiOperation("下载导入模板")
+  @PreAuthorize("@permission.valid('base-data:shop:import')")
+  @GetMapping("/import/template")
+  public void downloadImportTemplate() {
+    ExcelUtil.exportXls("门店导入模板", ShopImportModel.class);
+  }
+
+  @ApiOperation("导入")
+  @PreAuthorize("@permission.valid('base-data:shop:import')")
+  @PostMapping("/import")
+  public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,
+      @NotNull(message = "请上传文件") MultipartFile file) {
+
+    ShopImportListener listener = new ShopImportListener();
+    listener.setTaskId(id);
+    ExcelUtil.read(file, ShopImportModel.class, listener).sheet().doRead();
 
     return InvokeResultBuilder.success();
   }

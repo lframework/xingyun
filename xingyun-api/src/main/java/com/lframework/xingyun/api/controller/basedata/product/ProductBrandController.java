@@ -9,9 +9,12 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.UploadUtil;
 import com.lframework.xingyun.api.bo.basedata.product.brand.GetProductBrandBo;
 import com.lframework.xingyun.api.bo.basedata.product.brand.QueryProductBrandBo;
+import com.lframework.xingyun.api.excel.basedata.product.brand.ProductBrandImportListener;
+import com.lframework.xingyun.api.excel.basedata.product.brand.ProductBrandImportModel;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.service.product.IProductBrandService;
 import com.lframework.xingyun.basedata.vo.product.brand.CreateProductBrandVo;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -175,6 +179,26 @@ public class ProductBrandController extends DefaultBaseController {
         productBrandService.update(vo);
 
         productBrandService.cleanCacheByKey(vo.getId());
+
+        return InvokeResultBuilder.success();
+    }
+
+    @ApiOperation("下载导入模板")
+    @PreAuthorize("@permission.valid('base-data:product:brand:import')")
+    @GetMapping("/import/template")
+    public void downloadImportTemplate() {
+        ExcelUtil.exportXls("品牌导入模板", ProductBrandImportModel.class);
+    }
+
+    @ApiOperation("导入")
+    @PreAuthorize("@permission.valid('base-data:product:brand:import')")
+    @PostMapping("/import")
+    public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,
+        @NotNull(message = "请上传文件") MultipartFile file) {
+
+        ProductBrandImportListener listener = new ProductBrandImportListener();
+        listener.setTaskId(id);
+        ExcelUtil.read(file, ProductBrandImportModel.class, listener).sheet().doRead();
 
         return InvokeResultBuilder.success();
     }

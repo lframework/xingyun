@@ -9,6 +9,12 @@ import lombok.Data;
 public class StoreCenterImportModel implements ExcelModel {
 
   /**
+   * ID
+   */
+  @ExcelIgnore
+  private String id;
+
+  /**
    * 编号
    */
   @ExcelProperty("编号")

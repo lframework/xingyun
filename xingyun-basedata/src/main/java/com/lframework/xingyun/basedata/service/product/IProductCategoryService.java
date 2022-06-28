@@ -60,4 +60,12 @@ public interface IProductCategoryService extends BaseMpService<ProductCategory> 
    * @param vo
    */
   void update(UpdateProductCategoryVo vo);
+
+  /**
+   * 保存关系
+   *
+   * @param categoryId
+   * @param parentId
+   */
+  void saveRecursion(String categoryId, String parentId);
 }

@@ -225,7 +225,8 @@ public class ProductCategoryServiceImpl extends
    * @param categoryId
    * @param parentId
    */
-  private void saveRecursion(String categoryId, String parentId) {
+  @Override
+  public void saveRecursion(String categoryId, String parentId) {
 
     if (!StringUtil.isBlank(parentId)) {
       List<String> parentIds = recursionMappingService.getNodeParentIds(parentId,

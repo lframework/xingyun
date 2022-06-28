@@ -7,8 +7,11 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.basedata.customer.GetCustomerBo;
 import com.lframework.xingyun.api.bo.basedata.customer.QueryCustomerBo;
+import com.lframework.xingyun.api.excel.basedata.customer.CustomerImportListener;
+import com.lframework.xingyun.api.excel.basedata.customer.CustomerImportModel;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +37,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 客户管理
@@ -45,109 +50,129 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/basedata/customer")
 public class CustomerController extends DefaultBaseController {
 
-    @Autowired
-    private ICustomerService customerService;
+  @Autowired
+  private ICustomerService customerService;
 
-    /**
-     * 客户列表
-     */
-    @ApiOperation("客户列表")
-    @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
-    @GetMapping("/query")
-    public InvokeResult<PageResult<QueryCustomerBo>> query(@Valid QueryCustomerVo vo) {
+  /**
+   * 客户列表
+   */
+  @ApiOperation("客户列表")
+  @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
+  @GetMapping("/query")
+  public InvokeResult<PageResult<QueryCustomerBo>> query(@Valid QueryCustomerVo vo) {
 
-        PageResult<Customer> pageResult = customerService.query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<Customer> pageResult = customerService.query(getPageIndex(vo), getPageSize(vo), vo);
 
-        List<Customer> datas = pageResult.getDatas();
-        List<QueryCustomerBo> results = null;
+    List<Customer> datas = pageResult.getDatas();
+    List<QueryCustomerBo> results = null;
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(QueryCustomerBo::new).collect(Collectors.toList());
-        }
-
-        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(QueryCustomerBo::new).collect(Collectors.toList());
     }
 
-    /**
-     * 查询客户
-     */
-    @ApiOperation("查询客户")
-    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-    @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
-    @GetMapping
-    public InvokeResult<GetCustomerBo> get(@NotBlank(message = "ID不能为空！") String id) {
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
 
-        Customer data = customerService.findById(id);
-        if (data == null) {
-            throw new DefaultClientException("客户不存在！");
-        }
+  /**
+   * 查询客户
+   */
+  @ApiOperation("查询客户")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @PreAuthorize("@permission.valid('base-data:customer:query','base-data:customer:add','base-data:customer:modify')")
+  @GetMapping
+  public InvokeResult<GetCustomerBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
-        GetCustomerBo result = new GetCustomerBo(data);
-
-        return InvokeResultBuilder.success(result);
+    Customer data = customerService.findById(id);
+    if (data == null) {
+      throw new DefaultClientException("客户不存在！");
     }
 
-    /**
-     * 批量停用客户
-     */
-    @ApiOperation("批量停用客户")
-    @PreAuthorize("@permission.valid('base-data:customer:modify')")
-    @PatchMapping("/unable/batch")
-    public InvokeResult<Void> batchUnable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的客户！") @RequestBody List<String> ids) {
+    GetCustomerBo result = new GetCustomerBo(data);
 
-        customerService.batchUnable(ids);
+    return InvokeResultBuilder.success(result);
+  }
 
-        for (String id : ids) {
-            customerService.cleanCacheByKey(id);
-        }
+  /**
+   * 批量停用客户
+   */
+  @ApiOperation("批量停用客户")
+  @PreAuthorize("@permission.valid('base-data:customer:modify')")
+  @PatchMapping("/unable/batch")
+  public InvokeResult<Void> batchUnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的客户！") @RequestBody List<String> ids) {
 
-        return InvokeResultBuilder.success();
+    customerService.batchUnable(ids);
+
+    for (String id : ids) {
+      customerService.cleanCacheByKey(id);
     }
 
-    /**
-     * 批量启用客户
-     */
-    @ApiOperation("批量启用客户")
-    @PreAuthorize("@permission.valid('base-data:customer:modify')")
-    @PatchMapping("/enable/batch")
-    public InvokeResult<Void> batchEnable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的客户！") @RequestBody List<String> ids) {
+    return InvokeResultBuilder.success();
+  }
 
-        customerService.batchEnable(ids);
+  /**
+   * 批量启用客户
+   */
+  @ApiOperation("批量启用客户")
+  @PreAuthorize("@permission.valid('base-data:customer:modify')")
+  @PatchMapping("/enable/batch")
+  public InvokeResult<Void> batchEnable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的客户！") @RequestBody List<String> ids) {
 
-        for (String id : ids) {
-            customerService.cleanCacheByKey(id);
-        }
+    customerService.batchEnable(ids);
 
-        return InvokeResultBuilder.success();
+    for (String id : ids) {
+      customerService.cleanCacheByKey(id);
     }
 
-    /**
-     * 新增客户
-     */
-    @ApiOperation("新增客户")
-    @PreAuthorize("@permission.valid('base-data:customer:add')")
-    @PostMapping
-    public InvokeResult<Void> create(@Valid CreateCustomerVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        customerService.create(vo);
+  /**
+   * 新增客户
+   */
+  @ApiOperation("新增客户")
+  @PreAuthorize("@permission.valid('base-data:customer:add')")
+  @PostMapping
+  public InvokeResult<Void> create(@Valid CreateCustomerVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    customerService.create(vo);
 
-    /**
-     * 修改客户
-     */
-    @ApiOperation("修改客户")
-    @PreAuthorize("@permission.valid('base-data:customer:modify')")
-    @PutMapping
-    public InvokeResult<Void> update(@Valid UpdateCustomerVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        customerService.update(vo);
+  /**
+   * 修改客户
+   */
+  @ApiOperation("修改客户")
+  @PreAuthorize("@permission.valid('base-data:customer:modify')")
+  @PutMapping
+  public InvokeResult<Void> update(@Valid UpdateCustomerVo vo) {
 
-        customerService.cleanCacheByKey(vo.getId());
+    customerService.update(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    customerService.cleanCacheByKey(vo.getId());
+
+    return InvokeResultBuilder.success();
+  }
+
+  @ApiOperation("下载导入模板")
+  @PreAuthorize("@permission.valid('base-data:customer:import')")
+  @GetMapping("/import/template")
+  public void downloadImportTemplate() {
+    ExcelUtil.exportXls("客户导入模板", CustomerImportModel.class);
+  }
+
+  @ApiOperation("导入")
+  @PreAuthorize("@permission.valid('base-data:customer:import')")
+  @PostMapping("/import")
+  public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,
+      @NotNull(message = "请上传文件") MultipartFile file) {
+
+    CustomerImportListener listener = new CustomerImportListener();
+    listener.setTaskId(id);
+    ExcelUtil.read(file, CustomerImportModel.class, listener).sheet().doRead();
+
+    return InvokeResultBuilder.success();
+  }
 }

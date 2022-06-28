@@ -1,8 +1,8 @@
 package com.lframework.xingyun.basedata.impl.product;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.IdUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItemRelation;

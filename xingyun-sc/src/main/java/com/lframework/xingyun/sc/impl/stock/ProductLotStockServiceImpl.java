@@ -1,9 +1,9 @@
 package com.lframework.xingyun.sc.impl.stock;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.IdUtil;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.sc.entity.ProductLot;

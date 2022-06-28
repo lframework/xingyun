@@ -2,9 +2,9 @@ package com.lframework.xingyun.chart.impl;
 
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.DateUtil;
-import com.lframework.common.utils.IdUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.EnumUtil;
+import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.chart.dto.OrderChartSameMonthDto;
 import com.lframework.xingyun.chart.dto.OrderChartSumDto;
 import com.lframework.xingyun.chart.dto.OrderChartTodayDto;

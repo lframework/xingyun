@@ -10,8 +10,8 @@ ADD INDEX `poly_id`(`poly_id`, `sale_prop_item_id`) USING BTREE;
 ALTER TABLE `base_data_product_saleprop_item_relation`
     CHANGE COLUMN `sale_prop_item_id` `sale_prop_item_id1` varchar (32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '销售属性ID1' AFTER `product_id`,
     ADD COLUMN `sale_prop_group_id1` varchar (32) NOT NULL COMMENT '销售属性组ID1' AFTER `product_id`,
-    ADD COLUMN `sale_prop_group_id2` varchar (32) NOT NULL COMMENT '销售属性组ID2' AFTER `sale_prop_item_id1`,
-    ADD COLUMN `sale_prop_item_id2` varchar (32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '销售属性ID2' AFTER `sale_prop_group_id2`,
+    ADD COLUMN `sale_prop_group_id2` varchar (32) COMMENT '销售属性组ID2' AFTER `sale_prop_item_id1`,
+    ADD COLUMN `sale_prop_item_id2` varchar (32) CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT '销售属性ID2' AFTER `sale_prop_group_id2`,
 DROP
 PRIMARY KEY,
 ADD PRIMARY KEY (`id`) USING BTREE;

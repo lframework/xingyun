@@ -27,17 +27,32 @@ public class ProductSalePropItemRelation extends BaseEntity implements BaseDto {
   private String id;
 
   /**
+   * 聚合ID
+   */
+  private String polyId;
+
+  /**
    * 商品ID
    */
   private String productId;
 
   /**
-   * 销售属性值ID
+   * 销售属性组ID1
    */
-  private String salePropItemId;
+  private String salePropGroupId1;
 
   /**
-   * 排序
+   * 销售属性值ID1
    */
-  private Integer orderNo;
+  private String salePropItemId1;
+
+  /**
+   * 销售属性组ID2
+   */
+  private String salePropGroupId2;
+
+  /**
+   * 销售属性值ID2
+   */
+  private String salePropItemId2;
 }

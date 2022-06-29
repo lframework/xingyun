@@ -143,7 +143,9 @@ public class SupplierImportListener extends ExcelImportListener<SupplierImportMo
       record.setDeliveryAddress(data.getDeliveryAddress());
       record.setDeliveryCycle(data.getDeliveryCycle());
       record.setManageType(data.getManageTypeEnum());
-      record.setSettleType(data.getSettleTypeEnum());
+      if (isInsert) {
+        record.setSettleType(data.getSettleTypeEnum());
+      }
       record.setCreditCode(data.getCreditCode());
       record.setTaxIdentifyNo(data.getTaxIdentifyNo());
       record.setBankName(data.getBankName());

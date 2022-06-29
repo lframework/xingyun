@@ -17,6 +17,7 @@ import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPoly;
 import com.lframework.xingyun.basedata.entity.ProductPolySalePropGroup;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
+import com.lframework.xingyun.basedata.entity.ProductSalePropItemRelation;
 import com.lframework.xingyun.basedata.service.product.IProductPolySalePropGroupService;
 import com.lframework.xingyun.basedata.service.product.IProductPolyService;
 import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
@@ -27,8 +28,11 @@ import com.lframework.xingyun.basedata.service.product.IProductSaleService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.saleprop.CreateProductSalePropItemRelationVo;
 import com.lframework.xingyun.basedata.vo.product.purchase.CreateProductPurchaseVo;
+import com.lframework.xingyun.basedata.vo.product.purchase.UpdateProductPurchaseVo;
 import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
+import com.lframework.xingyun.basedata.vo.product.retail.UpdateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
+import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -96,12 +100,12 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
             querySalePropItemWrapper);
         if (salePropItem == null) {
           throw new DefaultClientException(
-              "第" + context.readRowHolder().getRowIndex() + "行“销售属性1编号”不存在");
+              "第" + context.readRowHolder().getRowIndex() + "行“销售属性2编号”不存在");
         }
         data.setSalePropItemId2(salePropItem.getId());
       }
       if (salePropGroups.size() == 0 || salePropGroups.size() > 2) {
-        throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行商品数据有误");
+        throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行销售属性数据有误");
       }
     }
 
@@ -131,11 +135,6 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       if (productService.count(checkSkuCodeWrapper) > 0) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“商品SKU编号”重复，请检查");
-      } else {
-        if (this.getDatas().stream().anyMatch(t -> data.getSkuCode().equals(t.getSkuCode()))) {
-          throw new DefaultClientException(
-              "第" + context.readRowHolder().getRowIndex() + "行“商品SKU编号”重复，请检查");
-        }
       }
     }
 
@@ -231,36 +230,72 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       createProductSalePropItemRelationVo.setSalePropItemIds(salePropItems);
 
       if (!CollectionUtil.isEmpty(salePropItems)) {
+        LambdaQueryWrapper<ProductSalePropItemRelation> checkRelationWrapper = Wrappers.lambdaQuery(
+                ProductSalePropItemRelation.class)
+            .eq(ProductSalePropItemRelation::getPolyId, record.getPolyId())
+            .eq(ProductSalePropItemRelation::getSalePropItemId1, salePropItems.get(0));
+        if (salePropItems.size() > 1) {
+          checkRelationWrapper.eq(ProductSalePropItemRelation::getSalePropItemId2,
+              salePropItems.get(1));
+        }
+        checkRelationWrapper.ne(ProductSalePropItemRelation::getProductId, record.getId());
+        if (productSalePropItemRelationService.count(checkRelationWrapper) > 0) {
+          throw new DefaultClientException("第" + (i + 1) + "行“销售属性1、销售属性2”已设置商品，同一组销售属性不允许设置多个商品");
+        }
         productSalePropItemRelationService.create(createProductSalePropItemRelationVo);
       }
 
       if (data.getPurchasePrice() != null) {
         IProductPurchaseService productPurchaseService = ApplicationUtil.getBean(
             IProductPurchaseService.class);
-        CreateProductPurchaseVo createProductPurchaseVo = new CreateProductPurchaseVo();
-        createProductPurchaseVo.setId(data.getId());
-        createProductPurchaseVo.setPrice(data.getPurchasePrice());
+        if (isInsert) {
+          CreateProductPurchaseVo createProductPurchaseVo = new CreateProductPurchaseVo();
+          createProductPurchaseVo.setId(data.getId());
+          createProductPurchaseVo.setPrice(data.getPurchasePrice());
 
-        productPurchaseService.create(createProductPurchaseVo);
+          productPurchaseService.create(createProductPurchaseVo);
+        } else {
+          UpdateProductPurchaseVo updateProductPurchaseVo = new UpdateProductPurchaseVo();
+          updateProductPurchaseVo.setId(data.getId());
+          updateProductPurchaseVo.setPrice(data.getPurchasePrice());
+
+          productPurchaseService.update(updateProductPurchaseVo);
+        }
       }
 
       if (data.getSalePrice() != null) {
         IProductSaleService productSaleService = ApplicationUtil.getBean(IProductSaleService.class);
-        CreateProductSaleVo createProductSaleVo = new CreateProductSaleVo();
-        createProductSaleVo.setId(data.getId());
-        createProductSaleVo.setPrice(data.getSalePrice());
+        if (isInsert) {
+          CreateProductSaleVo createProductSaleVo = new CreateProductSaleVo();
+          createProductSaleVo.setId(data.getId());
+          createProductSaleVo.setPrice(data.getSalePrice());
 
-        productSaleService.create(createProductSaleVo);
+          productSaleService.create(createProductSaleVo);
+        } else {
+          UpdateProductSaleVo updateProductSaleVo = new UpdateProductSaleVo();
+          updateProductSaleVo.setId(data.getId());
+          updateProductSaleVo.setPrice(data.getSalePrice());
+
+          productSaleService.update(updateProductSaleVo);
+        }
       }
 
       if (data.getRetailPrice() != null) {
         IProductRetailService productRetailService = ApplicationUtil.getBean(
             IProductRetailService.class);
-        CreateProductRetailVo createProductRetailVo = new CreateProductRetailVo();
-        createProductRetailVo.setId(data.getId());
-        createProductRetailVo.setPrice(data.getRetailPrice());
+        if (isInsert) {
+          CreateProductRetailVo createProductRetailVo = new CreateProductRetailVo();
+          createProductRetailVo.setId(data.getId());
+          createProductRetailVo.setPrice(data.getRetailPrice());
 
-        productRetailService.create(createProductRetailVo);
+          productRetailService.create(createProductRetailVo);
+        } else {
+          UpdateProductRetailVo updateProductRetailVo = new UpdateProductRetailVo();
+          updateProductRetailVo.setId(data.getId());
+          updateProductRetailVo.setPrice(data.getRetailPrice());
+
+          productRetailService.update(updateProductRetailVo);
+        }
       }
 
       this.setSuccessProcess(i);

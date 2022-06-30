@@ -1,7 +1,6 @@
 package com.lframework.xingyun.api.bo.purchase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lframework.common.utils.CollectionUtil;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
@@ -9,10 +8,9 @@ import com.lframework.xingyun.basedata.dto.product.info.PurchaseProductDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -139,20 +137,18 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
         this.productCode = dto.getCode();
         this.productName = dto.getName();
 
-        if (!CollectionUtil.isEmpty(dto.getSaleProps())) {
-            if (dto.getSaleProps().size() > 0) {
-                this.salePropItemName1 = dto.getSaleProps().get(0).getName();
-            }
-
-            if (dto.getSaleProps().size() > 1) {
-                this.salePropItemName2 = dto.getSaleProps().get(1).getName();
-            }
+        if (dto.getSaleProps() != null) {
+            this.salePropItemName1 = dto.getSaleProps().getItemName1();
+            this.salePropItemName2 = dto.getSaleProps().getItemName2();
         }
 
-        IProductStockService productStockService = ApplicationUtil.getBean(IProductStockService.class);
-        ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(), this.getScId());
+        IProductStockService productStockService = ApplicationUtil.getBean(
+            IProductStockService.class);
+        ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
+            this.getScId());
         this.taxCostPrice =
-                productStock == null ? BigDecimal.ZERO : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
+            productStock == null ? BigDecimal.ZERO
+                : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
         this.stockNum = productStock == null ? 0 : productStock.getStockNum();
     }
 }

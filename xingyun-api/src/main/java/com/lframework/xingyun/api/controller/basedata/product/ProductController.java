@@ -13,6 +13,7 @@ import com.lframework.xingyun.api.excel.basedata.product.ProductImportListener;
 import com.lframework.xingyun.api.excel.basedata.product.ProductImportModel;
 import com.lframework.xingyun.basedata.dto.product.info.GetProductDto;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.service.product.IProductSalePropItemRelationService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.UpdateProductVo;
@@ -47,6 +48,9 @@ public class ProductController extends DefaultBaseController {
 
   @Autowired
   private IProductService productService;
+
+  @Autowired
+  private IProductSalePropItemRelationService productSalePropItemRelationService;
 
   /**
    * 商品列表
@@ -96,6 +100,8 @@ public class ProductController extends DefaultBaseController {
     productService.update(vo);
 
     productService.cleanCacheByKey(vo.getId());
+
+    productSalePropItemRelationService.cleanCacheByKey(vo.getId());
 
     return InvokeResultBuilder.success();
   }

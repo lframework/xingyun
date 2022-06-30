@@ -413,14 +413,9 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
       this.spec = product.getSpec();
       this.categoryName = product.getCategoryName();
       this.brandName = product.getBrandName();
-      if (!CollectionUtil.isEmpty(product.getSaleProps())) {
-        if (product.getSaleProps().size() > 0) {
-          this.salePropItemName1 = product.getSaleProps().get(0).getName();
-        }
-
-        if (product.getSaleProps().size() > 1) {
-          this.salePropItemName2 = product.getSaleProps().get(1).getName();
-        }
+      if (product.getSaleProps() != null) {
+        this.salePropItemName1 = product.getSaleProps().getItemName1();
+        this.salePropItemName2 = product.getSaleProps().getItemName2();
       }
 
       if (!StringUtil.isBlank(dto.getSaleOrderDetailId())) {

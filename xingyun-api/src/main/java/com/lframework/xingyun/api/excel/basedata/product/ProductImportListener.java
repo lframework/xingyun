@@ -304,9 +304,12 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
 
   @Override
   protected void doComplete() {
+    IProductSalePropItemRelationService productSalePropItemRelationService = ApplicationUtil.getBean(
+        IProductSalePropItemRelationService.class);
     IProductService productService = ApplicationUtil.getBean(IProductService.class);
     for (ProductImportModel data : this.getDatas()) {
       productService.cleanCacheByKey(data.getId());
+      productSalePropItemRelationService.cleanCacheByKey(data.getId());
     }
   }
 }

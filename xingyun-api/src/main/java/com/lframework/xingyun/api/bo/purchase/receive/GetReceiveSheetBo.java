@@ -21,14 +21,13 @@ import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -413,24 +412,20 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
             this.spec = product.getSpec();
             this.categoryName = product.getCategoryName();
             this.brandName = product.getBrandName();
-            if (!CollectionUtil.isEmpty(product.getSaleProps())) {
-                if (product.getSaleProps().size() > 0) {
-                    this.salePropItemName1 = product.getSaleProps().get(0).getName();
-                }
-
-                if (product.getSaleProps().size() > 1) {
-                    this.salePropItemName2 = product.getSaleProps().get(1).getName();
-                }
+            if (product.getSaleProps() != null) {
+                this.salePropItemName1 = product.getSaleProps().getItemName1();
+                this.salePropItemName2 = product.getSaleProps().getItemName2();
             }
 
             if (!StringUtil.isBlank(dto.getPurchaseOrderDetailId())) {
                 IPurchaseOrderDetailService purchaseOrderDetailService = ApplicationUtil.getBean(
-                        IPurchaseOrderDetailService.class);
+                    IPurchaseOrderDetailService.class);
                 PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailService.getById(
-                        dto.getPurchaseOrderDetailId());
+                    dto.getPurchaseOrderDetailId());
                 this.orderNum = purchaseOrderDetail.getOrderNum();
-                this.remainNum = NumberUtil.sub(purchaseOrderDetail.getOrderNum(), purchaseOrderDetail.getReceiveNum())
-                        .intValue();
+                this.remainNum = NumberUtil.sub(purchaseOrderDetail.getOrderNum(),
+                        purchaseOrderDetail.getReceiveNum())
+                    .intValue();
             }
 
             IProductStockService productStockService = ApplicationUtil.getBean(IProductStockService.class);

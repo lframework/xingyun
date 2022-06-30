@@ -7,6 +7,7 @@ import com.lframework.common.exceptions.impl.DefaultSysException;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.dto.product.saleprop.item.SalePropItemByProductDto;
 import com.lframework.xingyun.basedata.entity.ProductSalePropGroup;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItemRelation;
@@ -16,7 +17,11 @@ import com.lframework.xingyun.basedata.service.product.IProductSalePropItemRelat
 import com.lframework.xingyun.basedata.service.product.IProductSalePropItemService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.vo.product.info.saleprop.CreateProductSalePropItemRelationVo;
+import java.io.Serializable;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +38,17 @@ public class ProductSalePropItemRelationServiceImpl extends
 
   @Autowired
   private IProductSalePropGroupService productSalePropGroupService;
+
+  @Cacheable(value = ProductSalePropItemRelation.CACHE_NAME_BY_PRODUCT_ID, key = "#productId", unless = "#result == null")
+  @Override
+  public SalePropItemByProductDto getByProductId(String productId) {
+    return getBaseMapper().getByProductId(productId);
+  }
+
+  @Override
+  public List<String> getProductIdById(String id) {
+    return getBaseMapper().getProductIdById(id);
+  }
 
   @Transactional
   @Override
@@ -115,5 +131,12 @@ public class ProductSalePropItemRelationServiceImpl extends
     data.setSalePropItemId2(salePropItemId2);
 
     getBaseMapper().insert(data);
+  }
+
+  @CacheEvict(value = {ProductSalePropItemRelation.CACHE_NAME,
+      ProductSalePropItemRelation.CACHE_NAME_BY_PRODUCT_ID}, key = "#key")
+  @Override
+  public void cleanCacheByKey(Serializable key) {
+    super.cleanCacheByKey(key);
   }
 }

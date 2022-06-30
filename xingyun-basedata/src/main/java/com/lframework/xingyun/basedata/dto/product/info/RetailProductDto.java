@@ -4,7 +4,6 @@ import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.basedata.dto.product.saleprop.item.SalePropItemByProductDto;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.Data;
 
 @Data
@@ -90,5 +89,5 @@ public class RetailProductDto implements BaseDto, Serializable {
   /**
    * 销售属性
    */
-  private List<SalePropItemByProductDto> saleProps;
+  private SalePropItemByProductDto saleProps;
 }

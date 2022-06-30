@@ -2,31 +2,43 @@ package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.basedata.dto.product.saleprop.item.SalePropItemByProductDto;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.CreateProductSalePropItemVo;
+import com.lframework.xingyun.basedata.vo.product.saleprop.item.QueryProductSalePropItemSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.QueryProductSalePropItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.UpdateProductSalePropItemVo;
 import java.util.List;
 
 public interface IProductSalePropItemService extends BaseMpService<ProductSalePropItem> {
 
-    /**
-     * 查询列表
-     *
-     * @return
-     */
-    PageResult<ProductSalePropItem> query(Integer pageIndex, Integer pageSize, QueryProductSalePropItemVo vo);
+  /**
+   * 查询列表
+   *
+   * @return
+   */
+  PageResult<ProductSalePropItem> query(Integer pageIndex, Integer pageSize,
+      QueryProductSalePropItemVo vo);
 
-    /**
-     * 查询列表
-     *
-     * @param vo
-     * @return
-     */
-    List<ProductSalePropItem> query(QueryProductSalePropItemVo vo);
+  /**
+   * 选择器
+   *
+   * @param pageIndex
+   * @param pageSize
+   * @param vo
+   * @return
+   */
+  PageResult<ProductSalePropItem> selector(Integer pageIndex, Integer pageSize,
+      QueryProductSalePropItemSelectorVo vo);
 
-    /**
+  /**
+   * 查询列表
+   *
+   * @param vo
+   * @return
+   */
+  List<ProductSalePropItem> query(QueryProductSalePropItemVo vo);
+
+  /**
      * 根据ID查询
      *
      * @param id
@@ -56,20 +68,4 @@ public interface IProductSalePropItemService extends BaseMpService<ProductSalePr
      * @return
      */
     List<ProductSalePropItem> getEnablesByGroupId(String groupId);
-
-    /**
-     * 根据商品ID查询
-     *
-     * @param productId
-     * @return
-     */
-    List<SalePropItemByProductDto> getByProductId(String productId);
-
-    /**
-     * 根据ID查询商品ID
-     *
-     * @param id
-     * @return
-     */
-    List<String> getProductIdById(String id);
 }

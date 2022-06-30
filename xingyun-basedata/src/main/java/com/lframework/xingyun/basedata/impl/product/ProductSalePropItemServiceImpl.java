@@ -17,13 +17,13 @@ import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.xingyun.basedata.dto.product.saleprop.item.SalePropItemByProductDto;
 import com.lframework.xingyun.basedata.entity.ProductSalePropGroup;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
 import com.lframework.xingyun.basedata.mappers.ProductSalePropItemMapper;
 import com.lframework.xingyun.basedata.service.product.IProductSalePropGroupService;
 import com.lframework.xingyun.basedata.service.product.IProductSalePropItemService;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.CreateProductSalePropItemVo;
+import com.lframework.xingyun.basedata.vo.product.saleprop.item.QueryProductSalePropItemSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.QueryProductSalePropItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.UpdateProductSalePropItemVo;
 import java.io.Serializable;
@@ -51,6 +51,18 @@ public class ProductSalePropItemServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<ProductSalePropItem> datas = this.query(vo);
+
+    return PageResultUtil.convert(new PageInfo<>(datas));
+  }
+
+  @Override
+  public PageResult<ProductSalePropItem> selector(Integer pageIndex, Integer pageSize,
+      QueryProductSalePropItemSelectorVo vo) {
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+    List<ProductSalePropItem> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -156,20 +168,7 @@ public class ProductSalePropItemServiceImpl extends
     return getBaseMapper().getEnablesByGroupId(groupId);
   }
 
-  @Cacheable(value = ProductSalePropItem.CACHE_NAME_BY_PRODUCT_ID, key = "#productId", unless = "#result == null || #result.size() == 0")
-  @Override
-  public List<SalePropItemByProductDto> getByProductId(String productId) {
-
-    return getBaseMapper().getByProductId(productId);
-  }
-
-  @Override
-  public List<String> getProductIdById(String id) {
-    return getBaseMapper().getProductIdById(id);
-  }
-
-  @CacheEvict(value = {ProductSalePropItem.CACHE_NAME,
-      ProductSalePropItem.CACHE_NAME_BY_PRODUCT_ID}, key = "#key")
+  @CacheEvict(value = ProductSalePropItem.CACHE_NAME, key = "#key")
   @Override
   public void cleanCacheByKey(Serializable key) {
 

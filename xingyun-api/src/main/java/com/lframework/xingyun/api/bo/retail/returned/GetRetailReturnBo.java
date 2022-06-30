@@ -20,14 +20,13 @@ import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -419,23 +418,19 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
             this.spec = product.getSpec();
             this.categoryName = product.getCategoryName();
             this.brandName = product.getBrandName();
-            if (!CollectionUtil.isEmpty(product.getSaleProps())) {
-                if (product.getSaleProps().size() > 0) {
-                    this.salePropItemName1 = product.getSaleProps().get(0).getName();
-                }
-
-                if (product.getSaleProps().size() > 1) {
-                    this.salePropItemName2 = product.getSaleProps().get(1).getName();
-                }
+            if (product.getSaleProps() != null) {
+                this.salePropItemName1 = product.getSaleProps().getItemName1();
+                this.salePropItemName2 = product.getSaleProps().getItemName2();
             }
 
             if (!StringUtil.isBlank(dto.getOutSheetDetailId())) {
                 IRetailOutSheetDetailLotService receiveSheetDetailService = ApplicationUtil.getBean(
-                        IRetailOutSheetDetailLotService.class);
+                    IRetailOutSheetDetailLotService.class);
                 RetailOutSheetDetailLotDto outSheetDetail = receiveSheetDetailService.findById(
-                        dto.getOutSheetDetailId());
+                    dto.getOutSheetDetailId());
                 this.outNum = outSheetDetail.getOrderNum();
-                this.remainNum = NumberUtil.sub(outSheetDetail.getOrderNum(), outSheetDetail.getReturnNum()).intValue();
+                this.remainNum = NumberUtil.sub(outSheetDetail.getOrderNum(),
+                    outSheetDetail.getReturnNum()).intValue();
             }
         }
     }

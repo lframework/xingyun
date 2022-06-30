@@ -11,6 +11,7 @@ import com.lframework.xingyun.api.bo.basedata.product.saleprop.item.GetEnableSal
 import com.lframework.xingyun.api.bo.basedata.product.saleprop.item.GetProductSalePropItemBo;
 import com.lframework.xingyun.api.bo.basedata.product.saleprop.item.QueryProductSalePropItemBo;
 import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
+import com.lframework.xingyun.basedata.service.product.IProductSalePropItemRelationService;
 import com.lframework.xingyun.basedata.service.product.IProductSalePropItemService;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.CreateProductSalePropItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.item.QueryProductSalePropItemVo;
@@ -46,15 +47,20 @@ public class ProductSalePropItemController extends DefaultBaseController {
     @Autowired
     private IProductSalePropItemService productSalePropItemService;
 
+    @Autowired
+    private IProductSalePropItemRelationService productSalePropItemRelationService;
+
     /**
      * 销售属性列表
      */
     @ApiOperation("销售属性列表")
     @PreAuthorize("@permission.valid('base-data:product:saleprop-item:query','base-data:product:saleprop-item:add','base-data:product:saleprop-item:modify')")
     @GetMapping("/query")
-    public InvokeResult<PageResult<QueryProductSalePropItemBo>> query(@Valid QueryProductSalePropItemVo vo) {
+    public InvokeResult<PageResult<QueryProductSalePropItemBo>> query(
+        @Valid QueryProductSalePropItemVo vo) {
 
-        PageResult<ProductSalePropItem> pageResult = productSalePropItemService.query(getPageIndex(vo), getPageSize(vo),
+        PageResult<ProductSalePropItem> pageResult = productSalePropItemService.query(
+            getPageIndex(vo), getPageSize(vo),
                 vo);
 
         List<ProductSalePropItem> datas = pageResult.getDatas();
@@ -112,10 +118,11 @@ public class ProductSalePropItemController extends DefaultBaseController {
 
         productSalePropItemService.cleanCacheByKey(vo.getId());
 
-        List<String> productIdList = productSalePropItemService.getProductIdById(vo.getId());
+        List<String> productIdList = productSalePropItemRelationService.getProductIdById(
+            vo.getId());
         if (!CollectionUtil.isEmpty(productIdList)) {
             for (String productId : productIdList) {
-                productSalePropItemService.cleanCacheByKey(productId);
+                productSalePropItemRelationService.cleanCacheByKey(productId);
             }
         }
 

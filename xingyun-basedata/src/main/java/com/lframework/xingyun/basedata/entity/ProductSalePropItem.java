@@ -20,7 +20,6 @@ import lombok.EqualsAndHashCode;
 public class ProductSalePropItem extends BaseEntity implements BaseDto {
 
   public static final String CACHE_NAME = "ProductSalePropItem";
-  public static final String CACHE_NAME_BY_PRODUCT_ID = "ProductSalePropItemDtoByProductId";
   private static final long serialVersionUID = 1L;
   /**
    * ID

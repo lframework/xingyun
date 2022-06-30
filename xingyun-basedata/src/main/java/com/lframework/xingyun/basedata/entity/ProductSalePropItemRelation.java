@@ -21,6 +21,10 @@ public class ProductSalePropItemRelation extends BaseEntity implements BaseDto {
 
   private static final long serialVersionUID = 1L;
 
+  public static final String CACHE_NAME = "ProductSalePropItemRelation";
+
+  public static final String CACHE_NAME_BY_PRODUCT_ID = "ProductSalePropItemRelationByProductId";
+
   /**
    * ID
    */

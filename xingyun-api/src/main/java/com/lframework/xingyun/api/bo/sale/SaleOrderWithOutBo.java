@@ -19,12 +19,11 @@ import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -298,14 +297,9 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
             this.spec = product.getSpec();
             this.categoryName = product.getCategoryName();
             this.brandName = product.getBrandName();
-            if (!CollectionUtil.isEmpty(product.getSaleProps())) {
-                if (product.getSaleProps().size() > 0) {
-                    this.salePropItemName1 = product.getSaleProps().get(0).getName();
-                }
-
-                if (product.getSaleProps().size() > 1) {
-                    this.salePropItemName2 = product.getSaleProps().get(1).getName();
-                }
+            if (product.getSaleProps() != null) {
+                this.salePropItemName1 = product.getSaleProps().getItemName1();
+                this.salePropItemName2 = product.getSaleProps().getItemName2();
             }
 
             this.orderNum = dto.getOrderNum();

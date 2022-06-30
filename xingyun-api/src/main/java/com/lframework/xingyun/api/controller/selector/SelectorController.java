@@ -15,6 +15,7 @@ import com.lframework.xingyun.api.bo.basedata.member.MemberSelectorBo;
 import com.lframework.xingyun.api.bo.basedata.product.brand.ProductBrandSelectorBo;
 import com.lframework.xingyun.api.bo.basedata.product.brand.ProductCategorySelectorBo;
 import com.lframework.xingyun.api.bo.basedata.product.saleprop.ProductSalePropGroupSelectorBo;
+import com.lframework.xingyun.api.bo.basedata.product.saleprop.item.ProductSalePropItemSelectorBo;
 import com.lframework.xingyun.api.bo.basedata.shop.ShopSelectorBo;
 import com.lframework.xingyun.api.bo.basedata.storecenter.StoreCenterSelectorBo;
 import com.lframework.xingyun.api.bo.basedata.supplier.SupplierSelectorBo;
@@ -30,6 +31,7 @@ import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.ProductSalePropGroup;
+import com.lframework.xingyun.basedata.entity.ProductSalePropItem;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
@@ -38,6 +40,7 @@ import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.product.IProductBrandService;
 import com.lframework.xingyun.basedata.service.product.IProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.IProductSalePropGroupService;
+import com.lframework.xingyun.basedata.service.product.IProductSalePropItemService;
 import com.lframework.xingyun.basedata.service.shop.IShopService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
@@ -46,6 +49,7 @@ import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import com.lframework.xingyun.basedata.vo.product.saleprop.QueryProductSalePropGroupSelectorVo;
+import com.lframework.xingyun.basedata.vo.product.saleprop.item.QueryProductSalePropItemSelectorVo;
 import com.lframework.xingyun.basedata.vo.shop.ShopSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierSelectorVo;
@@ -100,6 +104,9 @@ public class SelectorController extends DefaultBaseController {
 
   @Autowired
   private IProductSalePropGroupService productSalePropGroupService;
+
+  @Autowired
+  private IProductSalePropItemService productSalePropItemService;
 
   @Autowired
   private IMemberService memberService;
@@ -199,14 +206,33 @@ public class SelectorController extends DefaultBaseController {
       @Valid QueryProductSalePropGroupSelectorVo vo) {
 
     PageResult<ProductSalePropGroup> pageResult = productSalePropGroupService.selector(
-        getPageIndex(vo),
-        getPageSize(vo), vo);
+        getPageIndex(vo), getPageSize(vo), vo);
     List<ProductSalePropGroup> datas = pageResult.getDatas();
     List<ProductSalePropGroupSelectorBo> results = null;
 
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream().map(ProductSalePropGroupSelectorBo::new)
           .collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 销售属性
+   */
+  @ApiOperation("销售属性")
+  @GetMapping("/saleprop")
+  public InvokeResult<PageResult<ProductSalePropItemSelectorBo>> salePropItem(
+      @Valid QueryProductSalePropItemSelectorVo vo) {
+
+    PageResult<ProductSalePropItem> pageResult = productSalePropItemService.selector(
+        getPageIndex(vo), getPageSize(vo), vo);
+    List<ProductSalePropItem> datas = pageResult.getDatas();
+    List<ProductSalePropItemSelectorBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(ProductSalePropItemSelectorBo::new).collect(Collectors.toList());
     }
 
     return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
@@ -383,8 +409,7 @@ public class SelectorController extends DefaultBaseController {
       @Valid TakeStockPlanSelectorVo vo) {
 
     PageResult<TakeStockPlanSelectorDto> pageResult = takeStockPlanService.selector(
-        getPageIndex(vo),
-        getPageSize(vo), vo);
+        getPageIndex(vo), getPageSize(vo), vo);
 
     List<TakeStockPlanSelectorDto> datas = pageResult.getDatas();
     List<TakeStockPlanSelectorBo> results = null;
@@ -405,8 +430,7 @@ public class SelectorController extends DefaultBaseController {
       @Valid PreTakeStockSheetSelectorVo vo) {
 
     PageResult<PreTakeStockSheetSelectorDto> pageResult = preTakeStockSheetService.selector(
-        getPageIndex(vo),
-        getPageSize(vo), vo);
+        getPageIndex(vo), getPageSize(vo), vo);
 
     List<PreTakeStockSheetSelectorDto> datas = pageResult.getDatas();
     List<PreTakeStockSheetSelectorBo> results = null;

@@ -8,32 +8,47 @@ import lombok.Data;
 public class SalePropItemByProductDto implements BaseDto, Serializable {
 
   /**
-   * ID
+   * 销售属性ID1
    */
-  private String id;
+  private String itemId1;
 
   /**
-   * 名称
+   * 销售属性名称1
    */
-  private String name;
+  private String itemName1;
 
   /**
-   * 销售属性组ID
+   * 销售属性组ID1
    */
-  private String groupId;
+  private String groupId1;
 
   /**
-   * 销售属性组名称
+   * 销售属性组名称1
    */
-  private String groupName;
+  private String groupName1;
+
+  /**
+   * 销售属性ID2
+   */
+  private String itemId2;
+
+  /**
+   * 销售属性名称2
+   */
+  private String itemName2;
+
+  /**
+   * 销售属性组ID2
+   */
+  private String groupId2;
+
+  /**
+   * 销售属性组名称2
+   */
+  private String groupName2;
 
   /**
    * 商品ID
    */
   private String productId;
-
-  /**
-   * 排序编号
-   */
-  private Integer orderNo;
 }

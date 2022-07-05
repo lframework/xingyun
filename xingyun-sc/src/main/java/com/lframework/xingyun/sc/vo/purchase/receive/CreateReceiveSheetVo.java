@@ -52,6 +52,11 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
   private LocalDate paymentDate;
 
   /**
+   * 是否允许修改付款日期
+   */
+  private Boolean allowModifyPaymentDate = Boolean.FALSE;
+
+  /**
    * 到货日期
    */
   @ApiModelProperty(value = "到货日期", required = true)

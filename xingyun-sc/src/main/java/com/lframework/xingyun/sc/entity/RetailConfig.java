@@ -27,6 +27,11 @@ public class RetailConfig extends BaseEntity implements BaseDto {
   private String id;
 
   /**
+   * 零售出库单上的会员是否必填
+   */
+  private Boolean retailOutSheetRequireMember;
+
+  /**
    * 零售退货单是否关联零售出库单
    */
   private Boolean retailReturnRequireOutStock;
@@ -35,4 +40,9 @@ public class RetailConfig extends BaseEntity implements BaseDto {
    * 零售退货单是否多次关联零售出库单
    */
   private Boolean retailReturnMultipleRelateOutStock;
+
+  /**
+   * 零售退货单上的会员是否必填
+   */
+  private Boolean retailReturnRequireMember;
 }

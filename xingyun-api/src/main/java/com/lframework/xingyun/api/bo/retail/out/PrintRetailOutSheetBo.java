@@ -18,12 +18,11 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -136,10 +135,12 @@ public class PrintRetailOutSheetBo extends BasePrintDataBo<RetailOutSheetFullDto
         this.scCode = sc.getCode();
         this.scName = sc.getName();
 
-        IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
-        Member member = memberService.findById(dto.getMemberId());
-        this.memberCode = member.getCode();
-        this.memberName = member.getName();
+        if (!StringUtil.isBlank(dto.getMemberId())) {
+            IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
+            Member member = memberService.findById(dto.getMemberId());
+            this.memberCode = member.getCode();
+            this.memberName = member.getName();
+        }
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
         if (!StringUtil.isBlank(dto.getSalerId())) {

@@ -54,6 +54,7 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
   /**
    * 是否允许修改付款日期
    */
+  @ApiModelProperty("是否允许修改付款日期")
   private Boolean allowModifyPaymentDate = Boolean.FALSE;
 
   /**

@@ -52,6 +52,12 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
   private LocalDate paymentDate;
 
   /**
+   * 是否允许修改付款日期
+   */
+  @ApiModelProperty("是否允许修改付款日期")
+  private Boolean allowModifyPaymentDate = Boolean.FALSE;
+
+  /**
    * 商品信息
    */
   @ApiModelProperty(value = "商品信息", required = true)

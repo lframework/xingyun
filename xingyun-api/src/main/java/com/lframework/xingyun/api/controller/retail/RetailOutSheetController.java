@@ -2,6 +2,7 @@ package com.lframework.xingyun.api.controller.retail;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
+import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
@@ -64,278 +65,287 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/retail/out/sheet")
 public class RetailOutSheetController extends DefaultBaseController {
 
-    @Autowired
-    private IRetailOutSheetService retailOutSheetService;
+  @Autowired
+  private IRetailOutSheetService retailOutSheetService;
 
-    /**
-     * 打印
-     */
-    @ApiOperation("打印")
-    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-    @PreAuthorize("@permission.valid('retail:out:query')")
-    @GetMapping("/print")
-    public InvokeResult<A4ExcelPortraitPrintBo<PrintRetailOutSheetBo>> print(
-            @NotBlank(message = "订单ID不能为空！") String id) {
+  /**
+   * 打印
+   */
+  @ApiOperation("打印")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @PreAuthorize("@permission.valid('retail:out:query')")
+  @GetMapping("/print")
+  public InvokeResult<A4ExcelPortraitPrintBo<PrintRetailOutSheetBo>> print(
+      @NotBlank(message = "订单ID不能为空！") String id) {
 
-        RetailOutSheetFullDto data = retailOutSheetService.getDetail(id);
-        if (data == null) {
-            throw new DefaultClientException("零售出库单不存在！");
-        }
-
-        PrintRetailOutSheetBo result = new PrintRetailOutSheetBo(data);
-        A4ExcelPortraitPrintBo<PrintRetailOutSheetBo> printResult = new A4ExcelPortraitPrintBo<>(
-                "print/retail-out-sheet.ftl", result);
-
-        return InvokeResultBuilder.success(printResult);
+    RetailOutSheetFullDto data = retailOutSheetService.getDetail(id);
+    if (data == null) {
+      throw new DefaultClientException("零售出库单不存在！");
     }
 
-    /**
-     * 订单列表
-     */
-    @ApiOperation("订单列表")
-    @PreAuthorize("@permission.valid('retail:out:query')")
-    @GetMapping("/query")
-    public InvokeResult<PageResult<QueryRetailOutSheetBo>> query(@Valid QueryRetailOutSheetVo vo) {
+    PrintRetailOutSheetBo result = new PrintRetailOutSheetBo(data);
+    A4ExcelPortraitPrintBo<PrintRetailOutSheetBo> printResult = new A4ExcelPortraitPrintBo<>(
+        "print/retail-out-sheet.ftl", result);
 
-        PageResult<RetailOutSheet> pageResult = retailOutSheetService.query(getPageIndex(vo), getPageSize(vo), vo);
+    return InvokeResultBuilder.success(printResult);
+  }
 
+  /**
+   * 订单列表
+   */
+  @ApiOperation("订单列表")
+  @PreAuthorize("@permission.valid('retail:out:query')")
+  @GetMapping("/query")
+  public InvokeResult<PageResult<QueryRetailOutSheetBo>> query(@Valid QueryRetailOutSheetVo vo) {
+
+    PageResult<RetailOutSheet> pageResult = retailOutSheetService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
+
+    List<RetailOutSheet> datas = pageResult.getDatas();
+    List<QueryRetailOutSheetBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+
+      results = datas.stream().map(QueryRetailOutSheetBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 导出
+   */
+  @ApiOperation("导出")
+  @PreAuthorize("@permission.valid('retail:out:export')")
+  @PostMapping("/export")
+  public void export(@Valid QueryRetailOutSheetVo vo) {
+
+    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("零售出库单信息",
+        RetailOutSheetExportModel.class);
+
+    try {
+      int pageIndex = 1;
+      while (true) {
+        PageResult<RetailOutSheet> pageResult = retailOutSheetService.query(pageIndex,
+            getExportSize(), vo);
         List<RetailOutSheet> datas = pageResult.getDatas();
-        List<QueryRetailOutSheetBo> results = null;
+        List<RetailOutSheetExportModel> models = datas.stream().map(RetailOutSheetExportModel::new)
+            .collect(Collectors.toList());
+        builder.doWrite(models);
 
-        if (!CollectionUtil.isEmpty(datas)) {
-
-            results = datas.stream().map(QueryRetailOutSheetBo::new).collect(Collectors.toList());
+        if (!pageResult.isHasNext()) {
+          break;
         }
+        pageIndex++;
+      }
+    } finally {
+      builder.finish();
+    }
+  }
 
-        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  /**
+   * 根据ID查询
+   */
+  @ApiOperation("根据ID查询")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @PreAuthorize("@permission.valid('retail:out:query')")
+  @GetMapping
+  public InvokeResult<GetRetailOutSheetBo> findById(@NotBlank(message = "订单ID不能为空！") String id) {
+
+    RetailOutSheetFullDto data = retailOutSheetService.getDetail(id);
+
+    GetRetailOutSheetBo result = new GetRetailOutSheetBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 根据会员ID查询默认付款日期
+   */
+  @ApiOperation("根据会员ID查询默认付款日期")
+  @ApiImplicitParam(value = "会员ID", name = "memberId", paramType = "query")
+  @PreAuthorize("@permission.valid('retail:out:add', 'retail:out:modify')")
+  @GetMapping("/paymentdate")
+  public InvokeResult<GetPaymentDateBo> getPaymentDate(String memberId) {
+
+    GetPaymentDateDto data = retailOutSheetService.getPaymentDate(memberId);
+
+    GetPaymentDateBo result = new GetPaymentDateBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 根据ID查询（零售退货业务）
+   */
+  @ApiOperation("根据ID查询（零售退货业务）")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @PreAuthorize("@permission.valid('retail:return:add', 'retail:return:modify')")
+  @GetMapping("/return")
+  public InvokeResult<RetailOutSheetWithReturnBo> getWithReturn(
+      @NotBlank(message = "出库单ID不能为空！") String id) {
+
+    RetailOutSheetWithReturnDto data = retailOutSheetService.getWithReturn(id);
+    RetailOutSheetWithReturnBo result = new RetailOutSheetWithReturnBo(data);
+
+    return InvokeResultBuilder.success(result);
+  }
+
+  /**
+   * 查询列表（零售退货业务）
+   */
+  @ApiOperation("查询列表（零售退货业务）")
+  @PreAuthorize("@permission.valid('retail:return:add', 'retail:return:modify')")
+  @GetMapping("/query/return")
+  public InvokeResult<PageResult<QueryRetailOutSheetWithReturnBo>> queryWithReturn(
+      @Valid QueryRetailOutSheetWithReturnVo vo) {
+
+    PageResult<RetailOutSheet> pageResult = retailOutSheetService.queryWithReturn(getPageIndex(vo),
+        getPageSize(vo),
+        vo);
+    List<RetailOutSheet> datas = pageResult.getDatas();
+
+    List<QueryRetailOutSheetWithReturnBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(QueryRetailOutSheetWithReturnBo::new)
+          .collect(Collectors.toList());
     }
 
-    /**
-     * 导出
-     */
-    @ApiOperation("导出")
-    @PreAuthorize("@permission.valid('retail:out:export')")
-    @PostMapping("/export")
-    public void export(@Valid QueryRetailOutSheetVo vo) {
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
 
-        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("零售出库单信息",
-                RetailOutSheetExportModel.class);
+  /**
+   * 创建
+   */
+  @ApiOperation("创建")
+  @PreAuthorize("@permission.valid('retail:out:add')")
+  @PostMapping
+  public InvokeResult<String> create(@RequestBody @Valid CreateRetailOutSheetVo vo) {
 
-        try {
-            int pageIndex = 1;
-            while (true) {
-                PageResult<RetailOutSheet> pageResult = retailOutSheetService.query(pageIndex, getExportSize(), vo);
-                List<RetailOutSheet> datas = pageResult.getDatas();
-                List<RetailOutSheetExportModel> models = datas.stream().map(RetailOutSheetExportModel::new)
-                        .collect(Collectors.toList());
-                builder.doWrite(models);
+    vo.validate();
 
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
-            }
-        } finally {
-            builder.finish();
-        }
+    String id = retailOutSheetService.create(vo);
+
+    return InvokeResultBuilder.success(id);
+  }
+
+  /**
+   * 修改
+   */
+  @ApiOperation("修改")
+  @PreAuthorize("@permission.valid('retail:out:modify')")
+  @PutMapping
+  public InvokeResult<Void> update(@RequestBody @Valid UpdateRetailOutSheetVo vo) {
+
+    vo.validate();
+
+    retailOutSheetService.update(vo);
+
+    return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 审核通过
+   */
+  @ApiOperation("审核通过")
+  @PreAuthorize("@permission.valid('retail:out:approve')")
+  @PatchMapping("/approve/pass")
+  public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassRetailOutSheetVo vo) {
+
+    retailOutSheetService.approvePass(vo);
+
+    RetailOutSheet outSheet = retailOutSheetService.getById(vo.getId());
+
+    if (!StringUtil.isBlank(outSheet.getMemberId())) {
+      MemberConsumeEvent event = new MemberConsumeEvent(this);
+      event.setId(outSheet.getMemberId());
+      event.setAmount(outSheet.getTotalAmount());
+      ApplicationUtil.publishEvent(event);
     }
 
-    /**
-     * 根据ID查询
-     */
-    @ApiOperation("根据ID查询")
-    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-    @PreAuthorize("@permission.valid('retail:out:query')")
-    @GetMapping
-    public InvokeResult<GetRetailOutSheetBo> findById(@NotBlank(message = "订单ID不能为空！") String id) {
+    return InvokeResultBuilder.success();
+  }
 
-        RetailOutSheetFullDto data = retailOutSheetService.getDetail(id);
+  /**
+   * 批量审核通过
+   */
+  @ApiOperation("批量审核通过")
+  @PreAuthorize("@permission.valid('retail:out:approve')")
+  @PatchMapping("/approve/pass/batch")
+  public InvokeResult<Void> batchApprovePass(
+      @RequestBody @Valid BatchApprovePassRetailOutSheetVo vo) {
 
-        GetRetailOutSheetBo result = new GetRetailOutSheetBo(data);
+    retailOutSheetService.batchApprovePass(vo);
 
-        return InvokeResultBuilder.success(result);
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 根据会员ID查询默认付款日期
-     */
-    @ApiOperation("根据会员ID查询默认付款日期")
-    @ApiImplicitParam(value = "会员ID", name = "memberId", paramType = "query", required = true)
-    @PreAuthorize("@permission.valid('retail:out:add', 'retail:out:modify')")
-    @GetMapping("/paymentdate")
-    public InvokeResult<GetPaymentDateBo> getPaymentDate(@NotBlank(message = "会员ID不能为空！") String memberId) {
+  /**
+   * 直接审核通过
+   */
+  @ApiOperation("直接审核通过")
+  @PreAuthorize("@permission.valid('retail:out:approve')")
+  @PostMapping("/approve/pass/direct")
+  public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateRetailOutSheetVo vo) {
 
-        GetPaymentDateDto data = retailOutSheetService.getPaymentDate(memberId);
+    retailOutSheetService.directApprovePass(vo);
 
-        GetPaymentDateBo result = new GetPaymentDateBo(data);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success(result);
-    }
+  /**
+   * 审核拒绝
+   */
+  @ApiOperation("审核拒绝")
+  @PreAuthorize("@permission.valid('retail:out:approve')")
+  @PatchMapping("/approve/refuse")
+  public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseRetailOutSheetVo vo) {
 
-    /**
-     * 根据ID查询（零售退货业务）
-     */
-    @ApiOperation("根据ID查询（零售退货业务）")
-    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-    @PreAuthorize("@permission.valid('retail:return:add', 'retail:return:modify')")
-    @GetMapping("/return")
-    public InvokeResult<RetailOutSheetWithReturnBo> getWithReturn(@NotBlank(message = "出库单ID不能为空！") String id) {
+    retailOutSheetService.approveRefuse(vo);
 
-        RetailOutSheetWithReturnDto data = retailOutSheetService.getWithReturn(id);
-        RetailOutSheetWithReturnBo result = new RetailOutSheetWithReturnBo(data);
+    return InvokeResultBuilder.success();
+  }
 
-        return InvokeResultBuilder.success(result);
-    }
+  /**
+   * 批量审核拒绝
+   */
+  @ApiOperation("批量审核拒绝")
+  @PreAuthorize("@permission.valid('retail:out:approve')")
+  @PatchMapping("/approve/refuse/batch")
+  public InvokeResult<Void> batchApproveRefuse(
+      @RequestBody @Valid BatchApproveRefuseRetailOutSheetVo vo) {
 
-    /**
-     * 查询列表（零售退货业务）
-     */
-    @ApiOperation("查询列表（零售退货业务）")
-    @PreAuthorize("@permission.valid('retail:return:add', 'retail:return:modify')")
-    @GetMapping("/query/return")
-    public InvokeResult<PageResult<QueryRetailOutSheetWithReturnBo>> queryWithReturn(
-            @Valid QueryRetailOutSheetWithReturnVo vo) {
+    retailOutSheetService.batchApproveRefuse(vo);
 
-        PageResult<RetailOutSheet> pageResult = retailOutSheetService.queryWithReturn(getPageIndex(vo), getPageSize(vo),
-                vo);
-        List<RetailOutSheet> datas = pageResult.getDatas();
+    return InvokeResultBuilder.success();
+  }
 
-        List<QueryRetailOutSheetWithReturnBo> results = null;
+  /**
+   * 删除
+   */
+  @ApiOperation("删除")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @PreAuthorize("@permission.valid('retail:out:delete')")
+  @DeleteMapping
+  public InvokeResult<Void> deleteById(@NotBlank(message = "零售出库单ID不能为空！") String id) {
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(QueryRetailOutSheetWithReturnBo::new).collect(Collectors.toList());
-        }
+    retailOutSheetService.deleteById(id);
 
-        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-    }
+    return InvokeResultBuilder.success();
+  }
 
-    /**
-     * 创建
-     */
-    @ApiOperation("创建")
-    @PreAuthorize("@permission.valid('retail:out:add')")
-    @PostMapping
-    public InvokeResult<String> create(@RequestBody @Valid CreateRetailOutSheetVo vo) {
+  /**
+   * 批量删除
+   */
+  @ApiOperation("批量删除")
+  @PreAuthorize("@permission.valid('retail:out:delete')")
+  @DeleteMapping("/batch")
+  public InvokeResult<Void> deleteByIds(
+      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的零售出库单！") List<String> ids) {
 
-        vo.validate();
+    retailOutSheetService.deleteByIds(ids);
 
-        String id = retailOutSheetService.create(vo);
-
-        return InvokeResultBuilder.success(id);
-    }
-
-    /**
-     * 修改
-     */
-    @ApiOperation("修改")
-    @PreAuthorize("@permission.valid('retail:out:modify')")
-    @PutMapping
-    public InvokeResult<Void> update(@RequestBody @Valid UpdateRetailOutSheetVo vo) {
-
-        vo.validate();
-
-        retailOutSheetService.update(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 审核通过
-     */
-    @ApiOperation("审核通过")
-    @PreAuthorize("@permission.valid('retail:out:approve')")
-    @PatchMapping("/approve/pass")
-    public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassRetailOutSheetVo vo) {
-
-        retailOutSheetService.approvePass(vo);
-
-        RetailOutSheet outSheet = retailOutSheetService.getById(vo.getId());
-
-        MemberConsumeEvent event = new MemberConsumeEvent(this);
-        event.setId(vo.getId());
-        event.setAmount(outSheet.getTotalAmount());
-        ApplicationUtil.publishEvent(event);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量审核通过
-     */
-    @ApiOperation("批量审核通过")
-    @PreAuthorize("@permission.valid('retail:out:approve')")
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassRetailOutSheetVo vo) {
-
-        retailOutSheetService.batchApprovePass(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 直接审核通过
-     */
-    @ApiOperation("直接审核通过")
-    @PreAuthorize("@permission.valid('retail:out:approve')")
-    @PostMapping("/approve/pass/direct")
-    public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateRetailOutSheetVo vo) {
-
-        retailOutSheetService.directApprovePass(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 审核拒绝
-     */
-    @ApiOperation("审核拒绝")
-    @PreAuthorize("@permission.valid('retail:out:approve')")
-    @PatchMapping("/approve/refuse")
-    public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseRetailOutSheetVo vo) {
-
-        retailOutSheetService.approveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量审核拒绝
-     */
-    @ApiOperation("批量审核拒绝")
-    @PreAuthorize("@permission.valid('retail:out:approve')")
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult<Void> batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseRetailOutSheetVo vo) {
-
-        retailOutSheetService.batchApproveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 删除
-     */
-    @ApiOperation("删除")
-    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-    @PreAuthorize("@permission.valid('retail:out:delete')")
-    @DeleteMapping
-    public InvokeResult<Void> deleteById(@NotBlank(message = "零售出库单ID不能为空！") String id) {
-
-        retailOutSheetService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除
-     */
-    @ApiOperation("批量删除")
-    @PreAuthorize("@permission.valid('retail:out:delete')")
-    @DeleteMapping("/batch")
-    public InvokeResult<Void> deleteByIds(
-            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的零售出库单！") List<String> ids) {
-
-        retailOutSheetService.deleteByIds(ids);
-
-        return InvokeResultBuilder.success();
-    }
+    return InvokeResultBuilder.success();
+  }
 }

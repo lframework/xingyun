@@ -35,8 +35,7 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
   /**
    * 会员ID
    */
-  @ApiModelProperty(value = "会员ID", required = true)
-  @NotBlank(message = "会员ID不能为空！")
+  @ApiModelProperty("会员ID")
   private String memberId;
 
   /**
@@ -50,6 +49,12 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("付款日期")
   private LocalDate paymentDate;
+
+  /**
+   * 是否允许修改付款日期
+   */
+  @ApiModelProperty("是否允许修改付款日期")
+  private Boolean allowModifyPaymentDate = Boolean.FALSE;
 
   /**
    * 收货单ID
@@ -82,6 +87,12 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
 
     IRetailConfigService retailConfigService = ApplicationUtil.getBean(IRetailConfigService.class);
     RetailConfig retailConfig = retailConfigService.get();
+
+    if (retailConfig.getRetailReturnRequireMember()) {
+      if (StringUtil.isBlank(this.memberId)) {
+        throw new DefaultClientException("请选择会员！");
+      }
+    }
 
     if (!retailConfig.getRetailReturnRequireOutStock().equals(this.required)) {
       throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");

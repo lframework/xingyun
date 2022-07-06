@@ -102,9 +102,11 @@ public class RetailOutSheetWithReturnBo extends BaseBo<RetailOutSheetWithReturnD
         StoreCenter sc = storeCenterService.findById(dto.getScId());
         this.scName = sc.getName();
 
-        IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
-        Member member = memberService.findById(dto.getMemberId());
-        this.memberName = member.getName();
+        if (!StringUtil.isBlank(dto.getMemberId())) {
+            IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
+            Member member = memberService.findById(dto.getMemberId());
+            this.memberName = member.getName();
+        }
 
         if (!StringUtil.isBlank(dto.getSalerId())) {
             IUserService userService = ApplicationUtil.getBean(IUserService.class);

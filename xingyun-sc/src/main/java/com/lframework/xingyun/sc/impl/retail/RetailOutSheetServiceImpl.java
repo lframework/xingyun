@@ -190,8 +190,6 @@ public class RetailOutSheetServiceImpl extends
     sheet.setId(IdUtil.getId());
     sheet.setCode(generateCodeService.generate(GenerateCodeTypePool.RETAIL_OUT_SHEET));
 
-    RetailConfig retailConfig = retailConfigService.get();
-
     this.create(sheet, vo);
 
     sheet.setStatus(RetailOutSheetStatus.CREATED);
@@ -241,6 +239,7 @@ public class RetailOutSheetServiceImpl extends
     Wrapper<RetailOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(RetailOutSheet.class)
         .set(RetailOutSheet::getApproveBy, null).set(RetailOutSheet::getApproveTime, null)
         .set(RetailOutSheet::getRefuseReason, StringPool.EMPTY_STR)
+        .set(RetailOutSheet::getMemberId, sheet.getMemberId())
         .eq(RetailOutSheet::getId, sheet.getId())
         .in(RetailOutSheet::getStatus, statusList);
     if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
@@ -270,8 +269,6 @@ public class RetailOutSheetServiceImpl extends
 
       throw new DefaultClientException("销售出库单无法审核通过！");
     }
-
-    RetailConfig retailConfig = retailConfigService.get();
 
     sheet.setStatus(RetailOutSheetStatus.APPROVE_PASS);
 
@@ -491,11 +488,16 @@ public class RetailOutSheetServiceImpl extends
 
     sheet.setScId(vo.getScId());
 
-    Member member = memberService.findById(vo.getMemberId());
-    if (member == null) {
-      throw new InputErrorException("会员不存在！");
+    Member member = null;
+    if (!StringUtil.isBlank(vo.getMemberId())) {
+      member = memberService.findById(vo.getMemberId());
+      if (member == null) {
+        throw new InputErrorException("会员不存在！");
+      }
+      sheet.setMemberId(vo.getMemberId());
+    } else {
+      sheet.setMemberId(null);
     }
-    sheet.setMemberId(vo.getMemberId());
 
     if (!StringUtil.isBlank(vo.getSalerId())) {
       UserDto saler = userService.findById(vo.getSalerId());
@@ -506,12 +508,11 @@ public class RetailOutSheetServiceImpl extends
       sheet.setSalerId(vo.getSalerId());
     }
 
-    RetailConfig retailConfig = retailConfigService.get();
-
-    GetPaymentDateDto paymentDate = this.getPaymentDate(member.getId());
+    GetPaymentDateDto paymentDate = this.getPaymentDate(member == null ? null : member.getId());
 
     sheet.setPaymentDate(
-        paymentDate.getAllowModify() ? vo.getPaymentDate() : paymentDate.getPaymentDate());
+        vo.getAllowModifyPaymentDate() || paymentDate.getAllowModify() ? vo.getPaymentDate()
+            : paymentDate.getPaymentDate());
 
     int purchaseNum = 0;
     int giftNum = 0;

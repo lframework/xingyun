@@ -36,6 +36,8 @@ public class RetailConfigServiceImpl extends BaseMpServiceImpl<RetailConfigMappe
     RetailConfig config = getBaseMapper().selectOne(Wrappers.query());
     config.setRetailReturnRequireOutStock(vo.getRetailReturnRequireOutStock());
     config.setRetailReturnMultipleRelateOutStock(vo.getRetailReturnMultipleRelateOutStock());
+    config.setRetailOutSheetRequireMember(vo.getRetailOutSheetRequireMember());
+    config.setRetailReturnRequireMember(vo.getRetailReturnRequireMember());
 
     getBaseMapper().updateById(config);
 

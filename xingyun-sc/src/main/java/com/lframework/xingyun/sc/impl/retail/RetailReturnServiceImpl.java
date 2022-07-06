@@ -217,6 +217,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     Wrapper<RetailReturn> updateOrderWrapper = Wrappers.lambdaUpdate(RetailReturn.class)
         .set(RetailReturn::getApproveBy, null).set(RetailReturn::getApproveTime, null)
         .set(RetailReturn::getRefuseReason, StringPool.EMPTY_STR)
+        .set(RetailReturn::getMemberId, retailReturn.getMemberId())
         .eq(RetailReturn::getId, retailReturn.getId())
         .in(RetailReturn::getStatus, statusList);
     if (getBaseMapper().update(retailReturn, updateOrderWrapper) != 1) {
@@ -477,11 +478,16 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
 
     retailReturn.setScId(vo.getScId());
 
-    Member member = memberService.findById(vo.getMemberId());
-    if (member == null) {
-      throw new InputErrorException("客户不存在！");
+    Member member = null;
+    if (!StringUtil.isBlank(vo.getMemberId())) {
+      member = memberService.findById(vo.getMemberId());
+      if (member == null) {
+        throw new InputErrorException("客户不存在！");
+      }
+      retailReturn.setMemberId(vo.getMemberId());
+    } else {
+      retailReturn.setMemberId(null);
     }
-    retailReturn.setMemberId(vo.getMemberId());
 
     if (!StringUtil.isBlank(vo.getSalerId())) {
       UserDto saler = userService.findById(vo.getSalerId());
@@ -494,10 +500,12 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
 
     RetailConfig retailConfig = retailConfigService.get();
 
-    GetPaymentDateDto paymentDate = retailOutSheetService.getPaymentDate(member.getId());
+    GetPaymentDateDto paymentDate = retailOutSheetService.getPaymentDate(
+        member == null ? null : member.getId());
 
     retailReturn.setPaymentDate(
-        paymentDate.getAllowModify() ? vo.getPaymentDate() : paymentDate.getPaymentDate());
+        vo.getAllowModifyPaymentDate() || paymentDate.getAllowModify() ? vo.getPaymentDate()
+            : paymentDate.getPaymentDate());
 
     if (requireOut) {
 

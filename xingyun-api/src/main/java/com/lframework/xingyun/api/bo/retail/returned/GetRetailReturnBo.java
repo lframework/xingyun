@@ -191,15 +191,18 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
         IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
         this.scName = storeCenterService.findById(dto.getScId()).getName();
 
-        IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
-        this.memberName = memberService.findById(dto.getMemberId()).getName();
+        if (!StringUtil.isBlank(dto.getMemberId())) {
+            IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
+            this.memberName = memberService.findById(dto.getMemberId()).getName();
+        }
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
         if (!StringUtil.isBlank(dto.getSalerId())) {
             this.salerName = userService.findById(dto.getSalerId()).getName();
         }
 
-        IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(IRetailOutSheetService.class);
+        IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
+            IRetailOutSheetService.class);
         if (!StringUtil.isBlank(dto.getOutSheetId())) {
             RetailOutSheet outSheet = retailOutSheetService.getById(dto.getOutSheetId());
             this.outSheetCode = outSheet.getCode();

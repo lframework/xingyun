@@ -566,7 +566,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     GetPaymentDateDto paymentDate = this.getPaymentDate(customer.getId());
 
     sheet.setPaymentDate(
-        paymentDate.getAllowModify() ? vo.getPaymentDate() : paymentDate.getPaymentDate());
+        vo.getAllowModifyPaymentDate() || paymentDate.getAllowModify() ? vo.getPaymentDate()
+            : paymentDate.getPaymentDate());
 
     if (requireSale) {
 

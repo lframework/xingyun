@@ -2,6 +2,7 @@ package com.lframework.xingyun.api.bo.retail.out;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
+import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
@@ -11,10 +12,9 @@ import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -92,10 +92,12 @@ public class QueryRetailOutSheetWithReturnBo extends BaseBo<RetailOutSheet> {
         this.scCode = sc.getCode();
         this.scName = sc.getName();
 
-        IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
-        Member member = memberService.findById(dto.getMemberId());
-        this.memberCode = member.getCode();
-        this.memberName = member.getName();
+        if (!StringUtil.isBlank(dto.getMemberId())) {
+            IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
+            Member member = memberService.findById(dto.getMemberId());
+            this.memberCode = member.getCode();
+            this.memberName = member.getName();
+        }
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
 

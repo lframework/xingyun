@@ -1,11 +1,14 @@
 package com.lframework.xingyun.sc.vo.retail.out;
 
+import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.exceptions.impl.InputErrorException;
 import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
+import com.lframework.xingyun.sc.entity.RetailConfig;
+import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -32,8 +35,7 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
   /**
    * 会员ID
    */
-  @ApiModelProperty(value = "会员ID", required = true)
-  @NotBlank(message = "会员ID不能为空！")
+  @ApiModelProperty(value = "会员ID")
   private String memberId;
 
   /**
@@ -47,6 +49,12 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("付款日期")
   private LocalDate paymentDate;
+
+  /**
+   * 是否允许修改付款日期
+   */
+  @ApiModelProperty("是否允许修改付款日期")
+  private Boolean allowModifyPaymentDate = Boolean.FALSE;
 
   /**
    * 商品信息
@@ -64,6 +72,14 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
 
   @Override
   public void validate() {
+
+    IRetailConfigService retailConfigService = ApplicationUtil.getBean(IRetailConfigService.class);
+    RetailConfig config = retailConfigService.get();
+    if (config.getRetailOutSheetRequireMember()) {
+      if (StringUtil.isBlank(this.memberId)) {
+        throw new DefaultClientException("请选择会员！");
+      }
+    }
 
     IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
         IRetailOutSheetService.class);

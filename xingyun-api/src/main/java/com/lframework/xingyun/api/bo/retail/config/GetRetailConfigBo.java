@@ -10,24 +10,36 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GetRetailConfigBo extends BaseBo<RetailConfig> {
 
-    /**
-     * 零售退货单是否关联零售出库单
-     */
-    @ApiModelProperty("零售退货单是否关联零售出库单")
-    private Boolean retailReturnRequireOutStock;
+  /**
+   * 零售出库单上的会员是否必填
+   */
+  @ApiModelProperty("零售出库单上的会员是否必填")
+  private Boolean retailOutSheetRequireMember;
 
-    /**
-     * 零售退货单是否多次关联零售出库单
-     */
-    @ApiModelProperty("零售退货单是否多次关联零售出库单")
-    private Boolean retailReturnMultipleRelateOutStock;
+  /**
+   * 零售退货单上的会员是否必填
+   */
+  @ApiModelProperty("零售退货单上的会员是否必填")
+  private Boolean retailReturnRequireMember;
 
-    public GetRetailConfigBo() {
+  /**
+   * 零售退货单是否关联零售出库单
+   */
+  @ApiModelProperty("零售退货单是否关联零售出库单")
+  private Boolean retailReturnRequireOutStock;
 
-    }
+  /**
+   * 零售退货单是否多次关联零售出库单
+   */
+  @ApiModelProperty("零售退货单是否多次关联零售出库单")
+  private Boolean retailReturnMultipleRelateOutStock;
 
-    public GetRetailConfigBo(RetailConfig dto) {
+  public GetRetailConfigBo() {
 
-        super(dto);
-    }
+  }
+
+  public GetRetailConfigBo(RetailConfig dto) {
+
+    super(dto);
+  }
 }

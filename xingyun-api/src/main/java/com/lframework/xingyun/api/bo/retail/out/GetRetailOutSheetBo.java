@@ -179,8 +179,10 @@ public class GetRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
         IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);
         this.scName = storeCenterService.findById(dto.getScId()).getName();
 
-        IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
-        this.memberName = memberService.findById(dto.getMemberId()).getName();
+        if (!StringUtil.isBlank(dto.getMemberId())) {
+            IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
+            this.memberName = memberService.findById(dto.getMemberId()).getName();
+        }
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
         if (!StringUtil.isBlank(dto.getSalerId())) {

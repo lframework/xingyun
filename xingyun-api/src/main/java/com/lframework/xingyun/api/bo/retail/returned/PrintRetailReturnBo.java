@@ -21,12 +21,11 @@ import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.enums.RetailReturnStatus;
 import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -142,17 +141,20 @@ public class PrintRetailReturnBo extends BasePrintDataBo<RetailReturnFullDto> {
         this.scCode = sc.getCode();
         this.scName = sc.getName();
 
-        IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
-        Member member = memberService.findById(dto.getMemberId());
-        this.memberCode = member.getCode();
-        this.memberName = member.getName();
+        if (!StringUtil.isBlank(dto.getMemberId())) {
+            IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
+            Member member = memberService.findById(dto.getMemberId());
+            this.memberCode = member.getCode();
+            this.memberName = member.getName();
+        }
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
         if (!StringUtil.isBlank(dto.getSalerId())) {
             this.salerName = userService.findById(dto.getSalerId()).getName();
         }
 
-        IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(IRetailOutSheetService.class);
+        IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
+            IRetailOutSheetService.class);
         if (!StringUtil.isBlank(dto.getOutSheetId())) {
             RetailOutSheet outSheet = retailOutSheetService.getById(dto.getOutSheetId());
             this.outSheetCode = outSheet.getCode();

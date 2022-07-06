@@ -12,11 +12,10 @@ import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -151,10 +150,12 @@ public class QueryRetailOutSheetBo extends BaseBo<RetailOutSheet> {
         this.scCode = sc.getCode();
         this.scName = sc.getName();
 
-        IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
-        Member member = memberService.findById(dto.getMemberId());
-        this.memberCode = member.getCode();
-        this.memberName = member.getName();
+        if (!StringUtil.isBlank(dto.getMemberId())) {
+            IMemberService memberService = ApplicationUtil.getBean(IMemberService.class);
+            Member member = memberService.findById(dto.getMemberId());
+            this.memberCode = member.getCode();
+            this.memberName = member.getName();
+        }
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
         if (!StringUtil.isBlank(dto.getSalerId())) {

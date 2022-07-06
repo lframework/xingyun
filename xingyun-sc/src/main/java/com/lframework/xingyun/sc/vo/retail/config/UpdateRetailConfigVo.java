@@ -12,6 +12,13 @@ public class UpdateRetailConfigVo implements BaseVo, Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
+   * 零售出库单上的会员是否必填
+   */
+  @ApiModelProperty(value = "零售出库单上的会员是否必填", required = true)
+  @NotNull(message = "零售出库单上的会员是否必填不能为空！")
+  private Boolean retailOutSheetRequireMember;
+
+  /**
    * 零售退货单是否关联零售出库单
    */
   @ApiModelProperty(value = "零售退货单是否关联零售出库单", required = true)
@@ -24,4 +31,11 @@ public class UpdateRetailConfigVo implements BaseVo, Serializable {
   @ApiModelProperty(value = "零售退货单是否多次关联零售出库单", required = true)
   @NotNull(message = "零售退货单是否多次关联零售出库单不能为空！")
   private Boolean retailReturnMultipleRelateOutStock;
+
+  /**
+   * 零售退货单上的会员是否必填
+   */
+  @ApiModelProperty(value = "零售退货单上的会员是否必填", required = true)
+  @NotNull(message = "零售退货单上的会员是否必填不能为空！")
+  private Boolean retailReturnRequireMember;
 }

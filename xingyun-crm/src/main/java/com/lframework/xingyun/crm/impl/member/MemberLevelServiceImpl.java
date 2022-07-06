@@ -179,7 +179,7 @@ public class MemberLevelServiceImpl extends
     MemberLevel result = null;
     for (int i = 0; i < levelList.size() - 1; i++) {
       if (exp > levelList.get(i).getExp() && exp <= levelList.get(i + 1).getExp()) {
-        result = result = levelList.get(i + 1);
+        result = levelList.get(i + 1);
       }
     }
     if (result == null) {

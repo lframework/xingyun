@@ -16,10 +16,8 @@ import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.xingyun.core.events.member.CreateMemberEvent;
 import com.lframework.xingyun.core.events.member.MemberConsumeEvent;
 import com.lframework.xingyun.core.events.member.MemberReturnEvent;
-import com.lframework.xingyun.crm.entity.CrmMember;
 import com.lframework.xingyun.crm.entity.MemberLevel;
 import com.lframework.xingyun.crm.mappers.MemberLevelMapper;
 import com.lframework.xingyun.crm.service.member.ICrmMemberService;
@@ -193,33 +191,6 @@ public class MemberLevelServiceImpl extends
   @Override
   public void cleanCacheByKey(Serializable key) {
 
-  }
-
-  /**
-   * 新增会员监听器
-   */
-  @Component
-  public static class CreateMemberListener implements ApplicationListener<CreateMemberEvent> {
-
-    @Autowired
-    private ICrmMemberService crmMemberService;
-
-    @Autowired
-    private IMemberLevelService memberLevelService;
-
-    @Transactional
-    @Override
-    public void onApplicationEvent(CreateMemberEvent createMemberEvent) {
-      String id = createMemberEvent.getId();
-
-      MemberLevel level = memberLevelService.getDefaultLevel();
-
-      CrmMember member = new CrmMember();
-      member.setId(id);
-      member.setLevelId(level.getId());
-
-      crmMemberService.save(member);
-    }
   }
 
   /**

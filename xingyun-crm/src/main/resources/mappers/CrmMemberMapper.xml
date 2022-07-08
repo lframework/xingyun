@@ -2,10 +2,62 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.crm.mappers.CrmMemberMapper">
 
+  <resultMap id="CrmMember" type="com.lframework.xingyun.crm.entity.CrmMember">
+    <id column="id" property="id"/>
+    <result column="code" property="code"/>
+    <result column="name" property="name"/>
+    <result column="gender" property="gender"/>
+    <result column="telephone" property="telephone"/>
+    <result column="birthday" property="birthday"/>
+    <result column="join_day" property="joinDay"/>
+    <result column="shop_id" property="shopId"/>
+    <result column="guider_id" property="guiderId"/>
+    <result column="level_id" property="levelId"/>
+    <result column="exp" property="exp"/>
+    <result column="last_drop_date" property="lastDropDate"/>
+  </resultMap>
+
+  <select id="query" resultType="com.lframework.xingyun.crm.entity.CrmMember">
+    <include refid="CrmMember_sql"/>
+    <where>
+      <if test="vo != null">
+        <if test="vo.code != null and vo.code != ''">
+          AND tb.code = #{vo.code}
+        </if>
+        <if test="vo.name != null and vo.name != ''">
+          AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+        </if>
+        <if test="vo.telephone != null and vo.telephone != ''">
+          AND tb.telephone = #{vo.telephone}
+        </if>
+      </if>
+    </where>
+  </select>
+
+  <sql id="CrmMember_sql">
+    SELECT tb.id,
+           tb.code,
+           tb.name,
+           tb.gender,
+           tb.telephone,
+           tb.birthday,
+           tb.join_day,
+           tb.shop_id,
+           tb.guider_id,
+           tb.level_id,
+           tb.exp,
+           tb.last_drop_date
+    FROM crm_member AS tb
+  </sql>
+
   <update id="addExp">
-    UPDATE crm_member SET exp = exp + #{exp} WHERE id = #{memberId}
+    UPDATE crm_member
+    SET exp = exp + #{exp}
+    WHERE id = #{memberId}
   </update>
   <update id="subExp">
-    UPDATE crm_member SET exp = IF(exp >= #{exp}, exp - #{exp}, 0) WHERE id = #{memberId}
+    UPDATE crm_member
+    SET exp = IF(exp >= #{exp}, exp - #{exp}, 0)
+    WHERE id = #{memberId}
   </update>
 </mapper>

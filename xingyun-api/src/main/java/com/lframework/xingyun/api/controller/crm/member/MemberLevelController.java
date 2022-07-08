@@ -1,4 +1,4 @@
-package com.lframework.xingyun.api.controller.basedata.member;
+package com.lframework.xingyun.api.controller.crm.member;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -9,8 +9,8 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
-import com.lframework.xingyun.api.bo.basedata.member.level.GetMemberLevelBo;
-import com.lframework.xingyun.api.bo.basedata.member.level.QueryMemberLevelBo;
+import com.lframework.xingyun.api.bo.crm.member.level.GetMemberLevelBo;
+import com.lframework.xingyun.api.bo.crm.member.level.QueryMemberLevelBo;
 import com.lframework.xingyun.crm.entity.MemberLevel;
 import com.lframework.xingyun.crm.service.member.IMemberLevelService;
 import com.lframework.xingyun.crm.vo.member.level.CreateMemberLevelVo;

@@ -1,4 +1,4 @@
-package com.lframework.xingyun.api.bo.basedata.member.level.config;
+package com.lframework.xingyun.api.bo.crm.member.level.config;
 
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.crm.entity.MemberLevelConfig;

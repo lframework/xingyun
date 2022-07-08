@@ -96,9 +96,18 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     @Override
     public String create(CreateMemberVo vo) {
 
-        Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class).eq(Member::getCode, vo.getCode());
+        Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class)
+            .eq(Member::getCode, vo.getCode());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
             throw new DefaultClientException("编号重复，请重新输入！");
+        }
+
+        if (!StringUtil.isBlank(vo.getTelephone())) {
+            checkWrapper = Wrappers.lambdaQuery(Member.class)
+                .eq(Member::getTelephone, vo.getTelephone());
+            if (getBaseMapper().selectCount(checkWrapper) > 0) {
+                throw new DefaultClientException("手机号重复，请重新输入！");
+            }
         }
 
         Member data = new Member();
@@ -146,21 +155,33 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
             throw new DefaultClientException("会员不存在！");
         }
 
-        Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class).eq(Member::getCode, vo.getCode())
-                .ne(Member::getId, vo.getId());
+        Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class)
+            .eq(Member::getCode, vo.getCode())
+            .ne(Member::getId, vo.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
             throw new DefaultClientException("编号重复，请重新输入！");
         }
 
+        if (!StringUtil.isBlank(vo.getTelephone())) {
+            checkWrapper = Wrappers.lambdaQuery(Member.class)
+                .eq(Member::getTelephone, vo.getTelephone())
+                .ne(Member::getId, vo.getId());
+            if (getBaseMapper().selectCount(checkWrapper) > 0) {
+                throw new DefaultClientException("手机号重复，请重新输入！");
+            }
+        }
+
         LambdaUpdateWrapper<Member> updateWrapper = Wrappers.lambdaUpdate(Member.class)
-                .set(Member::getCode, vo.getCode()).set(Member::getName, vo.getName())
-                .set(Member::getGender, EnumUtil.getByCode(Gender.class, vo.getGender()))
-                .set(Member::getTelephone, !StringUtil.isBlank(vo.getTelephone()) ? vo.getTelephone() : null)
-                .set(Member::getEmail, !StringUtil.isBlank(vo.getEmail()) ? vo.getEmail() : null)
-                .set(Member::getBirthday, vo.getBirthday() != null ? vo.getBirthday() : null)
-                .set(Member::getJoinDay, vo.getJoinDay() != null ? vo.getJoinDay() : null)
-                .set(Member::getShopId, !StringUtil.isBlank(vo.getShopId()) ? vo.getShopId() : null)
-                .set(Member::getGuiderId, !StringUtil.isBlank(vo.getGuiderId()) ? vo.getGuiderId() : null)
+            .set(Member::getCode, vo.getCode()).set(Member::getName, vo.getName())
+            .set(Member::getGender, EnumUtil.getByCode(Gender.class, vo.getGender()))
+            .set(Member::getTelephone,
+                !StringUtil.isBlank(vo.getTelephone()) ? vo.getTelephone() : null)
+            .set(Member::getEmail, !StringUtil.isBlank(vo.getEmail()) ? vo.getEmail() : null)
+            .set(Member::getBirthday, vo.getBirthday() != null ? vo.getBirthday() : null)
+            .set(Member::getJoinDay, vo.getJoinDay() != null ? vo.getJoinDay() : null)
+            .set(Member::getShopId, !StringUtil.isBlank(vo.getShopId()) ? vo.getShopId() : null)
+            .set(Member::getGuiderId,
+                !StringUtil.isBlank(vo.getGuiderId()) ? vo.getGuiderId() : null)
                 .set(Member::getAvailable, vo.getAvailable()).set(Member::getDescription,
                         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
                 .eq(Member::getId, vo.getId());

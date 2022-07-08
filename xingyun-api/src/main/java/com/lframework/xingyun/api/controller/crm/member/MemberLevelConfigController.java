@@ -1,9 +1,9 @@
-package com.lframework.xingyun.api.controller.basedata.member;
+package com.lframework.xingyun.api.controller.crm.member;
 
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
-import com.lframework.xingyun.api.bo.basedata.member.level.config.GetMemberLevelConfigBo;
+import com.lframework.xingyun.api.bo.crm.member.level.config.GetMemberLevelConfigBo;
 import com.lframework.xingyun.crm.entity.MemberLevelConfig;
 import com.lframework.xingyun.crm.service.member.IMemberLevelConfigService;
 import com.lframework.xingyun.crm.vo.member.level.config.UpdateMemberLevelConfigVo;

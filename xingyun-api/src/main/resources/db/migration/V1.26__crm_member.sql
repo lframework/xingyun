@@ -11,7 +11,7 @@ DROP
 PRIMARY KEY,
 ADD PRIMARY KEY (`id`) USING BTREE;
 
-update base_data_member as m inner join (select telephone from base_data_member where telephone is not null group by telephone having count (*) > 1) as m2
+update base_data_member as m inner join (select telephone from base_data_member where telephone is not null group by telephone having count(*) > 1) as m2
 on m2.telephone = m.telephone set m.description = m.telephone, m.telephone = NULL;
 
 UPDATE crm_member AS c

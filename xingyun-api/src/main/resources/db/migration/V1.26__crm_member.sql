@@ -4,7 +4,7 @@ ADD COLUMN `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NUL
 ADD COLUMN `gender` tinyint(3) NOT NULL DEFAULT 0 COMMENT '性别' AFTER `name`,
 ADD COLUMN `telephone` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '联系电话' AFTER `gender`,
 ADD COLUMN `birthday` date NULL DEFAULT NULL COMMENT '出生日期' AFTER `telephone`,
-ADD COLUMN `join_day` date NOT NULL COMMENT '入会日期' AFTER `birthday`,
+ADD COLUMN `join_day` date NULL COMMENT '入会日期' AFTER `birthday`,
 ADD COLUMN `shop_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属门店' AFTER `join_day`,
 ADD COLUMN `guider_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属导购' AFTER `shop_id`,
 DROP
@@ -25,6 +25,9 @@ ON m.id = c.id
         c.join_day = m.join_day,
         c.shop_id = m.shop_id,
         c.guider_id = m.guider_id;
+
+ALTER TABLE `crm_member`
+    MODIFY COLUMN `join_day` date NOT NULL COMMENT '入会日期' AFTER `birthday`;
 
 ALTER TABLE `crm_member`
     ADD UNIQUE INDEX `code`(`code`) USING BTREE;

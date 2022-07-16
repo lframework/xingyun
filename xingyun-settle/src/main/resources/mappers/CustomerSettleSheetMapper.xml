@@ -24,15 +24,6 @@
 
   <resultMap id="CustomerSettleSheetFullDto"
     type="com.lframework.xingyun.settle.dto.sheet.customer.CustomerSettleSheetFullDto">
-    <collection javaType="java.util.ArrayList"
-      ofType="com.lframework.xingyun.settle.dto.sheet.customer.CustomerSettleSheetFullDto$SheetDetailDto"
-      property="details">
-      <id column="detail_id" property="id"/>
-      <result column="detail_biz_id" property="bizId"/>
-      <result column="detail_pay_amount" property="payAmount"/>
-      <result column="detail_discount_amount" property="discountAmount"/>
-      <result column="detail_description" property="description"/>
-    </collection>
     <id column="id" property="id"/>
     <result column="code" property="code"/>
     <result column="customer_id" property="customerId"/>
@@ -49,6 +40,15 @@
     <result column="approve_time" property="approveTime"/>
     <result column="status" property="status"/>
     <result column="refuse_reason" property="refuseReason"/>
+    <collection javaType="java.util.ArrayList"
+              ofType="com.lframework.xingyun.settle.dto.sheet.customer.CustomerSettleSheetFullDto$SheetDetailDto"
+              property="details">
+      <id column="detail_id" property="id"/>
+      <result column="detail_biz_id" property="bizId"/>
+      <result column="detail_pay_amount" property="payAmount"/>
+      <result column="detail_discount_amount" property="discountAmount"/>
+      <result column="detail_description" property="description"/>
+    </collection>
   </resultMap>
 
   <select id="query" resultMap="CustomerSettleSheet">

@@ -20,15 +20,7 @@
     <result column="settle_status" property="settleStatus"/>
   </resultMap>
 
-  <resultMap id="CustomerSettlePreSheetFullDto"
-    type="com.lframework.xingyun.settle.dto.pre.customer.CustomerSettlePreSheetFullDto">
-    <collection javaType="java.util.ArrayList"
-      ofType="com.lframework.xingyun.settle.dto.pre.customer.CustomerSettlePreSheetFullDto$SheetDetailDto"
-      property="details">
-      <id column="detail_id" property="id"/>
-      <result column="detail_item_id" property="itemId"/>
-      <result column="detail_amount" property="amount"/>
-    </collection>
+  <resultMap id="CustomerSettlePreSheetFullDto" type="com.lframework.xingyun.settle.dto.pre.customer.CustomerSettlePreSheetFullDto">
     <id column="id" property="id"/>
     <result column="code" property="code"/>
     <result column="customer_id" property="customerId"/>
@@ -43,6 +35,13 @@
     <result column="status" property="status"/>
     <result column="refuse_reason" property="refuseReason"/>
     <result column="settle_status" property="settleStatus"/>
+    <collection javaType="java.util.ArrayList"
+                ofType="com.lframework.xingyun.settle.dto.pre.customer.CustomerSettlePreSheetFullDto$SheetDetailDto"
+                property="details">
+      <id column="detail_id" property="id"/>
+      <result column="detail_item_id" property="itemId"/>
+      <result column="detail_amount" property="amount"/>
+    </collection>
   </resultMap>
 
   <select id="query" resultMap="CustomerSettlePreSheet">

@@ -6,6 +6,7 @@ import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
+import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.sale.out.ApprovePassSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.ApproveRefuseSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.BatchApprovePassSaleOutSheetVo;
@@ -15,6 +16,7 @@ import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.sale.out.SaleOutSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.sale.out.UpdateSaleOutSheetVo;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ISaleOutSheetService extends BaseMpService<SaleOutSheet> {
@@ -144,4 +146,40 @@ public interface ISaleOutSheetService extends BaseMpService<SaleOutSheet> {
    * @param ids
    */
   void deleteByIds(List<String> ids);
+
+  /**
+   * 设置成未结算
+   *
+   * @param id
+   * @return
+   */
+  int setUnSettle(String id);
+
+  /**
+   * 设置成结算中
+   *
+   * @param id
+   * @return
+   */
+  int setPartSettle(String id);
+
+  /**
+   * 设置成已结算
+   *
+   * @param id
+   * @return
+   */
+  int setSettled(String id);
+
+  /**
+   * 查询已审核列表
+   *
+   * @param customerId
+   * @param startTime
+   * @param endTime
+   * @return
+   */
+  List<SaleOutSheet> getApprovedList(String customerId, LocalDateTime startTime,
+      LocalDateTime endTime,
+      SettleStatus settleStatus);
 }

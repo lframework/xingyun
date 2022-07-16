@@ -7,8 +7,8 @@ import com.lframework.xingyun.settle.service.ISettleCheckSheetDetailService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ISettleCheckSheetDetailServiceImpl
-        extends BaseMpServiceImpl<SettleCheckSheetDetailMapper, SettleCheckSheetDetail>
-        implements ISettleCheckSheetDetailService {
+public class SettleCheckSheetDetailServiceImpl
+    extends BaseMpServiceImpl<SettleCheckSheetDetailMapper, SettleCheckSheetDetail>
+    implements ISettleCheckSheetDetailService {
 
 }

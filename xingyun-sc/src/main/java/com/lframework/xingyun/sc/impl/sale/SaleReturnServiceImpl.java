@@ -465,6 +465,50 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     }
   }
 
+  @Transactional
+  @Override
+  public int setUnSettle(String id) {
+
+    Wrapper<SaleReturn> updateWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
+        .set(SaleReturn::getSettleStatus, SettleStatus.UN_SETTLE).eq(SaleReturn::getId, id)
+        .eq(SaleReturn::getSettleStatus, SettleStatus.PART_SETTLE);
+    int count = getBaseMapper().update(updateWrapper);
+
+    return count;
+  }
+
+  @Transactional
+  @Override
+  public int setPartSettle(String id) {
+
+    Wrapper<SaleReturn> updateWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
+        .set(SaleReturn::getSettleStatus, SettleStatus.PART_SETTLE).eq(SaleReturn::getId, id)
+        .in(SaleReturn::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
+    int count = getBaseMapper().update(updateWrapper);
+
+    return count;
+  }
+
+  @Transactional
+  @Override
+  public int setSettled(String id) {
+
+    Wrapper<SaleReturn> updateWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
+        .set(SaleReturn::getSettleStatus, SettleStatus.SETTLED).eq(SaleReturn::getId, id)
+        .in(SaleReturn::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
+    int count = getBaseMapper().update(updateWrapper);
+
+    return count;
+  }
+
+  @Override
+  public List<SaleReturn> getApprovedList(String customerId, LocalDateTime startTime,
+      LocalDateTime endTime,
+      SettleStatus settleStatus) {
+
+    return getBaseMapper().getApprovedList(customerId, startTime, endTime, settleStatus);
+  }
+
   private void create(SaleReturn saleReturn, CreateSaleReturnVo vo, boolean requireOut) {
 
     StoreCenter sc = storeCenterService.findById(vo.getScId());

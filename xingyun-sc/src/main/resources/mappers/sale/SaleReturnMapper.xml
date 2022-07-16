@@ -193,14 +193,29 @@
                     AND r.approve_time <= #{vo.approveEndTime}
                     ]]>
                 </if>
-                <if test="vo.outSheetCode != null and vo.outSheetCode != ''">
-                    AND s.code = #{vo.outSheetCode}
-                </if>
-                <if test="vo.settleStatus != null">
-                    AND r.settle_status = #{vo.settleStatus}
-                </if>
+              <if test="vo.outSheetCode != null and vo.outSheetCode != ''">
+                AND s.code = #{vo.outSheetCode}
+              </if>
+              <if test="vo.settleStatus != null">
+                AND r.settle_status = #{vo.settleStatus}
+              </if>
             </if>
         </where>
-        ORDER BY r.create_time DESC, d.order_no
+      ORDER BY r.create_time DESC, d.order_no
     </select>
+  <select id="getApprovedList" resultMap="SaleReturn">
+    <if test="startTime != null">
+      AND r.approve_time >= #{startTime}
+    </if>
+    WHERE r.customer_id = #{customerId}
+    <if test="endTime != null">
+      <![CDATA[
+            AND r.approve_time <= #{endTime}
+            ]]>
+    </if>
+    <include refid="SaleReturnDto_sql"/>
+    AND r.status = 3
+    AND r.settle_status = #{settleStatus}
+    ORDER BY r.approve_time DESC
+  </select>
 </mapper>

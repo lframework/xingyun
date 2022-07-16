@@ -302,14 +302,29 @@
                     AND s.create_time >= #{vo.createStartTime}
                 </if>
                 <if test="vo.createEndTime != null">
-                    <![CDATA[
+                  <![CDATA[
                     AND s.create_time <= #{vo.createEndTime}
                     ]]>
                 </if>
             </if>
-            <if test="!multipleRelate">AND p.id IS NULL</if>
+          <if test="!multipleRelate">AND p.id IS NULL</if>
         </where>
-        <if test="!multipleRelate">GROUP BY s.id</if>
-        ORDER BY s.create_time DESC
+      <if test="!multipleRelate">GROUP BY s.id</if>
+      ORDER BY s.create_time DESC
     </select>
+  <select id="getApprovedList" resultMap="SaleOutSheet">
+    <if test="startTime != null">
+      AND s.approve_time >= #{startTime}
+    </if>
+    WHERE s.customer_id = #{customerId}
+    <if test="endTime != null">
+      <![CDATA[
+            AND s.approve_time <= #{endTime}
+            ]]>
+    </if>
+    <include refid="SaleOutSheetDto_sql"/>
+    AND s.status = 3
+    AND s.settle_status = #{settleStatus}
+    ORDER BY s.approve_time DESC
+  </select>
 </mapper>

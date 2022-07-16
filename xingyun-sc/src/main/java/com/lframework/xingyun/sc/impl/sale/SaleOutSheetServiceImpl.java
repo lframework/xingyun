@@ -537,6 +537,50 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     }
   }
 
+  @Transactional
+  @Override
+  public int setUnSettle(String id) {
+
+    Wrapper<SaleOutSheet> updateWrapper = Wrappers.lambdaUpdate(SaleOutSheet.class)
+        .set(SaleOutSheet::getSettleStatus, SettleStatus.UN_SETTLE).eq(SaleOutSheet::getId, id)
+        .eq(SaleOutSheet::getSettleStatus, SettleStatus.PART_SETTLE);
+    int count = getBaseMapper().update(updateWrapper);
+
+    return count;
+  }
+
+  @Transactional
+  @Override
+  public int setPartSettle(String id) {
+
+    Wrapper<SaleOutSheet> updateWrapper = Wrappers.lambdaUpdate(SaleOutSheet.class)
+        .set(SaleOutSheet::getSettleStatus, SettleStatus.PART_SETTLE).eq(SaleOutSheet::getId, id)
+        .in(SaleOutSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
+    int count = getBaseMapper().update(updateWrapper);
+
+    return count;
+  }
+
+  @Transactional
+  @Override
+  public int setSettled(String id) {
+
+    Wrapper<SaleOutSheet> updateWrapper = Wrappers.lambdaUpdate(SaleOutSheet.class)
+        .set(SaleOutSheet::getSettleStatus, SettleStatus.SETTLED).eq(SaleOutSheet::getId, id)
+        .in(SaleOutSheet::getSettleStatus, SettleStatus.UN_SETTLE, SettleStatus.PART_SETTLE);
+    int count = getBaseMapper().update(updateWrapper);
+
+    return count;
+  }
+
+  @Override
+  public List<SaleOutSheet> getApprovedList(String customerId, LocalDateTime startTime,
+      LocalDateTime endTime,
+      SettleStatus settleStatus) {
+
+    return getBaseMapper().getApprovedList(customerId, startTime, endTime, settleStatus);
+  }
+
   private void create(SaleOutSheet sheet, CreateSaleOutSheetVo vo, boolean requireSale) {
 
     StoreCenter sc = storeCenterService.findById(vo.getScId());

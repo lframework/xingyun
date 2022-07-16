@@ -4,6 +4,7 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleReturn;
+import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.sale.returned.ApprovePassSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.ApproveRefuseSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.BatchApprovePassSaleReturnVo;
@@ -11,6 +12,7 @@ import com.lframework.xingyun.sc.vo.sale.returned.BatchApproveRefuseSaleReturnVo
 import com.lframework.xingyun.sc.vo.sale.returned.CreateSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.UpdateSaleReturnVo;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ISaleReturnService extends BaseMpService<SaleReturn> {
@@ -104,4 +106,40 @@ public interface ISaleReturnService extends BaseMpService<SaleReturn> {
    * @param ids
    */
   void deleteByIds(List<String> ids);
+
+  /**
+   * 设置成未结算
+   *
+   * @param id
+   * @return
+   */
+  int setUnSettle(String id);
+
+  /**
+   * 设置成结算中
+   *
+   * @param id
+   * @return
+   */
+  int setPartSettle(String id);
+
+  /**
+   * 设置成已结算
+   *
+   * @param id
+   * @return
+   */
+  int setSettled(String id);
+
+  /**
+   * 查询已审核列表
+   *
+   * @param customerId
+   * @param startTime
+   * @param endTime
+   * @return
+   */
+  List<SaleReturn> getApprovedList(String customerId, LocalDateTime startTime,
+      LocalDateTime endTime,
+      SettleStatus settleStatus);
 }

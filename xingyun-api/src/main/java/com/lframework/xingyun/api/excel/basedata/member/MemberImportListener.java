@@ -20,8 +20,6 @@ import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.shop.IShopService;
-import com.lframework.xingyun.core.events.member.CreateMemberEvent;
-import com.lframework.xingyun.core.events.member.UpdateMemberEvent;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -137,17 +135,6 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
     List<MemberImportModel> datas = this.getDatas();
     for (MemberImportModel data : datas) {
       memberService.cleanCacheByKey(data.getId());
-    }
-    for (MemberImportModel data : datas) {
-      if (data.getIsInsert()) {
-        CreateMemberEvent event = new CreateMemberEvent(this);
-        event.setId(data.getId());
-        ApplicationUtil.publishEvent(event);
-      } else {
-        UpdateMemberEvent event = new UpdateMemberEvent(this);
-        event.setId(data.getId());
-        ApplicationUtil.publishEvent(event);
-      }
     }
   }
 }

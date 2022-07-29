@@ -2,14 +2,12 @@ package com.lframework.xingyun.api.controller.retail;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
-import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.receive.GetPaymentDateBo;
 import com.lframework.xingyun.api.bo.retail.out.GetRetailOutSheetBo;
@@ -19,7 +17,6 @@ import com.lframework.xingyun.api.bo.retail.out.QueryRetailOutSheetWithReturnBo;
 import com.lframework.xingyun.api.bo.retail.out.RetailOutSheetWithReturnBo;
 import com.lframework.xingyun.api.excel.retail.out.RetailOutSheetExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
-import com.lframework.xingyun.core.events.member.MemberConsumeEvent;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
@@ -256,13 +253,6 @@ public class RetailOutSheetController extends DefaultBaseController {
     retailOutSheetService.approvePass(vo);
 
     RetailOutSheet outSheet = retailOutSheetService.getById(vo.getId());
-
-    if (!StringUtil.isBlank(outSheet.getMemberId())) {
-      MemberConsumeEvent event = new MemberConsumeEvent(this);
-      event.setId(outSheet.getMemberId());
-      event.setAmount(outSheet.getTotalAmount());
-      ApplicationUtil.publishEvent(event);
-    }
 
     return InvokeResultBuilder.success();
   }

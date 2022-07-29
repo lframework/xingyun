@@ -10,21 +10,27 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ProductCategorySelectorBo extends BaseBo<ProductCategory> {
 
-    /**
-     * ID
-     */
-    @ApiModelProperty("ID")
-    private String id;
+  /**
+   * ID
+   */
+  @ApiModelProperty("ID")
+  private String id;
 
-    /**
-     * 名称
-     */
-    @ApiModelProperty("名称")
-    private String name;
+  /**
+   * 编号
+   */
+  @ApiModelProperty("编号")
+  private String code;
 
-    /**
-     * 父级ID
-     */
+  /**
+   * 名称
+   */
+  @ApiModelProperty("名称")
+  private String name;
+
+  /**
+   * 父级ID
+   */
     @ApiModelProperty("父级ID")
     private String parentId;
 

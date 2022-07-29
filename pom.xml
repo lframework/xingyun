@@ -24,7 +24,6 @@
         <module>xingyun-sc</module>
         <module>xingyun-chart</module>
         <module>xingyun-settle</module>
-        <module>xingyun-crm</module>
     </modules>
 
     <properties>
@@ -46,11 +45,6 @@
             <dependency>
                 <groupId>com.lframework</groupId>
                 <artifactId>xingyun-basedata</artifactId>
-                <version>${xingyun.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.lframework</groupId>
-                <artifactId>xingyun-crm</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
 

@@ -20,11 +20,6 @@
 
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>xingyun-crm</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lframework</groupId>
             <artifactId>xingyun-sc</artifactId>
         </dependency>
 

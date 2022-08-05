@@ -38,6 +38,8 @@ spring:
       - classpath:db/migration
     check-location: false
     placeholder-replacement: false
+    #取消历史sql checksum校验
+    validate-on-migrate: false
 
 knife4j:
   enable: true

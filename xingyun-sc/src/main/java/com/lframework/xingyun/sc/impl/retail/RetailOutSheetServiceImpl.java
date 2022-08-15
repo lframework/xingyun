@@ -31,8 +31,10 @@ import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.member.IMemberService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.dto.stock.ProductLotChangeDto;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailOutSheetEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
@@ -182,6 +184,7 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建出库单")
   @Transactional
   @Override
   public String create(CreateRetailOutSheetVo vo) {
@@ -203,6 +206,7 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改出库单")
   @Transactional
   @Override
   public void update(UpdateRetailOutSheetVo vo) {
@@ -251,6 +255,7 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核通过销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional
   @Override
   public void approvePass(ApprovePassRetailOutSheetVo vo) {
@@ -330,6 +335,7 @@ public class RetailOutSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassRetailOutSheetVo vo) {
@@ -350,9 +356,10 @@ public class RetailOutSheetServiceImpl extends
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional
   @Override
-  public void directApprovePass(CreateRetailOutSheetVo vo) {
+  public String directApprovePass(CreateRetailOutSheetVo vo) {
 
     IRetailOutSheetService thisService = getThis(this.getClass());
 
@@ -363,9 +370,12 @@ public class RetailOutSheetServiceImpl extends
     approvePassVo.setDescription(vo.getDescription());
 
     thisService.approvePass(approvePassVo);
+
+    return sheetId;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核拒绝销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseRetailOutSheetVo vo) {
@@ -405,6 +415,7 @@ public class RetailOutSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void batchApproveRefuse(BatchApproveRefuseRetailOutSheetVo vo) {
@@ -427,6 +438,7 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "删除销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional
   @Override
   public void deleteById(String id) {
@@ -459,6 +471,7 @@ public class RetailOutSheetServiceImpl extends
     OpLogUtil.setVariable("code", sheet.getCode());
   }
 
+  @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Transactional
   @Override
   public void deleteByIds(List<String> ids) {

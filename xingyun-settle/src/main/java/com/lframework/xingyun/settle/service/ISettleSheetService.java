@@ -64,7 +64,7 @@ public interface ISettleSheetService extends BaseMpService<SettleSheet> {
      *
      * @param vo
      */
-    void directApprovePass(CreateSettleSheetVo vo);
+    String directApprovePass(CreateSettleSheetVo vo);
 
     /**
      * 审核拒绝

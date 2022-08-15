@@ -75,7 +75,7 @@ public interface IRetailReturnService extends BaseMpService<RetailReturn> {
    *
    * @param vo
    */
-  void directApprovePass(CreateRetailReturnVo vo);
+  String directApprovePass(CreateRetailReturnVo vo);
 
   /**
    * 审核拒绝

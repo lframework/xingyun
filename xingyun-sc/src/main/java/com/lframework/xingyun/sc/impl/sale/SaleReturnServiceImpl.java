@@ -33,6 +33,8 @@ import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleReturnEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
@@ -141,6 +143,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建销售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建退货单")
   @Transactional
   @Override
   public String create(CreateSaleReturnVo vo) {
@@ -164,6 +167,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改销售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改退货单")
   @Transactional
   @Override
   public void update(UpdateSaleReturnVo vo) {
@@ -226,6 +230,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核通过销售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional
   @Override
   public void approvePass(ApprovePassSaleReturnVo vo) {
@@ -304,6 +309,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassSaleReturnVo vo) {
@@ -324,9 +330,10 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional
   @Override
-  public void directApprovePass(CreateSaleReturnVo vo) {
+  public String directApprovePass(CreateSaleReturnVo vo) {
 
     ISaleReturnService thisService = getThis(this.getClass());
 
@@ -337,9 +344,12 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     approvePassVo.setDescription(vo.getDescription());
 
     thisService.approvePass(approvePassVo);
+
+    return returnId;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核拒绝销售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseSaleReturnVo vo) {
@@ -378,6 +388,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void batchApproveRefuse(BatchApproveRefuseSaleReturnVo vo) {
@@ -400,6 +411,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
   }
 
   @OpLog(type = OpLogType.OTHER, name = "删除销售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional
   @Override
   public void deleteById(String id) {
@@ -445,6 +457,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     OpLogUtil.setVariable("code", saleReturn.getCode());
   }
 
+  @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Transactional
   @Override
   public void deleteByIds(List<String> ids) {

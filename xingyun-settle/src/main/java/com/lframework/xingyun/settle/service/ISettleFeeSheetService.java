@@ -65,7 +65,7 @@ public interface ISettleFeeSheetService extends BaseMpService<SettleFeeSheet> {
      *
      * @param vo
      */
-    void directApprovePass(CreateSettleFeeSheetVo vo);
+    String directApprovePass(CreateSettleFeeSheetVo vo);
 
     /**
      * 审核拒绝

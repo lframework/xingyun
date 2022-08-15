@@ -77,7 +77,7 @@ public interface ISaleReturnService extends BaseMpService<SaleReturn> {
    *
    * @param vo
    */
-  void directApprovePass(CreateSaleReturnVo vo);
+  String directApprovePass(CreateSaleReturnVo vo);
 
   /**
    * 审核拒绝

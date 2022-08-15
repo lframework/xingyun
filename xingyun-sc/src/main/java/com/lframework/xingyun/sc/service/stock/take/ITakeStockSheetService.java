@@ -77,7 +77,7 @@ public interface ITakeStockSheetService extends BaseMpService<TakeStockSheet> {
    *
    * @param vo
    */
-  void directApprovePass(CreateTakeStockSheetVo vo);
+  String directApprovePass(CreateTakeStockSheetVo vo);
 
   /**
    * 审核拒绝

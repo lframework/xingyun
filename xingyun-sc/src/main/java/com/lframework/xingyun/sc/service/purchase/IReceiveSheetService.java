@@ -117,7 +117,7 @@ public interface IReceiveSheetService extends BaseMpService<ReceiveSheet> {
    *
    * @param vo
    */
-  void directApprovePass(CreateReceiveSheetVo vo);
+  String directApprovePass(CreateReceiveSheetVo vo);
 
   /**
    * 审核拒绝

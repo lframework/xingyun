@@ -108,7 +108,7 @@ public interface IPurchaseOrderService extends BaseMpService<PurchaseOrder> {
    *
    * @param vo
    */
-  void directApprovePass(CreatePurchaseOrderVo vo);
+  String directApprovePass(CreatePurchaseOrderVo vo);
 
   /**
    * 审核拒绝

@@ -32,6 +32,8 @@ import com.lframework.xingyun.basedata.enums.ManageType;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
+import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseReturnEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
@@ -129,6 +131,7 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建采购退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建退单")
   @Transactional
   @Override
   public String create(CreatePurchaseReturnVo vo) {
@@ -152,6 +155,7 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改采购退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改退单")
   @Transactional
   @Override
   public void update(UpdatePurchaseReturnVo vo) {
@@ -216,6 +220,7 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核通过采购退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional
   @Override
   public void approvePass(ApprovePassPurchaseReturnVo vo) {
@@ -295,6 +300,7 @@ public class PurchaseReturnServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassPurchaseReturnVo vo) {
@@ -315,9 +321,10 @@ public class PurchaseReturnServiceImpl extends
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional
   @Override
-  public void directApprovePass(CreatePurchaseReturnVo vo) {
+  public String directApprovePass(CreatePurchaseReturnVo vo) {
 
     IPurchaseReturnService thisService = getThis(this.getClass());
 
@@ -328,9 +335,12 @@ public class PurchaseReturnServiceImpl extends
     approvePassVo.setDescription(vo.getDescription());
 
     thisService.approvePass(approvePassVo);
+
+    return returnId;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核拒绝采购退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void approveRefuse(ApproveRefusePurchaseReturnVo vo) {
@@ -370,6 +380,7 @@ public class PurchaseReturnServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void batchApproveRefuse(BatchApproveRefusePurchaseReturnVo vo) {
@@ -392,6 +403,7 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "删除采购退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional
   @Override
   public void deleteById(String id) {
@@ -440,6 +452,7 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @Transactional
+  @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Override
   public void deleteByIds(List<String> ids) {
 

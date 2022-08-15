@@ -32,6 +32,8 @@ import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
+import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
@@ -198,6 +200,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建采购收货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建收货单")
   @Transactional
   @Override
   public String create(CreateReceiveSheetVo vo) {
@@ -221,6 +224,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改采购收货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改收货单")
   @Transactional
   @Override
   public void update(UpdateReceiveSheetVo vo) {
@@ -284,6 +288,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核通过采购收货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional
   @Override
   public void approvePass(ApprovePassReceiveSheetVo vo) {
@@ -359,6 +364,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @Transactional
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Override
   public void batchApprovePass(BatchApprovePassReceiveSheetVo vo) {
 
@@ -379,8 +385,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @Transactional
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Override
-  public void directApprovePass(CreateReceiveSheetVo vo) {
+  public String directApprovePass(CreateReceiveSheetVo vo) {
 
     IReceiveSheetService thisService = getThis(this.getClass());
 
@@ -391,9 +398,12 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     approvePassVo.setDescription(vo.getDescription());
 
     thisService.approvePass(approvePassVo);
+
+    return sheetId;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核拒绝采购收货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseReceiveSheetVo vo) {
@@ -433,6 +443,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @Transactional
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Override
   public void batchApproveRefuse(BatchApproveRefuseReceiveSheetVo vo) {
 
@@ -454,6 +465,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @OpLog(type = OpLogType.OTHER, name = "删除采购收货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional
   @Override
   public void deleteById(String id) {
@@ -501,6 +513,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @Transactional
+  @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Override
   public void deleteByIds(List<String> ids) {
 

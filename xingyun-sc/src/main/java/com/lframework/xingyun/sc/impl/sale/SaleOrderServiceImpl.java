@@ -31,6 +31,8 @@ import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleOrderEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
@@ -157,6 +159,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建订单")
   @Transactional
   @Override
   public String create(CreateSaleOrderVo vo) {
@@ -178,6 +181,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改订单")
   @Transactional
   @Override
   public void update(UpdateSaleOrderVo vo) {
@@ -223,6 +227,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核通过订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional
   @Override
   public void approvePass(ApprovePassSaleOrderVo vo) {
@@ -265,6 +270,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     this.sendApprovePassEvent(order);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassSaleOrderVo vo) {
@@ -285,9 +291,10 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional
   @Override
-  public void directApprovePass(CreateSaleOrderVo vo) {
+  public String directApprovePass(CreateSaleOrderVo vo) {
 
     ISaleOrderService thisService = getThis(this.getClass());
 
@@ -298,9 +305,12 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     approvePassSaleOrderVo.setDescription(vo.getDescription());
 
     thisService.approvePass(approvePassSaleOrderVo);
+
+    return orderId;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核拒绝订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseSaleOrderVo vo) {
@@ -338,6 +348,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void batchApproveRefuse(BatchApproveRefuseSaleOrderVo vo) {
@@ -360,6 +371,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @OpLog(type = OpLogType.OTHER, name = "删除订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional
   @Override
   public void deleteById(String id) {
@@ -391,6 +403,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     OpLogUtil.setVariable("code", order.getCode());
   }
 
+  @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Transactional
   @Override
   public void deleteByIds(List<String> ids) {

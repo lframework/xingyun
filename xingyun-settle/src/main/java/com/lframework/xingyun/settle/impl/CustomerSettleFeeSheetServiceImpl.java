@@ -23,6 +23,8 @@ import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.web.common.security.AbstractUserDetails;
 import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.settle.dto.fee.customer.CustomerSettleFeeSheetFullDto;
@@ -96,6 +98,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "创建客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建费用单")
   @Transactional
   @Override
   public String create(CreateCustomerSettleFeeSheetVo vo) {
@@ -118,6 +121,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改费用单")
   @Transactional
   @Override
   public void update(UpdateCustomerSettleFeeSheetVo vo) {
@@ -166,6 +170,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核通过客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional
   @Override
   public void approvePass(ApprovePassCustomerSettleFeeSheetVo vo) {
@@ -206,9 +211,10 @@ public class CustomerSettleFeeSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional
   @Override
-  public void directApprovePass(CreateCustomerSettleFeeSheetVo vo) {
+  public String directApprovePass(CreateCustomerSettleFeeSheetVo vo) {
 
     ICustomerSettleFeeSheetService thisService = getThis(this.getClass());
 
@@ -218,9 +224,12 @@ public class CustomerSettleFeeSheetServiceImpl extends
     approveVo.setId(id);
 
     thisService.approvePass(approveVo);
+
+    return id;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核拒绝客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseCustomerSettleFeeSheetVo vo) {
@@ -261,6 +270,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassCustomerSettleFeeSheetVo vo) {
@@ -279,6 +289,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void batchApproveRefuse(BatchApproveRefuseCustomerSettleFeeSheetVo vo) {
@@ -300,6 +311,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "删除客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional
   @Override
   public void deleteById(String id) {
@@ -332,6 +344,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
     OpLogUtil.setVariable("code", sheet.getCode());
   }
 
+  @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Transactional
   @Override
   public void deleteByIds(List<String> ids) {

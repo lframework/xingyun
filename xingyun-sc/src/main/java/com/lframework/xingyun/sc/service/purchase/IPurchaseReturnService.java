@@ -77,7 +77,7 @@ public interface IPurchaseReturnService extends BaseMpService<PurchaseReturn> {
    *
    * @param vo
    */
-  void directApprovePass(CreatePurchaseReturnVo vo);
+  String directApprovePass(CreatePurchaseReturnVo vo);
 
   /**
    * 审核拒绝

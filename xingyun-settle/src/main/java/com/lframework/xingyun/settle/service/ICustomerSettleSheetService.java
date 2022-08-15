@@ -71,7 +71,7 @@ public interface ICustomerSettleSheetService extends BaseMpService<CustomerSettl
      *
      * @param vo
      */
-    void directApprovePass(CreateCustomerSettleSheetVo vo);
+    String directApprovePass(CreateCustomerSettleSheetVo vo);
 
     /**
      * 审核拒绝

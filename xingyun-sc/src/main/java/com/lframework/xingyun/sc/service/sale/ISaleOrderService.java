@@ -107,7 +107,7 @@ public interface ISaleOrderService extends BaseMpService<SaleOrder> {
    *
    * @param vo
    */
-  void directApprovePass(CreateSaleOrderVo vo);
+  String directApprovePass(CreateSaleOrderVo vo);
 
   /**
    * 审核拒绝

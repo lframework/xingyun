@@ -25,6 +25,8 @@ import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.IProductService;
+import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
@@ -99,6 +101,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增库存成本调整单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建调整单")
   @Transactional
   @Override
   public String create(CreateStockCostAdjustSheetVo vo) {
@@ -118,6 +121,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改库存成本调整单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#_result", name = "修改调整单")
   @Transactional
   @Override
   public void update(UpdateStockCostAdjustSheetVo vo) {
@@ -167,6 +171,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "删除库存成本调整单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional
   @Override
   public void deleteById(String id) {
@@ -194,6 +199,7 @@ public class StockCostAdjustSheetServiceImpl extends
     stockCostAdjustSheetDetailService.remove(deleteDetailWrapper);
   }
 
+  @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Transactional
   @Override
   public void deleteByIds(List<String> ids) {
@@ -215,6 +221,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核通过库存成本调整单，ID：{}", params = {"#vo.id"})
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional
   @Override
   public void approvePass(ApprovePassStockCostAdjustSheetVo vo) {
@@ -271,6 +278,7 @@ public class StockCostAdjustSheetServiceImpl extends
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassStockCostAdjustSheetVo vo) {
@@ -291,8 +299,10 @@ public class StockCostAdjustSheetServiceImpl extends
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
+  @Transactional
   @Override
-  public void directApprovePass(CreateStockCostAdjustSheetVo vo) {
+  public String directApprovePass(CreateStockCostAdjustSheetVo vo) {
 
     IStockCostAdjustSheetService thisService = getThis(this.getClass());
 
@@ -303,9 +313,12 @@ public class StockCostAdjustSheetServiceImpl extends
     approvePassVo.setDescription(vo.getDescription());
 
     thisService.approvePass(approvePassVo);
+
+    return id;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核拒绝库存成本调整单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseStockCostAdjustSheetVo vo) {
@@ -341,6 +354,8 @@ public class StockCostAdjustSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
+  @Transactional
   @Override
   public void batchApproveRefuse(BatchApproveRefuseStockCostAdjustSheetVo vo) {
 

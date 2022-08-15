@@ -116,7 +116,7 @@ public interface IRetailOutSheetService extends BaseMpService<RetailOutSheet> {
    *
    * @param vo
    */
-  void directApprovePass(CreateRetailOutSheetVo vo);
+  String directApprovePass(CreateRetailOutSheetVo vo);
 
   /**
    * 审核拒绝

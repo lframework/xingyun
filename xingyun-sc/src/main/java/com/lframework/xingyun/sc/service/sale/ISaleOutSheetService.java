@@ -117,7 +117,7 @@ public interface ISaleOutSheetService extends BaseMpService<SaleOutSheet> {
    *
    * @param vo
    */
-  void directApprovePass(CreateSaleOutSheetVo vo);
+  String directApprovePass(CreateSaleOutSheetVo vo);
 
   /**
    * 审核拒绝

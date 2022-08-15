@@ -21,6 +21,8 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.service.IGenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
@@ -101,6 +103,7 @@ public class TakeStockSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "新增盘点单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建盘点单")
   @Transactional
   @Override
   public String create(CreateTakeStockSheetVo vo) {
@@ -156,6 +159,7 @@ public class TakeStockSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "修改盘点单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#_result", name = "修改盘点单")
   @Transactional
   @Override
   public void update(UpdateTakeStockSheetVo vo) {
@@ -221,6 +225,7 @@ public class TakeStockSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核通过盘点单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional
   @Override
   public void approvePass(ApprovePassTakeStockSheetVo vo) {
@@ -264,6 +269,7 @@ public class TakeStockSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Transactional
   @Override
   public void batchApprovePass(BatchApprovePassTakeStockSheetVo vo) {
@@ -282,9 +288,10 @@ public class TakeStockSheetServiceImpl extends
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional
   @Override
-  public void directApprovePass(CreateTakeStockSheetVo vo) {
+  public String directApprovePass(CreateTakeStockSheetVo vo) {
 
     ITakeStockSheetService thisService = getThis(this.getClass());
 
@@ -294,9 +301,12 @@ public class TakeStockSheetServiceImpl extends
     approveVo.setId(id);
 
     thisService.approvePass(approveVo);
+
+    return id;
   }
 
   @OpLog(type = OpLogType.OTHER, name = "审核拒绝盘点单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void approveRefuse(ApproveRefuseTakeStockSheetVo vo) {
@@ -331,6 +341,7 @@ public class TakeStockSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional
   @Override
   public void batchApproveRefuse(BatchApproveRefuseTakeStockSheetVo vo) {
@@ -350,6 +361,7 @@ public class TakeStockSheetServiceImpl extends
     }
   }
 
+  @OrderTimeLineLog(type = OrderTimeLineBizType.CANCEL_APPROVE, orderId = "#id", name = "取消审核")
   @OpLog(type = OpLogType.OTHER, name = "取消审核通过盘点单，ID：{}", params = {"#id"})
   @Transactional
   @Override
@@ -394,6 +406,7 @@ public class TakeStockSheetServiceImpl extends
   }
 
   @OpLog(type = OpLogType.OTHER, name = "删除盘点单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional
   @Override
   public void deleteById(String id) {
@@ -417,6 +430,7 @@ public class TakeStockSheetServiceImpl extends
     takeStockSheetDetailService.remove(deleteDetailWrapper);
   }
 
+  @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Transactional
   @Override
   public void batchDelete(List<String> ids) {

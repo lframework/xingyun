@@ -93,7 +93,7 @@ public interface IStockCostAdjustSheetService extends BaseMpService<StockCostAdj
    *
    * @param vo
    */
-  void directApprovePass(CreateStockCostAdjustSheetVo vo);
+  String directApprovePass(CreateStockCostAdjustSheetVo vo);
 
   /**
    * 审核拒绝

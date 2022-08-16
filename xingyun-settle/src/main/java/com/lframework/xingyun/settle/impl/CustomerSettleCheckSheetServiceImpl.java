@@ -450,7 +450,7 @@ public class CustomerSettleCheckSheetServiceImpl extends
                 result.setCode(preSheet.getCode());
                 result.setTotalAmount(preSheet.getTotalAmount());
                 result.setApproveTime(preSheet.getApproveTime());
-                result.setCalcType(CustomerSettleCheckSheetCalcType.ADD);
+                result.setCalcType(CustomerSettleCheckSheetCalcType.SUB);
                 break;
             }
             default: {
@@ -674,7 +674,7 @@ public class CustomerSettleCheckSheetServiceImpl extends
                 result.setTotalAmount(item.getTotalAmount());
                 result.setApproveTime(item.getApproveTime());
                 result.setBizType(CustomerSettleCheckSheetBizType.SETTLE_PRE_SHEET);
-                result.setCalcType(CustomerSettleCheckSheetCalcType.ADD);
+                result.setCalcType(CustomerSettleCheckSheetCalcType.SUB);
 
                 results.add(result);
             }

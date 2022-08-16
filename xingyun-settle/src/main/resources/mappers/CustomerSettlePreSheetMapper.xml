@@ -137,16 +137,16 @@
   </select>
 
   <select id="getApprovedList" resultMap="CustomerSettlePreSheet">
+    <include refid="CustomerSettlePreSheetDto_sql"/>
+    WHERE s.customer_id = #{customerId}
     <if test="startTime != null">
       AND s.approve_time >= #{startTime}
     </if>
-    WHERE s.customer_id = #{customerId}
     <if test="endTime != null">
-      <![CDATA[
-            AND s.approve_time <= #{endTime}
-            ]]>
+    <![CDATA[
+      AND s.approve_time <= #{endTime}
+    ]]>
     </if>
-    <include refid="CustomerSettlePreSheetDto_sql"/>
     AND s.status = 3
     AND s.settle_status = #{settleStatus}
     ORDER BY s.approve_time DESC

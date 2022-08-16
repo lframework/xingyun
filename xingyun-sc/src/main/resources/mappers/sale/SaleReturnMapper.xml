@@ -204,16 +204,17 @@
       ORDER BY r.create_time DESC, d.order_no
     </select>
   <select id="getApprovedList" resultMap="SaleReturn">
+    <include refid="SaleReturnDto_sql"/>
+    WHERE r.customer_id = #{customerId}
     <if test="startTime != null">
       AND r.approve_time >= #{startTime}
     </if>
-    WHERE r.customer_id = #{customerId}
+
     <if test="endTime != null">
-      <![CDATA[
-            AND r.approve_time <= #{endTime}
-            ]]>
+    <![CDATA[
+        AND r.approve_time <= #{endTime}
+    ]]>
     </if>
-    <include refid="SaleReturnDto_sql"/>
     AND r.status = 3
     AND r.settle_status = #{settleStatus}
     ORDER BY r.approve_time DESC

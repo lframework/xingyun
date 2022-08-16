@@ -151,16 +151,16 @@
   </select>
 
   <select id="getApprovedList" resultMap="CustomerSettleCheckSheet">
+    <include refid="CustomerSettleCheckSheetDto_sql"/>
+    WHERE s.customer_id = #{customerId}
     <if test="startTime != null">
       AND s.approve_time >= #{startTime}
     </if>
-    WHERE s.customer_id = #{customerId}
     <if test="endTime != null">
-      <![CDATA[
-            AND s.approve_time <= #{endTime}
-            ]]>
+    <![CDATA[
+      AND s.approve_time <= #{endTime}
+    ]]>
     </if>
-    <include refid="CustomerSettleCheckSheetDto_sql"/>
     AND s.status = 3
     AND (s.total_pay_amount - s.total_payed_amount - s.total_discount_amount) != 0
     AND s.settle_status IN (0, 1)

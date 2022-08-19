@@ -1,8 +1,11 @@
 package com.lframework.xingyun.api.controller.components;
 
 import cn.hutool.crypto.SecureUtil;
+import com.lframework.common.constants.StringPool;
 import com.lframework.common.exceptions.ClientException;
 import com.lframework.common.exceptions.impl.DefaultClientException;
+import com.lframework.common.utils.CollectionUtil;
+import com.lframework.common.utils.FileUtil;
 import com.lframework.starter.security.controller.DefaultBaseController;
 import com.lframework.starter.web.bo.ExcelImportBo;
 import com.lframework.starter.web.resp.InvokeResult;
@@ -11,6 +14,7 @@ import com.lframework.starter.web.service.SysParameterService;
 import com.lframework.starter.web.utils.ExcelImportUtil;
 import com.lframework.starter.web.utils.HttpUtil;
 import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.starter.web.utils.UploadUtil;
 import com.lframework.xingyun.api.bo.components.MapLocationBo;
 import com.lframework.xingyun.api.bo.components.OrderTimeLineBo;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
@@ -19,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +34,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 公共组件 Controller
@@ -101,11 +108,26 @@ public class ComponentController extends DefaultBaseController {
   @ApiOperation("单据时间轴")
   @ApiImplicitParam(value = "单据ID", name = "orderId", paramType = "query", required = true)
   @GetMapping("/timeline/order")
-  public InvokeResult<List<OrderTimeLineBo>> getOrderTimeLine(@NotBlank(message = "单据ID不能为空！") String orderId) {
+  public InvokeResult<List<OrderTimeLineBo>> getOrderTimeLine(
+      @NotBlank(message = "单据ID不能为空！") String orderId) {
 
     List<OrderTimeLine> datas = orderTimeLineService.getByOrder(orderId);
-    List<OrderTimeLineBo> results = datas.stream().map(OrderTimeLineBo::new).collect(Collectors.toList());
+    List<OrderTimeLineBo> results = datas.stream().map(OrderTimeLineBo::new)
+        .collect(Collectors.toList());
 
     return InvokeResultBuilder.success(results);
+  }
+
+  @ApiOperation("富文本编辑器上传图片")
+  @PostMapping("/editor/upload/image")
+  public InvokeResult<Map<String, String>> editorUploadImage(MultipartFile file) {
+    if (!FileUtil.IMG_SUFFIX.contains(FileUtil.getSuffix(file.getOriginalFilename()))) {
+      throw new DefaultClientException(
+          "上传图片仅支持【" + CollectionUtil.join(FileUtil.IMG_SUFFIX, StringPool.STR_SPLIT_CN) + "】格式！");
+    }
+
+    String url = UploadUtil.upload(file);
+
+    return InvokeResultBuilder.success(Collections.singletonMap("url", url));
   }
 }

@@ -9,6 +9,7 @@ import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.SpelUtil;
 import com.lframework.web.common.security.AbstractUserDetails;
 import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.web.common.threads.DefaultRunnable;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
 import com.lframework.xingyun.core.service.IOrderTimeLineService;
@@ -177,17 +178,17 @@ public class OrderTimeLineLogAspect {
 
         if (orderTimeLineLog.delete()) {
           for (String orderId : orderIdList) {
-            ThreadUtil.execAsync(() -> {
+            ThreadUtil.execAsync(new DefaultRunnable(SecurityUtil.getCurrentUser(), () -> {
               IOrderTimeLineService orderTimeLineService = ApplicationUtil.getBean(
                   IOrderTimeLineService.class);
               orderTimeLineService.deleteByOrder(orderId);
               orderTimeLineService.cleanCacheByKey(orderId);
-            });
+            }));
           }
         } else {
           for (String[] strArr : paramsList) {
             for (String orderId : orderIdList) {
-              ThreadUtil.execAsync(() -> {
+              ThreadUtil.execAsync(new DefaultRunnable(SecurityUtil.getCurrentUser(), () -> {
                 IOrderTimeLineService orderTimeLineService = ApplicationUtil.getBean(
                     IOrderTimeLineService.class);
                 OrderTimeLine record = new OrderTimeLine();
@@ -199,7 +200,7 @@ public class OrderTimeLineLogAspect {
 
                 orderTimeLineService.save(record);
                 orderTimeLineService.cleanCacheByKey(orderId);
-              });
+              }));
             }
           }
         }

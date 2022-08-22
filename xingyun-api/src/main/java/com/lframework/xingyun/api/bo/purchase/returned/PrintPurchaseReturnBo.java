@@ -20,12 +20,11 @@ import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
 import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -132,7 +131,6 @@ public class PrintPurchaseReturnBo extends BasePrintDataBo<PurchaseReturnFullDto
         this.purchaserName = StringPool.EMPTY_STR;
         this.paymentDate = StringPool.EMPTY_STR;
         this.receiveSheetCode = StringPool.EMPTY_STR;
-        this.description = StringPool.EMPTY_STR;
         this.approveBy = StringPool.EMPTY_STR;
         this.approveTime = StringPool.EMPTY_STR;
 

@@ -18,12 +18,11 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -120,7 +119,6 @@ public class PrintSaleOrderBo extends BasePrintDataBo<SaleOrderFullDto> {
     protected void afterInit(SaleOrderFullDto dto) {
 
         this.salerName = StringPool.EMPTY_STR;
-        this.description = StringPool.EMPTY_STR;
         this.approveBy = StringPool.EMPTY_STR;
         this.approveTime = StringPool.EMPTY_STR;
 

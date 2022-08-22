@@ -21,12 +21,11 @@ import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.enums.SaleReturnStatus;
 import com.lframework.xingyun.sc.service.sale.ISaleOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -133,7 +132,6 @@ public class PrintSaleReturnBo extends BasePrintDataBo<SaleReturnFullDto> {
         this.salerName = StringPool.EMPTY_STR;
         this.paymentDate = StringPool.EMPTY_STR;
         this.outSheetCode = StringPool.EMPTY_STR;
-        this.description = StringPool.EMPTY_STR;
         this.approveBy = StringPool.EMPTY_STR;
         this.approveTime = StringPool.EMPTY_STR;
 

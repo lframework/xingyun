@@ -135,7 +135,6 @@ public class PrintSaleOutSheetBo extends BasePrintDataBo<SaleOutSheetFullDto> {
     this.salerName = StringPool.EMPTY_STR;
     this.paymentDate = StringPool.EMPTY_STR;
     this.saleOrderCode = StringPool.EMPTY_STR;
-    this.description = StringPool.EMPTY_STR;
     this.approveBy = StringPool.EMPTY_STR;
     this.approveTime = StringPool.EMPTY_STR;
 

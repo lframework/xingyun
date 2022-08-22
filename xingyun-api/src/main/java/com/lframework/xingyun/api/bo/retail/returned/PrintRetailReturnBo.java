@@ -132,7 +132,6 @@ public class PrintRetailReturnBo extends BasePrintDataBo<RetailReturnFullDto> {
         this.salerName = StringPool.EMPTY_STR;
         this.paymentDate = StringPool.EMPTY_STR;
         this.outSheetCode = StringPool.EMPTY_STR;
-        this.description = StringPool.EMPTY_STR;
         this.approveBy = StringPool.EMPTY_STR;
         this.approveTime = StringPool.EMPTY_STR;
 

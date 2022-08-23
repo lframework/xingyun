@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>gen</artifactId>
+            <artifactId>gen-starter</artifactId>
         </dependency>
     </dependencies>
 

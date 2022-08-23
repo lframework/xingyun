@@ -99,7 +99,7 @@ pagehelper:
   support-methods-arguments: false
 mybatis-plus:
   mapper-locations: classpath*:/mappers/**/*.xml
-  typeEnumsPackage: com.lframework.**.enums
+  typeEnumsPackage: com.lframework.starter.**.enums,com.lframework.xingyun.**.enums
 
 #验证码配置
 kaptcha:

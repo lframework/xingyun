@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.biz.mappers.PurchaseOrderDetailMapper">
+    <resultMap id="PurchaseOrderDetail" type="com.lframework.xingyun.sc.facade.entity.PurchaseOrderDetail">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="product_id" property="productId"/>
+        <result column="order_num" property="orderNum"/>
+        <result column="tax_price" property="taxPrice"/>
+        <result column="is_gift" property="isGift"/>
+        <result column="tax_rate" property="taxRate"/>
+        <result column="description" property="description"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="receive_num" property="receiveNum"/>
+    </resultMap>
+
+    <sql id="PurchaseOrderDetailDto_sql">
+        SELECT
+            d.id,
+            d.order_id,
+            d.product_id,
+            d.order_num,
+            d.tax_price,
+            d.is_gift,
+            d.tax_rate,
+            d.description,
+            d.order_no,
+            d.receive_num
+        FROM tbl_purchase_order_detail AS d
+    </sql>
+    <update id="addReceiveNum">
+        UPDATE tbl_purchase_order_detail
+        SET receive_num = receive_num + #{num}
+        WHERE id = #{id}
+        AND (order_num - receive_num) >= #{num}
+    </update>
+    <update id="subReceiveNum">
+        UPDATE tbl_purchase_order_detail
+        SET receive_num = receive_num - #{num}
+        WHERE id = #{id}
+        AND receive_num >= #{num}
+    </update>
+
+    <select id="getByOrderId" resultMap="PurchaseOrderDetail">
+        <include refid="PurchaseOrderDetailDto_sql"/>
+        WHERE d.order_id = #{orderId}
+        ORDER BY d.order_no
+    </select>
+</mapper>

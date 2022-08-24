@@ -1,0 +1,24 @@
+server:
+  #端口
+  port: 15000
+
+spring:
+  application:
+    name: @project.artifactId@
+  profiles:
+    active: @profiles-active@
+  cloud:
+    nacos:
+      config:
+        server-addr: ${nacos-server-addr}
+        file-extension: yaml
+        namespace: ${spring.profiles.active}
+        extension-configs[0]:
+          data-id: zipkin.yaml
+          refresh: true
+      discovery:
+        server-addr: ${nacos-server-addr}
+        namespace: ${spring.profiles.active}
+
+# nacos-server地址
+nacos-server-addr: @discovery-server@

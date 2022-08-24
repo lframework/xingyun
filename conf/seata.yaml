@@ -1,0 +1,21 @@
+# seata配置
+seata:
+  enabled: true
+  # Seata 事务组编号，此处需于 seata 相同
+  tx-service-group: default_tx_group
+  config:
+    type: nacos
+    nacos:
+      # nacos server地址
+      server-addr: 127.0.0.1:10000
+      namespace: dev
+      group: DEFAULT_GROUP
+      data-id: seata-server.properties # 读取 nacos seata 配置
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server # seata 服务名
+      # nacos server地址
+      server-addr: 127.0.0.1:10000
+      namespace: dev
+      group: DEFAULT_GROUP

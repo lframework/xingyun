@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.biz.mappers.SaleOutSheetMapper">
+
+    <resultMap id="SaleOutSheet" type="com.lframework.xingyun.sc.facade.entity.SaleOutSheet">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="saler_id" property="salerId"/>
+        <result column="payment_date" property="paymentDate"/>
+        <result column="sale_order_id" property="saleOrderId"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="total_gift_num" property="totalGiftNum"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="status" property="status"/>
+        <result column="settle_status" property="settleStatus"/>
+    </resultMap>
+
+    <resultMap id="SaleOutSheetFullDto" type="com.lframework.xingyun.sc.facade.dto.sale.out.SaleOutSheetFullDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="saler_id" property="salerId"/>
+        <result column="payment_date" property="paymentDate"/>
+        <result column="sale_order_id" property="saleOrderId"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="total_gift_num" property="totalGiftNum"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="status" property="status"/>
+        <result column="refuse_reason" property="refuseReason"/>
+        <result column="settle_status" property="settleStatus"/>
+        <collection property="details" javaType="java.util.ArrayList" ofType="com.lframework.xingyun.sc.facade.dto.sale.out.SaleOutSheetFullDto$SheetDetailDto">
+            <id column="detail_id" property="id"/>
+            <result column="detail_product_id" property="productId"/>
+            <result column="detail_order_num" property="orderNum"/>
+            <result column="detail_ori_price" property="oriPrice"/>
+            <result column="detail_tax_price" property="taxPrice"/>
+            <result column="detail_discount_rate" property="discountRate"/>
+            <result column="detail_is_gift" property="isGift"/>
+            <result column="detail_tax_rate" property="taxRate"/>
+            <result column="detail_description" property="description"/>
+            <result column="detail_order_no" property="orderNo"/>
+            <result column="detail_settle_status" property="settleStatus"/>
+            <result column="detail_sale_order_detail_id" property="saleOrderDetailId"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="SaleOutSheetWithReturnDto" type="com.lframework.xingyun.sc.facade.dto.sale.out.SaleOutSheetWithReturnDto">
+        <id column="id" property="id"/>
+        <result column="sc_id" property="scId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="saler_id" property="salerId"/>
+        <collection property="details" javaType="java.util.ArrayList" ofType="com.lframework.xingyun.sc.facade.dto.sale.out.SaleOutSheetWithReturnDto$SheetDetailDto">
+            <id column="detail_id" property="id"/>
+            <result column="detail_product_id" property="productId"/>
+            <result column="detail_order_num" property="orderNum"/>
+            <result column="detail_ori_price" property="oriPrice"/>
+            <result column="detail_tax_price" property="taxPrice"/>
+            <result column="detail_discount_rate" property="discountRate"/>
+            <result column="detail_is_gift" property="isGift"/>
+            <result column="detail_tax_rate" property="taxRate"/>
+            <result column="detail_description" property="description"/>
+            <result column="detail_order_no" property="orderNo"/>
+            <result column="detail_return_num" property="returnNum"/>
+            <result column="detail_lot_id" property="lotId"/>
+        </collection>
+    </resultMap>
+
+    <sql id="SaleOutSheetDto_sql">
+        SELECT
+            s.id,
+            s.code,
+            s.sc_id,
+            s.customer_id,
+            s.saler_id,
+            s.payment_date,
+            s.sale_order_id,
+            s.total_num,
+            s.total_gift_num,
+            s.total_amount,
+            s.description,
+            s.create_by,
+            s.create_time,
+            s.approve_by,
+            s.approve_time,
+            s.status,
+            s.settle_status
+        FROM tbl_sale_out_sheet AS s
+        LEFT JOIN tbl_sale_order AS o ON o.id = s.sale_order_id
+    </sql>
+
+    <sql id="SaleOutSheetFullDto_sql">
+        SELECT
+            s.id,
+            s.code,
+            s.sc_id,
+            s.customer_id,
+            s.saler_id,
+            s.payment_date,
+            s.sale_order_id,
+            s.total_num,
+            s.total_gift_num,
+            s.total_amount,
+            s.description,
+            s.create_by,
+            s.create_time,
+            s.update_by,
+            s.update_time,
+            s.approve_by,
+            s.approve_time,
+            s.status,
+            s.refuse_reason,
+            s.settle_status,
+            d.id AS detail_id,
+            d.product_id AS detail_product_id,
+            d.order_num AS detail_order_num,
+            d.ori_price AS detail_ori_price,
+            d.tax_price AS detail_tax_price,
+            d.discount_rate AS detail_discount_rate,
+            d.is_gift AS detail_is_gift,
+            d.tax_rate AS detail_tax_rate,
+            d.description AS detail_description,
+            d.order_no AS detail_order_no,
+            d.settle_status AS detail_settle_status,
+            d.sale_order_detail_id AS detail_sale_order_detail_id
+        FROM tbl_sale_out_sheet AS s
+        LEFT JOIN tbl_sale_out_sheet_detail AS d ON d.sheet_id = s.id
+    </sql>
+
+    <update id="setPartSettle">
+        UPDATE tbl_sale_out_sheet SET ori_settle_status = settle_status, settle_status = 1
+        WHERE id = #{id}
+        AND settle_status IN (0, 1)
+        AND ori_settle_status IS NULL
+    </update>
+
+    <update id="setSettled">
+        UPDATE tbl_sale_out_sheet SET ori_settle_status = settle_status, settle_status = 3
+        WHERE id = #{id}
+        AND settle_status IN (0, 1)
+        AND ori_settle_status IS NULL
+    </update>
+
+    <update id="rollbackSetPartSettle">
+        UPDATE tbl_sale_out_sheet SET settle_status = ori_settle_status, ori_settle_status = NULL, tx_id = NULL
+        WHERE id = #{id}
+        AND ori_settle_status IN (0, 1)
+        AND tx_id = #{txId}
+    </update>
+
+    <update id="rollbackSetSettled">
+        UPDATE tbl_sale_out_sheet SET settle_status = ori_settle_status, ori_settle_status = NULL, tx_id = NULL
+        WHERE id = #{id}
+        AND ori_settle_status IN (0, 1)
+        AND tx_id = #{txId}
+    </update>
+
+    <select id="query" resultMap="SaleOutSheet">
+        <include refid="SaleOutSheetDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND s.code = #{vo.code}
+                </if>
+                <if test="vo.customerId != null and vo.customerId != ''">
+                    AND s.customer_id = #{vo.customerId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND s.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.salerId != null and vo.salerId != ''">
+                    AND s.saler_id = #{vo.salerId}
+                </if>
+                <if test="vo.status != null">
+                    AND s.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND s.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.approveBy != null and vo.approveBy != ''">
+                    AND s.approve_by = #{vo.approveBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND s.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND s.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.approveStartTime != null">
+                    AND s.approve_time >= #{vo.approveStartTime}
+                </if>
+                <if test="vo.approveEndTime != null">
+                    <![CDATA[
+                    AND s.approve_time <= #{vo.approveEndTime}
+                    ]]>
+                </if>
+                <if test="vo.saleOrderCode != null and vo.saleOrderCode != ''">
+                    AND o.code = #{vo.saleOrderCode}
+                </if>
+                <if test="vo.settleStatus != null">
+                    AND s.settle_status = #{vo.settleStatus}
+                </if>
+            </if>
+        </where>
+        ORDER BY s.create_time DESC
+    </select>
+    <select id="selector" resultMap="SaleOutSheet">
+        <include refid="SaleOutSheetDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND s.code = #{vo.code}
+                </if>
+                <if test="vo.customerId != null and vo.customerId != ''">
+                    AND s.customer_id = #{vo.customerId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND s.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.status != null">
+                    AND s.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND s.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND s.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND s.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+            </if>
+        </where>
+        ORDER BY s.create_time DESC
+    </select>
+    <select id="getDetail" resultMap="SaleOutSheetFullDto">
+        <include refid="SaleOutSheetFullDto_sql"/>
+        WHERE s.id = #{id}
+    </select>
+    <select id="queryFulls" resultMap="SaleOutSheetFullDto">
+        <include refid="SaleOutSheetFullDto_sql"/>
+        LEFT JOIN tbl_sale_order AS o ON o.id = s.sale_order_id
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND s.code = #{vo.code}
+                </if>
+                <if test="vo.customerId != null and vo.customerId != ''">
+                    AND s.customer_id = #{vo.customerId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND s.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.status != null">
+                    AND s.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND s.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND s.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND s.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+            </if>
+        </where>
+        ORDER BY s.create_time DESC, d.order_no
+    </select>
+    <select id="getWithReturn" resultMap="SaleOutSheetWithReturnDto">
+        SELECT
+        s.id, s.code, s.sc_id, s.customer_id, s.saler_id, d.id AS detail_id, d.sheet_id AS detail_sheet_id,
+        d.product_id AS detail_product_id, d.order_num AS detail_order_num, d.ori_price AS detail_ori_price,
+        d.tax_price AS detail_tax_price, d.discount_rate AS detail_discount_rate, d.is_gift AS detail_is_gift,
+        d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
+        d.return_num AS detail_return_num, d.lot_id AS detail_lot_id
+        FROM tbl_sale_out_sheet AS s
+        LEFT JOIN (
+        SELECT
+        l.id, d.sheet_id, d.product_id, l.order_num, d.ori_price, d.tax_price, d.discount_rate, d.is_gift,
+        d.tax_rate, d.description, d.order_no, l.return_num, l.lot_id, l.order_no AS lot_order_no
+        FROM tbl_sale_out_sheet_detail AS d
+        INNER JOIN tbl_sale_out_sheet_detail_lot AS l ON l.detail_id = d.id
+        <if test="requireOut">AND l.order_num > l.return_num</if>
+        WHERE d.sheet_id = #{id}
+        ) AS d ON d.sheet_id = s.id
+        WHERE s.id = #{id}
+        AND s.status = 3
+        order by d.order_no, d.lot_order_no
+    </select>
+    <select id="queryWithReturn" resultMap="SaleOutSheet">
+        <include refid="SaleOutSheetDto_sql"/>
+        <if test="!multipleRelate">LEFT JOIN tbl_sale_return AS p ON p.out_sheet_id = s.id</if>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND s.code = #{vo.code}
+                </if>
+                <if test="vo.customerId != null and vo.customerId != ''">
+                    AND s.customer_id = #{vo.customerId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND s.sc_id = #{vo.scId}
+                </if>
+                AND s.status = 3
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND s.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND s.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                  <![CDATA[
+                    AND s.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+            </if>
+          <if test="!multipleRelate">AND p.id IS NULL</if>
+        </where>
+      <if test="!multipleRelate">GROUP BY s.id</if>
+      ORDER BY s.create_time DESC
+    </select>
+  <select id="getApprovedList" resultMap="SaleOutSheet">
+    <include refid="SaleOutSheetDto_sql"/>
+    WHERE s.customer_id = #{customerId}
+    <if test="startTime != null">
+      AND s.approve_time >= #{startTime}
+    </if>
+    <if test="endTime != null">
+      <![CDATA[
+        AND s.approve_time <= #{endTime}
+        ]]>
+    </if>
+    AND s.status = 3
+    AND s.settle_status = #{settleStatus}
+    AND s.tx_id IS NULL
+    ORDER BY s.approve_time DESC
+  </select>
+</mapper>

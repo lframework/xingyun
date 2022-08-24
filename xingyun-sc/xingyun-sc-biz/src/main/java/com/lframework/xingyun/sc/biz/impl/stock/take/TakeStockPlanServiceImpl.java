@@ -1,0 +1,492 @@
+package com.lframework.xingyun.sc.biz.impl.stock.take;
+
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.pagehelper.PageInfo;
+import com.lframework.common.constants.StringPool;
+import com.lframework.common.exceptions.impl.DefaultClientException;
+import com.lframework.common.utils.Assert;
+import com.lframework.common.utils.CollectionUtil;
+import com.lframework.common.utils.NumberUtil;
+import com.lframework.common.utils.ObjectUtil;
+import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.mybatis.resp.PageResult;
+import com.lframework.starter.mybatis.utils.OpLogUtil;
+import com.lframework.starter.mybatis.utils.PageHelperUtil;
+import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.components.qrtz.QrtzJob;
+import com.lframework.starter.web.service.IGenerateCodeService;
+import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.EnumUtil;
+import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.xingyun.basedata.facade.ProductFeignClient;
+import com.lframework.xingyun.basedata.facade.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.facade.vo.product.info.QueryProductVo;
+import com.lframework.xingyun.sc.biz.components.code.GenerateCodeTypePool;
+import com.lframework.xingyun.sc.biz.events.stock.AddStockEvent;
+import com.lframework.xingyun.sc.biz.events.stock.SubStockEvent;
+import com.lframework.xingyun.sc.biz.events.stock.take.DeleteTakeStockPlanEvent;
+import com.lframework.xingyun.sc.biz.mappers.TakeStockPlanDetailMapper;
+import com.lframework.xingyun.sc.biz.mappers.TakeStockPlanMapper;
+import com.lframework.xingyun.sc.biz.service.stock.IProductLotService;
+import com.lframework.xingyun.sc.biz.service.stock.IProductStockService;
+import com.lframework.xingyun.sc.biz.service.stock.take.ITakeStockConfigService;
+import com.lframework.xingyun.sc.biz.service.stock.take.ITakeStockPlanDetailService;
+import com.lframework.xingyun.sc.biz.service.stock.take.ITakeStockPlanService;
+import com.lframework.xingyun.sc.biz.service.stock.take.ITakeStockSheetService;
+import com.lframework.xingyun.sc.facade.dto.stock.ProductLotWithStockDto;
+import com.lframework.xingyun.sc.facade.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.sc.facade.dto.stock.take.plan.QueryTakeStockPlanProductDto;
+import com.lframework.xingyun.sc.facade.dto.stock.take.plan.TakeStockPlanFullDto;
+import com.lframework.xingyun.sc.facade.dto.stock.take.plan.TakeStockPlanSelectorDto;
+import com.lframework.xingyun.sc.facade.entity.ProductStock;
+import com.lframework.xingyun.sc.facade.entity.TakeStockConfig;
+import com.lframework.xingyun.sc.facade.entity.TakeStockPlan;
+import com.lframework.xingyun.sc.facade.entity.TakeStockPlanDetail;
+import com.lframework.xingyun.sc.facade.enums.ProductStockBizType;
+import com.lframework.xingyun.sc.facade.enums.TakeStockPlanStatus;
+import com.lframework.xingyun.sc.facade.enums.TakeStockPlanType;
+import com.lframework.xingyun.sc.facade.vo.stock.AddProductStockVo;
+import com.lframework.xingyun.sc.facade.vo.stock.SubProductStockVo;
+import com.lframework.xingyun.sc.facade.vo.stock.take.plan.CancelTakeStockPlanVo;
+import com.lframework.xingyun.sc.facade.vo.stock.take.plan.CreateTakeStockPlanVo;
+import com.lframework.xingyun.sc.facade.vo.stock.take.plan.HandleTakeStockPlanVo;
+import com.lframework.xingyun.sc.facade.vo.stock.take.plan.QueryTakeStockPlanVo;
+import com.lframework.xingyun.sc.facade.vo.stock.take.plan.TakeStockPlanSelectorVo;
+import com.lframework.xingyun.sc.facade.vo.stock.take.plan.UpdateTakeStockPlanVo;
+import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.JobExecutionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMapper, TakeStockPlan>
+    implements ITakeStockPlanService {
+
+  @Autowired
+  private ITakeStockPlanDetailService takeStockPlanDetailService;
+
+  @Autowired
+  private IGenerateCodeService generateCodeService;
+
+  @Autowired
+  private ProductFeignClient productFeignClient;
+
+  @Autowired
+  private IProductStockService productStockService;
+
+  @Autowired
+  private ITakeStockConfigService takeStockConfigService;
+
+  @Autowired
+  private ITakeStockSheetService takeStockSheetService;
+
+  @Autowired
+  private IProductLotService productLotService;
+
+  @Override
+  public PageResult<TakeStockPlan> query(Integer pageIndex, Integer pageSize,
+      QueryTakeStockPlanVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+    List<TakeStockPlan> datas = this.query(vo);
+
+    return PageResultUtil.convert(new PageInfo<>(datas));
+  }
+
+  @Override
+  public List<TakeStockPlan> query(QueryTakeStockPlanVo vo) {
+
+    return getBaseMapper().query(vo);
+  }
+
+  @Override
+  public PageResult<TakeStockPlanSelectorDto> selector(Integer pageIndex, Integer pageSize,
+      TakeStockPlanSelectorVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+    List<TakeStockPlanSelectorDto> datas = getBaseMapper().selector(vo);
+
+    return PageResultUtil.convert(new PageInfo<>(datas));
+  }
+
+  @Override
+  public TakeStockPlanFullDto getDetail(String id) {
+
+    return getBaseMapper().getDetail(id);
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "新增盘点任务，ID：{}", params = {"#id"})
+  @Transactional
+  @Override
+  public String create(CreateTakeStockPlanVo vo) {
+
+    TakeStockPlan data = new TakeStockPlan();
+    data.setId(IdUtil.getId());
+    data.setCode(generateCodeService.generate(GenerateCodeTypePool.TAKE_STOCK_PLAN));
+    data.setScId(vo.getScId());
+    data.setTakeType(EnumUtil.getByCode(TakeStockPlanType.class, vo.getTakeType()));
+    if (data.getTakeType() == TakeStockPlanType.CATEGORY
+        || data.getTakeType() == TakeStockPlanType.BRAND) {
+      data.setBizId(StringUtil.join(",", vo.getBizIds()));
+    }
+
+    data.setTakeStatus(TakeStockPlanStatus.CREATED);
+    data.setDescription(
+        StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+
+    getBaseMapper().insert(data);
+
+    List<ProductDto> products = null;
+    if (data.getTakeType() != TakeStockPlanType.SIMPLE) {
+      // 单品盘点不生成明细
+      if (data.getTakeType() == TakeStockPlanType.ALL) {
+        // 全场盘点
+        // 将所有商品添加明细
+        QueryProductVo queryProductVo = new QueryProductVo();
+        Integer count = productFeignClient.queryCount(queryProductVo).getCode();
+        if (count > 2000) {
+          throw new DefaultClientException(
+              TakeStockPlanType.ALL.getDesc() + "最多支持2000个商品，当前系统内已经超过2000个商品，无法进行"
+                  + TakeStockPlanType.ALL.getDesc());
+        }
+        products = productFeignClient.query(queryProductVo).getData();
+      } else if (data.getTakeType() == TakeStockPlanType.CATEGORY) {
+        // 类目盘点
+        products = productFeignClient.getByCategoryIds(vo.getBizIds()).getData();
+      } else if (data.getTakeType() == TakeStockPlanType.BRAND) {
+        // 品牌盘点
+        products = productFeignClient.getByBrandIds(vo.getBizIds()).getData();
+      }
+    }
+
+    if (data.getTakeType() != TakeStockPlanType.SIMPLE && CollectionUtil.isEmpty(products)) {
+      throw new DefaultClientException("没有查询到商品信息，无法生成盘点任务！");
+    }
+
+    if (products != null) {
+      List<String> productIds = products.stream().map(ProductDto::getId)
+          .collect(Collectors.toList());
+      List<ProductStock> productStocks = productStockService.getByProductIdsAndScId(productIds,
+          vo.getScId());
+      int orderNo = 1;
+      for (ProductDto product : products) {
+        ProductStock productStock = productStocks.stream()
+            .filter(t -> t.getProductId().equals(product.getId()))
+            .findFirst().orElse(null);
+
+        TakeStockPlanDetail detail = new TakeStockPlanDetail();
+        detail.setId(IdUtil.getId());
+        detail.setPlanId(data.getId());
+        detail.setProductId(product.getId());
+
+        detail.setStockNum(productStock == null ? 0 : productStock.getStockNum());
+        detail.setTotalOutNum(0);
+        detail.setTotalInNum(0);
+        detail.setOrderNo(orderNo++);
+
+        takeStockPlanDetailService.save(detail);
+      }
+    }
+
+    OpLogUtil.setVariable("id", data.getId());
+    OpLogUtil.setExtra(vo);
+
+    return data.getId();
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "修改盘点任务，ID：{}", params = {"#id"})
+  @Transactional
+  @Override
+  public void update(UpdateTakeStockPlanVo vo) {
+
+    TakeStockPlan data = getBaseMapper().selectById(vo.getId());
+    if (ObjectUtil.isNull(data)) {
+      throw new DefaultClientException("盘点任务不存在！");
+    }
+
+    LambdaUpdateWrapper<TakeStockPlan> updateWrapper = Wrappers.lambdaUpdate(TakeStockPlan.class)
+        .set(TakeStockPlan::getScId, vo.getScId())
+        .set(TakeStockPlan::getDescription, vo.getDescription())
+        .eq(TakeStockPlan::getId, vo.getId());
+
+    getBaseMapper().update(updateWrapper);
+
+    OpLogUtil.setVariable("id", data.getId());
+    OpLogUtil.setExtra(vo);
+  }
+
+  @Override
+  public List<QueryTakeStockPlanProductDto> getProducts(String planId) {
+
+    return getBaseMapper().getProducts(planId);
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "差异生成，盘点任务ID：{}", params = {"#id"})
+  @Transactional
+  @Override
+  public void createDiff(String id) {
+
+    TakeStockPlan data = getBaseMapper().selectById(id);
+    if (data == null) {
+      throw new DefaultClientException("盘点任务不存在！");
+    }
+
+    // 判断是否还有没审核通过的盘点单
+    if (takeStockSheetService.hasUnApprove(data.getId())) {
+      throw new DefaultClientException("盘点任务存在未审核的库存盘点单，请优先处理库存盘点单！");
+    }
+
+    LambdaUpdateWrapper<TakeStockPlan> updateWrapper = Wrappers.lambdaUpdate(TakeStockPlan.class)
+        .set(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.DIFF_CREATED)
+        .eq(TakeStockPlan::getId, data.getId())
+        .eq(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.CREATED);
+    if (getBaseMapper().update(updateWrapper) != 1) {
+      throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
+    }
+
+    Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockPlanDetail.class)
+        .eq(TakeStockPlanDetail::getPlanId, data.getId())
+        .orderByAsc(TakeStockPlanDetail::getOrderNo);
+    List<TakeStockPlanDetail> details = takeStockPlanDetailService.list(queryDetailWrapper);
+    if (CollectionUtil.isEmpty(details)) {
+      throw new DefaultClientException("盘点任务不存在商品信息，不允许执行差异生成操作！");
+    }
+    for (TakeStockPlanDetail detail : details) {
+      if (detail.getOriTakeNum() != null) {
+        continue;
+      }
+      LambdaUpdateWrapper<TakeStockPlanDetail> updateDetailWrapper = Wrappers.lambdaUpdate(
+              TakeStockPlanDetail.class).set(TakeStockPlanDetail::getOriTakeNum, 0)
+          .eq(TakeStockPlanDetail::getId, detail.getId());
+
+      takeStockPlanDetailService.update(updateDetailWrapper);
+    }
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "差异处理，盘点任务ID：{}", params = {"#id"})
+  @Transactional
+  @Override
+  public void handleDiff(HandleTakeStockPlanVo vo) {
+
+    TakeStockPlan data = getBaseMapper().selectById(vo.getId());
+    if (data == null) {
+      throw new DefaultClientException("盘点任务不存在！");
+    }
+
+    LambdaUpdateWrapper<TakeStockPlan> updateWrapper = Wrappers.lambdaUpdate(TakeStockPlan.class)
+        .set(TakeStockPlan::getDescription,
+            StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
+        .set(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.FINISHED)
+        .eq(TakeStockPlan::getId, data.getId())
+        .eq(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.DIFF_CREATED);
+    if (getBaseMapper().update(updateWrapper) != 1) {
+      throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
+    }
+
+    TakeStockConfig config = takeStockConfigService.get();
+
+    Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockPlanDetail.class)
+        .eq(TakeStockPlanDetail::getPlanId, data.getId())
+        .orderByAsc(TakeStockPlanDetail::getOrderNo);
+    List<TakeStockPlanDetail> details = takeStockPlanDetailService.list(queryDetailWrapper);
+    if (CollectionUtil.isEmpty(details)) {
+      throw new DefaultClientException("盘点任务不存在商品信息，不允许执行差异处理操作！");
+    }
+
+    if (!config.getAllowChangeNum().equals(vo.getAllowChangeNum()) || !config.getAutoChangeStock()
+        .equals(vo.getAutoChangeStock())) {
+      throw new DefaultClientException("系统参数发生改变，请刷新页面后重试！");
+    }
+
+    for (TakeStockPlanDetail detail : details) {
+      HandleTakeStockPlanVo.ProductVo productVo = vo.getProducts().stream()
+          .filter(t -> t.getProductId().equals(detail.getProductId())).findFirst().get();
+      if (config.getAllowChangeNum()) {
+        // 如果允许修改盘点数量
+        detail.setTakeNum(productVo.getTakeNum());
+      } else {
+        // 如果允许自动调整，那么盘点数量=盘点单的盘点数量 - 进项数量 + 出项数量，否则就等于盘点单的盘点数量
+        detail.setTakeNum(config.getAutoChangeStock() ?
+            detail.getOriTakeNum() - detail.getTotalInNum() + detail.getTotalOutNum() :
+            detail.getOriTakeNum());
+      }
+      detail.setDescription(
+          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+              : productVo.getDescription());
+
+      LambdaUpdateWrapper<TakeStockPlanDetail> updateDetailWrapper = Wrappers.lambdaUpdate(
+              TakeStockPlanDetail.class).set(TakeStockPlanDetail::getTakeNum, detail.getTakeNum())
+          .set(TakeStockPlanDetail::getDescription, detail.getDescription())
+          .eq(TakeStockPlanDetail::getId, detail.getId());
+      takeStockPlanDetailService.update(updateDetailWrapper);
+    }
+
+    // 进行出入库操作
+    int orderNo = 0;
+    for (TakeStockPlanDetail detail : details) {
+      orderNo++;
+      if (!NumberUtil.equal(detail.getStockNum(), detail.getTakeNum())) {
+        if (NumberUtil.lt(detail.getStockNum(), detail.getTakeNum())) {
+          ProductLotWithStockDto productLot = productLotService.getLastPurchaseLot(
+              detail.getProductId(),
+              data.getScId(), null);
+          if (productLot == null) {
+            throw new DefaultClientException("第" + orderNo + "行商品在系统中无入库记录，无法盘点报溢！");
+          }
+          // 如果库存数量小于盘点数量，则报溢
+          AddProductStockVo addProductStockVo = new AddProductStockVo();
+          addProductStockVo.setProductId(detail.getProductId());
+          addProductStockVo.setScId(data.getScId());
+          addProductStockVo.setSupplierId(productLot.getSupplierId());
+          addProductStockVo.setStockNum(detail.getTakeNum() - detail.getStockNum());
+          addProductStockVo.setTaxRate(productLot.getTaxRate());
+          addProductStockVo.setBizId(data.getId());
+          addProductStockVo.setBizDetailId(detail.getId());
+          addProductStockVo.setBizCode(data.getCode());
+          addProductStockVo.setBizType(ProductStockBizType.TAKE_STOCK_IN.getCode());
+
+          productStockService.addStock(addProductStockVo);
+        } else {
+          // 如果库存数量大于盘点数量，则报损
+          SubProductStockVo subProductStockVo = new SubProductStockVo();
+          subProductStockVo.setProductId(detail.getProductId());
+          subProductStockVo.setScId(data.getScId());
+          subProductStockVo.setStockNum(detail.getStockNum() - detail.getTakeNum());
+          subProductStockVo.setBizId(data.getId());
+          subProductStockVo.setBizDetailId(detail.getId());
+          subProductStockVo.setBizCode(data.getCode());
+          subProductStockVo.setBizType(ProductStockBizType.TAKE_STOCK_OUT.getCode());
+
+          productStockService.subStock(subProductStockVo);
+        }
+      }
+    }
+
+    OpLogUtil.setVariable("id", vo.getId());
+    OpLogUtil.setExtra(vo);
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "作废盘点任务，ID：{}", params = {"#id"})
+  @Transactional
+  @Override
+  public void cancel(CancelTakeStockPlanVo vo) {
+
+    TakeStockPlan data = getBaseMapper().selectById(vo.getId());
+    if (data == null) {
+      throw new DefaultClientException("盘点任务不存在！");
+    }
+
+    LambdaUpdateWrapper<TakeStockPlan> updateWrapper = Wrappers.lambdaUpdate(TakeStockPlan.class)
+        .set(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.CANCELED)
+        .eq(TakeStockPlan::getId, data.getId())
+        .in(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.CREATED,
+            TakeStockPlanStatus.DIFF_CREATED);
+    if (getBaseMapper().update(updateWrapper) != 1) {
+      throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
+    }
+
+    OpLogUtil.setVariable("id", vo.getId());
+    OpLogUtil.setExtra(vo);
+  }
+
+  @OpLog(type = OpLogType.OTHER, name = "删除盘点任务，ID：{}", params = {"#id"})
+  @Transactional
+  @Override
+  public void deleteById(String id) {
+
+    TakeStockPlan data = getBaseMapper().selectById(id);
+    if (data == null) {
+      throw new DefaultClientException("盘点任务不存在！");
+    }
+
+    Wrapper<TakeStockPlan> deleteWrapper = Wrappers.lambdaQuery(TakeStockPlan.class)
+        .eq(TakeStockPlan::getId, data.getId())
+        .eq(TakeStockPlan::getTakeStatus, TakeStockPlanStatus.CANCELED);
+    if (getBaseMapper().delete(deleteWrapper) != 1) {
+      throw new DefaultClientException("盘点任务信息已过期，请刷新重试！");
+    }
+
+    Wrapper<TakeStockPlanDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+            TakeStockPlanDetail.class)
+        .eq(TakeStockPlanDetail::getPlanId, data.getId());
+    takeStockPlanDetailService.remove(deleteDetailWrapper);
+
+    DeleteTakeStockPlanEvent deleteEvent = new DeleteTakeStockPlanEvent(this, data.getId());
+    ApplicationUtil.publishEvent(deleteEvent);
+  }
+
+  @Override
+  public void cleanCacheByKey(Serializable key) {
+
+  }
+
+  @Service
+  public static class AddStockListener implements ApplicationListener<AddStockEvent> {
+
+    @Autowired
+    private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
+
+    @Transactional
+    @Override
+    public void onApplicationEvent(AddStockEvent addStockEvent) {
+
+      ProductStockChangeDto change = addStockEvent.getChange();
+      takeStockPlanDetailMapper.addTotalInNum(change.getScId(), change.getProductId(),
+          change.getNum());
+    }
+  }
+
+  @Service
+  public static class SubStockListener implements ApplicationListener<SubStockEvent> {
+
+    @Autowired
+    private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
+
+    @Transactional
+    @Override
+    public void onApplicationEvent(SubStockEvent addStockEvent) {
+
+      ProductStockChangeDto change = addStockEvent.getChange();
+      takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getProductId(),
+          change.getNum());
+    }
+  }
+
+  /**
+   * 自动作废任务
+   */
+  @Slf4j
+  public static class AutoCancelJob extends QrtzJob {
+
+    @Autowired
+    private ITakeStockPlanService takeStockPlanService;
+
+    @Override
+    public void onExecute(JobExecutionContext context) {
+
+      String id = (String) context.getMergedJobDataMap().get("id");
+
+      CancelTakeStockPlanVo cancelVo = new CancelTakeStockPlanVo();
+      cancelVo.setId(id);
+      takeStockPlanService.cancel(cancelVo);
+    }
+  }
+}

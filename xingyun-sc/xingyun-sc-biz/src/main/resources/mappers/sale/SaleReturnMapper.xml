@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.biz.mappers.SaleReturnMapper">
+
+    <resultMap id="SaleReturn" type="com.lframework.xingyun.sc.facade.entity.SaleReturn">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="saler_id" property="salerId"/>
+        <result column="payment_date" property="paymentDate"/>
+        <result column="out_sheet_id" property="outSheetId"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="total_gift_num" property="totalGiftNum"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="status" property="status"/>
+        <result column="settle_status" property="settleStatus"/>
+    </resultMap>
+
+    <resultMap id="SaleReturnFullDto" type="com.lframework.xingyun.sc.facade.dto.sale.returned.SaleReturnFullDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="saler_id" property="salerId"/>
+        <result column="payment_date" property="paymentDate"/>
+        <result column="out_sheet_id" property="outSheetId"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="total_gift_num" property="totalGiftNum"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="status" property="status"/>
+        <result column="refuse_reason" property="refuseReason"/>
+        <result column="settle_status" property="settleStatus"/>
+        <collection property="details" javaType="java.util.ArrayList"
+                    ofType="com.lframework.xingyun.sc.facade.dto.sale.returned.SaleReturnFullDto$ReturnDetailDto">
+            <id column="detail_id" property="id"/>
+            <result column="detail_product_id" property="productId"/>
+            <result column="detail_supplier_id" property="supplierId"/>
+            <result column="detail_return_num" property="returnNum"/>
+            <result column="detail_ori_price" property="oriPrice"/>
+            <result column="detail_tax_price" property="taxPrice"/>
+            <result column="detail_discount_rate" property="discountRate"/>
+            <result column="detail_is_gift" property="isGift"/>
+            <result column="detail_tax_rate" property="taxRate"/>
+            <result column="detail_description" property="description"/>
+            <result column="detail_order_no" property="orderNo"/>
+            <result column="detail_settle_status" property="settleStatus"/>
+            <result column="detail_out_sheet_detail_id" property="outSheetDetailId"/>
+        </collection>
+    </resultMap>
+
+    <sql id="SaleReturnDto_sql">
+        SELECT
+            r.id,
+            r.code,
+            r.sc_id,
+            r.customer_id,
+            r.saler_id,
+            r.payment_date,
+            r.out_sheet_id,
+            r.total_num,
+            r.total_gift_num,
+            r.total_amount,
+            r.description,
+            r.create_by,
+            r.create_time,
+            r.approve_by,
+            r.approve_time,
+            r.status,
+            r.settle_status
+        FROM tbl_sale_return AS r
+        LEFT JOIN tbl_sale_out_sheet AS s ON s.id = r.out_sheet_id
+    </sql>
+
+    <sql id="SaleReturnFullDto_sql">
+        SELECT r.id, r.code, r.sc_id, r.customer_id, r.saler_id, r.payment_date, r.out_sheet_id, r.total_num, r.total_gift_num,
+               r.total_amount, r.description, r.create_by, r.create_time, r.update_by, r.update_time, r.approve_by, r.approve_time,
+               r.status, r.refuse_reason, r.settle_status, d.id AS detail_id, d.product_id AS detail_product_id, d.supplier_id AS detail_supplier_id,
+               d.return_num AS detail_return_num, d.ori_price AS detail_ori_price, d.tax_price AS detail_tax_price, d.discount_rate AS detail_discount_rate,
+               d.is_gift AS detail_is_gift, d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
+               d.settle_status AS detail_settle_status, d.out_sheet_detail_id AS detail_out_sheet_detail_id
+        FROM tbl_sale_return AS r
+        LEFT JOIN tbl_sale_return_detail AS d ON d.return_id = r.id
+    </sql>
+
+    <update id="setPartSettle">
+        UPDATE tbl_sale_return SET ori_settle_status = settle_status, settle_status = 1
+        WHERE id = #{id}
+        AND settle_status IN (0, 1)
+        AND ori_settle_status IS NULL
+    </update>
+
+    <update id="setSettled">
+        UPDATE tbl_sale_return SET ori_settle_status = settle_status, settle_status = 3
+        WHERE id = #{id}
+        AND settle_status IN (0, 1)
+        AND ori_settle_status IS NULL
+    </update>
+
+    <update id="rollbackSetPartSettle">
+        UPDATE tbl_sale_return SET settle_status = ori_settle_status, ori_settle_status = NULL, tx_id = NULL
+        WHERE id = #{id}
+        AND ori_settle_status IN (0, 1)
+        AND tx_id = #{txId}
+    </update>
+
+    <update id="rollbackSetSettled">
+        UPDATE tbl_sale_return SET settle_status = ori_settle_status, ori_settle_status = NULL, tx_id = NULL
+        WHERE id = #{id}
+        AND ori_settle_status IN (0, 1)
+        AND tx_id = #{txId}
+    </update>
+
+    <select id="query" resultMap="SaleReturn">
+        <include refid="SaleReturnDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND r.code = #{vo.code}
+                </if>
+                <if test="vo.customerId != null and vo.customerId != ''">
+                    AND r.customer_id = #{vo.customerId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND r.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.salerId != null and vo.salerId != ''">
+                    AND r.saler_id = #{vo.salerId}
+                </if>
+                <if test="vo.status != null">
+                    AND r.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND r.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.approveBy != null and vo.approveBy != ''">
+                    AND r.approve_by = #{vo.approveBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND r.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND r.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.approveStartTime != null">
+                    AND r.approve_time >= #{vo.approveStartTime}
+                </if>
+                <if test="vo.approveEndTime != null">
+                    <![CDATA[
+                    AND r.approve_time <= #{vo.approveEndTime}
+                    ]]>
+                </if>
+                <if test="vo.outSheetCode != null and vo.outSheetCode != ''">
+                    AND s.code = #{vo.outSheetCode}
+                </if>
+                <if test="vo.settleStatus != null">
+                    AND r.settle_status = #{vo.settleStatus}
+                </if>
+            </if>
+        </where>
+        ORDER BY r.create_time DESC
+    </select>
+    <select id="getDetail" resultMap="SaleReturnFullDto">
+        <include refid="SaleReturnFullDto_sql"/>
+        WHERE r.id = #{id}
+        ORDER BY d.order_no
+    </select>
+    <select id="queryFulls" resultMap="SaleReturnFullDto">
+        <include refid="SaleReturnFullDto_sql"/>
+        LEFT JOIN tbl_sale_out_sheet AS s ON s.id = r.out_sheet_id
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND r.code = #{vo.code}
+                </if>
+                <if test="vo.customerId != null and vo.customerId != ''">
+                    AND r.customer_id = #{vo.customerId}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND r.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.salerId != null and vo.salerId != ''">
+                    AND r.saler_id = #{vo.salerId}
+                </if>
+                <if test="vo.status != null">
+                    AND r.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND r.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.approveBy != null and vo.approveBy != ''">
+                    AND r.approve_by = #{vo.approveBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND r.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND r.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.approveStartTime != null">
+                    AND r.approve_time >= #{vo.approveStartTime}
+                </if>
+                <if test="vo.approveEndTime != null">
+                    <![CDATA[
+                    AND r.approve_time <= #{vo.approveEndTime}
+                    ]]>
+                </if>
+              <if test="vo.outSheetCode != null and vo.outSheetCode != ''">
+                AND s.code = #{vo.outSheetCode}
+              </if>
+              <if test="vo.settleStatus != null">
+                AND r.settle_status = #{vo.settleStatus}
+              </if>
+            </if>
+        </where>
+      ORDER BY r.create_time DESC, d.order_no
+    </select>
+  <select id="getApprovedList" resultMap="SaleReturn">
+    <include refid="SaleReturnDto_sql"/>
+    WHERE r.customer_id = #{customerId}
+    <if test="startTime != null">
+      AND r.approve_time >= #{startTime}
+    </if>
+
+    <if test="endTime != null">
+    <![CDATA[
+        AND r.approve_time <= #{endTime}
+    ]]>
+    </if>
+    AND r.status = 3
+    AND r.settle_status = #{settleStatus}
+    AND r.tx_id IS NULL
+    ORDER BY r.approve_time DESC
+  </select>
+</mapper>

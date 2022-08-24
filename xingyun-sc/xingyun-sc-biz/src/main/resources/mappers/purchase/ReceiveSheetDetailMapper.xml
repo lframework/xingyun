@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.biz.mappers.ReceiveSheetDetailMapper">
+    <resultMap id="ReceiveSheetDetail" type="com.lframework.xingyun.sc.facade.entity.ReceiveSheetDetail">
+        <id column="id" property="id"/>
+        <result column="sheet_id" property="sheetId"/>
+        <result column="product_id" property="productId"/>
+        <result column="order_num" property="orderNum"/>
+        <result column="tax_price" property="taxPrice"/>
+        <result column="is_gift" property="isGift"/>
+        <result column="tax_rate" property="taxRate"/>
+        <result column="description" property="description"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="return_num" property="returnNum"/>
+    </resultMap>
+
+    <sql id="ReceiveSheetDetailDto_sql">
+        SELECT
+            d.id,
+            d.sheet_id,
+            d.product_id,
+            d.order_num,
+            d.tax_price,
+            d.is_gift,
+            d.tax_rate,
+            d.description,
+            d.order_no,
+            d.return_num
+        FROM tbl_receive_sheet_detail AS d
+    </sql>
+    <update id="addReturnNum">
+        UPDATE tbl_receive_sheet_detail
+        SET return_num = return_num + #{num}
+        WHERE id = #{id}
+        AND (order_num - return_num) >= #{num}
+    </update>
+    <update id="subReturnNum">
+        UPDATE tbl_receive_sheet_detail
+        SET return_num = return_num - #{num}
+        WHERE id = #{id}
+        AND return_num >= #{num}
+    </update>
+
+    <select id="getBySheetId" resultMap="ReceiveSheetDetail">
+        <include refid="ReceiveSheetDetailDto_sql"/>
+        WHERE d.sheet_id = #{sheetId}
+        ORDER BY d.order_no
+    </select>
+</mapper>

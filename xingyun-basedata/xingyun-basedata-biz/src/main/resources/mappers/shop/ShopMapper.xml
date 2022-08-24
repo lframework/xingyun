@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.biz.mappers.ShopMapper">
+
+  <resultMap id="Shop" type="com.lframework.xingyun.basedata.facade.entity.Shop">
+    <id column="id" property="id"/>
+    <result column="code" property="code"/>
+    <result column="name" property="name"/>
+    <result column="dept_id" property="deptId"/>
+    <result column="lng" property="lng"/>
+    <result column="lat" property="lat"/>
+    <result column="description" property="description"/>
+    <result column="available" property="available"/>
+    <result column="create_by" property="createBy"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_by" property="updateBy"/>
+    <result column="update_time" property="updateTime"/>
+  </resultMap>
+
+  <sql id="Shop_sql">
+    SELECT
+      tb.id,
+      tb.code,
+      tb.name,
+      tb.dept_id,
+      tb.lng,
+      tb.lat,
+      tb.description,
+      tb.available,
+      tb.create_by,
+      tb.create_time,
+      tb.update_by,
+      tb.update_time
+    FROM tbl_shop AS tb
+  </sql>
+
+  <select id="query" resultMap="Shop">
+    <include refid="Shop_sql"/>
+    <where>
+      <if test="vo.code != null and vo.code != ''">
+        AND tb.code = #{vo.code}
+      </if>
+      <if test="vo.name != null and vo.name != ''">
+        AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+      </if>
+      <if test="vo.deptId != null and vo.deptId != ''">
+        AND tb.dept_id = #{vo.deptId}
+      </if>
+      <if test="vo.available != null">
+        AND tb.available = #{vo.available}
+      </if>
+      <if test="vo.createTimeStart != null">
+        AND tb.create_time >= #{vo.createTimeStart}
+      </if>
+      <if test="vo.createTimeEnd != null">
+        <![CDATA[
+        AND tb.create_time <= #{vo.createTimeEnd}
+        ]]>
+      </if>
+    </where>
+    ORDER BY tb.code ASC
+  </select>
+</mapper>

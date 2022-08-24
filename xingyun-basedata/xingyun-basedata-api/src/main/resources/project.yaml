@@ -1,0 +1,15 @@
+logging:
+  config: classpath:spring-logback-dev.xml
+  # path默认为当前目录的logs子目录
+  # name默认为log，name为文件名，例如：配置test-log，那么生成的日志文件的全名称为test-log.log
+  #file:
+  #  path: logs
+  #  name: log
+
+#不需要认证的Url
+#filter-url:
+
+#终端ID 不设置为自动生成
+#worker-id: 1
+#数据中心ID 不设置为自动生成
+#center-id: 1

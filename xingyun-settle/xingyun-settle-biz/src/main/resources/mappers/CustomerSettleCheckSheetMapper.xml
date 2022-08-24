@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.settle.biz.mappers.CustomerSettleCheckSheetMapper">
+  <resultMap id="CustomerSettleCheckSheet"
+    type="com.lframework.xingyun.settle.facade.entity.CustomerSettleCheckSheet">
+    <id column="id" property="id"/>
+    <result column="code" property="code"/>
+    <result column="customer_id" property="customerId"/>
+    <result column="total_amount" property="totalAmount"/>
+    <result column="total_pay_amount" property="totalPayAmount"/>
+    <result column="total_payed_amount" property="totalPayedAmount"/>
+    <result column="total_discount_amount" property="totalDiscountAmount"/>
+    <result column="start_date" property="startDate"/>
+    <result column="end_date" property="endDate"/>
+    <result column="description" property="description"/>
+    <result column="create_by" property="createBy"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_by" property="updateBy"/>
+    <result column="update_time" property="updateTime"/>
+    <result column="approve_by" property="approveBy"/>
+    <result column="approve_time" property="approveTime"/>
+    <result column="status" property="status"/>
+    <result column="refuse_reason" property="refuseReason"/>
+    <result column="settle_status" property="settleStatus"/>
+  </resultMap>
+
+  <resultMap id="CustomerSettleCheckSheetFullDto"
+    type="com.lframework.xingyun.settle.facade.dto.check.customer.CustomerSettleCheckSheetFullDto">
+    <id column="id" property="id"/>
+    <result column="code" property="code"/>
+    <result column="customer_id" property="customerId"/>
+    <result column="total_amount" property="totalAmount"/>
+    <result column="total_pay_amount" property="totalPayAmount"/>
+    <result column="total_payed_amount" property="totalPayedAmount"/>
+    <result column="total_discount_amount" property="totalDiscountAmount"/>
+    <result column="start_date" property="startDate"/>
+    <result column="end_date" property="endDate"/>
+    <result column="description" property="description"/>
+    <result column="create_by" property="createBy"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_by" property="updateBy"/>
+    <result column="update_time" property="updateTime"/>
+    <result column="approve_by" property="approveBy"/>
+    <result column="approve_time" property="approveTime"/>
+    <result column="status" property="status"/>
+    <result column="refuse_reason" property="refuseReason"/>
+    <result column="settle_status" property="settleStatus"/>
+    <collection javaType="java.util.ArrayList"
+              ofType="com.lframework.xingyun.settle.facade.dto.check.customer.CustomerSettleCheckSheetFullDto$SheetDetailDto"
+              property="details">
+      <id column="detail_id" property="id"/>
+      <result column="detail_biz_id" property="bizId"/>
+      <result column="detail_biz_type" property="bizType"/>
+      <result column="detail_calc_type" property="calcType"/>
+      <result column="detail_pay_amount" property="payAmount"/>
+      <result column="detail_description" property="description"/>
+    </collection>
+  </resultMap>
+
+  <select id="query" resultMap="CustomerSettleCheckSheet">
+    <include refid="CustomerSettleCheckSheetDto_sql"/>
+    <where>
+      <if test="vo != null">
+        <if test="vo.code != null and vo.code != ''">
+          AND s.code = #{vo.code}
+        </if>
+        <if test="vo.customerId != null and vo.customerId != ''">
+          AND s.customer_id = #{vo.customerId}
+        </if>
+        <if test="vo.status != null">
+          AND s.status = #{vo.status}
+        </if>
+        <if test="vo.createBy != null and vo.createBy != ''">
+          AND s.create_by = #{vo.createBy}
+        </if>
+        <if test="vo.approveBy != null and vo.approveBy != ''">
+          AND s.approve_by = #{vo.approveBy}
+        </if>
+        <if test="vo.createStartTime != null">
+          AND s.create_time >= #{vo.createStartTime}
+        </if>
+        <if test="vo.createEndTime != null">
+          <![CDATA[
+          AND s.create_time <= #{vo.createEndTime}
+          ]]>
+        </if>
+        <if test="vo.approveStartTime != null">
+          AND s.approve_time >= #{vo.approveStartTime}
+        </if>
+        <if test="vo.approveEndTime != null">
+          <![CDATA[
+          AND s.approve_time <= #{vo.approveEndTime}
+          ]]>
+        </if>
+        <if test="vo.settleStatus != null">
+          AND s.settle_status = #{vo.settleStatus}
+        </if>
+      </if>
+    </where>
+    ORDER BY s.create_time DESC
+  </select>
+
+  <select id="getDetail" resultMap="CustomerSettleCheckSheetFullDto">
+    <include refid="CustomerSettleCheckSheetFullDto_sql"/>
+    WHERE s.id = #{id}
+    ORDER BY d.order_no
+  </select>
+
+  <select id="queryFulls" resultMap="CustomerSettleCheckSheetFullDto">
+    <include refid="CustomerSettleCheckSheetFullDto_sql"/>
+    <where>
+      <if test="vo != null">
+        <if test="vo.code != null and vo.code != ''">
+          AND s.code = #{vo.code}
+        </if>
+        <if test="vo.customerId != null and vo.customerId != ''">
+          AND s.customer_id = #{vo.customerId}
+        </if>
+        <if test="vo.status != null">
+          AND s.status = #{vo.status}
+        </if>
+        <if test="vo.createBy != null and vo.createBy != ''">
+          AND s.create_by = #{vo.createBy}
+        </if>
+        <if test="vo.approveBy != null and vo.approveBy != ''">
+          AND s.approve_by = #{vo.approveBy}
+        </if>
+        <if test="vo.createStartTime != null">
+          AND s.create_time >= #{vo.createStartTime}
+        </if>
+        <if test="vo.createEndTime != null">
+          <![CDATA[
+                    AND s.create_time <= #{vo.createEndTime}
+                    ]]>
+        </if>
+        <if test="vo.approveStartTime != null">
+          AND s.approve_time >= #{vo.approveStartTime}
+        </if>
+        <if test="vo.approveEndTime != null">
+          <![CDATA[
+                    AND s.approve_time <= #{vo.approveEndTime}
+                    ]]>
+        </if>
+        <if test="vo.settleStatus != null">
+          AND s.settle_status = #{vo.settleStatus}
+        </if>
+      </if>
+    </where>
+    ORDER BY s.create_time DESC, d.order_no
+  </select>
+
+  <select id="getApprovedList" resultMap="CustomerSettleCheckSheet">
+    <include refid="CustomerSettleCheckSheetDto_sql"/>
+    WHERE s.customer_id = #{customerId}
+    <if test="startTime != null">
+      AND s.approve_time >= #{startTime}
+    </if>
+    <if test="endTime != null">
+    <![CDATA[
+      AND s.approve_time <= #{endTime}
+    ]]>
+    </if>
+    AND s.status = 3
+    AND (s.total_pay_amount - s.total_payed_amount - s.total_discount_amount) != 0
+    AND s.settle_status IN (0, 1)
+    AND (SELECT COUNT(*) FROM customer_settle_sheet_detail AS sheetDetail, customer_settle_sheet AS
+    settleSheet WHERE settleSheet.id =
+    sheetDetail.sheet_id AND sheetDetail.biz_id = s.id AND settleSheet.status IN (0, 6)) = 0
+    ORDER BY s.approve_time DESC
+  </select>
+
+  <sql id="CustomerSettleCheckSheetDto_sql">
+    SELECT s.id,
+           s.code,
+           s.customer_id,
+           s.total_amount,
+           s.total_pay_amount,
+           s.total_payed_amount,
+           s.total_discount_amount,
+           s.start_date,
+           s.end_date,
+           s.description,
+           s.create_by,
+           s.create_time,
+           s.update_by,
+           s.update_time,
+           s.approve_by,
+           s.approve_time,
+           s.status,
+           s.refuse_reason,
+           s.settle_status
+    FROM customer_settle_check_sheet AS s
+  </sql>
+  <sql id="CustomerSettleCheckSheetFullDto_sql">
+    SELECT s.id,
+           s.code,
+           s.customer_id,
+           s.total_amount,
+           s.total_pay_amount,
+           s.total_payed_amount,
+           s.total_discount_amount,
+           s.start_date,
+           s.end_date,
+           s.description,
+           s.create_by,
+           s.create_time,
+           s.update_by,
+           s.update_time,
+           s.approve_by,
+           s.approve_time,
+           s.status,
+           s.refuse_reason,
+           s.settle_status,
+           d.id          AS detail_id,
+           d.biz_id      AS detail_biz_id,
+           d.biz_type    AS detail_biz_type,
+           d.calc_type   AS detail_calc_type,
+           d.pay_amount  AS detail_pay_amount,
+           d.description AS detail_description
+    FROM customer_settle_check_sheet AS s
+           LEFT JOIN customer_settle_check_sheet_detail AS d ON d.sheet_id = s.id
+  </sql>
+</mapper>

@@ -1,0 +1,39 @@
+server:
+  #端口
+  port: 15050
+
+spring:
+  application:
+    name: @project.artifactId@
+  profiles:
+    active: @profiles-active@
+  cloud:
+    nacos:
+      config:
+        server-addr: ${nacos-server-addr}
+        file-extension: yaml
+        namespace: ${spring.profiles.active}
+        extension-configs[0]:
+          data-id: common.yaml
+          refresh: true
+        extension-configs[1]:
+          data-id: db.yaml
+          refresh: true
+        extension-configs[2]:
+          data-id: redis.yaml
+          refresh: true
+        extension-configs[3]:
+          data-id: mq.yaml
+          refresh: true
+        extension-configs[4]:
+          data-id: seata.yaml
+          refresh: true
+        extension-configs[5]:
+          data-id: zipkin.yaml
+          refresh: true
+      discovery:
+        server-addr: ${nacos-server-addr}
+        namespace: ${spring.profiles.active}
+
+# nacos-server地址
+nacos-server-addr: @discovery-server@

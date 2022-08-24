@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.settle.biz.mappers.SettleSheetMapper">
+    <resultMap id="SettleSheet" type="com.lframework.xingyun.settle.facade.entity.SettleSheet">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="total_discount_amount" property="totalDiscountAmount"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="status" property="status"/>
+        <result column="refuse_reason" property="refuseReason"/>
+    </resultMap>
+
+    <resultMap id="SettleSheetFullDto" type="com.lframework.xingyun.settle.facade.dto.sheet.SettleSheetFullDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="total_discount_amount" property="totalDiscountAmount"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="status" property="status"/>
+        <result column="refuse_reason" property="refuseReason"/>
+        <collection property="details"
+                    ofType="com.lframework.xingyun.settle.facade.dto.sheet.SettleSheetFullDto$SheetDetailDto"
+                    javaType="java.util.ArrayList">
+            <id column="detail_id" property="id"/>
+            <result column="detail_biz_id" property="bizId"/>
+            <result column="detail_pay_amount" property="payAmount"/>
+            <result column="detail_discount_amount" property="discountAmount"/>
+            <result column="detail_description" property="description"/>
+        </collection>
+    </resultMap>
+
+    <sql id="SettleSheetDto_sql">
+        SELECT
+            s.id,
+            s.code,
+            s.supplier_id,
+            s.total_amount,
+            s.total_discount_amount,
+            s.start_date,
+            s.end_date,
+            s.description,
+            s.create_by,
+            s.create_time,
+            s.update_by,
+            s.update_time,
+            s.approve_by,
+            s.approve_time,
+            s.status,
+            s.refuse_reason
+        FROM settle_sheet AS s
+    </sql>
+
+    <sql id="SettleSheetFullDto_sql">
+        SELECT
+            s.id,
+            s.code,
+            s.supplier_id,
+            s.total_amount,
+            s.total_discount_amount,
+            s.start_date,
+            s.end_date,
+            s.description,
+            s.create_by,
+            s.create_time,
+            s.update_by,
+            s.update_time,
+            s.approve_by,
+            s.approve_time,
+            s.status,
+            s.refuse_reason,
+            d.id AS detail_id,
+            d.biz_id AS detail_biz_id,
+            d.pay_amount AS detail_pay_amount,
+            d.discount_amount AS detail_discount_amount,
+            d.description AS detail_description
+        FROM settle_sheet AS s
+        LEFT JOIN settle_sheet_detail AS d ON d.sheet_id = s.id
+    </sql>
+
+    <select id="query" resultMap="SettleSheet">
+        <include refid="SettleSheetDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND s.code = #{vo.code}
+                </if>
+                <if test="vo.supplierId != null and vo.supplierId != ''">
+                    AND s.supplier_id = #{vo.supplierId}
+                </if>
+                <if test="vo.status != null">
+                    AND s.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND s.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.approveBy != null and vo.approveBy != ''">
+                    AND s.approve_by = #{vo.approveBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND s.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND s.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.approveStartTime != null">
+                    AND s.approve_time >= #{vo.approveStartTime}
+                </if>
+                <if test="vo.approveEndTime != null">
+                    <![CDATA[
+                    AND s.approve_time <= #{vo.approveEndTime}
+                    ]]>
+                </if>
+            </if>
+        </where>
+        ORDER BY s.create_time DESC
+    </select>
+
+    <select id="getDetail" resultMap="SettleSheetFullDto">
+        <include refid="SettleSheetFullDto_sql"/>
+        WHERE s.id = #{id}
+        ORDER BY d.order_no
+    </select>
+
+    <select id="queryFulls" resultMap="SettleSheetFullDto">
+        <include refid="SettleSheetFullDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND s.code = #{vo.code}
+                </if>
+                <if test="vo.supplierId != null and vo.supplierId != ''">
+                    AND s.supplier_id = #{vo.supplierId}
+                </if>
+                <if test="vo.status != null">
+                    AND s.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND s.create_by = #{vo.createBy}
+                </if>
+                <if test="vo.approveBy != null and vo.approveBy != ''">
+                    AND s.approve_by = #{vo.approveBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND s.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND s.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.approveStartTime != null">
+                    AND s.approve_time >= #{vo.approveStartTime}
+                </if>
+                <if test="vo.approveEndTime != null">
+                    <![CDATA[
+                    AND s.approve_time <= #{vo.approveEndTime}
+                    ]]>
+                </if>
+            </if>
+        </where>
+        ORDER BY s.create_time DESC, d.order_no
+    </select>
+</mapper>

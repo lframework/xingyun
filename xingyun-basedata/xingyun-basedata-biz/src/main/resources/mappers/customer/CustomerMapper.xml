@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.biz.mappers.CustomerMapper">
+
+    <resultMap id="CustomerDto" type="com.lframework.xingyun.basedata.facade.entity.Customer">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="mnemonic_code" property="mnemonicCode"/>
+        <result column="contact" property="contact"/>
+        <result column="telephone" property="telephone"/>
+        <result column="email" property="email"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="fax" property="fax"/>
+        <result column="city_id" property="cityId"/>
+        <result column="address" property="address"/>
+        <result column="receiver" property="receiver"/>
+        <result column="receive_telephone" property="receiveTelephone"/>
+        <result column="receive_address" property="receiveAddress"/>
+        <result column="settle_type" property="settleType"/>
+        <result column="credit_code" property="creditCode"/>
+        <result column="tax_identify_no" property="taxIdentifyNo"/>
+        <result column="bank_name" property="bankName"/>
+        <result column="account_name" property="accountName"/>
+        <result column="account_no" property="accountNo"/>
+        <result column="available" property="available"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="CustomerDto_sql">
+        SELECT
+            id,
+            code,
+            name,
+            mnemonic_code,
+            contact,
+            telephone,
+            email,
+            zip_code,
+            fax,
+            city_id,
+            address,
+            receiver,
+            receive_telephone,
+            receive_address,
+            settle_type,
+            credit_code,
+            tax_identify_no,
+            bank_name,
+            account_name,
+            account_no,
+            available,
+            description,
+            create_by,
+            create_time,
+            update_by,
+            update_time
+        FROM base_data_customer
+    </sql>
+
+    <select id="query" resultMap="CustomerDto">
+        <include refid="CustomerDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY code
+    </select>
+
+    <select id="selector" resultMap="CustomerDto">
+        <include refid="CustomerDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY code
+    </select>
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.chart.biz.mappers.OrderChartMapper">
+
+    <resultMap id="OrderChartSumDto" type="com.lframework.xingyun.chart.facade.dto.OrderChartSumDto">
+        <result column="total_amount" property="totalAmount"/>
+        <result column="total_num" property="totalNum"/>
+    </resultMap>
+
+    <resultMap id="OrderChartSameMonthDto" type="com.lframework.xingyun.chart.facade.dto.OrderChartSameMonthDto">
+        <result column="total_amount" property="totalAmount"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <resultMap id="OrderChartTodayDto" type="com.lframework.xingyun.chart.facade.dto.OrderChartTodayDto">
+        <result column="total_amount" property="totalAmount"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="create_hour" property="createHour"/>
+    </resultMap>
+
+    <select id="querySameMonth" resultMap="OrderChartSameMonthDto">
+        SELECT
+            IFNULL(SUM(c.total_amount), 0) AS total_amount,
+            COUNT(1) AS total_num,
+            c.create_date
+        FROM tbl_order_chart AS c
+        <where>
+            <if test="startTime != null">
+                AND c.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                <![CDATA[
+                AND c.create_time <= #{endTime}
+                ]]>
+            </if>
+            <if test="bizTypes != null and bizTypes.size() > 0">
+                AND c.biz_type IN <foreach collection="bizTypes" open="(" separator="," close=")" item="item">#{item}</foreach>
+            </if>
+        </where>
+        GROUP BY c.create_date
+    </select>
+    <select id="queryToday" resultMap="OrderChartTodayDto">
+        SELECT
+            IFNULL(SUM(c.total_amount), 0) AS total_amount,
+            COUNT(1) AS total_num,
+            c.create_hour
+        FROM tbl_order_chart AS c
+        <where>
+            <if test="startTime != null">
+                AND c.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                <![CDATA[
+                AND c.create_time <= #{endTime}
+                ]]>
+            </if>
+            <if test="bizTypes != null and bizTypes.size() > 0">
+                AND c.biz_type IN <foreach collection="bizTypes" open="(" separator="," close=")" item="item">#{item}</foreach>
+            </if>
+        </where>
+        GROUP BY c.create_hour
+    </select>
+    <select id="getChartSum" resultMap="OrderChartSumDto">
+        SELECT
+            IFNULL(SUM(c.total_amount), 0) AS total_amount,
+            COUNT(1) AS total_num
+        FROM tbl_order_chart AS c
+        <where>
+            <if test="startTime != null">
+                AND c.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                <![CDATA[
+                AND c.create_time <= #{endTime}
+                ]]>
+            </if>
+            <if test="bizTypes != null and bizTypes.size() > 0">
+                AND c.biz_type IN <foreach collection="bizTypes" open="(" separator="," close=")" item="item">#{item}</foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

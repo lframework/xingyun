@@ -19,18 +19,19 @@
 
     <modules>
         <module>xingyun-core</module>
-        <module>xingyun-api</module>
+        <module>xingyun-common</module>
         <module>xingyun-basedata</module>
         <module>xingyun-sc</module>
         <module>xingyun-chart</module>
         <module>xingyun-settle</module>
+      <module>xingyun-gateway</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <xingyun.version>1.0.0-SNAPSHOT</xingyun.version>
-        <jugg.version>2.2.13</jugg.version>
+        <jugg.version>2.2.14</jugg.version>
     </properties>
 
     <dependencyManagement>
@@ -61,16 +62,21 @@
             </dependency>
 
             <dependency>
-                <groupId>com.lframework</groupId>
-                <artifactId>xingyun-settle</artifactId>
-                <version>${xingyun.version}</version>
+              <groupId>com.lframework</groupId>
+              <artifactId>xingyun-settle</artifactId>
+              <version>${xingyun.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.lframework</groupId>
-                <artifactId>xingyun-core</artifactId>
-                <version>${xingyun.version}</version>
-            </dependency>
+          <dependency>
+            <groupId>com.lframework</groupId>
+            <artifactId>xingyun-core</artifactId>
+            <version>${xingyun.version}</version>
+          </dependency>
+          <dependency>
+            <artifactId>xingyun-common-facade</artifactId>
+            <groupId>com.lframework</groupId>
+            <version>${xingyun.version}</version>
+          </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -104,4 +110,31 @@
             <url>https://maven.aliyun.com/nexus/content/groups/public</url>
         </repository>
     </repositories>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <discovery-server>127.0.0.1:10000</discovery-server>
+                <profiles-active>dev</profiles-active>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <discovery-server>127.0.0.1:10000</discovery-server>
+                <profiles-active>test</profiles-active>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <discovery-server>127.0.0.1:10000</discovery-server>
+                <profiles-active>prod</profiles-active>
+            </properties>
+        </profile>
+    </profiles>
 </project>

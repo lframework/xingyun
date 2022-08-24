@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 开发环境下log配置信息 -->
+<configuration debug="false" packagingData="true" scan="false">
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [${applicationName}] [%X{X-B3-TraceId:-N/A}]
+        [%X{X-B3-SpanId:-N/A}] [%X{X-B3-ParentSpanId:-N/A}] [%X{X-Span-Export:-N/A}] [%thread]
+        [%-5level] %logger{36} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="LOG_STDOUT">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [${applicationName}] [%X{X-B3-TraceId:-N/A}]
+        [%X{X-B3-SpanId:-N/A}] [%X{X-B3-ParentSpanId:-N/A}] [%X{X-Span-Export:-N/A}] [%thread]
+        [%-5level] %logger{36} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <logger additivity="false" level="debug" name="com.lframework">
+    <appender-ref ref="LOG_STDOUT"/>
+  </logger>
+  <root level="info">
+    <appender-ref ref="STDOUT"/>
+  </root>
+  <springProperty defaultValue="unknown" name="applicationName" scope="context"
+    source="spring.application.name"/>
+</configuration>

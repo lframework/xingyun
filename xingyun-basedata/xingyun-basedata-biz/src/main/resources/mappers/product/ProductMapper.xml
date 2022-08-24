@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.biz.mappers.ProductMapper">
+
+    <resultMap id="ProductDto" type="com.lframework.xingyun.basedata.facade.dto.product.info.ProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="poly_id" property="poly.id"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+        <result column="available" property="available"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="GetProductDto" type="com.lframework.xingyun.basedata.facade.dto.product.info.GetProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="multi_saleprop" property="multiSaleProp"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+        <result column="purchase_price" property="purchasePrice"/>
+        <result column="sale_price" property="salePrice"/>
+        <result column="retail_price" property="retailPrice"/>
+        <result column="available" property="available"/>
+        <collection property="properties" ofType="com.lframework.xingyun.basedata.facade.dto.product.info.GetProductDto$PropertyDto"
+                    javaType="java.util.ArrayList">
+            <id column="property_id" property="id"/>
+            <result column="property_column_type" property="columnType"/>
+            <result column="property_name" property="name"/>
+            <result column="property_text" property="text"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="PurchaseProductDto" type="com.lframework.xingyun.basedata.facade.dto.product.info.PurchaseProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="multi_saleprop" property="multiSaleProp"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+        <result column="purchase_price" property="purchasePrice"/>
+        <result column="tax_rate" property="taxRate"/>
+        <result column="available" property="available"/>
+    </resultMap>
+
+    <resultMap id="SaleProductDto" type="com.lframework.xingyun.basedata.facade.dto.product.info.SaleProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="multi_saleprop" property="multiSaleProp"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+        <result column="sale_price" property="salePrice"/>
+        <result column="sale_tax_rate" property="taxRate"/>
+        <result column="available" property="available"/>
+    </resultMap>
+
+    <resultMap id="RetailProductDto" type="com.lframework.xingyun.basedata.facade.dto.product.info.RetailProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="multi_saleprop" property="multiSaleProp"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+        <result column="retail_price" property="retailPrice"/>
+        <result column="retail_tax_rate" property="taxRate"/>
+        <result column="available" property="available"/>
+    </resultMap>
+
+    <resultMap id="PreTakeStockProductDto" type="com.lframework.xingyun.basedata.facade.dto.product.info.PreTakeStockProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+    </resultMap>
+
+    <resultMap id="TakeStockSheetProductDto" type="com.lframework.xingyun.basedata.facade.dto.product.info.TakeStockSheetProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+    </resultMap>
+
+    <resultMap id="StockCostAdjustProductDto" type="com.lframework.xingyun.basedata.facade.dto.product.info.StockCostAdjustProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+        <result column="purchase_price" property="purchasePrice"/>
+        <result column="stock_num" property="stockNum"/>
+        <result column="ori_price" property="oriPrice"/>
+    </resultMap>
+
+    <sql id="ProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            g.poly_id,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit,
+            g.available,
+            g.create_by,
+            g.create_time,
+            g.update_by,
+            g.update_time
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = p.category_id and rm.node_type = 2
+    </sql>
+
+    <sql id="GetProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            p.multi_saleprop,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit,
+            purchase.price AS purchase_price,
+            sale.price AS sale_price,
+            retail.price AS retail_price,
+            g.available,
+            property.id AS property_id,
+            property.name AS property_name,
+            IF(property.column_type = 3, pproperty.property_text, IF(property.column_type = 1, GROUP_CONCAT(propertyItem.name order by propertyItem.code SEPARATOR '，'), propertyItem.name)) AS property_text,
+            property.column_type AS property_column_type
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        LEFT JOIN base_data_product_purchase AS purchase ON purchase.id = g.id
+        LEFT JOIN base_data_product_sale AS sale ON sale.id = g.id
+        LEFT JOIN base_data_product_retail AS retail ON retail.id = g.id
+        LEFT JOIN base_data_product_poly_property AS pproperty ON pproperty.poly_id = p.id
+        LEFT JOIN base_data_product_property AS property ON property.id = pproperty.property_id
+        LEFT JOIN base_data_product_property_item AS propertyItem ON propertyItem.id = pproperty.property_item_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+    </sql>
+
+    <sql id="PurchaseProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            p.multi_saleprop,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit,
+            purchase.price AS purchase_price,
+            p.tax_rate,
+            g.available
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        INNER JOIN base_data_product_purchase AS purchase ON purchase.id = g.id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
+    </sql>
+
+    <sql id="SaleProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            p.multi_saleprop,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit,
+            sale.price AS sale_price,
+            p.sale_tax_rate,
+            g.available
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        INNER JOIN base_data_product_sale AS sale ON sale.id = g.id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
+    </sql>
+
+    <sql id="RetailProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            p.multi_saleprop,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit,
+            retail.price AS retail_price,
+            p.sale_tax_rate,
+            g.available
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        INNER JOIN base_data_product_retail AS retail ON retail.id = g.id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
+    </sql>
+
+    <sql id="PreTakeStockProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
+    </sql>
+
+    <sql id="TakeStockSheetProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
+    </sql>
+
+    <sql id="StockCostAdjustProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit,
+            purchase.price AS purchase_price,
+            s.tax_price AS ori_price,
+            s.stock_num
+        FROM tbl_product_stock AS s
+        INNER JOIN base_data_product AS g ON g.id = s.product_id
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        INNER JOIN base_data_product_purchase AS purchase ON purchase.id = g.id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
+    </sql>
+
+    <select id="query" resultMap="ProductDto">
+        <include refid="ProductDto_sql"/>
+        WHERE g.poly_id = p.id
+        <if test="vo != null">
+            <if test="vo.code != null and vo.code != ''">
+                AND g.code = #{vo.code}
+            </if>
+            <if test="vo.name != null and vo.name != ''">
+                AND g.name LIKE CONCAT('%', #{vo.name}, '%')
+            </if>
+            <if test="vo.skuCode != null and vo.skuCode != ''">
+                AND g.sku_code = #{vo.skuCode}
+            </if>
+            <if test="vo.brandId != null and vo.brandId != ''">
+                AND p.brand_id = #{vo.brandId}
+            </if>
+            <if test="vo.categoryId != null and vo.categoryId != ''">
+                AND (p.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+            </if>
+            <if test="vo.available != null">
+                AND g.available = #{vo.available}
+            </if>
+            <if test="vo.startTime != null">
+                AND g.create_time >= #{vo.startTime}
+            </if>
+            <if test="vo.endTime != null">
+                <![CDATA[
+                AND g.create_time <= #{vo.endTime}
+                ]]>
+            </if>
+        </if>
+        ORDER BY p.code, g.code
+    </select>
+
+    <select id="findById" resultMap="ProductDto">
+        <include refid="ProductDto_sql"/>
+        WHERE g.id = #{id}
+    </select>
+    <select id="getDetailById" resultMap="GetProductDto">
+        <include refid="GetProductDto_sql"/>
+        WHERE g.id = #{id}
+        ORDER BY property.code, propertyItem.code
+    </select>
+
+    <select id="queryPurchaseByCondition" resultMap="PurchaseProductDto">
+        <include refid="PurchaseProductDto_sql"/>
+        <where>
+            AND (
+            p.code LIKE CONCAT('%', #{condition}, '%')
+            OR g.name LIKE CONCAT('%', #{condition}, '%')
+            OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+            OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+            AND g.available = TRUE
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryPurchaseList" resultMap="PurchaseProductDto">
+        <include refid="PurchaseProductDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                    p.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+            </if>
+            AND g.available = TRUE
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="getPurchaseById" resultMap="PurchaseProductDto">
+        <include refid="PurchaseProductDto_sql"/>
+        WHERE g.id = #{id}
+    </select>
+    <select id="querySaleByCondition" resultMap="SaleProductDto">
+        <include refid="SaleProductDto_sql"/>
+        <where>
+            AND (
+            p.code LIKE CONCAT('%', #{condition}, '%')
+            OR g.name LIKE CONCAT('%', #{condition}, '%')
+            OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+            OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+            AND g.available = TRUE
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="querySaleList" resultMap="SaleProductDto">
+        <include refid="SaleProductDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                    p.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+            </if>
+            AND g.available = TRUE
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="getSaleById" resultMap="SaleProductDto">
+        <include refid="SaleProductDto_sql"/>
+        WHERE g.id = #{id}
+    </select>
+    <select id="queryRetailByCondition" resultMap="RetailProductDto">
+        <include refid="RetailProductDto_sql"/>
+        <where>
+            AND (
+            p.code LIKE CONCAT('%', #{condition}, '%')
+            OR g.name LIKE CONCAT('%', #{condition}, '%')
+            OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+            OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+            AND g.available = TRUE
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryRetailList" resultMap="RetailProductDto">
+        <include refid="RetailProductDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                    p.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+            </if>
+            AND g.available = TRUE
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="getRetailById" resultMap="RetailProductDto">
+        <include refid="RetailProductDto_sql"/>
+        WHERE g.id = #{id}
+    </select>
+    <select id="queryPreTakeStockList" resultMap="PreTakeStockProductDto">
+        <include refid="PreTakeStockProductDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                        p.code LIKE CONCAT('%', #{vo.condition}, '%')
+                        OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                        OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                        OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+            </if>
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryPreTakeStockByCondition" resultMap="PreTakeStockProductDto">
+        <include refid="PreTakeStockProductDto_sql"/>
+        <where>
+            AND (
+                p.code LIKE CONCAT('%', #{condition}, '%')
+                OR g.name LIKE CONCAT('%', #{condition}, '%')
+                OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+                OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="getByCategoryIds" resultMap="ProductDto">
+        <include refid="ProductDto_sql"/>
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        WHERE c.id IN <foreach collection="categoryIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="getByBrandIds" resultMap="ProductDto">
+        <include refid="ProductDto_sql"/>
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        WHERE b.id IN <foreach collection="brandIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryTakeStockByCondition" resultMap="TakeStockSheetProductDto">
+        <include refid="TakeStockSheetProductDto_sql"/>
+        <where>
+            AND (
+            p.code LIKE CONCAT('%', #{condition}, '%')
+            OR g.name LIKE CONCAT('%', #{condition}, '%')
+            OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+            OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+            <if test="planId != null and planId != ''">
+                AND g.id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{planId})
+            </if>
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryTakeStockList" resultMap="TakeStockSheetProductDto">
+        <include refid="TakeStockSheetProductDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                    p.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+                <if test="vo.planId != null and vo.planId != ''">
+                    AND g.id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{vo.planId})
+                </if>
+            </if>
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_poly AS p ON p.id = g.poly_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = p.category_id and rm.node_type = 2
+        WHERE g.poly_id = p.id
+        <if test="vo != null">
+            <if test="vo.code != null and vo.code != ''">
+                AND g.code = #{vo.code}
+            </if>
+            <if test="vo.name != null and vo.name != ''">
+                AND g.name LIKE CONCAT('%', #{vo.name}, '%')
+            </if>
+            <if test="vo.skuCode != null and vo.skuCode != ''">
+                AND g.sku_code = #{vo.skuCode}
+            </if>
+            <if test="vo.brandId != null and vo.brandId != ''">
+                AND p.brand_id = #{vo.brandId}
+            </if>
+            <if test="vo.categoryId != null and vo.categoryId != ''">
+                AND (p.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+            </if>
+            <if test="vo.available != null">
+                AND g.available = #{vo.available}
+            </if>
+            <if test="vo.startTime != null">
+                AND g.create_time >= #{vo.startTime}
+            </if>
+            <if test="vo.endTime != null">
+                <![CDATA[
+                AND g.create_time <= #{vo.endTime}
+                ]]>
+            </if>
+        </if>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryStockCostAdjustByCondition" resultMap="StockCostAdjustProductDto">
+        <include refid="StockCostAdjustProductDto_sql"/>
+        <where>
+            AND s.sc_id = #{scId}
+            AND (
+            p.code LIKE CONCAT('%', #{condition}, '%')
+            OR g.name LIKE CONCAT('%', #{condition}, '%')
+            OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+            OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+    <select id="queryStockCostAdjustList" resultMap="StockCostAdjustProductDto">
+        <include refid="StockCostAdjustProductDto_sql"/>
+        <where>
+            AND s.sc_id = #{vo.scId}
+            <if test="vo != null">
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                    p.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+            </if>
+        </where>
+        ORDER BY p.code, g.code
+    </select>
+</mapper>

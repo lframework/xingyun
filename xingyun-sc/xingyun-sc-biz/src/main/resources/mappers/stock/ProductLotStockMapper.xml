@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.biz.mappers.ProductLotStockMapper">
+    <resultMap id="ProductLotStock" type="com.lframework.xingyun.sc.facade.entity.ProductLotStock">
+        <id column="id" property="id"/>
+        <result column="sc_id" property="scId"/>
+        <result column="lot_id" property="lotId"/>
+        <result column="stock_num" property="stockNum"/>
+    </resultMap>
+
+    <sql id="ProductLotStockDto_sql">
+        SELECT
+            s.id,
+            s.sc_id,
+            s.lot_id,
+            s.stock_num
+        FROM tbl_product_lot_stock AS s
+        INNER JOIN tbl_product_lot AS l ON l.id = s.lot_id
+    </sql>
+    <update id="subStockById">
+        UPDATE tbl_product_lot_stock SET stock_num = stock_num - #{num}
+        WHERE id = #{id}
+        AND stock_num >= #{num}
+    </update>
+
+    <select id="getFifoList" resultMap="ProductLotStock">
+        <include refid="ProductLotStockDto_sql"/>
+        WHERE s.sc_id = #{scId}
+        AND l.product_id = #{productId}
+        <if test="supplierId != null and supplierId != ''">
+            AND l.supplier_id = #{supplierId}
+        </if>
+        AND s.stock_num > 0
+        ORDER BY l.create_time
+    </select>
+    <select id="getByScIdAndLotId" resultMap="ProductLotStock">
+        <include refid="ProductLotStockDto_sql"/>
+        WHERE s.sc_id = #{scId}
+        AND s.lot_id = #{lotId}
+    </select>
+    <select id="getAllHasStockLots" resultMap="ProductLotStock">
+        <include refid="ProductLotStockDto_sql"/>
+        WHERE s.sc_id = #{scId}
+        AND l.product_id = #{productId}
+        AND s.stock_num > 0
+        ORDER BY l.create_time DESC
+    </select>
+</mapper>

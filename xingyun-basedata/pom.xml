@@ -10,12 +10,38 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xingyun-basedata</artifactId>
-    <name>【${project.artifactId}】基础数据服务层</name>
+    <packaging>pom</packaging>
 
-    <dependencies>
+    <name>【${project.artifactId}】基础数据服务</name>
+
+    <modules>
+      <module>xingyun-basedata-facade</module>
+      <module>xingyun-basedata-api</module>
+      <module>xingyun-basedata-biz</module>
+    </modules>
+
+    <dependencyManagement>
+      <dependencies>
         <dependency>
-            <groupId>com.lframework</groupId>
-            <artifactId>xingyun-core</artifactId>
+          <groupId>com.lframework</groupId>
+          <artifactId>xingyun-basedata-facade</artifactId>
+          <version>${project.version}</version>
         </dependency>
-    </dependencies>
+        <dependency>
+          <groupId>com.lframework</groupId>
+          <artifactId>xingyun-basedata-biz</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.lframework</groupId>
+          <artifactId>xingyun-common-facade</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <artifactId>xingyun-sc-facade</artifactId>
+          <groupId>com.lframework</groupId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
 </project>

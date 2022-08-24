@@ -1,0 +1,49 @@
+logging:
+  config: classpath:spring-logback-dev.xml
+  # path默认为当前目录的logs子目录
+  # name默认为log，name为文件名，例如：配置test-log，那么生成的日志文件的全名称为test-log.log
+  #file:
+  #  path: logs
+  #  name: log
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: xingyun-common-api
+          uri: lb://xingyun-common-api
+          predicates:
+            - Path=/common-api/**
+          filters:
+            - StripPrefix=1
+
+        - id: xingyun-basedata-api
+          uri: lb://xingyun-basedata-api
+          predicates:
+            - Path=/basedata-api/**
+          filters:
+            - StripPrefix=1
+
+        - id: xingyun-chart-api
+          uri: lb://xingyun-chart-api
+          predicates:
+            - Path=/chart-api/**
+          filters:
+            - StripPrefix=1
+
+        - id: xingyun-sc-api
+          uri: lb://xingyun-sc-api
+          predicates:
+            - Path=/sc-api/**
+          filters:
+            - StripPrefix=1
+
+        - id: xingyun-settle-api
+          uri: lb://xingyun-settle-api
+          predicates:
+            - Path=/settle-api/**
+          filters:
+            - StripPrefix=1

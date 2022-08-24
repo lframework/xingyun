@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.biz.mappers.ProductPolyMapper">
+
+    <resultMap id="ProductPoly" type="com.lframework.xingyun.basedata.facade.entity.ProductPoly">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="short_name" property="shortName"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="multi_saleprop" property="multiSaleprop"/>
+        <result column="tax_rate" property="taxRate"/>
+        <result column="sale_tax_rate" property="saleTaxRate"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="ProductPolyDto" type="com.lframework.xingyun.basedata.facade.dto.product.poly.ProductPolyDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="short_name" property="shortName"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="multi_saleprop" property="multiSaleProp"/>
+        <result column="tax_rate" property="taxRate"/>
+        <result column="sale_tax_rate" property="saleTaxRate"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="ProductPoly_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.name,
+            tb.short_name,
+            tb.category_id,
+            tb.brand_id,
+            tb.multi_saleprop,
+            tb.tax_rate,
+            tb.sale_tax_rate,
+            tb.create_by,
+            tb.create_time,
+            tb.update_by,
+            tb.update_time
+        FROM base_data_product_poly AS tb
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = tb.category_id and rm.node_type = 2
+    </sql>
+
+    <sql id="ProductPolyDto_sql">
+        SELECT
+            p.id,
+            p.code,
+            p.name,
+            p.short_name,
+            p.category_id AS category_id,
+            p.brand_id AS brand_id,
+            p.multi_saleprop,
+            p.tax_rate,
+            p.sale_tax_rate,
+            p.create_by,
+            p.create_time,
+            p.update_by,
+            p.update_time
+        FROM base_data_product_poly AS p
+    </sql>
+
+    <select id="query" resultMap="ProductPoly">
+        <include refid="ProductPoly_sql"/>
+        <where>
+            <if test="vo.code != null and vo.code != ''">
+                AND tb.code = #{vo.code}
+            </if>
+            <if test="vo.name != null and vo.name != ''">
+                AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+            </if>
+            <if test="vo.categoryId != null and vo.categoryId != ''">
+                AND (tb.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+            </if>
+            <if test="vo.brandId != null and vo.brandId != ''">
+                AND tb.brand_id = #{vo.brandId}
+            </if>
+        </where>
+        ORDER BY tb.code
+    </select>
+
+    <select id="findById" resultMap="ProductPolyDto">
+        <include refid="ProductPolyDto_sql"/>
+        WHERE p.id = #{id}
+    </select>
+    <select id="getIdNotInPolyProperty" resultType="java.lang.String">
+        SELECT id
+        FROM base_data_product_poly AS p
+        where p.id NOT IN (SELECT poly_id FROM base_data_product_poly_property WHERE property_id = #{propertyId})
+    </select>
+    <select id="getIdByCategoryId" resultType="java.lang.String">
+        SELECT id
+        FROM base_data_product_poly AS p
+        WHERE p.category_id = #{categoryId}
+    </select>
+</mapper>

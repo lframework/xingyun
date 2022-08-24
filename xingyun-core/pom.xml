@@ -13,14 +13,13 @@
     <name>【${project.artifactId}】基础依赖</name>
 
     <dependencies>
-        <dependency>
-            <groupId>com.lframework</groupId>
-            <artifactId>security-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lframework</groupId>
-            <artifactId>bpm-starter</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.lframework</groupId>
+        <artifactId>mybatis-starter</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>com.lframework</groupId>
+        <artifactId>cloud-starter</artifactId>
+      </dependency>
     </dependencies>
 </project>

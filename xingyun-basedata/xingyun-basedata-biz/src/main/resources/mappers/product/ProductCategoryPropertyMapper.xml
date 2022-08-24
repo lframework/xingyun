@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.biz.mappers.ProductCategoryPropertyMapper">
+
+    <resultMap id="ProductCategoryPropertyDto" type="com.lframework.xingyun.basedata.facade.entity.ProductCategoryProperty">
+        <id column="id" property="id"/>
+        <result column="property_id" property="propertyId"/>
+        <result column="category_id" property="categoryId"/>
+    </resultMap>
+
+    <sql id="ProductCategoryPropertyDto_sql">
+        SELECT
+            cp.id,
+            cp.property_id,
+            cp.category_id
+        FROM base_data_product_category_property AS cp
+        LEFT JOIN base_data_product_property AS p ON p.id = cp.property_id
+        LEFT JOIN base_data_product_category AS c ON c.id = cp.category_id
+    </sql>
+
+    <select id="getByPropertyId" resultMap="ProductCategoryPropertyDto">
+        <include refid="ProductCategoryPropertyDto_sql"/>
+        WHERE cp.property_id = #{propertyId}
+        ORDER BY c.code
+    </select>
+
+</mapper>

@@ -1,0 +1,11 @@
+spring:
+  activemq:
+    broker-url: tcp://127.0.0.1:61616
+    user: user
+    password: password
+    pool:
+      enabled: true
+      max-connections: 5
+    in-memory: false
+    packages:
+      trust-all: true

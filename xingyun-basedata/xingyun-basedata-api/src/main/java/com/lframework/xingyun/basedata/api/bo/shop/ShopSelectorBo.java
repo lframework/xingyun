@@ -1,0 +1,52 @@
+package com.lframework.xingyun.basedata.api.bo.shop;
+
+import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.xingyun.basedata.facade.entity.Shop;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * <p>
+ * 门店选择器 Bo
+ * </p>
+ *
+ * @author zmj
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ShopSelectorBo extends BaseBo<Shop> {
+
+  /**
+   * ID
+   */
+  @ApiModelProperty("ID")
+  private String id;
+
+  /**
+   * 编号
+   */
+  @ApiModelProperty("编号")
+  private String code;
+
+  /**
+   * 名称
+   */
+  @ApiModelProperty("名称")
+  private String name;
+
+  /**
+   * 状态
+   */
+  @ApiModelProperty("状态")
+  private Boolean available;
+
+  public ShopSelectorBo() {
+
+  }
+
+  public ShopSelectorBo(Shop dto) {
+
+    super(dto);
+  }
+}

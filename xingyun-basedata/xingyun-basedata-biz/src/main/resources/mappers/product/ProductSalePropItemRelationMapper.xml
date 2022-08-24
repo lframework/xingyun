@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.biz.mappers.ProductSalePropItemRelationMapper">
+
+  <resultMap id="SalePropItemByProductDto"
+    type="com.lframework.xingyun.basedata.facade.dto.product.saleprop.item.SalePropItemByProductDto">
+    <result column="item_id1" property="itemId1"/>
+    <result column="item_name1" property="itemName1"/>
+    <result column="item_id2" property="itemId2"/>
+    <result column="item_name2" property="itemName2"/>
+    <result column="group_id1" property="groupId1"/>
+    <result column="group_name1" property="groupName1"/>
+    <result column="group_id2" property="groupId2"/>
+    <result column="group_name2" property="groupName2"/>
+    <result column="product_id" property="productId"/>
+  </resultMap>
+
+  <select id="getByProductId" resultMap="SalePropItemByProductDto">
+    <include refid="SalePropItemByProductDto_sql"/>
+    WHERE r.product_id = #{productId}
+  </select>
+
+  <select id="getProductIdById" resultType="java.lang.String">
+    SELECT r.product_id
+    FROM base_data_product_saleprop_item_relation AS r
+    WHERE r.sale_prop_item_id1 = #{id}
+       OR r.sale_prop_item_id2 = #{id}
+  </select>
+  <sql id="SalePropItemByProductDto_sql">
+    SELECT item.id    AS item_id1,
+           item.name  AS item_name1,
+           item2.id   AS item_id2,
+           item2.name AS item_name2,
+           gp.id      AS group_id1,
+           gp.name    AS group_name1,
+           gp2.id     AS group_id2,
+           gp2.name   AS group_name2,
+           g.id       AS product_id
+    FROM base_data_product_saleprop_item_relation AS r
+           INNER JOIN base_data_product AS g ON g.id = r.product_id
+           INNER JOIN base_data_product_saleprop_item AS item ON item.id = r.sale_prop_item_id1
+           LEFT JOIN base_data_product_saleprop_item AS item2 ON item2.id = r.sale_prop_item_id2
+           INNER JOIN base_data_product_saleprop_group AS gp ON gp.id = r.sale_prop_group_id1
+           LEFT JOIN base_data_product_saleprop_group AS gp2 ON gp2.id = r.sale_prop_group_id2
+  </sql>
+</mapper>

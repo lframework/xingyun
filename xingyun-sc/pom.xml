@@ -1,26 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>xingyun</artifactId>
-        <groupId>com.lframework</groupId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>xingyun</artifactId>
+    <groupId>com.lframework</groupId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>xingyun-sc</artifactId>
 
-    <artifactId>xingyun-sc</artifactId>
-    <name>【${project.artifactId}】仓库业务服务层</name>
+  <packaging>pom</packaging>
+  <name>【${project.artifactId}】仓库业务服务</name>
 
+  <modules>
+    <module>xingyun-sc-api</module>
+    <module>xingyun-sc-facade</module>
+    <module>xingyun-sc-biz</module>
+  </modules>
+
+  <dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>com.lframework</groupId>
-            <artifactId>xingyun-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lframework</groupId>
-            <artifactId>xingyun-basedata</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.lframework</groupId>
+        <artifactId>xingyun-sc-facade</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.lframework</groupId>
+        <artifactId>xingyun-sc-biz</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.lframework</groupId>
+        <artifactId>xingyun-chart-facade</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>xingyun-basedata-facade</artifactId>
+        <groupId>com.lframework</groupId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
+  </dependencyManagement>
 </project>

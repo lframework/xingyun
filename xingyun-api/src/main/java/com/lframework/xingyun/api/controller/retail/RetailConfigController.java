@@ -1,6 +1,6 @@
 package com.lframework.xingyun.api.controller.retail;
 
-import com.lframework.starter.security.controller.DefaultBaseController;
+import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.xingyun.api.bo.retail.config.GetRetailConfigBo;

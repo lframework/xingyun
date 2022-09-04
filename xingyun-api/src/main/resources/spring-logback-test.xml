@@ -2,11 +2,12 @@
 <!-- 测试环境下log配置信息 -->
 <configuration debug="false" scan="false" packagingData="true">
     <springProperty scope="context" name="logFilePath" source="logging.file.path" defaultValue="logs"/>
+    <springProperty scope="context" name="logFileName" source="logging.file.name" defaultValue="log"/>
 
     <appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logFilePath}/log.log</file>
+        <file>${logFilePath}/${logFileName}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${logFilePath}/%d{yyyy-MM-dd}/log.%i.log</fileNamePattern>
+            <fileNamePattern>${logFilePath}/%d{yyyy-MM-dd}/${logFileName}.%i.log</fileNamePattern>
             <maxFileSize>30MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
@@ -17,9 +18,9 @@
     </appender>
 
     <appender name="ERROR_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logFilePath}/error.log</file>
+        <file>${logFilePath}/${logFileName}.error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${logFilePath}/%d{yyyy-MM-dd}/error.%i.log</fileNamePattern>
+            <fileNamePattern>${logFilePath}/%d{yyyy-MM-dd}/${logFileName}.error.%i.log</fileNamePattern>
             <maxFileSize>30MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>

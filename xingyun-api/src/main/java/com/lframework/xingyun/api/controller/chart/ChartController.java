@@ -1,7 +1,7 @@
 package com.lframework.xingyun.api.controller.chart;
 
 import com.lframework.common.utils.CollectionUtil;
-import com.lframework.starter.security.controller.DefaultBaseController;
+import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;

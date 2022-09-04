@@ -1,7 +1,7 @@
 package com.lframework.xingyun.api.controller.stock.take;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.starter.security.controller.DefaultBaseController;
+import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.xingyun.api.bo.stock.take.config.GetTakeStockConfigBo;

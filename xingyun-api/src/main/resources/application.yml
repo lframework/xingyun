@@ -3,9 +3,9 @@ server:
   port: 8080
 spring:
   application:
-    name: xingyun-api
+    name: @project.artifactId@
   profiles:
-    active: dev
+    active: @profiles-active@
   servlet:
     multipart:
       #是否开启文件上传

@@ -325,6 +325,7 @@
     </if>
     AND s.status = 3
     AND s.settle_status = #{settleStatus}
+    AND s.tx_id IS NULL
     ORDER BY s.approve_time DESC
   </select>
 </mapper>

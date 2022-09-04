@@ -1,54 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 生产环境下log配置信息 -->
-<configuration debug="false" packagingData="true" scan="false">
-  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="LOG_FILE">
-    <encoder>
-      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [${applicationName}] [%X{X-B3-TraceId:-N/A}]
-        [%X{X-B3-SpanId:-N/A}] [%X{X-B3-ParentSpanId:-N/A}] [%X{X-Span-Export:-N/A}] [%thread]
-        [%-5level] %logger{36} - %msg%n
-      </pattern>
-    </encoder>
-    <file>${logFilePath}/${logFileName}.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${logFilePath}/%d{yyyy-MM-dd}/${logFileName}.%i.log</fileNamePattern>
-      <maxFileSize>30MB</maxFileSize>
-      <maxHistory>30</maxHistory>
-      <totalSizeCap>10GB</totalSizeCap>
-    </rollingPolicy>
-  </appender>
-  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ERROR_LOG_FILE">
-    <encoder>
-      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [${applicationName}] [%X{X-B3-TraceId:-N/A}]
-        [%X{X-B3-SpanId:-N/A}] [%X{X-B3-ParentSpanId:-N/A}] [%X{X-Span-Export:-N/A}] [%thread]
-        [%-5level] %logger{36} - %msg%n
-      </pattern>
-    </encoder>
-    <file>${logFilePath}/${logFileName}.error.log</file>
-    <filter class="ch.qos.logback.classic.filter.LevelFilter">
-      <level>ERROR</level>
-      <onMatch>ACCEPT</onMatch>
-      <onMismatch>DENY</onMismatch>
-    </filter>
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${logFilePath}/%d{yyyy-MM-dd}/${logFileName}.error.%i.log</fileNamePattern>
-      <maxFileSize>30MB</maxFileSize>
-      <maxHistory>30</maxHistory>
-      <totalSizeCap>1GB</totalSizeCap>
-    </rollingPolicy>
-  </appender>
-  <logger additivity="false" level="info" name="com.lframework">
-    <appender-ref ref="LOG_FILE"/>
-    <appender-ref ref="ERROR_LOG_FILE"/>
-  </logger>
+<configuration debug="false" scan="false" packagingData="true">
+    <springProperty scope="context" name="logFilePath" source="logging.file.path" defaultValue="logs"/>
+    <springProperty scope="context" name="logFileName" source="logging.file.name" defaultValue="log"/>
+    <appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFilePath}/${logFileName}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logFilePath}/%d{yyyy-MM-dd}/${logFileName}.%i.log</fileNamePattern>
+            <maxFileSize>30MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [${applicationName}] [%X{X-B3-TraceId:-N/A}] [%X{X-B3-SpanId:-N/A}] [%X{X-B3-ParentSpanId:-N/A}] [%X{X-Span-Export:-N/A}] [%thread] [%-5level] %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
 
-  <root level="info">
-    <appender-ref ref="LOG_FILE"/>
-  </root>
+    <appender name="ERROR_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFilePath}/${logFileName}.error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logFilePath}/%d{yyyy-MM-dd}/${logFileName}.error.%i.log</fileNamePattern>
+            <maxFileSize>30MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+      <encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [${applicationName}] [%X{X-B3-TraceId:-N/A}] [%X{X-B3-SpanId:-N/A}] [%X{X-B3-ParentSpanId:-N/A}] [%X{X-Span-Export:-N/A}] [%thread] [%-5level] %logger{36} - %msg%n
+        </pattern>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>ERROR</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
 
   <springProperty defaultValue="unknown" name="applicationName" scope="context"
     source="spring.application.name"/>
 
-  <springProperty defaultValue="logs" name="logFilePath" scope="context"
-    source="logging.file.path"/>
-  <springProperty defaultValue="log" name="logFileName" scope="context" source="logging.file.name"/>
+  <logger name="com.lframework" level="info" additivity="false">
+    <appender-ref ref="LOG_FILE"/>
+    <appender-ref ref="ERROR_LOG_FILE"/>
+  </logger>
+  <root level="info">
+    <appender-ref ref="LOG_FILE"/>
+  </root>
 </configuration>

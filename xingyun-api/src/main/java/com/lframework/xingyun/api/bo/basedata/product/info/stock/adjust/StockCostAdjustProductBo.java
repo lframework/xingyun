@@ -1,12 +1,11 @@
-package com.lframework.xingyun.api.bo.stock.adjust;
+package com.lframework.xingyun.api.bo.basedata.product.info.stock.adjust;
 
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.basedata.dto.product.info.StockCostAdjustProductDto;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -2,27 +2,23 @@ package com.lframework.xingyun.api.controller.purchase;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
+import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.xingyun.api.bo.purchase.GetPurchaseOrderBo;
 import com.lframework.xingyun.api.bo.purchase.PrintPurchaseOrderBo;
 import com.lframework.xingyun.api.bo.purchase.PurchaseOrderWithReceiveBo;
-import com.lframework.xingyun.api.bo.purchase.PurchaseProductBo;
 import com.lframework.xingyun.api.bo.purchase.QueryPurchaseOrderBo;
 import com.lframework.xingyun.api.bo.purchase.QueryPurchaseOrderWithReceiveBo;
 import com.lframework.xingyun.api.excel.purchase.PurchaseOrderExportModel;
 import com.lframework.xingyun.api.excel.purchase.PurchaseOrderImportListener;
 import com.lframework.xingyun.api.excel.purchase.PurchaseOrderImportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
-import com.lframework.xingyun.basedata.dto.product.info.PurchaseProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.vo.product.info.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
@@ -37,10 +33,8 @@ import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -151,58 +145,6 @@ public class PurchaseOrderController extends DefaultBaseController {
     } finally {
       builder.finish();
     }
-  }
-
-  /**
-   * 根据关键字查询商品
-   */
-  @ApiOperation("根据关键字查询商品")
-  @ApiImplicitParams({
-      @ApiImplicitParam(value = "仓库ID", name = "scId", paramType = "query", required = true),
-      @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
-  @PreAuthorize("@permission.valid('purchase:order:add', 'purchase:order:modify', 'purchase:receive:add', 'purchase:receive:modify', 'purchase:return:add', 'purchase:return:modify')")
-  @GetMapping("/product/search")
-  public InvokeResult<List<PurchaseProductBo>> searchProducts(
-      @NotBlank(message = "仓库ID不能为空！") String scId,
-      String condition) {
-
-    if (StringUtil.isBlank(condition)) {
-      return InvokeResultBuilder.success(Collections.EMPTY_LIST);
-    }
-
-    PageResult<PurchaseProductDto> pageResult = productService.queryPurchaseByCondition(
-        getPageIndex(),
-        getPageSize(), condition);
-    List<PurchaseProductBo> results = Collections.EMPTY_LIST;
-    List<PurchaseProductDto> datas = pageResult.getDatas();
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new PurchaseProductBo(scId, t))
-          .collect(Collectors.toList());
-    }
-
-    return InvokeResultBuilder.success(results);
-  }
-
-  /**
-   * 查询商品列表
-   */
-  @ApiOperation("查询商品列表")
-  @PreAuthorize("@permission.valid('purchase:order:add', 'purchase:order:modify', 'purchase:receive:add', 'purchase:receive:modify', 'purchase:return:add', 'purchase:return:modify')")
-  @GetMapping("/product/list")
-  public InvokeResult<PageResult<PurchaseProductBo>> queryProductList(
-      @Valid QueryPurchaseProductVo vo) {
-
-    PageResult<PurchaseProductDto> pageResult = productService.queryPurchaseList(getPageIndex(),
-        getPageSize(), vo);
-    List<PurchaseProductBo> results = null;
-    List<PurchaseProductDto> datas = pageResult.getDatas();
-
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new PurchaseProductBo(vo.getScId(), t))
-          .collect(Collectors.toList());
-    }
-
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
   }
 
   /**

@@ -1,4 +1,4 @@
-package com.lframework.xingyun.api.bo.retail;
+package com.lframework.xingyun.api.bo.basedata.product.info.retail;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.web.bo.BaseBo;

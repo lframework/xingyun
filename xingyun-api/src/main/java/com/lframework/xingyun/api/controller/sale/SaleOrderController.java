@@ -2,11 +2,10 @@ package com.lframework.xingyun.api.controller.sale;
 
 import com.lframework.common.exceptions.impl.DefaultClientException;
 import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
+import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
@@ -15,12 +14,9 @@ import com.lframework.xingyun.api.bo.sale.PrintSaleOrderBo;
 import com.lframework.xingyun.api.bo.sale.QuerySaleOrderBo;
 import com.lframework.xingyun.api.bo.sale.QuerySaleOrderWithOutBo;
 import com.lframework.xingyun.api.bo.sale.SaleOrderWithOutBo;
-import com.lframework.xingyun.api.bo.sale.SaleProductBo;
 import com.lframework.xingyun.api.excel.sale.SaleOrderExportModel;
 import com.lframework.xingyun.api.print.A4ExcelPortraitPrintBo;
-import com.lframework.xingyun.basedata.dto.product.info.SaleProductDto;
 import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.vo.product.info.QuerySaleProductVo;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
@@ -35,10 +31,8 @@ import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -142,50 +136,6 @@ public class SaleOrderController extends DefaultBaseController {
         } finally {
             builder.finish();
         }
-    }
-
-    /**
-     * 根据关键字查询商品
-     */
-    @ApiOperation("根据关键字查询商品")
-    @ApiImplicitParams({@ApiImplicitParam(value = "仓库ID", name = "scId", paramType = "query", required = true),
-            @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
-    @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
-    @GetMapping("/product/search")
-    public InvokeResult<List<SaleProductBo>> searchProducts(@NotBlank(message = "仓库ID不能为空！") String scId,
-            String condition) {
-
-        if (StringUtil.isBlank(condition)) {
-            return InvokeResultBuilder.success(Collections.EMPTY_LIST);
-        }
-
-        PageResult<SaleProductDto> pageResult = productService.querySaleByCondition(getPageIndex(), getPageSize(),
-                condition);
-        List<SaleProductBo> results = Collections.EMPTY_LIST;
-        List<SaleProductDto> datas = pageResult.getDatas();
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(t -> new SaleProductBo(scId, t)).collect(Collectors.toList());
-        }
-
-        return InvokeResultBuilder.success(results);
-    }
-
-    /**
-     * 查询商品列表
-     */
-    @ApiOperation("查询商品列表")
-    @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
-    @GetMapping("/product/list")
-    public InvokeResult<PageResult<SaleProductBo>> queryProductList(@Valid QuerySaleProductVo vo) {
-
-        PageResult<SaleProductDto> pageResult = productService.querySaleList(getPageIndex(), getPageSize(), vo);
-        List<SaleProductBo> results = null;
-        List<SaleProductDto> datas = pageResult.getDatas();
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(t -> new SaleProductBo(vo.getScId(), t)).collect(Collectors.toList());
-        }
-
-        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
     }
 
     /**

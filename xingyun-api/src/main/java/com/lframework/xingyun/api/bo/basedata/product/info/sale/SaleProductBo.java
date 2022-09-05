@@ -1,10 +1,9 @@
-package com.lframework.xingyun.api.bo.purchase;
+package com.lframework.xingyun.api.bo.basedata.product.info.sale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lframework.common.utils.NumberUtil;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.dto.product.info.PurchaseProductDto;
+import com.lframework.xingyun.basedata.dto.product.info.SaleProductDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.stock.IProductStockService;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,7 +13,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
+public class SaleProductBo extends BaseBo<SaleProductDto> {
 
     /**
      * ID
@@ -77,16 +76,10 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
     private String unit;
 
     /**
-     * 采购价
+     * 销售价
      */
-    @ApiModelProperty("采购价")
-    private BigDecimal purchasePrice;
-
-    /**
-     * 含税成本价
-     */
-    @ApiModelProperty("含税成本价")
-    private BigDecimal taxCostPrice;
+    @ApiModelProperty("销售价")
+    private BigDecimal salePrice;
 
     /**
      * 库存数量
@@ -119,7 +112,7 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
     @JsonIgnore
     private String scId;
 
-    public PurchaseProductBo(String scId, PurchaseProductDto dto) {
+    public SaleProductBo(String scId, SaleProductDto dto) {
 
         this.scId = scId;
 
@@ -131,7 +124,7 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
     }
 
     @Override
-    protected void afterInit(PurchaseProductDto dto) {
+    protected void afterInit(SaleProductDto dto) {
 
         this.productId = dto.getId();
         this.productCode = dto.getCode();
@@ -146,9 +139,6 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
             IProductStockService.class);
         ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
             this.getScId());
-        this.taxCostPrice =
-            productStock == null ? BigDecimal.ZERO
-                : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
         this.stockNum = productStock == null ? 0 : productStock.getStockNum();
     }
 }

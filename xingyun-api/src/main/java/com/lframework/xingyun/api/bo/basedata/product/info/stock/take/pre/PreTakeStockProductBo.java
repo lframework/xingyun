@@ -1,4 +1,4 @@
-package com.lframework.xingyun.api.bo.stock.take.pre;
+package com.lframework.xingyun.api.bo.basedata.product.info.stock.take.pre;
 
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.basedata.dto.product.info.PreTakeStockProductDto;

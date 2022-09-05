@@ -1,4 +1,4 @@
-package com.lframework.xingyun.api.bo.stock.take.sheet;
+package com.lframework.xingyun.api.bo.basedata.product.info.stock.take.sheet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.common.utils.StringUtil;

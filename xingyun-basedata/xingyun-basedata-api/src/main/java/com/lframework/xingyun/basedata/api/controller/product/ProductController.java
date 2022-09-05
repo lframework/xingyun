@@ -283,7 +283,7 @@ public class ProductController extends DefaultBaseController {
    */
   @ApiOperation("查询可销售商品列表")
   @PreAuthorize("@permission.valid('sale:order:add', 'sale:order:modify', 'sale:out:add', 'sale:out:modify', 'sale:return:add', 'sale:return:modify')")
-  @GetMapping("/product/list")
+  @GetMapping("/sale/product/list")
   public InvokeResult<PageResult<SaleProductBo>> querySaleProductList(
       @Valid QuerySaleProductVo vo) {
 

@@ -28,6 +28,7 @@ import com.lframework.xingyun.sc.biz.service.stock.IProductStockLogService;
 import com.lframework.xingyun.sc.biz.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.facade.dto.stock.ProductLotChangeDto;
 import com.lframework.xingyun.sc.facade.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.sc.facade.dto.stock.adjust.StockCostAdjustDiffDto;
 import com.lframework.xingyun.sc.facade.entity.ProductLot;
 import com.lframework.xingyun.sc.facade.entity.ProductLotStock;
 import com.lframework.xingyun.sc.facade.entity.ProductStock;
@@ -401,7 +402,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
 
   @Transactional
   @Override
-  public void stockCostAdjust(StockCostAdjustVo vo) {
+  public StockCostAdjustDiffDto stockCostAdjust(StockCostAdjustVo vo) {
 
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
         .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
@@ -410,12 +411,17 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
 
     if (productStock == null) {
       // 没有库存，跳过
-      return;
+      return new StockCostAdjustDiffDto();
     }
 
     BigDecimal taxPrice = NumberUtil.getNumber(vo.getTaxPrice(), 6);
     BigDecimal unTaxPrice = NumberUtil.getNumber(
         NumberUtil.calcUnTaxPrice(vo.getTaxPrice(), vo.getTaxRate()), 6);
+
+    StockCostAdjustDiffDto result = new StockCostAdjustDiffDto();
+    result.setStockNum(productStock.getStockNum());
+    result.setOriPrice(NumberUtil.getNumber(productStock.getTaxPrice(), 2));
+    result.setDiffAmount(NumberUtil.getNumber(NumberUtil.mul(NumberUtil.sub(taxPrice, productStock.getTaxPrice()), productStock.getStockNum()), 2));
 
     getBaseMapper().stockCostAdjust(vo.getProductId(), vo.getScId(), taxPrice, unTaxPrice);
 
@@ -448,5 +454,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
         productStockLogService.addLogWithStockCostAdjust(logVo);
       }
     }
+
+    return result;
   }
 }

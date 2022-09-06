@@ -1,7 +1,9 @@
 package com.lframework.xingyun.sc.api.bo.stock.adjust;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.common.constants.StringPool;
+import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
@@ -10,7 +12,9 @@ import com.lframework.xingyun.basedata.facade.ProductFeignClient;
 import com.lframework.xingyun.basedata.facade.StoreCenterFeignClient;
 import com.lframework.xingyun.basedata.facade.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.facade.entity.StoreCenter;
+import com.lframework.xingyun.sc.biz.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.facade.dto.stock.adjust.StockCostAdjustSheetFullDto;
+import com.lframework.xingyun.sc.facade.entity.ProductStock;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -143,7 +147,8 @@ public class StockCostAdjustSheetFullBo extends BaseBo<StockCostAdjustSheetFullD
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }
 
-    this.details = dto.getDetails().stream().map(DetailBo::new).collect(Collectors.toList());
+    this.details = dto.getDetails().stream().map(t -> new DetailBo(t, this.scId))
+        .collect(Collectors.toList());
   }
 
   @Data
@@ -246,9 +251,21 @@ public class StockCostAdjustSheetFullBo extends BaseBo<StockCostAdjustSheetFullD
     @ApiModelProperty("备注")
     private String description;
 
-    public DetailBo(StockCostAdjustSheetFullDto.DetailDto dto) {
+    /**
+     * 仓库ID
+     */
+    @JsonIgnore
+    @ApiModelProperty(hidden = true)
+    private String scId;
 
-      super(dto);
+    public DetailBo(StockCostAdjustSheetFullDto.DetailDto dto, String scId) {
+
+      this.scId = scId;
+
+      if (dto != null) {
+        this.convert(dto);
+        this.afterInit(dto);
+      }
     }
 
     @Override
@@ -273,6 +290,16 @@ public class StockCostAdjustSheetFullBo extends BaseBo<StockCostAdjustSheetFullD
       this.externalCode = product.getExternalCode();
       this.spec = product.getSpec();
       this.unit = product.getUnit();
+
+      IProductStockService productStockService = ApplicationUtil.getBean(
+          IProductStockService.class);
+      ProductStock productStock = productStockService.getByProductIdAndScId(dto.getProductId(),
+          this.scId);
+      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+      this.oriPrice = productStock == null ? BigDecimal.ZERO
+          : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
+      this.diffAmount = NumberUtil.getNumber(
+          NumberUtil.mul(NumberUtil.sub(this.price, this.oriPrice), this.stockNum), 2);
     }
   }
 }

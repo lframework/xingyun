@@ -32,6 +32,7 @@ import com.lframework.xingyun.sc.biz.mappers.StockCostAdjustSheetMapper;
 import com.lframework.xingyun.sc.biz.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.biz.service.stock.adjust.IStockCostAdjustSheetDetailService;
 import com.lframework.xingyun.sc.biz.service.stock.adjust.IStockCostAdjustSheetService;
+import com.lframework.xingyun.sc.facade.dto.stock.adjust.StockCostAdjustDiffDto;
 import com.lframework.xingyun.sc.facade.dto.stock.adjust.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.facade.entity.ProductStock;
 import com.lframework.xingyun.sc.facade.entity.StockCostAdjustSheet;
@@ -262,6 +263,7 @@ public class StockCostAdjustSheetServiceImpl extends
     List<StockCostAdjustSheetDetail> details = stockCostAdjustSheetDetailService.list(
         queryDetailWrapper);
 
+    BigDecimal totalDiffAmount = BigDecimal.ZERO;
     for (StockCostAdjustSheetDetail detail : details) {
       ProductDto product = productFeignClient.findById(detail.getProductId()).getData();
       StockCostAdjustVo adjustVo = new StockCostAdjustVo();
@@ -274,8 +276,20 @@ public class StockCostAdjustSheetServiceImpl extends
       adjustVo.setBizDetailId(detail.getId());
       adjustVo.setBizCode(data.getCode());
 
-      productStockService.stockCostAdjust(adjustVo);
+      StockCostAdjustDiffDto diff = productStockService.stockCostAdjust(adjustVo);
+      detail.setStockNum(diff.getStockNum());
+      detail.setOriPrice(diff.getOriPrice());
+      detail.setDiffAmount(diff.getDiffAmount());
+
+      stockCostAdjustSheetDetailService.updateById(detail);
+
+      totalDiffAmount = NumberUtil.add(totalDiffAmount, detail.getDiffAmount());
     }
+
+    updateWrapper = Wrappers.lambdaUpdate(StockCostAdjustSheet.class)
+        .eq(StockCostAdjustSheet::getId, data.getId())
+        .set(StockCostAdjustSheet::getDiffAmount, totalDiffAmount);
+    this.update(updateWrapper);
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")

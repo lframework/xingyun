@@ -8,6 +8,7 @@ import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.basedata.facade.ProductFeignClient;
 import com.lframework.xingyun.basedata.facade.StoreCenterFeignClient;
 import com.lframework.xingyun.basedata.facade.dto.product.info.ProductDto;
@@ -15,6 +16,7 @@ import com.lframework.xingyun.basedata.facade.entity.StoreCenter;
 import com.lframework.xingyun.sc.biz.service.stock.IProductStockService;
 import com.lframework.xingyun.sc.facade.dto.stock.adjust.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.facade.entity.ProductStock;
+import com.lframework.xingyun.sc.facade.enums.StockCostAdjustSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -147,7 +149,7 @@ public class StockCostAdjustSheetFullBo extends BaseBo<StockCostAdjustSheetFullD
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }
 
-    this.details = dto.getDetails().stream().map(t -> new DetailBo(t, this.scId))
+    this.details = dto.getDetails().stream().map(t -> new DetailBo(t, this.scId, this.status))
         .collect(Collectors.toList());
   }
 
@@ -258,9 +260,17 @@ public class StockCostAdjustSheetFullBo extends BaseBo<StockCostAdjustSheetFullD
     @ApiModelProperty(hidden = true)
     private String scId;
 
-    public DetailBo(StockCostAdjustSheetFullDto.DetailDto dto, String scId) {
+    /**
+     * 状态
+     */
+    @JsonIgnore
+    @ApiModelProperty(hidden = true)
+    private Integer status;
+
+    public DetailBo(StockCostAdjustSheetFullDto.DetailDto dto, String scId, Integer status) {
 
       this.scId = scId;
+      this.status = status;
 
       if (dto != null) {
         this.convert(dto);
@@ -291,15 +301,18 @@ public class StockCostAdjustSheetFullBo extends BaseBo<StockCostAdjustSheetFullD
       this.spec = product.getSpec();
       this.unit = product.getUnit();
 
-      IProductStockService productStockService = ApplicationUtil.getBean(
-          IProductStockService.class);
-      ProductStock productStock = productStockService.getByProductIdAndScId(dto.getProductId(),
-          this.scId);
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
-      this.oriPrice = productStock == null ? BigDecimal.ZERO
-          : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
-      this.diffAmount = NumberUtil.getNumber(
-          NumberUtil.mul(NumberUtil.sub(this.price, this.oriPrice), this.stockNum), 2);
+      if (EnumUtil.getByCode(StockCostAdjustSheetStatus.class, this.status)
+          != StockCostAdjustSheetStatus.APPROVE_PASS) {
+        IProductStockService productStockService = ApplicationUtil.getBean(
+            IProductStockService.class);
+        ProductStock productStock = productStockService.getByProductIdAndScId(dto.getProductId(),
+            this.scId);
+        this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+        this.oriPrice = productStock == null ? BigDecimal.ZERO
+            : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
+        this.diffAmount = NumberUtil.getNumber(
+            NumberUtil.mul(NumberUtil.sub(this.price, this.oriPrice), this.stockNum), 2);
+      }
     }
   }
 }

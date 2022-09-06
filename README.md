@@ -1,16 +1,64 @@
 ### 项目介绍
+
 星云ERP基于SpringBoot框架，为中小企业提供完全开源、永久免费、用户体验好的进销存ERP系统，解决开店难、管理难、数据统计难的问题。星云ERP主要包括基础信息管理、商品中心、采购管理、销售管理、零售管理、库存管理、盘点管理、结算管理等，各业务模块均支持参数配置，满足实际遇到的各种业务场景。丰富的报表模块支持用户做各项数据分析。同时支持对部门、岗位、角色、用户、权限等进行精细化管理。最终，达到业务线上化、透明化、简易化管理的目标，实现物流、资金流、信息流的一体化管控。
 
-### 演示地址
-星云ERP平台地址：http://erp.lframework.com   <a href="http://erp.lframework.com" target="_blank">点此进入</a>
+#### 单体架构
+
+集成常用的SpringBoot、MybatisPlus等框架，更利于上手使用或二次开发。
+
+#### 分布式架构
+
+集成常用的Nacos、Seata、ZipKin、Feign、Spring GateWay、SpringBoot、MybatisPlus等框架，更利于上手使用或二次开发。
+
+#### 关于商业使用的说明
+
+项目使用Apache 2.0 License，编写的代码无任何闭源情况，均可免费使用。我们对商业使用行为没有限制，只需要遵循Apache2.0 License即可。
+
+### 演示环境地址
+
+星云ERP平台地址【单体架构】：http://erp.lframework.com   <a href="http://erp.lframework.com" target="_blank">
+点此进入</a>
+
+星云ERP平台地址【分布式架构】：http://erp.v2.lframework.com   <a href="http://erp.v2.lframework.com" target="_blank">
+点此进入</a>
+
+### 底层框架源码
+
+底层框架源码：https://gitee.com/lframework/jugg   <a href="https://gitee.com/lframework/jugg" target="_blank">
+点此进入</a>
 
 ### 前端项目源码
-前端项目码源：https://gitee.com/lframework/xingyun-front   <a href="https://gitee.com/lframework/xingyun-front" target="_blank">点此进入</a>
+
+前端项目源码：https://gitee.com/lframework/xingyun-front   <a href="https://gitee.com/lframework/xingyun-front" target="_blank">
+点此进入</a>
+
+### 分布式架构中间件
+
+分布式架构中间件：https://gitee.com/lframework/xingyun-cloud-server   <a href="https://gitee.com/lframework/xingyun-cloud-server" target="_blank">
+点此进入</a>
 
 ### 使用说明文档
+
 星云ERP说明文档：https://www.lframework.com   <a href="https://www.lframework.com" target="_blank">点此进入</a>
 
+### 分布式架构、单体架构切换
+
+前端项目仅需要一个配置项即可完成分布式架构与单体架构的无缝切换。
+
+后端项目的单体架构的分支为【master】、分布式架构的分支为【cloud】。
+
+后端项目代码差异：业务代码无任何差异，仅是模块结构有些许差异。如果有自定义代码，进行少量改动【耗时30分钟内】即可完成架构切换。
+
+底层框架无任何差异。
+
+支持分布式架构、单体架构同时运行，目前演示环境即为两个架构同时运行并且数据库使用的同一个。
+
+### 为什么将代码分了这么多仓库？ 全部放在一个仓库里面不是更方便吗？
+
+因为这些代码全部放在一个仓库的话，会导致这个仓库的文件占用很大，并且有些代码可能您并不需要，所以分了几个仓库，这样选择性下载代码，速度更快、体验更好。
+
 ### 系统功能
+
 | 系统功能   | 功能描述                          |
 |--------|-------------------------------|
 | 系统管理   | 系统设置、菜单、部门、角色、岗位、用户、操作日志      |
@@ -43,7 +91,7 @@
 
 ### 技术交流
 
-QQ交流群号： **717574596** ，目前项目刚发布不久，人数较少，希望大家不要嫌弃。
+QQ交流群号： **717574596**
 
 ### 注意事项
 

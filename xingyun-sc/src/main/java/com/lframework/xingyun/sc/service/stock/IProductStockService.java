@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.service.stock;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustDiffDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
@@ -67,5 +68,5 @@ public interface IProductStockService extends BaseMpService<ProductStock> {
    *
    * @param vo
    */
-  void stockCostAdjust(StockCostAdjustVo vo);
+  StockCostAdjustDiffDto stockCostAdjust(StockCostAdjustVo vo);
 }

@@ -76,6 +76,7 @@ public class ProductController extends DefaultBaseController {
   @Autowired
   private IProductSalePropItemRelationService productSalePropItemRelationService;
 
+  @Autowired
   private ITakeStockPlanService takeStockPlanService;
 
   /**

@@ -149,7 +149,7 @@
                     AND o.status = #{vo.status}
                 </if>
                 <if test="vo.createBy != null and vo.createBy != ''">
-                    AND o.create_by = #{vo.createBy}
+                    AND o.create_by_id = #{vo.createBy}
                 </if>
                 <if test="vo.approveBy != null and vo.approveBy != ''">
                     AND o.approve_by = #{vo.approveBy}
@@ -199,7 +199,7 @@
                     AND o.status = #{vo.status}
                 </if>
                 <if test="vo.createBy != null and vo.createBy != ''">
-                    AND o.create_by = #{vo.createBy}
+                    AND o.create_by_id = #{vo.createBy}
                 </if>
                 <if test="vo.approveBy != null and vo.approveBy != ''">
                     AND o.approve_by = #{vo.approveBy}
@@ -241,7 +241,7 @@
                     AND o.status = #{vo.status}
                 </if>
                 <if test="vo.createBy != null and vo.createBy != ''">
-                    AND o.create_by = #{vo.createBy}
+                    AND o.create_by_id = #{vo.createBy}
                 </if>
                 <if test="vo.createStartTime != null">
                     AND o.create_time >= #{vo.createStartTime}
@@ -284,7 +284,7 @@
                 </if>
                 AND o.status = 3
                 <if test="vo.createBy != null and vo.createBy != ''">
-                    AND o.create_by = #{vo.createBy}
+                    AND o.create_by_id = #{vo.createBy}
                 </if>
                 <if test="vo.createStartTime != null">
                     AND o.create_time >= #{vo.createStartTime}

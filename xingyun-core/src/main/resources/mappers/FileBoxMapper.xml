@@ -32,7 +32,7 @@
         AND tb.update_time <= #{vo.createTimeEnd}
         ]]>
       </if>
-      AND tb.create_by = #{createBy}
+      AND tb.create_by_id = #{createById}
     </where>
     ORDER BY tb.update_time DESC
   </select>

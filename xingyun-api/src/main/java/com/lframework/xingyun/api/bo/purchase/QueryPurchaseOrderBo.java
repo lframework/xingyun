@@ -12,12 +12,11 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -162,8 +161,6 @@ public class QueryPurchaseOrderBo extends BaseBo<PurchaseOrder> {
         if (!StringUtil.isBlank(dto.getPurchaserId())) {
             this.purchaserName = userService.findById(dto.getPurchaserId()).getName();
         }
-
-        this.createBy = userService.findById(dto.getCreateBy()).getName();
 
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             this.approveBy = userService.findById(dto.getApproveBy()).getName();

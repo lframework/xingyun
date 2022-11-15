@@ -115,7 +115,6 @@ public class SettlePreSheetExportModel extends BaseBo<SettlePreSheet> implements
         Supplier supplier = supplierService.findById(dto.getSupplierId());
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        UserDto createBy = userService.findById(dto.getCreateBy());
         UserDto approveBy = null;
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             approveBy = userService.findById(dto.getApproveBy());
@@ -126,7 +125,6 @@ public class SettlePreSheetExportModel extends BaseBo<SettlePreSheet> implements
         this.setSupplierName(supplier.getName());
         this.setTotalAmount(dto.getTotalAmount());
         this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
-        this.setCreateBy(createBy.getName());
         this.setStatus(EnumUtil.getDesc(SettlePreSheetStatus.class, dto.getStatus()));
         if (approveBy != null) {
             this.setApproveBy(approveBy.getName());

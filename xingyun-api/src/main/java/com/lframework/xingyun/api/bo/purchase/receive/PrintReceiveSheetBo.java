@@ -174,7 +174,6 @@ public class PrintReceiveSheetBo extends BasePrintDataBo<ReceiveSheetFullDto> {
             this.receiveDate = DateUtil.formatDate(dto.getReceiveDate());
         }
 
-        this.createBy = userService.findById(dto.getCreateBy()).getName();
         this.createTime = DateUtil.formatDateTime(dto.getCreateTime());
 
         if (!StringUtil.isBlank(dto.getApproveBy()) && dto.getStatus() == ReceiveSheetStatus.APPROVE_PASS) {

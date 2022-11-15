@@ -25,12 +25,11 @@ import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanDetailService;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -218,7 +217,6 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
         this.scName = sc.getName();
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        this.updateBy = userService.findById(this.updateBy).getName();
         if (!StringUtil.isBlank(this.approveBy)) {
             this.approveBy = userService.findById(this.approveBy).getName();
         }

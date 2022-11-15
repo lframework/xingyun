@@ -108,6 +108,12 @@ public class AddLogWithSubStockVo implements BaseVo, Serializable {
    * 创建人ID
    */
   @ApiModelProperty("创建人ID")
+  private String createById;
+
+  /**
+   * 创建人
+   */
+  @ApiModelProperty("创建人")
   private String createBy;
 
   /**

@@ -12,10 +12,9 @@ import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -140,7 +139,6 @@ public class QueryTakeStockSheetBo extends BaseBo<TakeStockSheet> {
         this.scName = sc.getName();
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        this.updateBy = userService.findById(dto.getUpdateBy()).getName();
 
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             this.approveBy = userService.findById(dto.getApproveBy()).getName();

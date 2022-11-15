@@ -43,7 +43,13 @@ public class OrderTimeLine extends BaseEntity implements BaseDto {
   private String content;
 
   /**
-   * 创建人
+   * 创建人ID 新增时赋值
+   */
+  @TableField(fill = FieldFill.INSERT)
+  private String createById;
+
+  /**
+   * 创建人 新增时赋值
    */
   @TableField(fill = FieldFill.INSERT)
   private String createBy;

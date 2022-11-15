@@ -18,12 +18,11 @@ import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -149,7 +148,6 @@ public class PrintPurchaseOrderBo extends BasePrintDataBo<PurchaseOrderFullDto> 
             this.expectArriveDate = DateUtil.formatDate(dto.getExpectArriveDate());
         }
 
-        this.createBy = userService.findById(dto.getCreateBy()).getName();
         this.createTime = DateUtil.formatDateTime(dto.getCreateTime());
 
         if (!StringUtil.isBlank(dto.getApproveBy()) && dto.getStatus() == PurchaseOrderStatus.APPROVE_PASS) {

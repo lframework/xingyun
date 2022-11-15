@@ -176,8 +176,6 @@ public class QueryRetailReturnBo extends BaseBo<RetailReturn> {
       this.salerName = userService.findById(dto.getSalerId()).getName();
     }
 
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
-
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }

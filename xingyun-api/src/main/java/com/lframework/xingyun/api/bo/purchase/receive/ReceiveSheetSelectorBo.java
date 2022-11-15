@@ -2,7 +2,6 @@ package com.lframework.xingyun.api.bo.purchase.receive;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
@@ -11,10 +10,9 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -102,10 +100,6 @@ public class ReceiveSheetSelectorBo extends BaseBo<ReceiveSheet> {
         Supplier supplier = supplierService.findById(dto.getSupplierId());
         this.supplierCode = supplier.getCode();
         this.supplierName = supplier.getName();
-
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
-
-        this.createBy = userService.findById(dto.getCreateBy()).getName();
 
         this.status = dto.getStatus().getCode();
     }

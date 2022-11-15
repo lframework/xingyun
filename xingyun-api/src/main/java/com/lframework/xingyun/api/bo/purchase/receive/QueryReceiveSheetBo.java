@@ -14,12 +14,11 @@ import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -182,8 +181,6 @@ public class QueryReceiveSheetBo extends BaseBo<ReceiveSheet> {
         if (!StringUtil.isBlank(dto.getPurchaserId())) {
             this.purchaserName = userService.findById(dto.getPurchaserId()).getName();
         }
-
-        this.createBy = userService.findById(dto.getCreateBy()).getName();
 
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             this.approveBy = userService.findById(dto.getApproveBy()).getName();

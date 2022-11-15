@@ -2,7 +2,6 @@ package com.lframework.xingyun.api.bo.stock.take.pre;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
@@ -11,12 +10,11 @@ import com.lframework.xingyun.basedata.service.product.IProductService;
 import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -214,9 +212,6 @@ public class GetPreTakeStockSheetBo extends BaseBo<PreTakeStockSheetFullDto> {
         this.scName = sc.getName();
 
         this.takeStatus = dto.getTakeStatus().getCode();
-
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        this.updateBy = userService.findById(dto.getUpdateBy()).getName();
 
         this.details = dto.getDetails().stream().map(SheetDetailBo::new).collect(Collectors.toList());
     }

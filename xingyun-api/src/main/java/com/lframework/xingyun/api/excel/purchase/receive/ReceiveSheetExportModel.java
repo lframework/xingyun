@@ -166,7 +166,6 @@ public class ReceiveSheetExportModel extends BaseBo<ReceiveSheet> implements Exc
         if (!StringUtil.isBlank(dto.getPurchaserId())) {
             purchaser = userService.findById(dto.getPurchaserId());
         }
-        UserDto createBy = userService.findById(dto.getCreateBy());
         UserDto approveBy = null;
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             approveBy = userService.findById(dto.getApproveBy());
@@ -183,7 +182,6 @@ public class ReceiveSheetExportModel extends BaseBo<ReceiveSheet> implements Exc
         this.setGiftNum(dto.getTotalGiftNum());
         this.setReceiveDate(DateUtil.toDate(dto.getReceiveDate()));
         this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
-        this.setCreateBy(createBy.getName());
         this.setStatus(dto.getStatus().getDesc());
         if (dto.getApproveTime() != null) {
             this.setApproveTime(DateUtil.toDate(dto.getApproveTime()));

@@ -5,17 +5,15 @@ import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
 import com.lframework.xingyun.settle.entity.SettleFeeSheet;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -136,8 +134,6 @@ public class QuerySettleFeeSheetBo extends BaseBo<SettleFeeSheet> {
         this.settleStatus = dto.getSettleStatus().getCode();
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        UserDto createBy = userService.findById(dto.getCreateBy());
-        this.createBy = createBy.getName();
 
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             this.approveBy = userService.findById(dto.getApproveBy()).getName();

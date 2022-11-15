@@ -150,10 +150,12 @@ public class OnlineExcelServiceImpl extends
     if (vo.getSelfSave()) {
       record.setId(IdUtil.getId());
       record.setAvailable(Boolean.TRUE);
-      record.setCreateBy(receiver.getId());
+      record.setCreateById(receiver.getId());
+      record.setCreateBy(receiver.getName());
       this.save(record);
     } else {
-      record.setCreateBy(vo.getUserId());
+      record.setCreateById(receiver.getId());
+      record.setCreateBy(receiver.getName());
       record.setAvailable(Boolean.TRUE);
       this.updateById(record);
     }
@@ -182,11 +184,13 @@ public class OnlineExcelServiceImpl extends
 
       if (vo.getSelfSave()) {
         record.setId(IdUtil.getId());
-        record.setCreateBy(receiver.getId());
+        record.setCreateById(receiver.getId());
+        record.setCreateBy(receiver.getName());
         record.setAvailable(Boolean.TRUE);
         this.save(record);
       } else {
-        record.setCreateBy(vo.getUserId());
+        record.setCreateById(receiver.getId());
+        record.setCreateBy(receiver.getName());
         record.setAvailable(Boolean.TRUE);
         this.updateById(record);
       }

@@ -2,16 +2,12 @@ package com.lframework.xingyun.api.bo.basedata.storecenter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -84,12 +80,5 @@ public class QueryStoreCenterBo extends BaseBo<StoreCenter> {
 
     @Override
     protected void afterInit(StoreCenter dto) {
-
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
-
-        UserDto createBy = userService.findById(this.getCreateBy());
-        UserDto updateBy = userService.findById(this.getUpdateBy());
-        this.setCreateBy(createBy.getName());
-        this.setUpdateBy(updateBy.getName());
     }
 }

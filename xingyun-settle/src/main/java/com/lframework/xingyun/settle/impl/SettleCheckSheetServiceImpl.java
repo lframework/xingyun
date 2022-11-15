@@ -791,7 +791,6 @@ public class SettleCheckSheetServiceImpl extends BaseMpServiceImpl<SettleCheckSh
         sheet.setTotalPayedAmount(BigDecimal.ZERO);
         sheet.setTotalDiscountAmount(BigDecimal.ZERO);
         sheet.setDescription(StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
-        sheet.setCreateBy(currentUser.getId());
         sheet.setRefuseReason(StringPool.EMPTY_STR);
         sheet.setSettleStatus(SettleStatus.UN_SETTLE);
         sheet.setStartDate(vo.getStartDate());

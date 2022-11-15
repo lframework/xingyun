@@ -14,11 +14,10 @@ import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.service.sale.ISaleOrderService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -174,8 +173,6 @@ public class QuerySaleOutSheetBo extends BaseBo<SaleOutSheet> {
         if (!StringUtil.isBlank(dto.getSalerId())) {
             this.salerName = userService.findById(dto.getSalerId()).getName();
         }
-
-        this.createBy = userService.findById(dto.getCreateBy()).getName();
 
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             this.approveBy = userService.findById(dto.getApproveBy()).getName();

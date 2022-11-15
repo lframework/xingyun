@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.dto.system.dept.DefaultSysDeptDto;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.mybatis.service.system.ISysDeptService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Shop;
 import io.swagger.annotations.ApiModelProperty;
@@ -93,10 +91,5 @@ public class QueryShopBo extends BaseBo<Shop> {
 
       this.deptName = dept.getName();
     }
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-
-    UserDto createBy = userService.findById(dto.getCreateBy());
-    this.createBy = createBy.getName();
   }
 }

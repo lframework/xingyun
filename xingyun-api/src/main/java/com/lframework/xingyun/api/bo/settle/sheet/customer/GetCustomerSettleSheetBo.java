@@ -7,7 +7,6 @@ import com.lframework.common.utils.DateUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.service.customer.ICustomerService;
@@ -155,8 +154,6 @@ public class GetCustomerSettleSheetBo extends BaseBo<CustomerSettleSheetFullDto>
         this.status = dto.getStatus().getCode();
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        UserDto createBy = userService.findById(dto.getCreateBy());
-        this.createBy = createBy.getName();
 
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             this.approveBy = userService.findById(dto.getApproveBy()).getName();

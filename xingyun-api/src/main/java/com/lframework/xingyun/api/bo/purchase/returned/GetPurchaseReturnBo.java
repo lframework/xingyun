@@ -206,8 +206,6 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
             this.receiveSheetCode = receiveSheet.getCode();
         }
 
-        this.createBy = userService.findById(dto.getCreateBy()).getName();
-
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             this.approveBy = userService.findById(dto.getApproveBy()).getName();
         }

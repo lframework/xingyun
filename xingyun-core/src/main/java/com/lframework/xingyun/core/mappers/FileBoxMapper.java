@@ -19,5 +19,5 @@ public interface FileBoxMapper extends BaseMapper<FileBox> {
    * @param vo
    * @return
    */
-  List<FileBox> query(@Param("vo") QueryFileBoxVo vo, @Param("createBy") String createBy);
+  List<FileBox> query(@Param("vo") QueryFileBoxVo vo, @Param("createById") String createById);
 }

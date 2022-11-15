@@ -142,7 +142,6 @@ public class SaleOrderExportModel extends BaseBo<SaleOrder> implements ExcelMode
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
         UserDto saler = userService.findById(dto.getSalerId());
-        UserDto createBy = userService.findById(dto.getCreateBy());
         UserDto approveBy = null;
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             approveBy = userService.findById(dto.getApproveBy());
@@ -160,7 +159,6 @@ public class SaleOrderExportModel extends BaseBo<SaleOrder> implements ExcelMode
         this.setGiftNum(dto.getTotalGiftNum());
         this.setTotalAmount(dto.getTotalAmount());
         this.setDescription(dto.getDescription());
-        this.setCreateBy(createBy.getName());
         this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
         if (approveBy != null) {
             this.setApproveBy(approveBy.getName());

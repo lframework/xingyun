@@ -2,7 +2,6 @@ package com.lframework.xingyun.api.bo.stock.take.plan;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
@@ -14,10 +13,9 @@ import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -161,9 +159,5 @@ public class QueryTakeStockPlanBo extends BaseBo<TakeStockPlan> {
 
             this.bizName = builder.toString();
         }
-
-        IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        this.createBy = userService.findById(dto.getCreateBy()).getName();
-        this.updateBy = userService.findById(dto.getUpdateBy()).getName();
     }
 }

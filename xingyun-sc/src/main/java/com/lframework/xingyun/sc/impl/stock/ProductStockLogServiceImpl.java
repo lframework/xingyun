@@ -66,6 +66,9 @@ public class ProductStockLogServiceImpl extends
     if (!StringUtil.isBlank(vo.getCreateBy())) {
       record.setCreateBy(vo.getCreateBy());
     }
+    if (!StringUtil.isBlank(vo.getCreateById())) {
+      record.setCreateById(vo.getCreateById());
+    }
     record.setCreateTime(vo.getCreateTime());
     if (!StringUtil.isBlank(vo.getBizId())) {
       record.setBizId(vo.getBizId());
@@ -102,6 +105,9 @@ public class ProductStockLogServiceImpl extends
     if (!StringUtil.isBlank(vo.getCreateBy())) {
       record.setCreateBy(vo.getCreateBy());
     }
+    if (!StringUtil.isBlank(vo.getCreateById())) {
+      record.setCreateById(vo.getCreateById());
+    }
     record.setCreateTime(vo.getCreateTime());
     if (!StringUtil.isBlank(vo.getBizId())) {
       record.setBizId(vo.getBizId());
@@ -137,6 +143,9 @@ public class ProductStockLogServiceImpl extends
     record.setUnTaxAmount(vo.getUnTaxAmount());
     if (!StringUtil.isBlank(vo.getCreateBy())) {
       record.setCreateBy(vo.getCreateBy());
+    }
+    if (!StringUtil.isBlank(vo.getCreateById())) {
+      record.setCreateById(vo.getCreateById());
     }
     record.setCreateTime(vo.getCreateTime());
     if (!StringUtil.isBlank(vo.getBizId())) {

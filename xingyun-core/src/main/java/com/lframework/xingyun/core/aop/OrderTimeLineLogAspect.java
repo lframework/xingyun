@@ -40,6 +40,9 @@ public class OrderTimeLineLogAspect {
   @Value("${default-setting.default-user-id:'1'}")
   private String defaultUserId;
 
+  @Value("${default-setting.default-user-name:'系统管理员'}")
+  private String defaultUserName;
+
   private final ThreadLocal<Integer> POOL = new ThreadLocal<>();
 
   @Pointcut("@annotation(com.lframework.xingyun.core.annations.OrderTimeLineLog)")
@@ -53,6 +56,7 @@ public class OrderTimeLineLogAspect {
     AbstractUserDetails currentUser = SecurityUtil.getCurrentUser();
 
     String curUserId = currentUser == null ? defaultUserId : currentUser.getId();
+    String curUserName = currentUser == null ? defaultUserName : currentUser.getName();
 
     Object value = null;
 
@@ -195,7 +199,8 @@ public class OrderTimeLineLogAspect {
                 record.setId(IdUtil.getId());
                 record.setOrderId(orderId);
                 record.setContent(StringUtil.format(orderTimeLineLog.name(), strArr));
-                record.setCreateBy(curUserId);
+                record.setCreateBy(curUserName);
+                record.setCreateById(curUserId);
                 record.setBizType(orderTimeLineLog.type());
 
                 orderTimeLineService.save(record);

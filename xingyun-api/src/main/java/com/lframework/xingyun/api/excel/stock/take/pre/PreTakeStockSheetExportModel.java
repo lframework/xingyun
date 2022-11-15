@@ -80,7 +80,6 @@ public class PreTakeStockSheetExportModel extends BaseBo<PreTakeStockSheet> impl
         this.takeStatus = dto.getTakeStatus().getDesc();
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        this.updateBy = userService.findById(dto.getUpdateBy()).getName();
         this.updateTime = DateUtil.toDate(dto.getUpdateTime());
 
         IStoreCenterService storeCenterService = ApplicationUtil.getBean(IStoreCenterService.class);

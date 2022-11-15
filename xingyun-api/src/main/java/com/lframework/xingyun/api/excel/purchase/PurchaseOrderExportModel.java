@@ -142,7 +142,6 @@ public class PurchaseOrderExportModel extends BaseBo<PurchaseOrder> implements E
         Supplier supplier = supplierService.findById(dto.getSupplierId());
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        UserDto createBy = userService.findById(dto.getCreateBy());
 
         UserDto approveBy = null;
         if (!StringUtil.isBlank(dto.getApproveBy())) {
@@ -161,7 +160,6 @@ public class PurchaseOrderExportModel extends BaseBo<PurchaseOrder> implements E
         this.setGiftNum(dto.getTotalGiftNum());
         this.setPurchaseAmount(dto.getTotalAmount());
         this.setDescription(dto.getDescription());
-        this.setCreateBy(createBy.getName());
         this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
         if (approveBy != null) {
             this.setApproveBy(approveBy.getName());

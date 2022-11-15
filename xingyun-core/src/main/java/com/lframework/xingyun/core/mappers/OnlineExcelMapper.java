@@ -19,5 +19,5 @@ public interface OnlineExcelMapper extends BaseMapper<OnlineExcel> {
    * @param vo
    * @return
    */
-  List<OnlineExcel> query(@Param("vo") QueryOnlineExcelVo vo, @Param("createBy") String createBy);
+  List<OnlineExcel> query(@Param("vo") QueryOnlineExcelVo vo, @Param("createById") String createById);
 }

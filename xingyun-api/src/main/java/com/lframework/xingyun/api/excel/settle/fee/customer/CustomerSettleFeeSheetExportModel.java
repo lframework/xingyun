@@ -117,7 +117,6 @@ public class CustomerSettleFeeSheetExportModel extends BaseBo<CustomerSettleFeeS
         Customer customer = customerService.findById(dto.getCustomerId());
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        UserDto createBy = userService.findById(dto.getCreateBy());
         UserDto approveBy = null;
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             approveBy = userService.findById(dto.getApproveBy());
@@ -128,7 +127,6 @@ public class CustomerSettleFeeSheetExportModel extends BaseBo<CustomerSettleFeeS
         this.setCustomerName(customer.getName());
         this.setTotalAmount(dto.getTotalAmount());
         this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
-        this.setCreateBy(createBy.getName());
         this.setStatus(EnumUtil.getDesc(CustomerSettleFeeSheetStatus.class, dto.getStatus()));
         if (approveBy != null) {
             this.setApproveBy(approveBy.getName());

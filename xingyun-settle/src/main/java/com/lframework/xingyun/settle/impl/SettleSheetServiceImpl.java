@@ -535,7 +535,6 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
     sheet.setTotalDiscountAmount(totalDiscountAmount);
     sheet.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
-    sheet.setCreateBy(currentUser.getId());
     sheet.setRefuseReason(StringPool.EMPTY_STR);
     sheet.setStartDate(vo.getStartDate());
     sheet.setEndDate(vo.getEndDate());

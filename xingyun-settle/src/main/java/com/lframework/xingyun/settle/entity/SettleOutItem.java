@@ -5,10 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -56,6 +55,12 @@ public class SettleOutItem extends BaseEntity implements BaseDto {
      * 创建人ID 新增时赋值
      */
     @TableField(fill = FieldFill.INSERT)
+    private String createById;
+
+    /**
+     * 创建人 新增时赋值
+     */
+    @TableField(fill = FieldFill.INSERT)
     private String createBy;
 
     /**
@@ -65,10 +70,16 @@ public class SettleOutItem extends BaseEntity implements BaseDto {
     private LocalDateTime createTime;
 
     /**
-     * 修改人ID 新增和修改时赋值
+     * 修改人 新增和修改时赋值
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private String updateBy;
+
+    /**
+     * 修改人ID 新增和修改时赋值
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private String updateById;
 
     /**
      * 修改时间 新增和修改时赋值

@@ -143,7 +143,6 @@ public class StockCostAdjustSheetFullBo extends BaseBo<StockCostAdjustSheetFullD
     this.scName = sc.getName();
 
     IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    this.updateBy = userService.findById(dto.getUpdateBy()).getName();
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }

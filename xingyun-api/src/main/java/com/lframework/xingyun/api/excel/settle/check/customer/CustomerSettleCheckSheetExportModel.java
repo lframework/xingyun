@@ -142,7 +142,6 @@ public class CustomerSettleCheckSheetExportModel extends BaseBo<CustomerSettleCh
         Customer customer = customerService.findById(dto.getCustomerId());
 
         IUserService userService = ApplicationUtil.getBean(IUserService.class);
-        UserDto createBy = userService.findById(dto.getCreateBy());
         UserDto approveBy = null;
         if (!StringUtil.isBlank(dto.getApproveBy())) {
             approveBy = userService.findById(dto.getApproveBy());
@@ -159,7 +158,6 @@ public class CustomerSettleCheckSheetExportModel extends BaseBo<CustomerSettleCh
                 NumberUtil.sub(dto.getTotalPayAmount(), dto.getTotalPayedAmount(),
                         dto.getTotalDiscountAmount()));
         this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
-        this.setCreateBy(createBy.getName());
         this.setStatus(EnumUtil.getDesc(CustomerSettleCheckSheetStatus.class, dto.getStatus()));
         if (approveBy != null) {
             this.setApproveBy(approveBy.getName());

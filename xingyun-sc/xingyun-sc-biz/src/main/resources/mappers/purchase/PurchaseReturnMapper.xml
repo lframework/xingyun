@@ -163,7 +163,7 @@
                     AND r.status = #{vo.status}
                 </if>
                 <if test="vo.createBy != null and vo.createBy != ''">
-                    AND r.create_by = #{vo.createBy}
+                    AND r.create_by_id = #{vo.createBy}
                 </if>
                 <if test="vo.approveBy != null and vo.approveBy != ''">
                     AND r.approve_by = #{vo.approveBy}
@@ -220,7 +220,7 @@
                     AND r.status = #{vo.status}
                 </if>
                 <if test="vo.createBy != null and vo.createBy != ''">
-                    AND r.create_by = #{vo.createBy}
+                    AND r.create_by_id = #{vo.createBy}
                 </if>
                 <if test="vo.approveBy != null and vo.approveBy != ''">
                     AND r.approve_by = #{vo.approveBy}

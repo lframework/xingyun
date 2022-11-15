@@ -91,8 +91,10 @@ sa-token:
 default-setting:
   #默认单号生成类型 FLOW：流水号 SNOW_FLAKE：雪花算法，如果不配置，默认是SNOW_FLAKE
   generator-type: SNOW_FLAKE
-  #默认的用户ID，用于写入数据库时的createBy和updateBy的自动赋值，如果有登录人则取登录人ID，如果没有则取默认用户ID，如果不配置，默认是1
+  #默认的用户ID，用于写入数据库时的createById和updateById的自动赋值，如果有登录人则取登录人ID，如果没有则取默认用户ID，如果不配置，默认是1
   default-user-id: 1
+  #默认的用户姓名，用于写入数据库时的createBy和updateBy的自动赋值，如果有登录人则取登录人姓名，如果没有则取默认用户姓名，如果不配置，默认是系统管理员
+  default-user-name: 系统管理员
 
 #PageHelper分页器
 pagehelper:

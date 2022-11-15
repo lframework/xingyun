@@ -121,7 +121,7 @@
                 AND tb.take_status = #{vo.takeStatus}
             </if>
             <if test="vo.updateBy != null and vo.updateBy != ''">
-                AND tb.update_by = #{vo.updateBy}
+                AND tb.update_by_id = #{vo.updateBy}
             </if>
             <if test="vo.updateTimeStart != null">
                 AND tb.update_time >= #{vo.updateTimeStart}

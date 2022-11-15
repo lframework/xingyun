@@ -140,7 +140,6 @@ public class SettleCheckSheetExportModel extends BaseBo<SettleCheckSheet> implem
     Supplier supplier = supplierFeignClient.findById(dto.getSupplierId()).getData();
 
     IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    UserDto createBy = userService.findById(dto.getCreateBy());
     UserDto approveBy = null;
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       approveBy = userService.findById(dto.getApproveBy());
@@ -157,7 +156,6 @@ public class SettleCheckSheetExportModel extends BaseBo<SettleCheckSheet> implem
         NumberUtil.sub(dto.getTotalPayAmount(), dto.getTotalPayedAmount(),
             dto.getTotalDiscountAmount()));
     this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
-    this.setCreateBy(createBy.getName());
     this.setStatus(EnumUtil.getDesc(SettleCheckSheetStatus.class, dto.getStatus()));
     if (approveBy != null) {
       this.setApproveBy(approveBy.getName());

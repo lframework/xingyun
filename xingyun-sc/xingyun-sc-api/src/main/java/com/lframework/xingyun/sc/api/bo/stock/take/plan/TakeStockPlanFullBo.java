@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.CollectionUtil;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.facade.ProductFeignClient;
@@ -114,10 +113,6 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
         StoreCenterFeignClient.class);
     StoreCenter sc = storeCenterFeignClient.findById(dto.getScId()).getData();
     this.scName = sc.getName();
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
-    this.updateBy = userService.findById(dto.getUpdateBy()).getName();
 
     this.details = CollectionUtil.isEmpty(dto.getDetails()) ?
         Collections.EMPTY_LIST :

@@ -2,10 +2,7 @@ package com.lframework.xingyun.basedata.api.bo.supplier;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.facade.entity.Supplier;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
@@ -83,12 +80,5 @@ public class QuerySupplierBo extends BaseBo<Supplier> {
 
   @Override
   protected void afterInit(Supplier dto) {
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-
-    UserDto createBy = userService.findById(this.getCreateBy());
-    UserDto updateBy = userService.findById(this.getUpdateBy());
-    this.setCreateBy(createBy.getName());
-    this.setUpdateBy(updateBy.getName());
   }
 }

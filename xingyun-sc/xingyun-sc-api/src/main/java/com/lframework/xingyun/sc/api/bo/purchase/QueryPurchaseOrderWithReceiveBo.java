@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.api.bo.purchase;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.facade.StoreCenterFeignClient;
@@ -87,9 +86,5 @@ public class QueryPurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrder> {
     Supplier supplier = suppliesupplierFeignClientService.findById(dto.getSupplierId()).getData();
     this.supplierCode = supplier.getCode();
     this.supplierName = supplier.getName();
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
   }
 }

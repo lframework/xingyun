@@ -160,7 +160,6 @@ public class PurchaseReturnExportModel extends BaseBo<PurchaseReturn> implements
     if (!StringUtil.isBlank(dto.getPurchaserId())) {
       purchaser = userService.findById(dto.getPurchaserId());
     }
-    UserDto createBy = userService.findById(dto.getCreateBy());
     UserDto approveBy = null;
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       approveBy = userService.findById(dto.getApproveBy());
@@ -176,7 +175,6 @@ public class PurchaseReturnExportModel extends BaseBo<PurchaseReturn> implements
     this.setReceiveNum(dto.getTotalNum());
     this.setGiftNum(dto.getTotalGiftNum());
     this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
-    this.setCreateBy(createBy.getName());
     this.setStatus(dto.getStatus().getDesc());
     if (dto.getApproveTime() != null) {
       this.setApproveTime(DateUtil.toDate(dto.getApproveTime()));

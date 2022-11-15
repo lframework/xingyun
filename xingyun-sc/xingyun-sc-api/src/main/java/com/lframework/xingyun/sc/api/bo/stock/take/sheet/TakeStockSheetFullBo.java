@@ -221,7 +221,6 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
     this.scName = sc.getName();
 
     IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    this.updateBy = userService.findById(this.updateBy).getName();
     if (!StringUtil.isBlank(this.approveBy)) {
       this.approveBy = userService.findById(this.approveBy).getName();
     }

@@ -117,7 +117,6 @@ public class CustomerSettlePreSheetExportModel extends BaseBo<CustomerSettlePreS
     Customer customer = customerFeignClient.findById(dto.getCustomerId()).getData();
 
     IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    UserDto createBy = userService.findById(dto.getCreateBy());
     UserDto approveBy = null;
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       approveBy = userService.findById(dto.getApproveBy());
@@ -128,7 +127,6 @@ public class CustomerSettlePreSheetExportModel extends BaseBo<CustomerSettlePreS
     this.setCustomerName(customer.getName());
     this.setTotalAmount(dto.getTotalAmount());
     this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
-    this.setCreateBy(createBy.getName());
     this.setStatus(EnumUtil.getDesc(CustomerSettlePreSheetStatus.class, dto.getStatus()));
     if (approveBy != null) {
       this.setApproveBy(approveBy.getName());

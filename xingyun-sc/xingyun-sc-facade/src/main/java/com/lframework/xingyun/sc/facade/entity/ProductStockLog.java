@@ -98,6 +98,12 @@ public class ProductStockLog extends BaseEntity implements BaseDto {
   private String createBy;
 
   /**
+   * 创建人ID
+   */
+  @TableField(fill = FieldFill.INSERT)
+  private String createById;
+
+  /**
    * 创建时间
    */
   @TableField(fill = FieldFill.INSERT)

@@ -164,7 +164,6 @@ public class PrintSaleOutSheetBo extends BasePrintDataBo<SaleOutSheetFullDto> {
       this.paymentDate = DateUtil.formatDate(dto.getPaymentDate());
     }
 
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
     this.createTime = DateUtil.formatDateTime(dto.getCreateTime());
 
     if (!StringUtil.isBlank(dto.getApproveBy())

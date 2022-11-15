@@ -434,7 +434,6 @@ public class SettleFeeSheetServiceImpl extends BaseMpServiceImpl<SettleFeeSheetM
         sheet.setSheetType(EnumUtil.getByCode(SettleFeeSheetType.class, vo.getSheetType()));
         sheet.setTotalAmount(totalAmount);
         sheet.setDescription(StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
-        sheet.setCreateBy(currentUser.getId());
         sheet.setRefuseReason(StringPool.EMPTY_STR);
         sheet.setSettleStatus(SettleStatus.UN_SETTLE);
     }

@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.api.bo.stock.take.pre;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.facade.StoreCenterFeignClient;
@@ -92,9 +91,6 @@ public class QueryPreTakeStockSheetBo extends BaseBo<PreTakeStockSheet> {
   protected void afterInit(PreTakeStockSheet dto) {
 
     this.takeStatus = dto.getTakeStatus().getCode();
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    this.updateBy = userService.findById(dto.getUpdateBy()).getName();
 
     StoreCenterFeignClient storeCenterFeignClient = ApplicationUtil.getBean(
         StoreCenterFeignClient.class);

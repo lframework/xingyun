@@ -138,7 +138,6 @@ public class PrintSaleOrderBo extends BasePrintDataBo<SaleOrderFullDto> {
       this.salerName = userService.findById(dto.getSalerId()).getName();
     }
 
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
     this.createTime = DateUtil.formatDateTime(dto.getCreateTime());
 
     if (!StringUtil.isBlank(dto.getApproveBy())

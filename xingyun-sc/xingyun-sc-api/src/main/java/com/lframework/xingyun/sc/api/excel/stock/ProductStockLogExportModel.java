@@ -5,10 +5,8 @@ import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.DateUtil;
 import com.lframework.common.utils.NumberUtil;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.components.excel.ExcelModel;
-import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.facade.ProductFeignClient;
 import com.lframework.xingyun.basedata.facade.ProductSalePropItemRelationFeignClient;
@@ -233,10 +231,6 @@ public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implemen
     this.setCurUnTaxPrice(NumberUtil.getNumber(dto.getCurUnTaxPrice(), 2));
     this.setTaxAmount(NumberUtil.getNumber(dto.getTaxAmount(), 2));
     this.setUnTaxAmount(NumberUtil.getNumber(dto.getUnTaxAmount(), 2));
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    UserDto createBy = userService.findById(dto.getCreateBy());
-    this.setCreateBy(createBy.getName());
 
     this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
     this.setBizCode(dto.getBizCode());

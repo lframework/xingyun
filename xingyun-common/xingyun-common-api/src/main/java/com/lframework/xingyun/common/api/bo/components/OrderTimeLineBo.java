@@ -2,10 +2,7 @@ package com.lframework.xingyun.common.api.bo.components;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
@@ -64,9 +61,6 @@ public class OrderTimeLineBo extends BaseBo<OrderTimeLine> {
 
   @Override
   protected void afterInit(OrderTimeLine dto) {
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    UserDto createBy = userService.findById(dto.getCreateBy());
-    this.createBy = createBy.getName();
 
     this.bizType = dto.getBizType().getCode();
   }

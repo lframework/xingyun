@@ -3,7 +3,6 @@ package com.lframework.xingyun.sc.api.excel.stock.take.plan;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.lframework.common.constants.StringPool;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import com.lframework.starter.web.utils.ApplicationUtil;
@@ -148,9 +147,5 @@ public class TakeStockPlanExportModel extends BaseBo<TakeStockPlan> implements E
 
       this.bizName = builder.toString();
     }
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
-    this.updateBy = userService.findById(dto.getUpdateBy()).getName();
   }
 }

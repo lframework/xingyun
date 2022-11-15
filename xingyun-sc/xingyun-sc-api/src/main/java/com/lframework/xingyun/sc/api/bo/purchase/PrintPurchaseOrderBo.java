@@ -150,7 +150,6 @@ public class PrintPurchaseOrderBo extends BasePrintDataBo<PurchaseOrderFullDto> 
       this.expectArriveDate = DateUtil.formatDate(dto.getExpectArriveDate());
     }
 
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
     this.createTime = DateUtil.formatDateTime(dto.getCreateTime());
 
     if (!StringUtil.isBlank(dto.getApproveBy())

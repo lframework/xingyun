@@ -419,7 +419,6 @@ public class SettlePreSheetServiceImpl extends BaseMpServiceImpl<SettlePreSheetM
         sheet.setSupplierId(vo.getSupplierId());
         sheet.setTotalAmount(totalAmount);
         sheet.setDescription(StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
-        sheet.setCreateBy(currentUser.getId());
         sheet.setRefuseReason(StringPool.EMPTY_STR);
         sheet.setSettleStatus(SettleStatus.UN_SETTLE);
     }

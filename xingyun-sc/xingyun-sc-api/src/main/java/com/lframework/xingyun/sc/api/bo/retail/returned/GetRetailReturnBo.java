@@ -213,8 +213,6 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
       this.outSheetCode = outSheet.getCode();
     }
 
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
-
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }

@@ -3,9 +3,7 @@ package com.lframework.xingyun.sc.api.bo.stock.product.log;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.common.constants.StringPool;
 import com.lframework.common.utils.NumberUtil;
-import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.facade.ProductFeignClient;
 import com.lframework.xingyun.basedata.facade.ProductSalePropItemRelationFeignClient;
@@ -251,10 +249,6 @@ public class QueryProductStockLogBo extends BaseBo<ProductStockLog> {
       this.salePropItem1 = saleProps.getItemName1();
       this.salePropItem2 = saleProps.getItemName2();
     }
-
-    IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    UserDto createBy = userService.findById(dto.getCreateBy());
-    this.createBy = createBy.getName();
 
     this.oriTaxPrice = NumberUtil.getNumber(dto.getOriTaxPrice(), 2);
     this.curTaxPrice = NumberUtil.getNumber(dto.getCurTaxPrice(), 2);

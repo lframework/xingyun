@@ -8,7 +8,6 @@ import com.lframework.common.utils.NumberUtil;
 import com.lframework.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.IUserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.facade.CustomerFeignClient;
 import com.lframework.xingyun.basedata.facade.entity.Customer;
@@ -177,8 +176,6 @@ public class GetCustomerSettleCheckSheetBo extends BaseBo<CustomerSettleCheckShe
         dto.getTotalDiscountAmount());
 
     IUserService userService = ApplicationUtil.getBean(IUserService.class);
-    UserDto createBy = userService.findById(dto.getCreateBy());
-    this.createBy = createBy.getName();
 
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();

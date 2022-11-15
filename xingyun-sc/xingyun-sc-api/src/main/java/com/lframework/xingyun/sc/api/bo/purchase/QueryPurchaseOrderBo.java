@@ -164,8 +164,6 @@ public class QueryPurchaseOrderBo extends BaseBo<PurchaseOrder> {
       this.purchaserName = userService.findById(dto.getPurchaserId()).getName();
     }
 
-    this.createBy = userService.findById(dto.getCreateBy()).getName();
-
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }

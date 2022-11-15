@@ -105,10 +105,16 @@ public class AddLogWithAddStockVo implements BaseVo, Serializable {
   private BigDecimal curUnTaxPrice;
 
   /**
+   * 创建人
+   */
+  @ApiModelProperty("创建人")
+  private String createBy;
+
+  /**
    * 创建人ID
    */
   @ApiModelProperty("创建人ID")
-  private String createBy;
+  private String createById;
 
   /**
    * 入库时间

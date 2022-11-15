@@ -87,10 +87,16 @@ public class Member extends BaseEntity implements BaseDto {
   private String description;
 
   /**
-   * 创建人ID 新增时赋值
+   * 创建人
    */
   @TableField(fill = FieldFill.INSERT)
   private String createBy;
+
+  /**
+   * 创建人ID
+   */
+  @TableField(fill = FieldFill.INSERT)
+  private String createById;
 
   /**
    * 创建时间 新增时赋值
@@ -99,10 +105,16 @@ public class Member extends BaseEntity implements BaseDto {
   private LocalDateTime createTime;
 
   /**
-   * 修改人ID 新增和修改时赋值
+   * 修改人 新增和修改时赋值
    */
   @TableField(fill = FieldFill.INSERT_UPDATE)
   private String updateBy;
+
+  /**
+   * 修改人ID 新增和修改时赋值
+   */
+  @TableField(fill = FieldFill.INSERT_UPDATE)
+  private String updateById;
 
   /**
    * 修改时间 新增和修改时赋值

@@ -178,3 +178,7 @@ CREATE TABLE `gen_data_obj_query_detail` (
      PRIMARY KEY (`id`),
      KEY `data_obj_id` (`data_obj_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据对象自定义查询明细';
+
+ALTER TABLE `sys_menu`
+    ADD COLUMN `component_type` tinyint(3) NULL COMMENT '组件类型（前端使用）' AFTER `icon`;
+UPDATE sys_menu set component_type = 0 where display = 1;

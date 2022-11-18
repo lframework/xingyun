@@ -9,7 +9,8 @@ DROP PRIMARY KEY,
 ADD PRIMARY KEY (`id`) USING BTREE;
 
 ALTER TABLE `gen_data_entity_detail`
-    ADD COLUMN `db_data_type` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '字段数据类型' AFTER `decimals`,
+    ADD COLUMN `db_column_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '字段名' AFTER `decimals`,
+    ADD COLUMN `db_data_type` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '字段数据类型' AFTER `db_column_name`,
 ADD COLUMN `is_nullable` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否允许为空' AFTER `db_data_type`,
 ADD COLUMN `column_default` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '默认值' AFTER `is_nullable`,
 ADD COLUMN `ordinal_position` bigint(21) UNSIGNED NOT NULL DEFAULT 0 COMMENT '字段排序' AFTER `column_default`,

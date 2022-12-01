@@ -113,6 +113,8 @@ BPM工作流目前是整合AgileBPM工作流管理平台，由于AgileBPM的Lice
 
 <a href="https://gitee.com/xiaoym/knife4j" target="_blank">knife4j</a> knife4j是为Java MVC框架集成Swagger生成Api文档的工具
 
+<a href="https://github.com/xaboy/form-create" target="_blank">FormCreate</a> 强大的动态表单生成器
+
 ### 系统展示
 
 * 首页

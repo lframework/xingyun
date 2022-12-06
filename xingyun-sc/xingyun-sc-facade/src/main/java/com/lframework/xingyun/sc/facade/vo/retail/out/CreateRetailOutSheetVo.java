@@ -107,10 +107,6 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + orderNo + "行商品零售数量必须大于0！");
       }
 
-      if (product.getDiscountRate() == null) {
-        throw new InputErrorException("第" + orderNo + "行商品折扣不能为空！");
-      }
-
       if (product.getOriPrice() == null) {
         throw new InputErrorException("第" + orderNo + "行商品参考零售价不能为空！");
       }
@@ -124,13 +120,9 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
       }
 
       if (!NumberUtil.equal(product.getOriPrice(), 0D)) {
-        BigDecimal diffPrice = NumberUtil.sub(NumberUtil.getNumber(
-                NumberUtil.mul(product.getOriPrice(), NumberUtil.div(product.getDiscountRate(), 100D)),
-                2),
-            product.getTaxPrice());
-        if (!NumberUtil.le(diffPrice.abs(), 0.01D)) {
-          throw new InputErrorException("第" + orderNo + "行商品折扣率不正确！");
-        }
+        // 由 根据原价和折扣率校验现价 更改为 根据原价、现价计算折扣率，即：不以传入的折扣率为准
+        BigDecimal discountRate = NumberUtil.getNumber(NumberUtil.mul(NumberUtil.div(product.getTaxPrice(), product.getOriPrice()), 100), 2);
+        product.setDiscountRate(discountRate);
       } else {
         //如果原价为0，折扣率固定为100
         product.setDiscountRate(BigDecimal.valueOf(100));

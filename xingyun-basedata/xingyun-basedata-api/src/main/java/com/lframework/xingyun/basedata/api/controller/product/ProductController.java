@@ -190,8 +190,8 @@ public class ProductController extends DefaultBaseController {
   public InvokeResult<PageResult<PurchaseProductBo>> queryPurchaseProductList(
       @Valid QueryPurchaseProductVo vo) {
 
-    PageResult<PurchaseProductDto> pageResult = productService.queryPurchaseList(getPageIndex(),
-        getPageSize(), vo);
+    PageResult<PurchaseProductDto> pageResult = productService.queryPurchaseList(getPageIndex(vo),
+        getPageSize(vo), vo);
     List<PurchaseProductBo> results = null;
     List<PurchaseProductDto> datas = pageResult.getDatas();
 
@@ -239,8 +239,8 @@ public class ProductController extends DefaultBaseController {
   public InvokeResult<PageResult<RetailProductBo>> queryRetailProductList(
       @Valid QueryRetailProductVo vo) {
 
-    PageResult<RetailProductDto> pageResult = productService.queryRetailList(getPageIndex(),
-        getPageSize(), vo);
+    PageResult<RetailProductDto> pageResult = productService.queryRetailList(getPageIndex(vo),
+        getPageSize(vo), vo);
     List<RetailProductBo> results = null;
     List<RetailProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
@@ -287,8 +287,8 @@ public class ProductController extends DefaultBaseController {
   public InvokeResult<PageResult<SaleProductBo>> querySaleProductList(
       @Valid QuerySaleProductVo vo) {
 
-    PageResult<SaleProductDto> pageResult = productService.querySaleList(getPageIndex(),
-        getPageSize(), vo);
+    PageResult<SaleProductDto> pageResult = productService.querySaleList(getPageIndex(vo),
+        getPageSize(vo), vo);
     List<SaleProductBo> results = null;
     List<SaleProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
@@ -335,7 +335,7 @@ public class ProductController extends DefaultBaseController {
       @Valid QueryStockCostAdjustProductVo vo) {
 
     PageResult<StockCostAdjustProductDto> pageResult = productService.queryStockCostAdjustList(
-        getPageIndex(), getPageSize(), vo);
+        getPageIndex(vo), getPageSize(vo), vo);
     List<StockCostAdjustProductBo> results = null;
     List<StockCostAdjustProductDto> datas = pageResult.getDatas();
 
@@ -379,7 +379,7 @@ public class ProductController extends DefaultBaseController {
       @Valid QueryPreTakeStockProductVo vo) {
 
     PageResult<PreTakeStockProductDto> pageResult = productService.queryPreTakeStockList(
-        getPageIndex(), getPageSize(), vo);
+        getPageIndex(vo), getPageSize(vo), vo);
     List<PreTakeStockProductBo> results = null;
     List<PreTakeStockProductDto> datas = pageResult.getDatas();
 
@@ -439,7 +439,7 @@ public class ProductController extends DefaultBaseController {
     }
 
     PageResult<TakeStockSheetProductDto> pageResult = productService.queryTakeStockList(
-        getPageIndex(), getPageSize(), vo);
+        getPageIndex(vo), getPageSize(vo), vo);
     List<TakeStockSheetProductBo> results = null;
     List<TakeStockSheetProductDto> datas = pageResult.getDatas();
 

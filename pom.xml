@@ -30,7 +30,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <xingyun.version>1.0.0-SNAPSHOT</xingyun.version>
-        <jugg.version>2.2.19</jugg.version>
+        <jugg.version>2.2.20</jugg.version>
     </properties>
 
     <dependencyManagement>

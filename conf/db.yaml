@@ -1,20 +1,27 @@
 spring:
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/xingyun?rewriteBatchedStatements=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
-    username: root
-    password: password
-    druid:
-      initial-size: 10
-      min-idle: 10
-      max-active: 200
-      max-wait: 60000
-      time-between-eviction-runs-millis: 300000
-      validation-query: SELECT 'x'
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
-      pool-prepared-statements: true
-      max-pool-prepared-statement-per-connection-size: 20
-      filters: stat
+    dynamic:
+      # 设置默认数据源
+      primary: master
+      # 是否严格匹配数据源 未匹配到指定数据源时true抛异常,false使用默认数据源
+      strict: false
+      datasource:
+        master:
+          type: com.alibaba.druid.pool.DruidDataSource
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/xingyun?rewriteBatchedStatements=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
+          username: root
+          password: password
+          druid:
+            initial-size: 10
+            min-idle: 10
+            max-active: 200
+            max-wait: 60000
+            time-between-eviction-runs-millis: 300000
+            validation-query: SELECT 'x'
+            test-while-idle: true
+            test-on-borrow: false
+            test-on-return: false
+            pool-prepared-statements: true
+            max-pool-prepared-statement-per-connection-size: 20
+            filters: stat

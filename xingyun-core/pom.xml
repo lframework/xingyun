@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>security-starter</artifactId>
+            <artifactId>tenant-starter</artifactId>
         </dependency>
 
         <dependency>

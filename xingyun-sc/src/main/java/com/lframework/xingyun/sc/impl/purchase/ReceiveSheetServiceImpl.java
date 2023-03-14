@@ -4,34 +4,34 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.service.IGenerateCodeService;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.ManageType;
 import com.lframework.xingyun.basedata.enums.SettleType;
-import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
-import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
+import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -47,12 +47,12 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.ReceiveSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.ReceiveSheetMapper;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderDetailService;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
-import com.lframework.xingyun.sc.service.purchase.IReceiveSheetDetailService;
-import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
-import com.lframework.xingyun.sc.service.stock.IProductStockService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
+import com.lframework.xingyun.sc.service.purchase.ReceiveSheetDetailService;
+import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
+import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApprovePassReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApproveRefuseReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.BatchApprovePassReceiveSheetVo;
@@ -75,37 +75,37 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMapper, ReceiveSheet>
-    implements IReceiveSheetService {
+    implements ReceiveSheetService {
 
   @Autowired
-  private IReceiveSheetDetailService receiveSheetDetailService;
+  private ReceiveSheetDetailService receiveSheetDetailService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private IStoreCenterService storeCenterService;
+  private StoreCenterService storeCenterService;
 
   @Autowired
-  private ISupplierService supplierService;
+  private SupplierService supplierService;
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private IPurchaseOrderService purchaseOrderService;
+  private PurchaseOrderService purchaseOrderService;
 
   @Autowired
-  private IPurchaseConfigService purchaseConfigService;
+  private PurchaseConfigService purchaseConfigService;
 
   @Autowired
-  private IPurchaseOrderDetailService purchaseOrderDetailService;
+  private PurchaseOrderDetailService purchaseOrderDetailService;
 
   @Autowired
-  private IProductStockService productStockService;
+  private ProductStockService productStockService;
 
   @Override
   public PageResult<ReceiveSheet> query(Integer pageIndex, Integer pageSize,
@@ -199,9 +199,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建采购收货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建采购收货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建收货单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateReceiveSheetVo vo) {
 
@@ -223,9 +223,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     return sheet.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改采购收货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改采购收货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改收货单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateReceiveSheetVo vo) {
 
@@ -287,9 +287,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过采购收货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过采购收货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassReceiveSheetVo vo) {
 
@@ -347,7 +347,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(sheet.getScId());
-      addProductStockVo.setSupplierId(sheet.getSupplierId());
       addProductStockVo.setStockNum(detail.getOrderNum());
       addProductStockVo.setTaxAmount(NumberUtil.mul(detail.getTaxPrice(), detail.getOrderNum()));
       addProductStockVo.setTaxRate(detail.getTaxRate());
@@ -363,7 +362,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Override
   public void batchApprovePass(BatchApprovePassReceiveSheetVo vo) {
@@ -374,7 +373,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       approvePassVo.setId(id);
 
       try {
-        IReceiveSheetService thisService = getThis(this.getClass());
+        ReceiveSheetService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个采购收货单审核通过失败，失败原因：" + e.getMsg());
@@ -384,12 +383,12 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     }
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Override
   public String directApprovePass(CreateReceiveSheetVo vo) {
 
-    IReceiveSheetService thisService = getThis(this.getClass());
+    ReceiveSheetService thisService = getThis(this.getClass());
 
     String sheetId = thisService.create(vo);
 
@@ -402,9 +401,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     return sheetId;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝采购收货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝采购收货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseReceiveSheetVo vo) {
 
@@ -442,7 +441,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Override
   public void batchApproveRefuse(BatchApproveRefuseReceiveSheetVo vo) {
@@ -454,7 +453,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       approveRefuseVo.setRefuseReason(vo.getRefuseReason());
 
       try {
-        IReceiveSheetService thisService = getThis(this.getClass());
+        ReceiveSheetService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个采购收货单审核拒绝失败，失败原因：" + e.getMsg());
@@ -464,9 +463,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除采购收货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除采购收货单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -512,7 +511,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     OpLogUtil.setVariable("code", sheet.getCode());
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Override
   public void deleteByIds(List<String> ids) {
@@ -522,7 +521,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       for (String id : ids) {
 
         try {
-          IReceiveSheetService thisService = getThis(this.getClass());
+          ReceiveSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个采购收货单删除失败，失败原因：" + e.getMsg());
@@ -533,7 +532,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     }
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setUnSettle(String id) {
 
@@ -545,7 +544,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setPartSettle(String id) {
 
@@ -557,7 +556,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setSettled(String id) {
 
@@ -670,7 +669,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       detail.setId(IdUtil.getId());
       detail.setSheetId(sheet.getId());
 
-      ProductDto product = productService.findById(productVo.getProductId());
+      Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -683,7 +682,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       detail.setOrderNum(productVo.getReceiveNum());
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getPoly().getTaxRate());
+      detail.setTaxRate(product.getTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

@@ -4,34 +4,34 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.ManageType;
-import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
-import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
+import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseReturnEvent;
@@ -47,12 +47,12 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.PurchaseReturnMapper;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseReturnDetailService;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseReturnService;
-import com.lframework.xingyun.sc.service.purchase.IReceiveSheetDetailService;
-import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
-import com.lframework.xingyun.sc.service.stock.IProductStockService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseReturnDetailService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseReturnService;
+import com.lframework.xingyun.sc.service.purchase.ReceiveSheetDetailService;
+import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
+import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.purchase.returned.ApprovePassPurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.ApproveRefusePurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.BatchApprovePassPurchaseReturnVo;
@@ -73,37 +73,37 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PurchaseReturnServiceImpl extends
     BaseMpServiceImpl<PurchaseReturnMapper, PurchaseReturn>
-    implements IPurchaseReturnService {
+    implements PurchaseReturnService {
 
   @Autowired
-  private IPurchaseReturnDetailService purchaseReturnDetailService;
+  private PurchaseReturnDetailService purchaseReturnDetailService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private IStoreCenterService storeCenterService;
+  private StoreCenterService storeCenterService;
 
   @Autowired
-  private ISupplierService supplierService;
+  private SupplierService supplierService;
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private IReceiveSheetService receiveSheetService;
+  private ReceiveSheetService receiveSheetService;
 
   @Autowired
-  private IPurchaseConfigService purchaseConfigService;
+  private PurchaseConfigService purchaseConfigService;
 
   @Autowired
-  private IReceiveSheetDetailService receiveSheetDetailService;
+  private ReceiveSheetDetailService receiveSheetDetailService;
 
   @Autowired
-  private IProductStockService productStockService;
+  private ProductStockService productStockService;
 
   @Override
   public PageResult<PurchaseReturn> query(Integer pageIndex, Integer pageSize,
@@ -130,9 +130,9 @@ public class PurchaseReturnServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建采购退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建退单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreatePurchaseReturnVo vo) {
 
@@ -154,9 +154,9 @@ public class PurchaseReturnServiceImpl extends
     return purchaseReturn.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改采购退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改退单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdatePurchaseReturnVo vo) {
 
@@ -219,9 +219,9 @@ public class PurchaseReturnServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过采购退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassPurchaseReturnVo vo) {
 
@@ -301,7 +301,7 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApprovePass(BatchApprovePassPurchaseReturnVo vo) {
 
@@ -311,7 +311,7 @@ public class PurchaseReturnServiceImpl extends
       approvePassVo.setId(id);
 
       try {
-        IPurchaseReturnService thisService = getThis(this.getClass());
+        PurchaseReturnService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个采购退货单审核通过失败，失败原因：" + e.getMsg());
@@ -322,11 +322,11 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreatePurchaseReturnVo vo) {
 
-    IPurchaseReturnService thisService = getThis(this.getClass());
+    PurchaseReturnService thisService = getThis(this.getClass());
 
     String returnId = thisService.create(vo);
 
@@ -339,9 +339,9 @@ public class PurchaseReturnServiceImpl extends
     return returnId;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝采购退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefusePurchaseReturnVo vo) {
 
@@ -381,7 +381,7 @@ public class PurchaseReturnServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApproveRefuse(BatchApproveRefusePurchaseReturnVo vo) {
 
@@ -392,7 +392,7 @@ public class PurchaseReturnServiceImpl extends
       approveRefuseVo.setRefuseReason(vo.getRefuseReason());
 
       try {
-        IPurchaseReturnService thisService = getThis(this.getClass());
+        PurchaseReturnService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个采购退货单审核拒绝失败，失败原因：" + e.getMsg());
@@ -402,9 +402,9 @@ public class PurchaseReturnServiceImpl extends
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除采购退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -451,7 +451,7 @@ public class PurchaseReturnServiceImpl extends
     OpLogUtil.setVariable("code", purchaseReturn.getCode());
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Override
   public void deleteByIds(List<String> ids) {
@@ -461,7 +461,7 @@ public class PurchaseReturnServiceImpl extends
       for (String id : ids) {
 
         try {
-          IPurchaseReturnService thisService = getThis(this.getClass());
+          PurchaseReturnService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个采购退货单删除失败，失败原因：" + e.getMsg());
@@ -472,7 +472,7 @@ public class PurchaseReturnServiceImpl extends
     }
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setUnSettle(String id) {
 
@@ -484,7 +484,7 @@ public class PurchaseReturnServiceImpl extends
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setPartSettle(String id) {
 
@@ -497,7 +497,7 @@ public class PurchaseReturnServiceImpl extends
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setSettled(String id) {
 
@@ -609,7 +609,7 @@ public class PurchaseReturnServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setReturnId(purchaseReturn.getId());
 
-      ProductDto product = productService.findById(productVo.getProductId());
+      Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -622,7 +622,7 @@ public class PurchaseReturnServiceImpl extends
       detail.setReturnNum(productVo.getReturnNum());
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getPoly().getTaxRate());
+      detail.setTaxRate(product.getTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

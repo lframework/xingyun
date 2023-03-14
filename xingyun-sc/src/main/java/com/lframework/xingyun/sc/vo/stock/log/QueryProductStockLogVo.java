@@ -45,18 +45,6 @@ public class QueryProductStockLogVo extends PageVo {
   private String brandId;
 
   /**
-   * 供应商ID
-   */
-  @ApiModelProperty("供应商ID")
-  private String supplierId;
-
-  /**
-   * 批次号
-   */
-  @ApiModelProperty("批次号")
-  private String lotCode;
-
-  /**
    * 创建起始时间
    */
   @ApiModelProperty("创建起始时间")

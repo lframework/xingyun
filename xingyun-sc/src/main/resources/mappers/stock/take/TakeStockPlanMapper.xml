@@ -16,14 +16,6 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <resultMap id="TakeStockPlanSelectorDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto">
-        <id column="id" property="id"/>
-        <result column="code" property="code"/>
-        <result column="sc_id" property="scId"/>
-        <result column="take_type" property="takeType"/>
-        <result column="take_status" property="takeStatus"/>
-    </resultMap>
-
     <resultMap id="QueryTakeStockPlanProductDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto">
         <result column="product_id" property="productId"/>
         <result column="stock_num" property="stockNum"/>
@@ -58,29 +50,7 @@
 
     <sql id="TakeStockPlanDto_sql">
         SELECT
-            tb.id,
-            tb.code,
-            tb.sc_id,
-            tb.take_type,
-            tb.biz_id,
-            tb.take_status,
-            tb.description,
-            tb.create_by,
-            tb.create_time,
-            tb.update_by,
-            tb.update_time
-        FROM tbl_take_stock_plan AS tb
-    </sql>
-
-    <sql id="TakeStockPlanSelectorDto_sql">
-        SELECT
-            tb.id,
-            tb.code,
-            tb.sc_id,
-            tb.take_type,
-            tb.take_status,
-            tb.create_time,
-            tb.update_time
+            tb.*
         FROM tbl_take_stock_plan AS tb
     </sql>
 
@@ -160,8 +130,8 @@
         ORDER BY tb.update_time DESC
     </select>
 
-    <select id="selector" resultMap="TakeStockPlanSelectorDto">
-        <include refid="TakeStockPlanSelectorDto_sql"/>
+    <select id="selector" resultMap="TakeStockPlan">
+        <include refid="TakeStockPlanDto_sql"/>
         <where>
             <if test="vo.code != null and vo.code != ''">
                 AND tb.code = #{vo.code}

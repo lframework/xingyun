@@ -6,7 +6,11 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -30,11 +34,10 @@ public class CreateProductVo implements BaseVo, Serializable {
   private String name;
 
   /**
-   * polyID
+   * 简称
    */
-  @ApiModelProperty(value = "polyID", required = true)
-  @NotBlank(message = "PolyId不能为空！")
-  private String polyId;
+  @ApiModelProperty(value = "简称")
+  private String shortName;
 
   /**
    * 商品SKU编号
@@ -50,6 +53,20 @@ public class CreateProductVo implements BaseVo, Serializable {
   private String externalCode;
 
   /**
+   * 类目ID
+   */
+  @ApiModelProperty("类目ID")
+  @NotBlank(message = "类目ID不能为空！")
+  private String categoryId;
+
+  /**
+   * 品牌ID
+   */
+  @ApiModelProperty("品牌ID")
+  @NotBlank(message = "品牌ID不能为空！")
+  private String brandId;
+
+  /**
    * 规格
    */
   @ApiModelProperty("规格")
@@ -60,6 +77,31 @@ public class CreateProductVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("单位")
   private String unit;
+
+  /**
+   * 进项税率（%）
+   */
+  @ApiModelProperty(value = "进项税率（%）", required = true)
+  @NotNull(message = "进项税率（%）不能为空！")
+  @Min(value = 0, message = "进项税率（%）不允许小于0！")
+  @Digits(integer = 10, fraction = 0, message = "进项税率（%）必须为整数！")
+  private BigDecimal taxRate;
+
+  /**
+   * 销项税率（%）
+   */
+  @ApiModelProperty(value = "销项税率（%）", required = true)
+  @NotNull(message = "销项税率（%）不能为空！")
+  @Min(value = 0, message = "销项税率（%）不允许小于0！")
+  @Digits(integer = 10, fraction = 0, message = "销项税率（%）必须为整数！")
+  private BigDecimal saleTaxRate;
+
+  /**
+   * 商品属性
+   */
+  @ApiModelProperty(value = "商品属性")
+  @Valid
+  private List<ProductPropertyRelationVo> properties;
 
   /**
    * 采购价
@@ -79,9 +121,5 @@ public class CreateProductVo implements BaseVo, Serializable {
   @ApiModelProperty("零售价")
   private BigDecimal retailPrice;
 
-  /**
-   * 销售属性ID
-   */
-  @ApiModelProperty("销售属性ID")
-  private List<String> salePropItems;
+
 }

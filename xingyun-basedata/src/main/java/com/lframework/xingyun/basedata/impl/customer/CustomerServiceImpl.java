@@ -4,14 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -22,13 +22,13 @@ import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.mappers.CustomerMapper;
-import com.lframework.xingyun.basedata.service.customer.ICustomerService;
+import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.UpdateCustomerVo;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
-import com.lframework.xingyun.core.service.IDicCityService;
+import com.lframework.xingyun.core.service.DicCityService;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -39,10 +39,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Customer> implements ICustomerService {
+public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Customer> implements
+    CustomerService {
 
     @Autowired
-    private IDicCityService dicCityService;
+    private DicCityService dicCityService;
 
     @Override
     public PageResult<Customer> query(Integer pageIndex, Integer pageSize, QueryCustomerVo vo) {
@@ -62,7 +63,7 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         return getBaseMapper().query(vo);
     }
 
-    @Cacheable(value = Customer.CACHE_NAME, key = "#id", unless = "#result == null")
+    @Cacheable(value = Customer.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
     @Override
     public Customer findById(String id) {
 
@@ -82,8 +83,8 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "停用客户，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "停用客户，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
 
@@ -96,8 +97,8 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "启用客户，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "启用客户，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
 
@@ -110,8 +111,8 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增客户，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "新增客户，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateCustomerVo vo) {
 
@@ -188,8 +189,8 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         return data.getId();
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改客户，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "修改客户，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateCustomerVo vo) {
 
@@ -246,7 +247,7 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         OpLogUtil.setExtra(vo);
     }
 
-    @CacheEvict(value = Customer.CACHE_NAME, key = "#key")
+    @CacheEvict(value = Customer.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
     @Override
     public void cleanCacheByKey(Serializable key) {
 

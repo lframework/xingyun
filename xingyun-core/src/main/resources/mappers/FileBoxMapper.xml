@@ -25,16 +25,16 @@
         AND tb.available = #{vo.available}
       </if>
       <if test="vo.createTimeStart != null">
-        AND tb.update_time >= #{vo.createTimeStart}
+        AND tb.create_time >= #{vo.createTimeStart}
       </if>
       <if test="vo.createTimeEnd != null">
         <![CDATA[
-        AND tb.update_time <= #{vo.createTimeEnd}
+        AND tb.create_time <= #{vo.createTimeEnd}
         ]]>
       </if>
       AND tb.create_by_id = #{createById}
     </where>
-    ORDER BY tb.update_time DESC
+    ORDER BY tb.create_time DESC
   </select>
 
   <sql id="FileBox_sql">

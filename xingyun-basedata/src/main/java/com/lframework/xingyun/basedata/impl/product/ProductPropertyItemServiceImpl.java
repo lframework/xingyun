@@ -3,13 +3,13 @@ package com.lframework.xingyun.basedata.impl.product;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -19,8 +19,8 @@ import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.entity.ProductPropertyItem;
 import com.lframework.xingyun.basedata.mappers.ProductPropertyItemMapper;
-import com.lframework.xingyun.basedata.service.product.IProductPropertyItemService;
-import com.lframework.xingyun.basedata.service.product.IProductPropertyService;
+import com.lframework.xingyun.basedata.service.product.ProductPropertyItemService;
+import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.item.CreateProductPropertyItemVo;
 import com.lframework.xingyun.basedata.vo.product.property.item.QueryProductPropertyItemVo;
 import com.lframework.xingyun.basedata.vo.product.property.item.UpdateProductPropertyItemVo;
@@ -34,10 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductPropertyItemServiceImpl extends BaseMpServiceImpl<ProductPropertyItemMapper, ProductPropertyItem>
-        implements IProductPropertyItemService {
+        implements ProductPropertyItemService {
 
     @Autowired
-    private IProductPropertyService productPropertyService;
+    private ProductPropertyService productPropertyService;
 
     @Override
     public PageResult<ProductPropertyItem> query(Integer pageIndex, Integer pageSize, QueryProductPropertyItemVo vo) {
@@ -63,15 +63,15 @@ public class ProductPropertyItemServiceImpl extends BaseMpServiceImpl<ProductPro
         return getBaseMapper().getByPropertyId(propertyId);
     }
 
-    @Cacheable(value = ProductPropertyItem.CACHE_NAME, key = "#id", unless = "#result == null")
+    @Cacheable(value = ProductPropertyItem.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
     @Override
     public ProductPropertyItem findById(String id) {
 
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增商品属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "新增商品属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateProductPropertyItemVo vo) {
 
@@ -111,8 +111,8 @@ public class ProductPropertyItemServiceImpl extends BaseMpServiceImpl<ProductPro
         return data.getId();
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改商品属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "修改商品属性值，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateProductPropertyItemVo vo) {
 
@@ -147,7 +147,7 @@ public class ProductPropertyItemServiceImpl extends BaseMpServiceImpl<ProductPro
         OpLogUtil.setExtra(vo);
     }
 
-    @CacheEvict(value = ProductPropertyItem.CACHE_NAME, key = "#key")
+    @CacheEvict(value = ProductPropertyItem.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
     @Override
     public void cleanCacheByKey(Serializable key) {
 

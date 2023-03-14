@@ -4,15 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.enums.Gender;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -22,7 +22,7 @@ import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.mappers.MemberMapper;
-import com.lframework.xingyun.basedata.service.member.IMemberService;
+import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
@@ -36,7 +36,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> implements IMemberService {
+public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> implements
+    MemberService {
 
     @Override
     public PageResult<Member> query(Integer pageIndex, Integer pageSize, QueryMemberVo vo) {
@@ -56,15 +57,15 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         return getBaseMapper().query(vo);
     }
 
-    @Cacheable(value = Member.CACHE_NAME, key = "#id", unless = "#result == null")
+    @Cacheable(value = Member.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
     @Override
     public Member findById(String id) {
 
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "停用会员，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "停用会员，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
 
@@ -77,8 +78,8 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "启用会员，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "启用会员，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
 
@@ -91,8 +92,8 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增会员，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "新增会员，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateMemberVo vo) {
 
@@ -145,8 +146,8 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         return data.getId();
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改会员，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "修改会员，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateMemberVo vo) {
 
@@ -204,7 +205,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @CacheEvict(value = Member.CACHE_NAME, key = "#key")
+    @CacheEvict(value = Member.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
     @Override
     public void cleanCacheByKey(Serializable key) {
 

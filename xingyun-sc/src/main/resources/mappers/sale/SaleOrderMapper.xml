@@ -74,6 +74,23 @@
         </collection>
     </resultMap>
 
+    <resultMap id="SaleProductDto" type="com.lframework.xingyun.sc.dto.sale.SaleProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+        <result column="sale_price" property="salePrice"/>
+        <result column="sale_tax_rate" property="taxRate"/>
+        <result column="available" property="available"/>
+    </resultMap>
+
     <sql id="SaleOrderDto_sql">
         SELECT
             o.id,
@@ -127,6 +144,29 @@
             d.order_no AS detail_order_no
         FROM tbl_sale_order AS o
         LEFT JOIN tbl_sale_order_detail AS d ON d.order_id = o.id
+    </sql>
+
+    <sql id="SaleProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit,
+            sale.price AS sale_price,
+            g.sale_tax_rate,
+            g.available
+        FROM base_data_product AS g
+        INNER JOIN base_data_product_sale AS sale ON sale.id = g.id
+        LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
     </sql>
 
     <select id="query" resultMap="SaleOrder">
@@ -299,5 +339,46 @@
         </where>
         <if test="!multipleRelate">GROUP BY o.id</if>
         ORDER BY o.create_time DESC
+    </select>
+
+    <select id="querySaleByCondition" resultMap="SaleProductDto">
+        <include refid="SaleProductDto_sql"/>
+        <where>
+            AND (
+            g.code LIKE CONCAT('%', #{condition}, '%')
+            OR g.name LIKE CONCAT('%', #{condition}, '%')
+            OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+            OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+            AND g.available = TRUE
+        </where>
+        ORDER BY g.code
+    </select>
+    <select id="querySaleList" resultMap="SaleProductDto">
+        <include refid="SaleProductDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                    g.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+            </if>
+            AND g.available = TRUE
+        </where>
+        ORDER BY g.code
+    </select>
+    <select id="getSaleById" resultMap="SaleProductDto">
+        <include refid="SaleProductDto_sql"/>
+        WHERE g.id = #{id}
     </select>
 </mapper>

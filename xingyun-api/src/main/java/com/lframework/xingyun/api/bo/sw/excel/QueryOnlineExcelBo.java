@@ -1,7 +1,7 @@
 package com.lframework.xingyun.api.bo.sw.excel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lframework.common.constants.StringPool;
+import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.core.entity.OnlineExcel;
 import io.swagger.annotations.ApiModelProperty;

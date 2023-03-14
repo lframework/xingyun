@@ -4,15 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -21,13 +21,13 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.mappers.StoreCenterMapper;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.vo.storecenter.CreateStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.UpdateStoreCenterVo;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
-import com.lframework.xingyun.core.service.IDicCityService;
+import com.lframework.xingyun.core.service.DicCityService;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -39,10 +39,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper, StoreCenter>
-        implements IStoreCenterService {
+        implements StoreCenterService {
 
     @Autowired
-    private IDicCityService dicCityService;
+    private DicCityService dicCityService;
 
     @Override
     public PageResult<StoreCenter> query(Integer pageIndex, Integer pageSize, QueryStoreCenterVo vo) {
@@ -56,15 +56,15 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @Cacheable(value = StoreCenter.CACHE_NAME, key = "#id", unless = "#result == null")
+    @Cacheable(value = StoreCenter.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
     @Override
     public StoreCenter findById(String id) {
 
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "停用仓库，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "停用仓库，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
 
@@ -77,8 +77,8 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "启用仓库，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "启用仓库，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
 
@@ -91,8 +91,8 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "新增仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateStoreCenterVo vo) {
 
@@ -142,8 +142,8 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
         return data.getId();
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "修改仓库，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateStoreCenterVo vo) {
 
@@ -205,7 +205,7 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @CacheEvict(value = StoreCenter.CACHE_NAME, key = "#key")
+    @CacheEvict(value = StoreCenter.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
     @Override
     public void cleanCacheByKey(Serializable key) {
 

@@ -63,8 +63,7 @@
         <include refid="ProductStockDto_sql"/>
         INNER JOIN base_data_store_center AS sc ON sc.id = gs.sc_id
         INNER JOIN base_data_product AS product ON product.id = gs.product_id
-        INNER JOIN base_data_product_poly AS poly ON poly.id = product.poly_id
-        LEFT JOIN recursion_mapping AS rm ON rm.node_id = poly.category_id and rm.node_type = 2
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = product.category_id and rm.node_type = 2
         <where>
             <if test="vo != null">
                 <if test="vo.scId != null and vo.scId != ''">
@@ -77,10 +76,10 @@
                     AND product.name LIKE CONCAT('%', #{vo.productName}, '%')
                 </if>
                 <if test="vo.brandId != null and vo.brandId != ''">
-                    AND poly.brand_id = #{vo.brandId}
+                    AND product.brand_id = #{vo.brandId}
                 </if>
                 <if test="vo.categoryId != null and vo.categoryId != ''">
-                    AND (poly.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                    AND (product.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
                 </if>
             </if>
         </where>

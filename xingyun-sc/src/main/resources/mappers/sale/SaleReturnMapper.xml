@@ -47,7 +47,6 @@
                     ofType="com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto$ReturnDetailDto">
             <id column="detail_id" property="id"/>
             <result column="detail_product_id" property="productId"/>
-            <result column="detail_supplier_id" property="supplierId"/>
             <result column="detail_return_num" property="returnNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
             <result column="detail_tax_price" property="taxPrice"/>
@@ -87,7 +86,7 @@
     <sql id="SaleReturnFullDto_sql">
         SELECT r.id, r.code, r.sc_id, r.customer_id, r.saler_id, r.payment_date, r.out_sheet_id, r.total_num, r.total_gift_num,
                r.total_amount, r.description, r.create_by, r.create_time, r.update_by, r.update_time, r.approve_by, r.approve_time,
-               r.status, r.refuse_reason, r.settle_status, d.id AS detail_id, d.product_id AS detail_product_id, d.supplier_id AS detail_supplier_id,
+               r.status, r.refuse_reason, r.settle_status, d.id AS detail_id, d.product_id AS detail_product_id,
                d.return_num AS detail_return_num, d.ori_price AS detail_ori_price, d.tax_price AS detail_tax_price, d.discount_rate AS detail_discount_rate,
                d.is_gift AS detail_is_gift, d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
                d.settle_status AS detail_settle_status, d.out_sheet_detail_id AS detail_out_sheet_detail_id

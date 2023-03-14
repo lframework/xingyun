@@ -1,9 +1,9 @@
 package com.lframework.xingyun.sc.vo.retail.returned;
 
-import com.lframework.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.RetailReturn;
-import com.lframework.xingyun.sc.service.retail.IRetailReturnService;
+import com.lframework.xingyun.sc.service.retail.RetailReturnService;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class UpdateRetailReturnVo extends CreateRetailReturnVo {
   @Override
   public void validate() {
 
-    IRetailReturnService saleReturnService = ApplicationUtil.getBean(IRetailReturnService.class);
+    RetailReturnService saleReturnService = ApplicationUtil.getBean(RetailReturnService.class);
     RetailReturn saleReturn = saleReturnService.getById(this.getId());
 
     this.validate(!StringUtil.isBlank(saleReturn.getOutSheetId()));

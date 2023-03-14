@@ -4,14 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -20,7 +20,7 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.mappers.ProductBrandMapper;
-import com.lframework.xingyun.basedata.service.product.IProductBrandService;
+import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.vo.product.brand.CreateProductBrandVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandVo;
@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMapper, ProductBrand>
-        implements IProductBrandService {
+        implements ProductBrandService {
 
     @Override
     public PageResult<ProductBrand> query(Integer pageIndex, Integer pageSize, QueryProductBrandVo vo) {
@@ -67,15 +67,15 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @Cacheable(value = ProductBrand.CACHE_NAME, key = "#id", unless = "#result == null")
+    @Cacheable(value = ProductBrand.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
     @Override
     public ProductBrand findById(String id) {
 
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "停用商品品牌，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "停用商品品牌，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
 
@@ -88,8 +88,8 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "启用商品品牌，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "启用商品品牌，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
 
@@ -102,8 +102,8 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "新增商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateProductBrandVo vo) {
 
@@ -140,8 +140,8 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         return data.getId();
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "修改商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateProductBrandVo vo) {
 
@@ -180,7 +180,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         OpLogUtil.setExtra(vo);
     }
 
-    @CacheEvict(value = ProductBrand.CACHE_NAME, key = "#key")
+    @CacheEvict(value = ProductBrand.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
     @Override
     public void cleanCacheByKey(Serializable key) {
 

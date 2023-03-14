@@ -4,47 +4,48 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.customer.ICustomerService;
-import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.xingyun.basedata.service.customer.CustomerService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleOrderEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
+import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
 import com.lframework.xingyun.sc.mappers.SaleOrderMapper;
-import com.lframework.xingyun.sc.service.sale.ISaleConfigService;
-import com.lframework.xingyun.sc.service.sale.ISaleOrderDetailService;
-import com.lframework.xingyun.sc.service.sale.ISaleOrderService;
+import com.lframework.xingyun.sc.service.sale.SaleConfigService;
+import com.lframework.xingyun.sc.service.sale.SaleOrderDetailService;
+import com.lframework.xingyun.sc.service.sale.SaleOrderService;
 import com.lframework.xingyun.sc.vo.sale.ApprovePassSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.ApproveRefuseSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.BatchApprovePassSaleOrderVo;
@@ -52,6 +53,7 @@ import com.lframework.xingyun.sc.vo.sale.BatchApproveRefuseSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.CreateSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
+import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.SaleOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.sale.SaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
@@ -65,28 +67,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, SaleOrder> implements
-    ISaleOrderService {
+    SaleOrderService {
 
   @Autowired
-  private ISaleOrderDetailService saleOrderDetailService;
+  private SaleOrderDetailService saleOrderDetailService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private IStoreCenterService storeCenterService;
+  private StoreCenterService storeCenterService;
 
   @Autowired
-  private ICustomerService customerService;
+  private CustomerService customerService;
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private ISaleConfigService saleConfigService;
+  private SaleConfigService saleConfigService;
 
   @Override
   public PageResult<SaleOrder> query(Integer pageIndex, Integer pageSize, QuerySaleOrderVo vo) {
@@ -158,9 +160,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建订单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSaleOrderVo vo) {
 
@@ -180,9 +182,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     return order.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改订单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSaleOrderVo vo) {
 
@@ -226,9 +228,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassSaleOrderVo vo) {
 
@@ -271,7 +273,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApprovePass(BatchApprovePassSaleOrderVo vo) {
 
@@ -281,7 +283,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
       approvePassSaleOrderVo.setId(id);
 
       try {
-        ISaleOrderService thisService = getThis(this.getClass());
+        SaleOrderService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassSaleOrderVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个销售订单审核通过失败，失败原因：" + e.getMsg());
@@ -292,11 +294,11 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateSaleOrderVo vo) {
 
-    ISaleOrderService thisService = getThis(this.getClass());
+    SaleOrderService thisService = getThis(this.getClass());
 
     String orderId = thisService.create(vo);
 
@@ -309,9 +311,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     return orderId;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseSaleOrderVo vo) {
 
@@ -349,7 +351,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApproveRefuse(BatchApproveRefuseSaleOrderVo vo) {
 
@@ -360,7 +362,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
       approveRefuseSaleOrderVo.setRefuseReason(vo.getRefuseReason());
 
       try {
-        ISaleOrderService thisService = getThis(this.getClass());
+        SaleOrderService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseSaleOrderVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个销售订单审核拒绝失败，失败原因：" + e.getMsg());
@@ -370,9 +372,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除订单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -404,7 +406,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByIds(List<String> ids) {
 
@@ -413,7 +415,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
       for (String id : ids) {
 
         try {
-          ISaleOrderService thisService = getThis(this.getClass());
+          SaleOrderService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个销售订单删除失败，失败原因：" + e.getMsg());
@@ -422,6 +424,44 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
         orderNo++;
       }
     }
+  }
+
+  @Override
+  public PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize,
+      String condition) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition);
+    PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<SaleProductDto> querySaleList(Integer pageIndex, Integer pageSize,
+      QuerySaleProductVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<SaleProductDto> datas = getBaseMapper().querySaleList(vo);
+    PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public SaleProductDto getSaleById(String id) {
+
+    SaleProductDto data = getBaseMapper().getSaleById(id);
+
+    return data;
   }
 
   private void create(SaleOrder order, CreateSaleOrderVo vo) {
@@ -469,7 +509,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
       orderDetail.setId(IdUtil.getId());
       orderDetail.setOrderId(order.getId());
 
-      ProductDto product = productService.findById(productVo.getProductId());
+      Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -484,7 +524,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
       orderDetail.setDiscountRate(productVo.getDiscountRate());
       orderDetail.setTaxPrice(productVo.getTaxPrice());
       orderDetail.setIsGift(isGift);
-      orderDetail.setTaxRate(product.getPoly().getSaleTaxRate());
+      orderDetail.setTaxRate(product.getSaleTaxRate());
       orderDetail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

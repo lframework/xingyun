@@ -1,15 +1,15 @@
 package com.lframework.xingyun.sc.vo.sale.out;
 
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.entity.SaleConfig;
-import com.lframework.xingyun.sc.service.sale.ISaleConfigService;
-import com.lframework.xingyun.sc.service.sale.ISaleOutSheetService;
+import com.lframework.xingyun.sc.service.sale.SaleConfigService;
+import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -83,10 +83,9 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
   @ApiModelProperty("是否关联销售订单")
   private Boolean required;
 
-  @Override
   public void validate() {
 
-    ISaleConfigService saleConfigService = ApplicationUtil.getBean(ISaleConfigService.class);
+    SaleConfigService saleConfigService = ApplicationUtil.getBean(SaleConfigService.class);
     SaleConfig saleConfig = saleConfigService.get();
 
     if (!saleConfig.getOutStockRequireSale().equals(this.required)) {
@@ -98,7 +97,7 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
 
   protected void validate(boolean requireSale) {
 
-    ISaleOutSheetService saleOutSheetService = ApplicationUtil.getBean(ISaleOutSheetService.class);
+    SaleOutSheetService saleOutSheetService = ApplicationUtil.getBean(SaleOutSheetService.class);
     GetPaymentDateDto paymentDate = saleOutSheetService.getPaymentDate(this.getCustomerId());
     if (paymentDate.getAllowModify()) {
       if (this.getPaymentDate() == null) {

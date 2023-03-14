@@ -1,15 +1,15 @@
 package com.lframework.xingyun.sc.vo.purchase.receive;
 
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
-import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
+import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -90,11 +90,10 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
   @ApiModelProperty("是否关联采购订单")
   private Boolean required;
 
-  @Override
   public void validate() {
 
-    IPurchaseConfigService purchaseConfigService = ApplicationUtil.getBean(
-        IPurchaseConfigService.class);
+    PurchaseConfigService purchaseConfigService = ApplicationUtil.getBean(
+        PurchaseConfigService.class);
     PurchaseConfig purchaseConfig = purchaseConfigService.get();
 
     if (!purchaseConfig.getReceiveRequirePurchase().equals(this.required)) {
@@ -106,7 +105,7 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
 
   protected void validate(boolean requirePurchase) {
 
-    IReceiveSheetService receiveSheetService = ApplicationUtil.getBean(IReceiveSheetService.class);
+    ReceiveSheetService receiveSheetService = ApplicationUtil.getBean(ReceiveSheetService.class);
     GetPaymentDateDto paymentDate = receiveSheetService.getPaymentDate(this.supplierId);
     if (paymentDate.getAllowModify()) {
       if (this.getPaymentDate() == null) {

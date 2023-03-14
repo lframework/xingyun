@@ -1,18 +1,18 @@
 package com.lframework.xingyun.core.aop;
 
-import com.lframework.common.utils.ArrayUtil;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.StringUtil;
-import com.lframework.common.utils.ThreadUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.common.utils.ArrayUtil;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.common.utils.ThreadUtil;
+import com.lframework.starter.web.common.security.AbstractUserDetails;
+import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.threads.DefaultRunnable;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.SpelUtil;
-import com.lframework.web.common.security.AbstractUserDetails;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.web.common.threads.DefaultRunnable;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
-import com.lframework.xingyun.core.service.IOrderTimeLineService;
+import com.lframework.xingyun.core.service.OrderTimeLineService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +62,7 @@ public class OrderTimeLineLogAspect {
 
     try {
       if (POOL.get() != null) {
-        POOL.set(POOL.get()+1);
+        POOL.set(POOL.get() + 1);
         // 如果出现嵌套，那么以最外层的为准，不进行嵌套隔离
         return joinPoint.proceed();
       }
@@ -182,34 +182,37 @@ public class OrderTimeLineLogAspect {
 
         if (orderTimeLineLog.delete()) {
           for (String orderId : orderIdList) {
-            ThreadUtil.execAsync(new DefaultRunnable(SecurityUtil.getCurrentUser(), () -> {
-              IOrderTimeLineService orderTimeLineService = ApplicationUtil.getBean(
-                  IOrderTimeLineService.class);
+            ThreadUtil.execAsync(new DefaultRunnable(() -> {
+              OrderTimeLineService orderTimeLineService = ApplicationUtil.getBean(
+                  OrderTimeLineService.class);
               orderTimeLineService.deleteByOrder(orderId);
               orderTimeLineService.cleanCacheByKey(orderId);
             }));
           }
         } else {
+          List<OrderTimeLine> records = new ArrayList<>();
+          OrderTimeLineService orderTimeLineService = ApplicationUtil.getBean(
+              OrderTimeLineService.class);
           for (String[] strArr : paramsList) {
             for (String orderId : orderIdList) {
-              ThreadUtil.execAsync(new DefaultRunnable(SecurityUtil.getCurrentUser(), () -> {
-                IOrderTimeLineService orderTimeLineService = ApplicationUtil.getBean(
-                    IOrderTimeLineService.class);
-                OrderTimeLine record = new OrderTimeLine();
-                record.setId(IdUtil.getId());
-                record.setOrderId(orderId);
-                record.setContent(StringUtil.format(orderTimeLineLog.name(), strArr));
-                record.setCreateBy(curUserName);
-                record.setCreateById(curUserId);
-                record.setBizType(orderTimeLineLog.type());
-
-                orderTimeLineService.save(record);
-                orderTimeLineService.cleanCacheByKey(orderId);
-              }));
+              OrderTimeLine record = new OrderTimeLine();
+              record.setId(IdUtil.getId());
+              record.setOrderId(orderId);
+              record.setContent(StringUtil.format(orderTimeLineLog.name(), strArr));
+              record.setCreateBy(curUserName);
+              record.setCreateById(curUserId);
+              record.setBizType(orderTimeLineLog.type());
+              records.add(record);
             }
           }
+          if (CollectionUtil.isNotEmpty(records)) {
+            ThreadUtil.execAsync(new DefaultRunnable(() -> {
+              orderTimeLineService.saveBatch(records);
+              orderTimeLineService.cleanCacheByKeys(orderIdList);
+            }));
+          }
         }
-      }catch (Exception e) {
+      } catch (Exception e) {
         log.error(e.getMessage(), e);
       }
     } finally {

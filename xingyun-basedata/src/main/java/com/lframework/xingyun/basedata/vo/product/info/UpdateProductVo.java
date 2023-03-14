@@ -5,6 +5,10 @@ import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
@@ -37,10 +41,16 @@ public class UpdateProductVo implements BaseVo, Serializable {
   private String name;
 
   /**
-   * SKU编号
+   * 简称
    */
-  @ApiModelProperty(value = "SKU编号", required = true)
-  @NotBlank(message = "请输入SKU编号！")
+  @ApiModelProperty(value = "简称")
+  private String shortName;
+
+  /**
+   * 商品SKU编号
+   */
+  @ApiModelProperty(value = "商品SKU编号", required = true)
+  @NotBlank(message = "商品SKU编号不能为空！")
   private String skuCode;
 
   /**
@@ -48,6 +58,20 @@ public class UpdateProductVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("外部编号")
   private String externalCode;
+
+  /**
+   * 类目ID
+   */
+  @ApiModelProperty("类目ID")
+  @NotBlank(message = "类目ID不能为空！")
+  private String categoryId;
+
+  /**
+   * 品牌ID
+   */
+  @ApiModelProperty("品牌ID")
+  @NotBlank(message = "品牌ID不能为空！")
+  private String brandId;
 
   /**
    * 规格
@@ -62,11 +86,29 @@ public class UpdateProductVo implements BaseVo, Serializable {
   private String unit;
 
   /**
-   * 状态
+   * 进项税率（%）
    */
-  @ApiModelProperty(value = "状态", required = true)
-  @NotNull(message = "请选择状态！")
-  private Boolean available;
+  @ApiModelProperty(value = "进项税率（%）", required = true)
+  @NotNull(message = "进项税率（%）不能为空！")
+  @Min(value = 0, message = "进项税率（%）不允许小于0！")
+  @Digits(integer = 10, fraction = 0, message = "进项税率（%）必须为整数！")
+  private BigDecimal taxRate;
+
+  /**
+   * 销项税率（%）
+   */
+  @ApiModelProperty(value = "销项税率（%）", required = true)
+  @NotNull(message = "销项税率（%）不能为空！")
+  @Min(value = 0, message = "销项税率（%）不允许小于0！")
+  @Digits(integer = 10, fraction = 0, message = "销项税率（%）必须为整数！")
+  private BigDecimal saleTaxRate;
+
+  /**
+   * 商品属性
+   */
+  @ApiModelProperty(value = "商品属性")
+  @Valid
+  private List<ProductPropertyRelationVo> properties;
 
   /**
    * 采购价
@@ -87,14 +129,9 @@ public class UpdateProductVo implements BaseVo, Serializable {
   private BigDecimal retailPrice;
 
   /**
-   * 销售属性1ID
+   * 状态
    */
-  @ApiModelProperty("销售属性1ID")
-  private String salePropItem1Id;
-
-  /**
-   * 销售属性2ID
-   */
-  @ApiModelProperty("销售属性2ID")
-  private String salePropItem2Id;
+  @ApiModelProperty(value = "状态",required = true)
+  @NotNull(message = "状态不能为空！")
+  private Boolean available;
 }

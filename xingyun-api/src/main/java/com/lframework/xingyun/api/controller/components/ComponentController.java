@@ -1,13 +1,13 @@
 package com.lframework.xingyun.api.controller.components;
 
 import cn.hutool.crypto.SecureUtil;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.FileUtil;
-import com.lframework.starter.web.controller.DefaultBaseController;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.FileUtil;
 import com.lframework.starter.web.bo.ExcelImportBo;
+import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.service.SysParameterService;
@@ -18,12 +18,11 @@ import com.lframework.starter.web.utils.UploadUtil;
 import com.lframework.xingyun.api.bo.components.MapLocationBo;
 import com.lframework.xingyun.api.bo.components.OrderTimeLineBo;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
-import com.lframework.xingyun.core.service.IOrderTimeLineService;
+import com.lframework.xingyun.core.service.OrderTimeLineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class ComponentController extends DefaultBaseController {
   private SysParameterService sysParameterService;
 
   @Autowired
-  private IOrderTimeLineService orderTimeLineService;
+  private OrderTimeLineService orderTimeLineService;
 
   @ApiOperation("查询导入Excel任务")
   @GetMapping("/import/task")
@@ -118,16 +117,29 @@ public class ComponentController extends DefaultBaseController {
     return InvokeResultBuilder.success(results);
   }
 
-  @ApiOperation("富文本编辑器上传图片")
-  @PostMapping("/editor/upload/image")
-  public InvokeResult<Map<String, String>> editorUploadImage(MultipartFile file) {
-    if (!FileUtil.IMG_SUFFIX.contains(FileUtil.getSuffix(file.getOriginalFilename()))) {
+  @ApiOperation("通用上传图片")
+  @PostMapping("/upload/image")
+  public InvokeResult<String> uploadImage(MultipartFile file) {
+    if (!FileUtil.IMG_SUFFIX.contains(FileUtil.getSuffix(file.getOriginalFilename()).toLowerCase())) {
       throw new DefaultClientException(
           "上传图片仅支持【" + CollectionUtil.join(FileUtil.IMG_SUFFIX, StringPool.STR_SPLIT_CN) + "】格式！");
     }
 
     String url = UploadUtil.upload(file);
 
-    return InvokeResultBuilder.success(Collections.singletonMap("url", url));
+    return InvokeResultBuilder.success(url);
+  }
+
+  @ApiOperation("通用上传视频")
+  @PostMapping("/upload/video")
+  public InvokeResult<String> uploadVideo(MultipartFile file) {
+    if (!FileUtil.VIDEO_SUFFIX.contains(FileUtil.getSuffix(file.getOriginalFilename()).toLowerCase())) {
+      throw new DefaultClientException(
+          "上传视频仅支持【" + CollectionUtil.join(FileUtil.VIDEO_SUFFIX, StringPool.STR_SPLIT_CN) + "】格式！");
+    }
+
+    String url = UploadUtil.upload(file);
+
+    return InvokeResultBuilder.success(url);
   }
 }

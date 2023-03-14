@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.vo.stock.take.pre;
 
-import com.lframework.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.utils.EnumUtil;
@@ -52,7 +52,6 @@ public class CreatePreTakeStockSheetVo implements BaseVo, Serializable {
   @NotEmpty(message = "请录入商品！")
   private List<PreTakeStockProductVo> products;
 
-  @Override
   public void validate() {
 
     Set<String> checkSet = new HashSet<>();

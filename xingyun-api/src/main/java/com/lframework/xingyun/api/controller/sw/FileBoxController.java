@@ -1,18 +1,18 @@
 package com.lframework.xingyun.api.controller.sw;
 
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.CollectionUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.UploadUtil;
-import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.api.bo.sw.filebox.GetFileBoxBo;
 import com.lframework.xingyun.api.bo.sw.filebox.QueryFileBoxBo;
 import com.lframework.xingyun.core.entity.FileBox;
-import com.lframework.xingyun.core.service.IFileBoxService;
+import com.lframework.xingyun.core.service.FileBoxService;
 import com.lframework.xingyun.core.vo.sw.filebox.BatchSendFileBoxVo;
 import com.lframework.xingyun.core.vo.sw.filebox.CreateFileBoxVo;
 import com.lframework.xingyun.core.vo.sw.filebox.QueryFileBoxVo;
@@ -45,7 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileBoxController extends DefaultBaseController {
 
   @Autowired
-  private IFileBoxService fileBoxService;
+  private FileBoxService fileBoxService;
 
   /**
    * 上传文件

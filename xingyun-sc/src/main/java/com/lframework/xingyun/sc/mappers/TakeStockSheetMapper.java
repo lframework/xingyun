@@ -1,6 +1,8 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
+import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
@@ -47,4 +49,21 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
    * @return
    */
   Boolean hasUnApprove(String planId);
+
+  /**
+   * 根据关键字查询盘点单商品信息
+   *
+   * @param condition
+   * @return
+   */
+  List<TakeStockSheetProductDto> queryTakeStockByCondition(@Param("planId") String planId,
+      @Param("condition") String condition);
+
+  /**
+   * 查询盘点单商品信息
+   *
+   * @param vo
+   * @return
+   */
+  List<TakeStockSheetProductDto> queryTakeStockList(@Param("vo") QueryTakeStockSheetProductVo vo);
 }

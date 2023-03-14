@@ -1,14 +1,14 @@
 package com.lframework.xingyun.basedata.impl.product;
 
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductSale;
 import com.lframework.xingyun.basedata.mappers.ProductSaleMapper;
-import com.lframework.xingyun.basedata.service.product.IProductSaleService;
+import com.lframework.xingyun.basedata.service.product.ProductSaleService;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
 import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductSaleServiceImpl extends BaseMpServiceImpl<ProductSaleMapper, ProductSale>
-    implements IProductSaleService {
+    implements ProductSaleService {
 
-  @OpLog(type = OpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductSaleVo vo) {
 
@@ -36,8 +36,8 @@ public class ProductSaleServiceImpl extends BaseMpServiceImpl<ProductSaleMapper,
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductSaleVo vo) {
 

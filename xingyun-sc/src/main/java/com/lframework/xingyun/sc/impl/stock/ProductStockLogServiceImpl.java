@@ -1,8 +1,8 @@
 package com.lframework.xingyun.sc.impl.stock;
 
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -12,7 +12,7 @@ import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.mappers.ProductStockLogMapper;
-import com.lframework.xingyun.sc.service.stock.IProductStockLogService;
+import com.lframework.xingyun.sc.service.stock.ProductStockLogService;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductStockLogServiceImpl extends
     BaseMpServiceImpl<ProductStockLogMapper, ProductStockLog>
-    implements IProductStockLogService {
+    implements ProductStockLogService {
 
   @Override
   public PageResult<ProductStockLog> query(Integer pageIndex, Integer pageSize,
@@ -45,7 +45,7 @@ public class ProductStockLogServiceImpl extends
     return getBaseMapper().query(vo);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void addLogWithAddStock(AddLogWithAddStockVo vo) {
 
@@ -53,7 +53,6 @@ public class ProductStockLogServiceImpl extends
     record.setId(IdUtil.getId());
     record.setScId(vo.getScId());
     record.setProductId(vo.getProductId());
-    record.setLotId(vo.getLotId());
     record.setOriStockNum(vo.getOriStockNum());
     record.setCurStockNum(vo.getCurStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());
@@ -84,7 +83,7 @@ public class ProductStockLogServiceImpl extends
     getBaseMapper().insert(record);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void addLogWithSubStock(AddLogWithSubStockVo vo) {
 
@@ -92,7 +91,6 @@ public class ProductStockLogServiceImpl extends
     record.setId(IdUtil.getId());
     record.setScId(vo.getScId());
     record.setProductId(vo.getProductId());
-    record.setLotId(vo.getLotId());
     record.setOriStockNum(vo.getOriStockNum());
     record.setCurStockNum(vo.getCurStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());
@@ -123,7 +121,7 @@ public class ProductStockLogServiceImpl extends
     getBaseMapper().insert(record);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void addLogWithStockCostAdjust(AddLogWithStockCostAdjustVo vo) {
 
@@ -131,7 +129,6 @@ public class ProductStockLogServiceImpl extends
     record.setId(IdUtil.getId());
     record.setScId(vo.getScId());
     record.setProductId(vo.getProductId());
-    record.setLotId(vo.getLotId());
     record.setOriStockNum(vo.getOriStockNum());
     record.setCurStockNum(vo.getOriStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());

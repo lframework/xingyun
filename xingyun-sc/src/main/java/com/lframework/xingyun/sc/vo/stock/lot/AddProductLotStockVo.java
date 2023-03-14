@@ -14,13 +14,6 @@ public class AddProductLotStockVo implements BaseVo, Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
-   * 批次ID
-   */
-  @ApiModelProperty(value = "批次ID", required = true)
-  @NotBlank(message = "批次ID不能为空！")
-  private String lotId;
-
-  /**
    * 仓库ID
    */
   @ApiModelProperty(value = "仓库ID", required = true)

@@ -1,10 +1,10 @@
 package com.lframework.xingyun.sc.vo.sale.out;
 
-import com.lframework.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
-import com.lframework.xingyun.sc.service.sale.ISaleOutSheetService;
+import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
@@ -27,7 +27,7 @@ public class UpdateSaleOutSheetVo extends CreateSaleOutSheetVo implements BaseVo
   @Override
   public void validate() {
 
-    ISaleOutSheetService saleOutSheetService = ApplicationUtil.getBean(ISaleOutSheetService.class);
+    SaleOutSheetService saleOutSheetService = ApplicationUtil.getBean(SaleOutSheetService.class);
     SaleOutSheet saleOutSheet = saleOutSheetService.getById(this.getId());
 
     this.validate(!StringUtil.isBlank(saleOutSheet.getSaleOrderId()));

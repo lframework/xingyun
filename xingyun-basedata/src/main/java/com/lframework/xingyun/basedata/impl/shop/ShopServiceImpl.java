@@ -4,12 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -18,7 +18,7 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.mappers.ShopMapper;
-import com.lframework.xingyun.basedata.service.shop.IShopService;
+import com.lframework.xingyun.basedata.service.shop.ShopService;
 import com.lframework.xingyun.basedata.vo.shop.CreateShopVo;
 import com.lframework.xingyun.basedata.vo.shop.QueryShopVo;
 import com.lframework.xingyun.basedata.vo.shop.UpdateShopVo;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> implements IShopService {
+public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> implements ShopService {
 
   @Override
   public PageResult<Shop> query(Integer pageIndex, Integer pageSize, QueryShopVo vo) {
@@ -50,15 +50,15 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
     return getBaseMapper().query(vo);
   }
 
-  @Cacheable(value = Shop.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Cacheable(value = Shop.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
   @Override
   public Shop findById(String id) {
 
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增门店，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "新增门店，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateShopVo vo) {
 
@@ -92,8 +92,8 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改门店，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改门店，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateShopVo vo) {
 
@@ -125,7 +125,7 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
     OpLogUtil.setExtra(vo);
   }
 
-  @CacheEvict(value = Shop.CACHE_NAME, key = "#key")
+  @CacheEvict(value = Shop.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
   @Override
   public void cleanCacheByKey(Serializable key) {
 

@@ -1,7 +1,7 @@
 package com.lframework.xingyun.chart.impl;
 
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.utils.DateUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
@@ -11,7 +11,7 @@ import com.lframework.xingyun.chart.dto.OrderChartTodayDto;
 import com.lframework.xingyun.chart.entity.OrderChart;
 import com.lframework.xingyun.chart.enums.OrderChartBizType;
 import com.lframework.xingyun.chart.mappers.OrderChartMapper;
-import com.lframework.xingyun.chart.service.IOrderChartService;
+import com.lframework.xingyun.chart.service.OrderChartService;
 import com.lframework.xingyun.chart.vo.CreateOrderChartVo;
 import com.lframework.xingyun.chart.vo.GetOrderChartVo;
 import com.lframework.xingyun.chart.vo.QueryOrderChartVo;
@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderChartServiceImpl extends BaseMpServiceImpl<OrderChartMapper, OrderChart>
-    implements IOrderChartService {
+    implements OrderChartService {
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateOrderChartVo vo) {
 

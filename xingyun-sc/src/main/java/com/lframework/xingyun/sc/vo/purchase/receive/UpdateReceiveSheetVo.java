@@ -1,9 +1,9 @@
 package com.lframework.xingyun.sc.vo.purchase.receive;
 
-import com.lframework.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
-import com.lframework.xingyun.sc.service.purchase.IReceiveSheetService;
+import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class UpdateReceiveSheetVo extends CreateReceiveSheetVo {
   @Override
   public void validate() {
 
-    IReceiveSheetService receiveSheetService = ApplicationUtil.getBean(IReceiveSheetService.class);
+    ReceiveSheetService receiveSheetService = ApplicationUtil.getBean(ReceiveSheetService.class);
     ReceiveSheet receiveSheet = receiveSheetService.getById(this.getId());
 
     this.validate(!StringUtil.isBlank(receiveSheet.getPurchaseOrderId()));

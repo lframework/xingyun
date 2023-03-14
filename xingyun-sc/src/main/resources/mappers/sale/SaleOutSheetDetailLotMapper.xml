@@ -4,7 +4,6 @@
     <resultMap id="SaleOutSheetDetailLotDto" type="com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailLotDto">
         <id column="id" property="id"/>
         <result column="detail_id" property="detailId"/>
-        <result column="lot_id" property="lotId"/>
         <result column="order_num" property="orderNum"/>
         <result column="return_num" property="returnNum"/>
         <result column="cost_tax_amount" property="costTaxAmount"/>
@@ -17,7 +16,6 @@
         SELECT
             d.id,
             d.detail_id,
-            d.lot_id,
             d.order_num,
             d.return_num,
             d.cost_tax_amount,

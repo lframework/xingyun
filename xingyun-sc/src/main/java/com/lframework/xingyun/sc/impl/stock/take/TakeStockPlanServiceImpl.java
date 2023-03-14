@@ -4,38 +4,37 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.qrtz.QrtzJob;
-import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
-import com.lframework.xingyun.basedata.service.product.IProductService;
+import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductPurchase;
+import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.events.stock.AddStockEvent;
 import com.lframework.xingyun.core.events.stock.SubStockEvent;
 import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
-import com.lframework.xingyun.sc.dto.stock.ProductLotWithStockDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
@@ -45,12 +44,11 @@ import com.lframework.xingyun.sc.enums.TakeStockPlanStatus;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanMapper;
-import com.lframework.xingyun.sc.service.stock.IProductLotService;
-import com.lframework.xingyun.sc.service.stock.IProductStockService;
-import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
-import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanDetailService;
-import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
-import com.lframework.xingyun.sc.service.stock.take.ITakeStockSheetService;
+import com.lframework.xingyun.sc.service.stock.ProductStockService;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanDetailService;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.CancelTakeStockPlanVo;
@@ -71,31 +69,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMapper, TakeStockPlan>
-    implements ITakeStockPlanService {
+    implements TakeStockPlanService {
 
   @Autowired
-  private ITakeStockPlanDetailService takeStockPlanDetailService;
+  private TakeStockPlanDetailService takeStockPlanDetailService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private IProductStockService productStockService;
+  private ProductStockService productStockService;
 
   @Autowired
-  private ITakeStockConfigService takeStockConfigService;
+  private TakeStockConfigService takeStockConfigService;
 
   @Autowired
-  private ITakeStockSheetService takeStockSheetService;
+  private TakeStockSheetService takeStockSheetService;
 
   @Autowired
-  private IProductPurchaseService productPurchaseService;
+  private ProductPurchaseService productPurchaseService;
 
-  @Autowired
-  private IProductLotService productLotService;
 
   @Override
   public PageResult<TakeStockPlan> query(Integer pageIndex, Integer pageSize,
@@ -117,14 +113,14 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
   }
 
   @Override
-  public PageResult<TakeStockPlanSelectorDto> selector(Integer pageIndex, Integer pageSize,
+  public PageResult<TakeStockPlan> selector(Integer pageIndex, Integer pageSize,
       TakeStockPlanSelectorVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<TakeStockPlanSelectorDto> datas = getBaseMapper().selector(vo);
+    List<TakeStockPlan> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -135,8 +131,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增盘点任务，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "新增盘点任务，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateTakeStockPlanVo vo) {
 
@@ -156,7 +152,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
 
     getBaseMapper().insert(data);
 
-    List<ProductDto> products = null;
+    List<Product> products = null;
     if (data.getTakeType() != TakeStockPlanType.SIMPLE) {
       // 单品盘点不生成明细
       if (data.getTakeType() == TakeStockPlanType.ALL) {
@@ -184,12 +180,12 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     }
 
     if (products != null) {
-      List<String> productIds = products.stream().map(ProductDto::getId)
+      List<String> productIds = products.stream().map(Product::getId)
           .collect(Collectors.toList());
       List<ProductStock> productStocks = productStockService.getByProductIdsAndScId(productIds,
           vo.getScId());
       int orderNo = 1;
-      for (ProductDto product : products) {
+      for (Product product : products) {
         ProductStock productStock = productStocks.stream()
             .filter(t -> t.getProductId().equals(product.getId()))
             .findFirst().orElse(null);
@@ -214,8 +210,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改盘点任务，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改盘点任务，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateTakeStockPlanVo vo) {
 
@@ -241,8 +237,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return getBaseMapper().getProducts(planId);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "差异生成，盘点任务ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "差异生成，盘点任务ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void createDiff(String id) {
 
@@ -284,8 +280,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "差异处理，盘点任务ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "差异处理，盘点任务ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void handleDiff(HandleTakeStockPlanVo vo) {
 
@@ -349,19 +345,16 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
       orderNo++;
       if (!NumberUtil.equal(detail.getStockNum(), detail.getTakeNum())) {
         if (NumberUtil.lt(detail.getStockNum(), detail.getTakeNum())) {
-          ProductLotWithStockDto productLot = productLotService.getLastPurchaseLot(
-              detail.getProductId(),
-              data.getScId(), null);
-          if (productLot == null) {
-            throw new DefaultClientException("第" + orderNo + "行商品在系统中无入库记录，无法盘点报溢！");
-          }
+          Product product = productService.findById(detail.getProductId());
+          ProductPurchase purchase = productPurchaseService.getById(product.getId());
           // 如果库存数量小于盘点数量，则报溢
           AddProductStockVo addProductStockVo = new AddProductStockVo();
           addProductStockVo.setProductId(detail.getProductId());
           addProductStockVo.setScId(data.getScId());
-          addProductStockVo.setSupplierId(productLot.getSupplierId());
           addProductStockVo.setStockNum(detail.getTakeNum() - detail.getStockNum());
-          addProductStockVo.setTaxRate(productLot.getTaxRate());
+          addProductStockVo.setDefaultTaxAmount(
+              NumberUtil.mul(purchase.getPrice(), addProductStockVo.getStockNum()));
+          addProductStockVo.setTaxRate(product.getTaxRate());
           addProductStockVo.setBizId(data.getId());
           addProductStockVo.setBizDetailId(detail.getId());
           addProductStockVo.setBizCode(data.getCode());
@@ -388,8 +381,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "作废盘点任务，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "作废盘点任务，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void cancel(CancelTakeStockPlanVo vo) {
 
@@ -411,8 +404,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除盘点任务，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除盘点任务，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -448,7 +441,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     @Autowired
     private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void onApplicationEvent(AddStockEvent addStockEvent) {
 
@@ -464,7 +457,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     @Autowired
     private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void onApplicationEvent(SubStockEvent addStockEvent) {
 
@@ -481,7 +474,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
   public static class AutoCancelJob extends QrtzJob {
 
     @Autowired
-    private ITakeStockPlanService takeStockPlanService;
+    private TakeStockPlanService takeStockPlanService;
 
     @Override
     public void onExecute(JobExecutionContext context) {

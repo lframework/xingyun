@@ -4,14 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -23,13 +23,13 @@ import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.ManageType;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.mappers.SupplierMapper;
-import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
+import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.basedata.vo.supplier.CreateSupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierSelectorVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.UpdateSupplierVo;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
-import com.lframework.xingyun.core.service.IDicCityService;
+import com.lframework.xingyun.core.service.DicCityService;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -40,10 +40,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Supplier> implements ISupplierService {
+public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Supplier> implements
+    SupplierService {
 
     @Autowired
-    private IDicCityService dicCityService;
+    private DicCityService dicCityService;
 
     @Override
     public PageResult<Supplier> query(Integer pageIndex, Integer pageSize, QuerySupplierVo vo) {
@@ -63,15 +64,15 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         return getBaseMapper().query(vo);
     }
 
-    @Cacheable(value = Supplier.CACHE_NAME, key = "#id", unless = "#result == null")
+    @Cacheable(value = Supplier.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
     @Override
     public Supplier findById(String id) {
 
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "停用供应商，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "停用供应商，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
 
@@ -84,8 +85,8 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "启用供应商，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "启用供应商，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
 
@@ -98,8 +99,8 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增供应商，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "新增供应商，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateSupplierVo vo) {
 
@@ -176,8 +177,8 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         return data.getId();
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改供应商，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "修改供应商，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateSupplierVo vo) {
 
@@ -244,7 +245,7 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @CacheEvict(value = Supplier.CACHE_NAME, key = "#key")
+    @CacheEvict(value = Supplier.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
     @Override
     public void cleanCacheByKey(Serializable key) {
 

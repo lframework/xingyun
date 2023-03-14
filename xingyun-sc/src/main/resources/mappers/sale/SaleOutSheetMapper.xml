@@ -76,7 +76,6 @@
             <result column="detail_description" property="description"/>
             <result column="detail_order_no" property="orderNo"/>
             <result column="detail_return_num" property="returnNum"/>
-            <result column="detail_lot_id" property="lotId"/>
         </collection>
     </resultMap>
 
@@ -265,12 +264,12 @@
         d.product_id AS detail_product_id, d.order_num AS detail_order_num, d.ori_price AS detail_ori_price,
         d.tax_price AS detail_tax_price, d.discount_rate AS detail_discount_rate, d.is_gift AS detail_is_gift,
         d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
-        d.return_num AS detail_return_num, d.lot_id AS detail_lot_id
+        d.return_num AS detail_return_num
         FROM tbl_sale_out_sheet AS s
         LEFT JOIN (
         SELECT
         l.id, d.sheet_id, d.product_id, l.order_num, d.ori_price, d.tax_price, d.discount_rate, d.is_gift,
-        d.tax_rate, d.description, d.order_no, l.return_num, l.lot_id, l.order_no AS lot_order_no
+        d.tax_rate, d.description, d.order_no, l.return_num, l.order_no AS lot_order_no
         FROM tbl_sale_out_sheet_detail AS d
         INNER JOIN tbl_sale_out_sheet_detail_lot AS l ON l.detail_id = d.id
         <if test="requireOut">AND l.order_num > l.return_num</if>

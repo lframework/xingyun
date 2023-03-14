@@ -1,17 +1,17 @@
 package com.lframework.xingyun.sc.impl.retail;
 
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.NumberUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
-import com.lframework.xingyun.basedata.service.product.IProductService;
+import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
 import com.lframework.xingyun.sc.mappers.RetailOutSheetDetailLotMapper;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailLotService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RetailOutSheetDetailLotServiceImpl
     extends BaseMpServiceImpl<RetailOutSheetDetailLotMapper, RetailOutSheetDetailLot>
-    implements IRetailOutSheetDetailLotService {
+    implements RetailOutSheetDetailLotService {
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private IRetailOutSheetDetailService retailOutSheetDetailService;
+  private RetailOutSheetDetailService retailOutSheetDetailService;
 
   @Override
   public RetailOutSheetDetailLotDto findById(String id) {
@@ -33,7 +33,7 @@ public class RetailOutSheetDetailLotServiceImpl
     return getBaseMapper().findById(id);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void addReturnNum(String id, Integer num) {
 
@@ -46,7 +46,7 @@ public class RetailOutSheetDetailLotServiceImpl
     if (NumberUtil.lt(remainNum, num)) {
       RetailOutSheetDetail sheetDetail = retailOutSheetDetailService.getById(detail.getDetailId());
 
-      ProductDto product = productService.findById(sheetDetail.getProductId());
+      Product product = productService.findById(sheetDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余退货数量为" + remainNum
@@ -57,7 +57,7 @@ public class RetailOutSheetDetailLotServiceImpl
     if (getBaseMapper().addReturnNum(detail.getId(), num) != 1) {
       RetailOutSheetDetail sheetDetail = retailOutSheetDetailService.getById(detail.getDetailId());
 
-      ProductDto product = productService.findById(sheetDetail.getProductId());
+      Product product = productService.findById(sheetDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余退货数量不足，不允许继续退货！");
@@ -66,7 +66,7 @@ public class RetailOutSheetDetailLotServiceImpl
     retailOutSheetDetailService.addReturnNum(detail.getDetailId(), num);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void subReturnNum(String id, Integer num) {
 
@@ -78,7 +78,7 @@ public class RetailOutSheetDetailLotServiceImpl
     if (NumberUtil.lt(detail.getReturnNum(), num)) {
       RetailOutSheetDetail sheetDetail = retailOutSheetDetailService.getById(detail.getDetailId());
 
-      ProductDto product = productService.findById(sheetDetail.getProductId());
+      Product product = productService.findById(sheetDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已退货数量为" + detail.getReturnNum()
@@ -88,7 +88,7 @@ public class RetailOutSheetDetailLotServiceImpl
     if (getBaseMapper().subReturnNum(detail.getId(), num) != 1) {
       RetailOutSheetDetail sheetDetail = retailOutSheetDetailService.getById(detail.getDetailId());
 
-      ProductDto product = productService.findById(sheetDetail.getProductId());
+      Product product = productService.findById(sheetDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已退货数量不足，不允许取消退货！");

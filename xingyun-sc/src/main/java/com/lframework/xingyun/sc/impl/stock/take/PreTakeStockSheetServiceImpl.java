@@ -4,32 +4,33 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.starter.web.service.IGenerateCodeService;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
+import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
-import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetSelectorDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheetDetail;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import com.lframework.xingyun.sc.mappers.PreTakeStockSheetMapper;
-import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetDetailService;
-import com.lframework.xingyun.sc.service.stock.take.IPreTakeStockSheetService;
-import com.lframework.xingyun.sc.service.stock.take.ITakeStockSheetService;
+import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetDetailService;
+import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetService;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
@@ -44,16 +45,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PreTakeStockSheetServiceImpl extends
     BaseMpServiceImpl<PreTakeStockSheetMapper, PreTakeStockSheet>
-    implements IPreTakeStockSheetService {
+    implements PreTakeStockSheetService {
 
   @Autowired
-  private IPreTakeStockSheetDetailService preTakeStockSheetDetailService;
+  private PreTakeStockSheetDetailService preTakeStockSheetDetailService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private ITakeStockSheetService takeStockSheetService;
+  private TakeStockSheetService takeStockSheetService;
 
   @Override
   public PageResult<PreTakeStockSheet> query(Integer pageIndex, Integer pageSize,
@@ -75,14 +76,14 @@ public class PreTakeStockSheetServiceImpl extends
   }
 
   @Override
-  public PageResult<PreTakeStockSheetSelectorDto> selector(Integer pageIndex, Integer pageSize,
+  public PageResult<PreTakeStockSheet> selector(Integer pageIndex, Integer pageSize,
       PreTakeStockSheetSelectorVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PreTakeStockSheetSelectorDto> datas = getBaseMapper().selector(vo);
+    List<PreTakeStockSheet> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -104,8 +105,8 @@ public class PreTakeStockSheetServiceImpl extends
     return getBaseMapper().getProducts(id, planId);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增预先盘点单，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "新增预先盘点单，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreatePreTakeStockSheetVo vo) {
 
@@ -139,8 +140,8 @@ public class PreTakeStockSheetServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改预先盘点单，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改预先盘点单，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdatePreTakeStockSheetVo vo) {
 
@@ -182,8 +183,8 @@ public class PreTakeStockSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除预先盘点单，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除预先盘点单，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -199,13 +200,43 @@ public class PreTakeStockSheetServiceImpl extends
     preTakeStockSheetDetailService.remove(deleteDetailWrapper);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchDelete(List<String> ids) {
 
     for (String id : ids) {
       getThis(this.getClass()).deleteById(id);
     }
+  }
+
+  @Override
+  public PageResult<PreTakeStockProductDto> queryPreTakeStockByCondition(Integer pageIndex,
+      Integer pageSize, String condition) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockByCondition(condition);
+    PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<PreTakeStockProductDto> queryPreTakeStockList(Integer pageIndex,
+      Integer pageSize, QueryPreTakeStockProductVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockList(vo);
+    PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
   }
 
   @Override

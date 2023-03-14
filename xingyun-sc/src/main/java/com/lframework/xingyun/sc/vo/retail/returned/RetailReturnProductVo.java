@@ -18,12 +18,6 @@ public class RetailReturnProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
-   * 供应商ID
-   */
-  @ApiModelProperty("供应商ID")
-  private String supplierId;
-
-  /**
    * 原价
    */
   @ApiModelProperty("原价")

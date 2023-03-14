@@ -18,13 +18,6 @@ public class CreateProductLotVo implements BaseVo, Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
-   * 批次号
-   */
-  @ApiModelProperty(value = "批次号", required = true)
-  @NotBlank(message = "批次号不能为空！")
-  private String lotCode;
-
-  /**
    * 商品ID
    */
   @ApiModelProperty(value = "商品ID", required = true)

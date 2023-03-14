@@ -32,13 +32,6 @@ public class AddProductStockVo implements BaseVo, Serializable {
   private String scId;
 
   /**
-   * 供应商ID
-   */
-  @ApiModelProperty(value = "供应商ID", required = true)
-  @NotBlank(message = "供应商ID不能为空！")
-  private String supplierId;
-
-  /**
    * 入库数量
    */
   @ApiModelProperty(value = "入库数量", required = true)

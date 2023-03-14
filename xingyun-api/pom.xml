@@ -34,11 +34,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.lframework</groupId>
             <artifactId>gen-starter</artifactId>
         </dependency>

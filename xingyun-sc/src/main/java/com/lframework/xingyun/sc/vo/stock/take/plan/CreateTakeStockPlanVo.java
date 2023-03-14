@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.take.plan;
 
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.CollectionUtil;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.utils.EnumUtil;
@@ -48,7 +48,6 @@ public class CreateTakeStockPlanVo implements BaseVo, Serializable {
   @ApiModelProperty("备注")
   private String description;
 
-  @Override
   public void validate() {
 
     TakeStockPlanType takeType = EnumUtil.getByCode(TakeStockPlanType.class, this.takeType);

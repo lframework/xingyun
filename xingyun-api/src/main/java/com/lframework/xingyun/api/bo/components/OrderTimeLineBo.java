@@ -1,7 +1,7 @@
 package com.lframework.xingyun.api.bo.components;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lframework.common.constants.StringPool;
+import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
 import io.swagger.annotations.ApiModelProperty;

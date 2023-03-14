@@ -3,47 +3,49 @@ package com.lframework.xingyun.sc.impl.stock.adjust;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.starter.web.service.IGenerateCodeService;
+import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
-import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
-import com.lframework.xingyun.basedata.service.product.IProductService;
+import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustDiffDto;
+import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheetDetail;
 import com.lframework.xingyun.sc.enums.StockCostAdjustSheetStatus;
 import com.lframework.xingyun.sc.mappers.StockCostAdjustSheetMapper;
-import com.lframework.xingyun.sc.service.stock.IProductStockService;
-import com.lframework.xingyun.sc.service.stock.adjust.IStockCostAdjustSheetDetailService;
-import com.lframework.xingyun.sc.service.stock.adjust.IStockCostAdjustSheetService;
+import com.lframework.xingyun.sc.service.stock.ProductStockService;
+import com.lframework.xingyun.sc.service.stock.adjust.StockCostAdjustSheetDetailService;
+import com.lframework.xingyun.sc.service.stock.adjust.StockCostAdjustSheetService;
 import com.lframework.xingyun.sc.vo.stock.StockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.ApprovePassStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.ApproveRefuseStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.BatchApprovePassStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.BatchApproveRefuseStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.CreateStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.StockCostAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.UpdateStockCostAdjustSheetVo;
@@ -59,22 +61,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class StockCostAdjustSheetServiceImpl extends
     BaseMpServiceImpl<StockCostAdjustSheetMapper, StockCostAdjustSheet>
-    implements IStockCostAdjustSheetService {
+    implements StockCostAdjustSheetService {
 
   @Autowired
-  private IStockCostAdjustSheetDetailService stockCostAdjustSheetDetailService;
+  private StockCostAdjustSheetDetailService stockCostAdjustSheetDetailService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private IProductStockService productStockService;
+  private ProductStockService productStockService;
 
   @Autowired
-  private IProductPurchaseService productPurchaseService;
+  private ProductPurchaseService productPurchaseService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Override
   public PageResult<StockCostAdjustSheet> query(Integer pageIndex, Integer pageSize,
@@ -101,9 +103,9 @@ public class StockCostAdjustSheetServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增库存成本调整单，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.OTHER, name = "新增库存成本调整单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建调整单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateStockCostAdjustSheetVo vo) {
 
@@ -121,9 +123,9 @@ public class StockCostAdjustSheetServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改库存成本调整单，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改库存成本调整单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#_result", name = "修改调整单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateStockCostAdjustSheetVo vo) {
 
@@ -171,9 +173,9 @@ public class StockCostAdjustSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除库存成本调整单，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除库存成本调整单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -201,7 +203,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByIds(List<String> ids) {
 
@@ -210,7 +212,7 @@ public class StockCostAdjustSheetServiceImpl extends
       for (String id : ids) {
 
         try {
-          IStockCostAdjustSheetService thisService = getThis(this.getClass());
+          StockCostAdjustSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个库存成本调整单删除失败，失败原因：" + e.getMsg());
@@ -221,9 +223,9 @@ public class StockCostAdjustSheetServiceImpl extends
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过库存成本调整单，ID：{}", params = {"#vo.id"})
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过库存成本调整单，ID：{}", params = {"#vo.id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassStockCostAdjustSheetVo vo) {
 
@@ -265,12 +267,12 @@ public class StockCostAdjustSheetServiceImpl extends
 
     BigDecimal totalDiffAmount = BigDecimal.ZERO;
     for (StockCostAdjustSheetDetail detail : details) {
-      ProductDto product = productService.findById(detail.getProductId());
+      Product product = productService.findById(detail.getProductId());
       StockCostAdjustVo adjustVo = new StockCostAdjustVo();
       adjustVo.setProductId(detail.getProductId());
       adjustVo.setScId(data.getScId());
       adjustVo.setTaxPrice(detail.getPrice());
-      adjustVo.setTaxRate(product.getPoly().getTaxRate());
+      adjustVo.setTaxRate(product.getTaxRate());
       adjustVo.setCreateTime(now);
       adjustVo.setBizId(data.getId());
       adjustVo.setBizDetailId(detail.getId());
@@ -293,7 +295,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApprovePass(BatchApprovePassStockCostAdjustSheetVo vo) {
 
@@ -303,7 +305,7 @@ public class StockCostAdjustSheetServiceImpl extends
       approvePassVo.setId(id);
 
       try {
-        IStockCostAdjustSheetService thisService = getThis(this.getClass());
+        StockCostAdjustSheetService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个库存成本调整单审核通过失败，失败原因：" + e.getMsg());
@@ -314,11 +316,11 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateStockCostAdjustSheetVo vo) {
 
-    IStockCostAdjustSheetService thisService = getThis(this.getClass());
+    StockCostAdjustSheetService thisService = getThis(this.getClass());
 
     String id = thisService.create(vo);
 
@@ -331,9 +333,9 @@ public class StockCostAdjustSheetServiceImpl extends
     return id;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝库存成本调整单，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝库存成本调整单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseStockCostAdjustSheetVo vo) {
 
@@ -369,7 +371,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApproveRefuse(BatchApproveRefuseStockCostAdjustSheetVo vo) {
 
@@ -380,7 +382,7 @@ public class StockCostAdjustSheetServiceImpl extends
       approveRefuseVo.setRefuseReason(vo.getRefuseReason());
 
       try {
-        IStockCostAdjustSheetService thisService = getThis(this.getClass());
+        StockCostAdjustSheetService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个库存成本调整单审核拒绝失败，失败原因：" + e.getMsg());
@@ -388,6 +390,40 @@ public class StockCostAdjustSheetServiceImpl extends
 
       orderNo++;
     }
+  }
+
+
+  @Override
+  public PageResult<StockCostAdjustProductDto> queryStockCostAdjustByCondition(Integer pageIndex,
+      Integer pageSize, String scId, String condition) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<StockCostAdjustProductDto> datas = getBaseMapper().queryStockCostAdjustByCondition(scId,
+        condition);
+    PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(
+        new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<StockCostAdjustProductDto> queryStockCostAdjustList(Integer pageIndex,
+      Integer pageSize, QueryStockCostAdjustProductVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<StockCostAdjustProductDto> datas = getBaseMapper().queryStockCostAdjustList(vo);
+    PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(
+        new PageInfo<>(datas));
+
+    return pageResult;
   }
 
   @Override

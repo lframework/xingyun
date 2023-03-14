@@ -22,11 +22,6 @@ public class RetailOutSheetDetailLotDto implements BaseDto, Serializable {
   private String detailId;
 
   /**
-   * 批次ID
-   */
-  private String lotId;
-
-  /**
    * 出库数量
    */
   private Integer orderNum;

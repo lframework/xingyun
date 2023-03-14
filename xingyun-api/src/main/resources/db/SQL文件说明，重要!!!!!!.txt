@@ -1,0 +1,3 @@
+all目录中的是全量SQL，其中platform.sql是平台库SQL；tenant.sql是租户库SQL。
+migration目录中的是增量SQL，其中platform目录中是平台库的增量SQL；tenant目录中是租户库的增量SQL。
+如果不使用多租户，那么平台库和租户库的SQL就在同一个库中执行。

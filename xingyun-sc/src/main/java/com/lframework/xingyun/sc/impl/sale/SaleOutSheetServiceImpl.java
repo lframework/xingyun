@@ -4,35 +4,34 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.service.IGenerateCodeService;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.enums.SettleType;
-import com.lframework.xingyun.basedata.service.customer.ICustomerService;
-import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.xingyun.basedata.service.customer.CustomerService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.dto.stock.ProductLotChangeDto;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -49,13 +48,13 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.SaleOutSheetMapper;
-import com.lframework.xingyun.sc.service.sale.ISaleConfigService;
-import com.lframework.xingyun.sc.service.sale.ISaleOrderDetailService;
-import com.lframework.xingyun.sc.service.sale.ISaleOrderService;
-import com.lframework.xingyun.sc.service.sale.ISaleOutSheetDetailLotService;
-import com.lframework.xingyun.sc.service.sale.ISaleOutSheetDetailService;
-import com.lframework.xingyun.sc.service.sale.ISaleOutSheetService;
-import com.lframework.xingyun.sc.service.stock.IProductStockService;
+import com.lframework.xingyun.sc.service.sale.SaleConfigService;
+import com.lframework.xingyun.sc.service.sale.SaleOrderDetailService;
+import com.lframework.xingyun.sc.service.sale.SaleOrderService;
+import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailLotService;
+import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailService;
+import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
+import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.sale.out.ApprovePassSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.ApproveRefuseSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.BatchApprovePassSaleOutSheetVo;
@@ -78,40 +77,40 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMapper, SaleOutSheet>
-    implements ISaleOutSheetService {
+    implements SaleOutSheetService {
 
   @Autowired
-  private ISaleOutSheetDetailService saleOutSheetDetailService;
+  private SaleOutSheetDetailService saleOutSheetDetailService;
 
   @Autowired
-  private ISaleOutSheetDetailLotService saleOutSheetDetailLotService;
+  private SaleOutSheetDetailLotService saleOutSheetDetailLotService;
 
   @Autowired
-  private IStoreCenterService storeCenterService;
+  private StoreCenterService storeCenterService;
 
   @Autowired
-  private ICustomerService customerService;
+  private CustomerService customerService;
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Autowired
-  private ISaleOrderService saleOrderService;
+  private SaleOrderService saleOrderService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private ISaleConfigService saleConfigService;
+  private SaleConfigService saleConfigService;
 
   @Autowired
-  private ISaleOrderDetailService saleOrderDetailService;
+  private SaleOrderDetailService saleOrderDetailService;
 
   @Autowired
-  private IProductStockService productStockService;
+  private ProductStockService productStockService;
 
   @Override
   public PageResult<SaleOutSheet> query(Integer pageIndex, Integer pageSize,
@@ -202,9 +201,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建出库单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSaleOutSheetVo vo) {
 
@@ -226,9 +225,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     return sheet.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改出库单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSaleOutSheetVo vo) {
 
@@ -289,9 +288,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassSaleOutSheetVo vo) {
 
@@ -345,6 +344,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         .eq(SaleOutSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(SaleOutSheetDetail::getOrderNo);
     List<SaleOutSheetDetail> details = saleOutSheetDetailService.list(queryDetailWrapper);
+    int orderNo = 1;
     for (SaleOutSheetDetail detail : details) {
       SubProductStockVo subProductStockVo = new SubProductStockVo();
       subProductStockVo.setProductId(detail.getProductId());
@@ -356,23 +356,19 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       subProductStockVo.setBizType(ProductStockBizType.SALE.getCode());
 
       ProductStockChangeDto stockChange = productStockService.subStock(subProductStockVo);
-      int orderNo = 1;
 
-      for (ProductLotChangeDto lotChange : stockChange.getLotChangeList()) {
-        SaleOutSheetDetailLot detailLot = new SaleOutSheetDetailLot();
+      SaleOutSheetDetailLot detailLot = new SaleOutSheetDetailLot();
 
-        detailLot.setId(IdUtil.getId());
-        detailLot.setDetailId(detail.getId());
-        detailLot.setLotId(lotChange.getLotId());
-        detailLot.setOrderNum(lotChange.getNum());
-        detailLot.setCostTaxAmount(lotChange.getTaxAmount());
-        detailLot.setCostUnTaxAmount(lotChange.getUnTaxAmount());
-        detailLot.setSettleStatus(detail.getSettleStatus());
-        detailLot.setOrderNo(orderNo);
-        saleOutSheetDetailLotService.save(detailLot);
+      detailLot.setId(IdUtil.getId());
+      detailLot.setDetailId(detail.getId());
+      detailLot.setOrderNum(detail.getOrderNum());
+      detailLot.setCostTaxAmount(stockChange.getTaxAmount());
+      detailLot.setCostUnTaxAmount(stockChange.getUnTaxAmount());
+      detailLot.setSettleStatus(detail.getSettleStatus());
+      detailLot.setOrderNo(orderNo);
+      saleOutSheetDetailLotService.save(detailLot);
 
-        orderNo++;
-      }
+      orderNo++;
 
       saleOutSheetDetailService.updateById(detail);
     }
@@ -382,7 +378,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApprovePass(BatchApprovePassSaleOutSheetVo vo) {
 
@@ -392,7 +388,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       approvePassVo.setId(id);
 
       try {
-        ISaleOutSheetService thisService = getThis(this.getClass());
+        SaleOutSheetService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个销售出库单审核通过失败，失败原因：" + e.getMsg());
@@ -403,11 +399,11 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateSaleOutSheetVo vo) {
 
-    ISaleOutSheetService thisService = getThis(this.getClass());
+    SaleOutSheetService thisService = getThis(this.getClass());
 
     String sheetId = thisService.create(vo);
 
@@ -420,9 +416,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     return sheetId;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseSaleOutSheetVo vo) {
 
@@ -461,7 +457,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApproveRefuse(BatchApproveRefuseSaleOutSheetVo vo) {
 
@@ -472,7 +468,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       approveRefuseVo.setRefuseReason(vo.getRefuseReason());
 
       try {
-        ISaleOutSheetService thisService = getThis(this.getClass());
+        SaleOutSheetService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个销售出库单审核拒绝失败，失败原因：" + e.getMsg());
@@ -482,9 +478,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -530,7 +526,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
   }
 
   @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByIds(List<String> ids) {
 
@@ -539,7 +535,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       for (String id : ids) {
 
         try {
-          ISaleOutSheetService thisService = getThis(this.getClass());
+          SaleOutSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个销售出库单删除失败，失败原因：" + e.getMsg());
@@ -550,7 +546,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     }
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setUnSettle(String id) {
 
@@ -562,7 +558,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setPartSettle(String id) {
 
@@ -574,7 +570,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setSettled(String id) {
 
@@ -689,7 +685,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       detail.setId(IdUtil.getId());
       detail.setSheetId(sheet.getId());
 
-      ProductDto product = productService.findById(productVo.getProductId());
+      Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -704,7 +700,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       detail.setTaxPrice(productVo.getTaxPrice());
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getPoly().getTaxRate());
+      detail.setTaxRate(product.getTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

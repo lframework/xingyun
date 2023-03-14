@@ -4,40 +4,40 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.entity.Member;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.member.IMemberService;
-import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.xingyun.basedata.service.member.MemberService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.dto.stock.ProductLotChangeDto;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailOutSheetEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
+import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.RetailConfig;
@@ -48,11 +48,11 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.RetailOutSheetMapper;
-import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailLotService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
-import com.lframework.xingyun.sc.service.stock.IProductStockService;
+import com.lframework.xingyun.sc.service.retail.RetailConfigService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
+import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.retail.out.ApprovePassRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.ApproveRefuseRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.BatchApprovePassRetailOutSheetVo;
@@ -60,6 +60,7 @@ import com.lframework.xingyun.sc.vo.retail.out.BatchApproveRefuseRetailOutSheetV
 import com.lframework.xingyun.sc.vo.retail.out.CreateRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetWithReturnVo;
+import com.lframework.xingyun.sc.vo.retail.out.QueryRetailProductVo;
 import com.lframework.xingyun.sc.vo.retail.out.RetailOutProductVo;
 import com.lframework.xingyun.sc.vo.retail.out.RetailOutSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.retail.out.UpdateRetailOutSheetVo;
@@ -76,34 +77,34 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RetailOutSheetServiceImpl extends
     BaseMpServiceImpl<RetailOutSheetMapper, RetailOutSheet>
-    implements IRetailOutSheetService {
+    implements RetailOutSheetService {
 
   @Autowired
-  private IRetailOutSheetDetailService retailOutSheetDetailService;
+  private RetailOutSheetDetailService retailOutSheetDetailService;
 
   @Autowired
-  private IRetailOutSheetDetailLotService retailOutSheetDetailLotService;
+  private RetailOutSheetDetailLotService retailOutSheetDetailLotService;
 
   @Autowired
-  private IStoreCenterService storeCenterService;
+  private StoreCenterService storeCenterService;
 
   @Autowired
-  private IMemberService memberService;
+  private MemberService memberService;
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private IRetailConfigService retailConfigService;
+  private RetailConfigService retailConfigService;
 
   @Autowired
-  private IProductStockService productStockService;
+  private ProductStockService productStockService;
 
   @Override
   public PageResult<RetailOutSheet> query(Integer pageIndex, Integer pageSize,
@@ -183,9 +184,9 @@ public class RetailOutSheetServiceImpl extends
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建出库单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateRetailOutSheetVo vo) {
 
@@ -205,9 +206,9 @@ public class RetailOutSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改出库单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateRetailOutSheetVo vo) {
 
@@ -254,9 +255,9 @@ public class RetailOutSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassRetailOutSheetVo vo) {
 
@@ -299,6 +300,7 @@ public class RetailOutSheetServiceImpl extends
         .eq(RetailOutSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(RetailOutSheetDetail::getOrderNo);
     List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
+    int orderNo = 1;
     for (RetailOutSheetDetail detail : details) {
       SubProductStockVo subProductStockVo = new SubProductStockVo();
       subProductStockVo.setProductId(detail.getProductId());
@@ -310,23 +312,19 @@ public class RetailOutSheetServiceImpl extends
       subProductStockVo.setBizType(ProductStockBizType.RETAIL.getCode());
 
       ProductStockChangeDto stockChange = productStockService.subStock(subProductStockVo);
-      int orderNo = 1;
 
-      for (ProductLotChangeDto lotChange : stockChange.getLotChangeList()) {
-        RetailOutSheetDetailLot detailLot = new RetailOutSheetDetailLot();
+      RetailOutSheetDetailLot detailLot = new RetailOutSheetDetailLot();
 
-        detailLot.setId(IdUtil.getId());
-        detailLot.setDetailId(detail.getId());
-        detailLot.setLotId(lotChange.getLotId());
-        detailLot.setOrderNum(lotChange.getNum());
-        detailLot.setCostTaxAmount(lotChange.getTaxAmount());
-        detailLot.setCostUnTaxAmount(lotChange.getUnTaxAmount());
-        detailLot.setSettleStatus(detail.getSettleStatus());
-        detailLot.setOrderNo(orderNo);
-        retailOutSheetDetailLotService.save(detailLot);
+      detailLot.setId(IdUtil.getId());
+      detailLot.setDetailId(detail.getId());
+      detailLot.setOrderNum(detail.getOrderNum());
+      detailLot.setCostTaxAmount(stockChange.getTaxAmount());
+      detailLot.setCostUnTaxAmount(stockChange.getUnTaxAmount());
+      detailLot.setSettleStatus(detail.getSettleStatus());
+      detailLot.setOrderNo(orderNo);
+      retailOutSheetDetailLotService.save(detailLot);
 
-        orderNo++;
-      }
+      orderNo++;
 
       retailOutSheetDetailService.updateById(detail);
     }
@@ -336,7 +334,7 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApprovePass(BatchApprovePassRetailOutSheetVo vo) {
 
@@ -346,10 +344,11 @@ public class RetailOutSheetServiceImpl extends
       approvePassVo.setId(id);
 
       try {
-        IRetailOutSheetService thisService = getThis(this.getClass());
+        RetailOutSheetService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个销售出库单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个销售出库单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -357,11 +356,11 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateRetailOutSheetVo vo) {
 
-    IRetailOutSheetService thisService = getThis(this.getClass());
+    RetailOutSheetService thisService = getThis(this.getClass());
 
     String sheetId = thisService.create(vo);
 
@@ -374,9 +373,9 @@ public class RetailOutSheetServiceImpl extends
     return sheetId;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseRetailOutSheetVo vo) {
 
@@ -416,7 +415,7 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApproveRefuse(BatchApproveRefuseRetailOutSheetVo vo) {
 
@@ -427,19 +426,20 @@ public class RetailOutSheetServiceImpl extends
       approveRefuseVo.setRefuseReason(vo.getRefuseReason());
 
       try {
-        IRetailOutSheetService thisService = getThis(this.getClass());
+        RetailOutSheetService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个销售出库单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个销售出库单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -472,7 +472,7 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByIds(List<String> ids) {
 
@@ -481,15 +481,53 @@ public class RetailOutSheetServiceImpl extends
       for (String id : ids) {
 
         try {
-          IRetailOutSheetService thisService = getThis(this.getClass());
+          RetailOutSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个销售出库单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个销售出库单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
       }
     }
+  }
+
+  @Override
+  public PageResult<RetailProductDto> queryRetailByCondition(Integer pageIndex, Integer pageSize,
+      String condition) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition);
+    PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<RetailProductDto> queryRetailList(Integer pageIndex, Integer pageSize,
+      QueryRetailProductVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<RetailProductDto> datas = getBaseMapper().queryRetailList(vo);
+    PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public RetailProductDto getRetailById(String id) {
+
+    RetailProductDto data = getBaseMapper().getRetailById(id);
+    return data;
   }
 
   private void create(RetailOutSheet sheet, CreateRetailOutSheetVo vo) {
@@ -547,7 +585,7 @@ public class RetailOutSheetServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setSheetId(sheet.getId());
 
-      ProductDto product = productService.findById(productVo.getProductId());
+      Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -562,7 +600,7 @@ public class RetailOutSheetServiceImpl extends
       detail.setTaxPrice(productVo.getTaxPrice());
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getPoly().getTaxRate());
+      detail.setTaxRate(product.getTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

@@ -4,43 +4,43 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.system.IRecursionMappingService;
+import com.lframework.starter.mybatis.service.system.RecursionMappingService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.enums.ColumnDataType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.enums.PropertyType;
 import com.lframework.xingyun.basedata.mappers.ProductPropertyMapper;
-import com.lframework.xingyun.basedata.service.product.IProductCategoryPropertyService;
-import com.lframework.xingyun.basedata.service.product.IProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.IProductPolyPropertyService;
-import com.lframework.xingyun.basedata.service.product.IProductPropertyService;
+import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyService;
+import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
+import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.UpdateProductPropertyVo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,19 +54,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductPropertyServiceImpl extends
     BaseMpServiceImpl<ProductPropertyMapper, ProductProperty>
-    implements IProductPropertyService {
+    implements ProductPropertyService {
 
   @Autowired
-  private IProductPolyPropertyService productPolyPropertyService;
+  private ProductCategoryService productCategoryService;
 
   @Autowired
-  private IProductCategoryService productCategoryService;
+  private RecursionMappingService recursionMappingService;
 
   @Autowired
-  private IRecursionMappingService recursionMappingService;
+  private ProductCategoryPropertyService productCategoryPropertyService;
 
   @Autowired
-  private IProductCategoryPropertyService productCategoryPropertyService;
+  private ProductPropertyRelationService productPropertyRelationService;
 
   @Override
   public PageResult<ProductProperty> query(Integer pageIndex, Integer pageSize,
@@ -87,15 +87,15 @@ public class ProductPropertyServiceImpl extends
     return getBaseMapper().query(vo);
   }
 
-  @Cacheable(value = ProductProperty.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Cacheable(value = ProductProperty.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
   @Override
   public ProductProperty findById(String id) {
 
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "停用商品属性，ID：{}", params = "#ids", loopFormat = true)
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "停用商品属性，ID：{}", params = "#ids", loopFormat = true)
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
 
@@ -108,8 +108,8 @@ public class ProductPropertyServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "启用商品属性，ID：{}", params = "#ids", loopFormat = true)
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "启用商品属性，ID：{}", params = "#ids", loopFormat = true)
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
 
@@ -125,7 +125,7 @@ public class ProductPropertyServiceImpl extends
   private List<String> calcCategoryIds(List<String> categoryIds) {
 
     if (CollectionUtil.isEmpty(categoryIds)) {
-      return Collections.EMPTY_LIST;
+      return CollectionUtil.emptyList();
     }
 
     //先整理categoryId，因为可能父级类目和子级类目全传过来了
@@ -147,8 +147,8 @@ public class ProductPropertyServiceImpl extends
     return results;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增商品属性，ID：{}, 编号：{}", params = {"#id", "#code"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "新增商品属性，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductPropertyVo vo) {
 
@@ -213,8 +213,8 @@ public class ProductPropertyServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改商品属性，ID：{}, 编号：{}", params = {"#id", "#code"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改商品属性，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductPropertyVo vo) {
 
@@ -268,7 +268,7 @@ public class ProductPropertyServiceImpl extends
               + PropertyType.NONE.getDesc() + "”");
     }
 
-    // List<ProductCategoryProperty> oldProductCategoryPropertyList = new ArrayList<>();
+    List<ProductCategoryProperty> oldProductCategoryPropertyList = new ArrayList<>();
 
     if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
       //如果是指定类目
@@ -288,7 +288,7 @@ public class ProductPropertyServiceImpl extends
 
     if (data.getPropertyType() == PropertyType.APPOINT) {
       //删除关系
-      // oldProductCategoryPropertyList = productCategoryPropertyService.getByPropertyId(data.getId());
+      oldProductCategoryPropertyList = productCategoryPropertyService.getByPropertyId(data.getId());
       productCategoryPropertyService.deleteByPropertyId(data.getId());
     }
 
@@ -315,24 +315,24 @@ public class ProductPropertyServiceImpl extends
 
     getBaseMapper().update(updateWrapper);
 
-    /*if (vo.getPropertyType() != PropertyType.NONE.getCode().intValue()) {
+    if (vo.getPropertyType() != PropertyType.NONE.getCode().intValue()) {
       if (data.getColumnType() == ColumnType.MULTIPLE
           && vo.getColumnType() == ColumnType.SINGLE.getCode()
           .intValue()) {
         //从多选更改为单选
-        productPolyPropertyService.setMultipleToSimple(data.getId());
+        productPropertyRelationService.setMultipleToSimple(data.getId());
       }
 
       if (data.getPropertyType() == PropertyType.COMMON
           && vo.getPropertyType() == PropertyType.APPOINT.getCode()
           .intValue()) {
         //从通用改成指定类目
-        productPolyPropertyService.setCommonToAppoint(data.getId());
+        productPropertyRelationService.setCommonToAppoint(data.getId());
 
       } else if (data.getPropertyType() == PropertyType.APPOINT
           && vo.getPropertyType() == PropertyType.COMMON.getCode().intValue()) {
         //从指定类目改成通用
-        productPolyPropertyService.setAppointToCommon(data.getId());
+        productPropertyRelationService.setAppointToCommon(data.getId());
       } else if (data.getPropertyType() == PropertyType.APPOINT
           && vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
         List<String> oldCategoryIds = oldProductCategoryPropertyList.stream()
@@ -341,10 +341,10 @@ public class ProductPropertyServiceImpl extends
         boolean isUpdateCategory = CollectionUtil.isEqualList(oldCategoryIds, vo.getCategoryIds());
         if (isUpdateCategory) {
           //更改了类目ID
-          productPolyPropertyService.updateAppointCategoryId(data.getId());
+          productPropertyRelationService.updateAppointCategoryId(data.getId());
         }
       }
-    }*/
+    }
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -362,7 +362,7 @@ public class ProductPropertyServiceImpl extends
     return datas;
   }
 
-  @CacheEvict(value = ProductProperty.CACHE_NAME, key = "#key")
+  @CacheEvict(value = ProductProperty.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
   @Override
   public void cleanCacheByKey(Serializable key) {
 

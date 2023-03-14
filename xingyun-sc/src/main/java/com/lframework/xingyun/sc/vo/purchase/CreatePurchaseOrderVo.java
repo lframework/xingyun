@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.purchase;
 
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -59,7 +59,6 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
   @ApiModelProperty("备注")
   private String description;
 
-  @Override
   public void validate() {
 
     int orderNo = 1;

@@ -2,7 +2,7 @@ package com.lframework.xingyun.sc.impl.stock.take;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.lframework.common.constants.StringPool;
+import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
@@ -10,9 +10,9 @@ import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
-import com.lframework.xingyun.sc.service.stock.IProductStockService;
-import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanDetailService;
-import com.lframework.xingyun.sc.service.stock.take.ITakeStockPlanService;
+import com.lframework.xingyun.sc.service.stock.ProductStockService;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanDetailService;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TakeStockPlanDetailServiceImpl extends
     BaseMpServiceImpl<TakeStockPlanDetailMapper, TakeStockPlanDetail>
-    implements ITakeStockPlanDetailService {
+    implements TakeStockPlanDetailService {
 
   @Autowired
-  private IProductStockService productStockService;
+  private ProductStockService productStockService;
 
   @Autowired
-  private ITakeStockPlanService takeStockPlanService;
+  private TakeStockPlanService takeStockPlanService;
 
   @Override
   public GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(String planId, String productId) {
@@ -35,7 +35,7 @@ public class TakeStockPlanDetailServiceImpl extends
     return getBaseMapper().getByPlanIdAndProductId(planId, productId);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void savePlanDetailBySimple(String planId, List<String> productIds) {
 
@@ -73,7 +73,7 @@ public class TakeStockPlanDetailServiceImpl extends
     return getBaseMapper().getDetailsByPlanId(planId);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void updateOriTakeNum(String planId, String productId, Integer num) {
 

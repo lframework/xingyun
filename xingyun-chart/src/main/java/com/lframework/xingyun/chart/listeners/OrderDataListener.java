@@ -1,7 +1,7 @@
 package com.lframework.xingyun.chart.listeners;
 
 import com.lframework.xingyun.chart.enums.OrderChartBizType;
-import com.lframework.xingyun.chart.service.IOrderChartService;
+import com.lframework.xingyun.chart.service.OrderChartService;
 import com.lframework.xingyun.chart.vo.CreateOrderChartVo;
 import com.lframework.xingyun.core.events.order.ApprovePassOrderEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class OrderDataListener implements ApplicationListener<ApprovePassOrderEvent> {
 
   @Autowired
-  private IOrderChartService orderChartService;
+  private OrderChartService orderChartService;
 
   @Override
   public void onApplicationEvent(ApprovePassOrderEvent event) {

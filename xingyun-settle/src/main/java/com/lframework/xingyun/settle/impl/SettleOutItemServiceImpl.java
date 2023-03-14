@@ -4,14 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -20,7 +20,7 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.settle.entity.SettleOutItem;
 import com.lframework.xingyun.settle.mappers.SettleOutItemMapper;
-import com.lframework.xingyun.settle.service.ISettleOutItemService;
+import com.lframework.xingyun.settle.service.SettleOutItemService;
 import com.lframework.xingyun.settle.vo.item.out.CreateSettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.QuerySettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.SettleOutItemSelectorVo;
@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMapper, SettleOutItem>
-        implements ISettleOutItemService {
+        implements SettleOutItemService {
 
     @Override
     public PageResult<SettleOutItem> query(Integer pageIndex, Integer pageSize, QuerySettleOutItemVo vo) {
@@ -67,15 +67,15 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @Cacheable(value = SettleOutItem.CACHE_NAME, key = "#id", unless = "#result == null")
+    @Cacheable(value = SettleOutItem.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
     @Override
     public SettleOutItem findById(String id) {
 
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "停用支出项目，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "停用支出项目，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
 
@@ -88,8 +88,8 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "启用支出项目，ID：{}", params = "#ids", loopFormat = true)
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "启用支出项目，ID：{}", params = "#ids", loopFormat = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
 
@@ -102,8 +102,8 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "新增支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "新增支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateSettleOutItemVo vo) {
 
@@ -129,8 +129,8 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         return data.getId();
     }
 
-    @OpLog(type = OpLogType.OTHER, name = "修改支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
-    @Transactional
+    @OpLog(type = DefaultOpLogType.OTHER, name = "修改支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateSettleOutItemVo vo) {
 
@@ -158,7 +158,7 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         OpLogUtil.setExtra(vo);
     }
 
-    @CacheEvict(value = SettleOutItem.CACHE_NAME, key = "#key")
+    @CacheEvict(value = SettleOutItem.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
     @Override
     public void cleanCacheByKey(Serializable key) {
 

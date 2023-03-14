@@ -4,7 +4,7 @@ import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.entity.DicCity;
 import com.lframework.xingyun.core.mappers.DicCityMapper;
-import com.lframework.xingyun.core.service.IDicCityService;
+import com.lframework.xingyun.core.service.DicCityService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,16 +15,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DicCityServiceImpl extends BaseMpServiceImpl<DicCityMapper, DicCity> implements
-    IDicCityService {
+    DicCityService {
 
-  @Cacheable(value = DicCityDto.SELECTOR_CACHE_NAME, key = "'all'")
+  @Cacheable(value = DicCityDto.SELECTOR_CACHE_NAME, key = "@cacheVariables.tenantId() + 'all'")
   @Override
   public List<DicCityDto> getAll() {
 
     return getBaseMapper().getAll();
   }
 
-  @Cacheable(value = DicCityDto.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Cacheable(value = DicCityDto.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
   @Override
   public DicCityDto findById(String id) {
 
@@ -34,7 +34,7 @@ public class DicCityServiceImpl extends BaseMpServiceImpl<DicCityMapper, DicCity
   @Override
   public List<DicCityDto> getChainById(String id) {
 
-    IDicCityService thisService = getThis(this.getClass());
+    DicCityService thisService = getThis(this.getClass());
     List<DicCityDto> all = thisService.getAll();
     List<DicCityDto> results = new ArrayList<>();
     DicCityDto current = all.stream().filter(t -> t.getId().equals(id)).findFirst().orElse(null);
@@ -54,7 +54,7 @@ public class DicCityServiceImpl extends BaseMpServiceImpl<DicCityMapper, DicCity
     return results;
   }
 
-  @CacheEvict(value = DicCityDto.CACHE_NAME, key = "#key")
+  @CacheEvict(value = DicCityDto.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
   @Override
   public void cleanCacheByKey(Serializable key) {
 

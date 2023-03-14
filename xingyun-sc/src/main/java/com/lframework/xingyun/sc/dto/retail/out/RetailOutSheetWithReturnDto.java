@@ -95,10 +95,5 @@ public class RetailOutSheetWithReturnDto implements BaseDto, Serializable {
      * 已退货数量
      */
     private Integer returnNum;
-
-    /**
-     * 批次ID
-     */
-    private String lotId;
   }
 }

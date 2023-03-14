@@ -16,13 +16,6 @@ public class AddLogWithStockCostAdjustVo implements BaseVo, Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
-   * 批次ID
-   */
-  @ApiModelProperty(value = "批次ID", required = true)
-  @NotBlank(message = "批次ID不能为空！")
-  private String lotId;
-
-  /**
    * 商品ID
    */
   @ApiModelProperty(value = "商品ID", required = true)

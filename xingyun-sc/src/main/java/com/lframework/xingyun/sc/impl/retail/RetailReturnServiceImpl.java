@@ -4,35 +4,35 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
 import com.lframework.xingyun.basedata.entity.Member;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.member.IMemberService;
-import com.lframework.xingyun.basedata.service.product.IProductPurchaseService;
-import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
+import com.lframework.xingyun.basedata.service.member.MemberService;
+import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailReturnEvent;
@@ -40,7 +40,6 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
-import com.lframework.xingyun.sc.entity.ProductLot;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
@@ -50,14 +49,13 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.RetailReturnMapper;
-import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailLotService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetDetailService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
-import com.lframework.xingyun.sc.service.retail.IRetailReturnDetailService;
-import com.lframework.xingyun.sc.service.retail.IRetailReturnService;
-import com.lframework.xingyun.sc.service.stock.IProductLotService;
-import com.lframework.xingyun.sc.service.stock.IProductStockService;
+import com.lframework.xingyun.sc.service.retail.RetailConfigService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
+import com.lframework.xingyun.sc.service.retail.RetailReturnDetailService;
+import com.lframework.xingyun.sc.service.retail.RetailReturnService;
+import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.retail.returned.ApprovePassRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.ApproveRefuseRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.BatchApprovePassRetailReturnVo;
@@ -77,46 +75,43 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMapper, RetailReturn>
-    implements IRetailReturnService {
+    implements RetailReturnService {
 
   @Autowired
-  private IRetailReturnDetailService retailReturnDetailService;
+  private RetailReturnDetailService retailReturnDetailService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private IStoreCenterService storeCenterService;
+  private StoreCenterService storeCenterService;
 
   @Autowired
-  private IMemberService memberService;
+  private MemberService memberService;
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private IRetailOutSheetService retailOutSheetService;
+  private RetailOutSheetService retailOutSheetService;
 
   @Autowired
-  private IRetailConfigService retailConfigService;
+  private RetailConfigService retailConfigService;
 
   @Autowired
-  private IRetailOutSheetDetailService retailOutSheetDetailService;
+  private RetailOutSheetDetailService retailOutSheetDetailService;
 
   @Autowired
-  private IRetailOutSheetDetailLotService retailOutSheetDetailLotService;
+  private RetailOutSheetDetailLotService retailOutSheetDetailLotService;
 
   @Autowired
-  private IProductStockService productStockService;
+  private ProductStockService productStockService;
 
   @Autowired
-  private IProductLotService productLotService;
-
-  @Autowired
-  private IProductPurchaseService productPurchaseService;
+  private ProductPurchaseService productPurchaseService;
 
   @Override
   public PageResult<RetailReturn> query(Integer pageIndex, Integer pageSize,
@@ -143,9 +138,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建零售退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建零售退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建退单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateRetailReturnVo vo) {
 
@@ -167,9 +162,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     return retailReturn.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改零售退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改零售退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改退单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateRetailReturnVo vo) {
 
@@ -232,9 +227,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过零售退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过零售退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassRetailReturnVo vo) {
 
@@ -293,7 +288,6 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(retailReturn.getScId());
-      addProductStockVo.setSupplierId(detail.getSupplierId());
       addProductStockVo.setStockNum(detail.getReturnNum());
       addProductStockVo.setDefaultTaxAmount(
           NumberUtil.mul(productPurchase.getPrice(), detail.getReturnNum()));
@@ -313,7 +307,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApprovePass(BatchApprovePassRetailReturnVo vo) {
 
@@ -323,7 +317,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       approvePassVo.setId(id);
 
       try {
-        IRetailReturnService thisService = getThis(this.getClass());
+        RetailReturnService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个零售退货单审核通过失败，失败原因：" + e.getMsg());
@@ -334,11 +328,11 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateRetailReturnVo vo) {
 
-    IRetailReturnService thisService = getThis(this.getClass());
+    RetailReturnService thisService = getThis(this.getClass());
 
     String returnId = thisService.create(vo);
 
@@ -351,9 +345,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     return returnId;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝零售退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝零售退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseRetailReturnVo vo) {
 
@@ -392,7 +386,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApproveRefuse(BatchApproveRefuseRetailReturnVo vo) {
 
@@ -403,7 +397,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       approveRefuseVo.setRefuseReason(vo.getRefuseReason());
 
       try {
-        IRetailReturnService thisService = getThis(this.getClass());
+        RetailReturnService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个零售退货单审核拒绝失败，失败原因：" + e.getMsg());
@@ -413,9 +407,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除零售退货单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除零售退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -462,7 +456,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
   }
 
   @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByIds(List<String> ids) {
 
@@ -471,7 +465,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       for (String id : ids) {
 
         try {
-          IRetailReturnService thisService = getThis(this.getClass());
+          RetailReturnService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个零售退货单删除失败，失败原因：" + e.getMsg());
@@ -553,11 +547,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
               productVo.getOutSheetDetailId());
           RetailOutSheetDetail detail = retailOutSheetDetailService.getById(
               detailLot.getDetailId());
-          ProductLot lot = productLotService.findById(detailLot.getLotId());
           productVo.setOriPrice(detail.getOriPrice());
           productVo.setTaxPrice(detail.getTaxPrice());
           productVo.setDiscountRate(detail.getDiscountRate());
-          productVo.setSupplierId(lot.getSupplierId());
         } else {
           productVo.setTaxPrice(BigDecimal.ZERO);
           productVo.setDiscountRate(BigDecimal.valueOf(100));
@@ -587,7 +579,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       detail.setId(IdUtil.getId());
       detail.setReturnId(retailReturn.getId());
 
-      ProductDto product = productService.findById(productVo.getProductId());
+      Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -597,13 +589,12 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       }
 
       detail.setProductId(productVo.getProductId());
-      detail.setSupplierId(productVo.getSupplierId());
       detail.setReturnNum(productVo.getReturnNum());
       detail.setOriPrice(productVo.getOriPrice());
       detail.setTaxPrice(productVo.getTaxPrice());
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getPoly().getTaxRate());
+      detail.setTaxRate(product.getTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

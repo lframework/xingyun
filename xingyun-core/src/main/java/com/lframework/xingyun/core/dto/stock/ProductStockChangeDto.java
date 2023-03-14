@@ -35,9 +35,4 @@ public class ProductStockChangeDto implements BaseDto, Serializable {
    * 无税金额
    */
   private BigDecimal unTaxAmount;
-
-  /**
-   * 批次变动记录
-   */
-  private List<ProductLotChangeDto> lotChangeList;
 }

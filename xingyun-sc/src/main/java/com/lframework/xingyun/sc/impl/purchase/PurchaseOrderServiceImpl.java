@@ -4,47 +4,48 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.service.IGenerateCodeService;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
-import com.lframework.xingyun.basedata.dto.product.info.ProductDto;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
-import com.lframework.xingyun.basedata.service.product.IProductService;
-import com.lframework.xingyun.basedata.service.storecenter.IStoreCenterService;
-import com.lframework.xingyun.basedata.service.supplier.ISupplierService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
+import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseOrderEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
+import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import com.lframework.xingyun.sc.mappers.PurchaseOrderMapper;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderDetailService;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseOrderService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.BatchApprovePassPurchaseOrderVo;
@@ -54,6 +55,7 @@ import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseProductVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -65,28 +67,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMapper, PurchaseOrder>
-    implements IPurchaseOrderService {
+    implements PurchaseOrderService {
 
   @Autowired
-  private IPurchaseOrderDetailService purchaseOrderDetailService;
+  private PurchaseOrderDetailService purchaseOrderDetailService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Autowired
-  private IStoreCenterService storeCenterService;
+  private StoreCenterService storeCenterService;
 
   @Autowired
-  private ISupplierService supplierService;
+  private SupplierService supplierService;
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Autowired
-  private IProductService productService;
+  private ProductService productService;
 
   @Autowired
-  private IPurchaseConfigService purchaseConfigService;
+  private PurchaseConfigService purchaseConfigService;
 
   @Override
   public PageResult<PurchaseOrder> query(Integer pageIndex, Integer pageSize,
@@ -160,9 +162,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建订单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreatePurchaseOrderVo vo) {
 
@@ -182,9 +184,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     return order.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改订单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdatePurchaseOrderVo vo) {
 
@@ -230,9 +232,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassPurchaseOrderVo vo) {
 
@@ -276,7 +278,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     this.sendApprovePassEvent(order);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
   @Override
   public void batchApprovePass(BatchApprovePassPurchaseOrderVo vo) {
@@ -287,7 +289,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       approvePassPurchaseOrderVo.setId(id);
 
       try {
-        IPurchaseOrderService thisService = getThis(this.getClass());
+        PurchaseOrderService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassPurchaseOrderVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个采购订单审核通过失败，失败原因：" + e.getMsg());
@@ -297,12 +299,12 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     }
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Override
   public String directApprovePass(CreatePurchaseOrderVo vo) {
 
-    IPurchaseOrderService thisService = getThis(this.getClass());
+    PurchaseOrderService thisService = getThis(this.getClass());
 
     String orderId = thisService.create(vo);
 
@@ -315,9 +317,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     return orderId;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefusePurchaseOrderVo vo) {
 
@@ -356,7 +358,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     OpLogUtil.setExtra(vo);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Override
   public void batchApproveRefuse(BatchApproveRefusePurchaseOrderVo vo) {
@@ -368,7 +370,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       approveRefusePurchaseOrderVo.setRefuseReason(vo.getRefuseReason());
 
       try {
-        IPurchaseOrderService thisService = getThis(this.getClass());
+        PurchaseOrderService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefusePurchaseOrderVo);
       } catch (ClientException e) {
         throw new DefaultClientException("第" + orderNo + "个采购订单审核拒绝失败，失败原因：" + e.getMsg());
@@ -378,9 +380,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除订单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -412,7 +414,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     OpLogUtil.setVariable("code", order.getCode());
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(orderId = "#ids", delete = true)
   @Override
   public void deleteByIds(List<String> ids) {
@@ -422,7 +424,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       for (String id : ids) {
 
         try {
-          IPurchaseOrderService thisService = getThis(this.getClass());
+          PurchaseOrderService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个采购订单删除失败，失败原因：" + e.getMsg());
@@ -433,9 +435,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "取消审核订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "取消审核订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CANCEL_APPROVE, orderId = "#id", name = "取消审核")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void cancelApprovePass(String id) {
 
@@ -512,7 +514,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       orderDetail.setId(IdUtil.getId());
       orderDetail.setOrderId(order.getId());
 
-      ProductDto product = productService.findById(productVo.getProductId());
+      Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -525,7 +527,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       orderDetail.setOrderNum(productVo.getPurchaseNum());
       orderDetail.setTaxPrice(productVo.getPurchasePrice());
       orderDetail.setIsGift(isGift);
-      orderDetail.setTaxRate(product.getPoly().getTaxRate());
+      orderDetail.setTaxRate(product.getTaxRate());
       orderDetail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());
@@ -539,6 +541,44 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     order.setTotalAmount(totalAmount);
     order.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+  }
+
+  @Override
+  public PageResult<PurchaseProductDto> queryPurchaseByCondition(Integer pageIndex,
+      Integer pageSize, String condition) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(condition);
+    PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PageResult<PurchaseProductDto> queryPurchaseList(Integer pageIndex, Integer pageSize,
+      QueryPurchaseProductVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+
+    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseList(vo);
+    PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
+
+    return pageResult;
+  }
+
+  @Override
+  public PurchaseProductDto getPurchaseById(String id) {
+
+    PurchaseProductDto data = getBaseMapper().getPurchaseById(id);
+
+    return data;
   }
 
   private void sendApprovePassEvent(PurchaseOrder order) {

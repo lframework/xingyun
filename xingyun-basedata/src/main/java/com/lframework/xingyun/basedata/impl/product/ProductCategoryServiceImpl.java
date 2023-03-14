@@ -2,22 +2,22 @@ package com.lframework.xingyun.basedata.impl.product;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
-import com.lframework.starter.mybatis.service.system.IRecursionMappingService;
+import com.lframework.starter.mybatis.service.system.RecursionMappingService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.mappers.ProductCategoryMapper;
-import com.lframework.xingyun.basedata.service.product.IProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
@@ -34,10 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductCategoryServiceImpl extends
     BaseMpServiceImpl<ProductCategoryMapper, ProductCategory>
-    implements IProductCategoryService {
+    implements ProductCategoryService {
 
   @Autowired
-  private IRecursionMappingService recursionMappingService;
+  private RecursionMappingService recursionMappingService;
 
   @Override
   public List<ProductCategory> getAllProductCategories() {
@@ -45,7 +45,7 @@ public class ProductCategoryServiceImpl extends
     return getBaseMapper().getAllProductCategories();
   }
 
-  @Cacheable(value = ProductCategory.CACHE_NAME, key = "#id", unless = "#result == null")
+  @Cacheable(value = ProductCategory.CACHE_NAME, key = "@cacheVariables.tenantId() + #id", unless = "#result == null")
   @Override
   public ProductCategory findById(String id) {
 
@@ -58,8 +58,8 @@ public class ProductCategoryServiceImpl extends
     return getBaseMapper().selector(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "停用商品类目，ID：{}", params = "#ids", loopFormat = true)
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "停用商品类目，ID：{}", params = "#ids", loopFormat = true)
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
 
@@ -85,8 +85,8 @@ public class ProductCategoryServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "启用商品类目，ID：{}", params = "#ids", loopFormat = true)
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "启用商品类目，ID：{}", params = "#ids", loopFormat = true)
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
 
@@ -112,8 +112,8 @@ public class ProductCategoryServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "新增商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductCategoryVo vo) {
 
@@ -161,8 +161,8 @@ public class ProductCategoryServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductCategoryVo vo) {
 
@@ -245,7 +245,7 @@ public class ProductCategoryServiceImpl extends
     }
   }
 
-  @CacheEvict(value = ProductCategory.CACHE_NAME, key = "#key")
+  @CacheEvict(value = ProductCategory.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
   @Override
   public void cleanCacheByKey(Serializable key) {
 

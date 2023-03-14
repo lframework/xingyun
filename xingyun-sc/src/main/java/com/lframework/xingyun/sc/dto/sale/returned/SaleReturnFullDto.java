@@ -136,11 +136,6 @@ public class SaleReturnFullDto implements BaseDto, Serializable {
     private String productId;
 
     /**
-     * 供应商ID
-     */
-    private String supplierId;
-
-    /**
      * 退货数量
      */
     private Integer returnNum;

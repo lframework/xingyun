@@ -31,6 +31,12 @@ public class QueryProductVo extends PageVo implements BaseVo, Serializable {
   private String skuCode;
 
   /**
+   * 简称
+   */
+  @ApiModelProperty("简称")
+  private String shortName;
+
+  /**
    * 品牌ID
    */
   @ApiModelProperty("品牌ID")

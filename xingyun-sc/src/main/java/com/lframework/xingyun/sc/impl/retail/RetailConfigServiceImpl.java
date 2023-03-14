@@ -2,12 +2,12 @@ package com.lframework.xingyun.sc.impl.retail;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.mappers.RetailConfigMapper;
-import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
+import com.lframework.xingyun.sc.service.retail.RetailConfigService;
 import com.lframework.xingyun.sc.vo.retail.config.UpdateRetailConfigVo;
 import java.io.Serializable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RetailConfigServiceImpl extends BaseMpServiceImpl<RetailConfigMapper, RetailConfig>
-    implements IRetailConfigService {
+    implements RetailConfigService {
 
-  @Cacheable(value = RetailConfig.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Cacheable(value = RetailConfig.CACHE_NAME, key = "@cacheVariables.tenantId() + 'config'", unless = "#result == null")
   @Override
   public RetailConfig get() {
 
@@ -28,8 +28,8 @@ public class RetailConfigServiceImpl extends BaseMpServiceImpl<RetailConfigMappe
     return config;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改零售参数设置")
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改零售参数设置")
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateRetailConfigVo vo) {
 
@@ -44,7 +44,7 @@ public class RetailConfigServiceImpl extends BaseMpServiceImpl<RetailConfigMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @CacheEvict(value = RetailConfig.CACHE_NAME, key = "'config'")
+  @CacheEvict(value = RetailConfig.CACHE_NAME, key = "@cacheVariables.tenantId() + 'config'")
   @Override
   public void cleanCacheByKey(Serializable key) {
 

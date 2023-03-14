@@ -3,7 +3,6 @@ package com.lframework.xingyun.sc.mappers;
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
-import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanSelectorDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
@@ -33,7 +32,7 @@ public interface TakeStockPlanMapper extends BaseMapper<TakeStockPlan> {
    * @param vo
    * @return
    */
-  List<TakeStockPlanSelectorDto> selector(@Param("vo") TakeStockPlanSelectorVo vo);
+  List<TakeStockPlan> selector(@Param("vo") TakeStockPlanSelectorVo vo);
 
   /**
    * 根据盘点任务ID查询商品信息

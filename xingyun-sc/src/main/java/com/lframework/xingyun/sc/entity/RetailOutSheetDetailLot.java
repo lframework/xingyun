@@ -34,11 +34,6 @@ public class RetailOutSheetDetailLot extends BaseEntity implements BaseDto {
   private String detailId;
 
   /**
-   * 批次ID
-   */
-  private String lotId;
-
-  /**
    * 出库数量
    */
   private Integer orderNum;

@@ -1,8 +1,8 @@
 package com.lframework.xingyun.settle.vo.fee;
 
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.settle.enums.SettleFeeSheetType;
@@ -46,7 +46,6 @@ public class CreateSettleFeeSheetVo implements BaseVo, Serializable {
   @ApiModelProperty("备注")
   private String description;
 
-  @Override
   public void validate() {
 
     int orderNo = 1;

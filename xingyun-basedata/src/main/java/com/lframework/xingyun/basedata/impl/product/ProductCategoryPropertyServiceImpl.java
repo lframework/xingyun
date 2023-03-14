@@ -6,7 +6,7 @@ import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.mappers.ProductCategoryPropertyMapper;
-import com.lframework.xingyun.basedata.service.product.IProductCategoryPropertyService;
+import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyService;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductCategoryPropertyServiceImpl
     extends BaseMpServiceImpl<ProductCategoryPropertyMapper, ProductCategoryProperty>
-    implements IProductCategoryPropertyService {
+    implements ProductCategoryPropertyService {
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(String categoryId, String propertyId) {
 
@@ -30,7 +30,7 @@ public class ProductCategoryPropertyServiceImpl
     return record.getId();
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByPropertyId(String propertyId) {
 

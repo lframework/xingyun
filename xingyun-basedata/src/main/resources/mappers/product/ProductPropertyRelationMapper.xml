@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.ProductPropertyRelationMapper">
+
+    <resultMap id="ProductPolyPropertyDto" type="com.lframework.xingyun.basedata.dto.product.ProductPropertyRelationDto">
+        <id column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="property_id" property="propertyId"/>
+        <result column="property_item_id" property="propertyItemId"/>
+        <result column="property_column_type" property="propertyColumnType"/>
+        <result column="property_name" property="propertyName"/>
+        <result column="property_text" property="propertyText"/>
+    </resultMap>
+
+    <sql id="ProductPolyPropertyDto_sql">
+        SELECT
+            pp.id,
+            pp.product_id,
+            p.id AS property_id,
+            t.id AS property_item_id,
+            p.column_type AS property_column_type,
+            p.name AS property_name,
+            IF(p.column_type = 3, pp.property_text, t.name) AS property_text
+        FROM base_data_product_property_relation AS pp
+        INNER JOIN base_data_product_property AS p ON p.id = pp.property_id
+        LEFT JOIN base_data_product_property_item AS t ON t.id = pp.property_item_id
+    </sql>
+    <delete id="setCommonToAppoint">
+        DELETE FROM base_data_product_poly_property WHERE property_id = #{propertyId} AND poly_id NOT IN (SELECT id from base_data_product_poly WHERE category_id = #{categoryId})
+    </delete>
+    <select id="getByProductId" resultMap="ProductPolyPropertyDto">
+        <include refid="ProductPolyPropertyDto_sql"/>
+        WHERE pp.product_id = #{productId}
+        ORDER BY p.code, t.code
+    </select>
+    <select id="getByPropertyId" resultMap="ProductPolyPropertyDto">
+        <include refid="ProductPolyPropertyDto_sql"/>
+        WHERE pp.property_id = #{propertyId}
+        ORDER BY p.code, t.code
+    </select>
+</mapper>

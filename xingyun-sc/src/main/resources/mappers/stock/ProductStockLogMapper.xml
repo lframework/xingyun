@@ -5,7 +5,6 @@
         <id column="id" property="id"/>
         <result column="product_id" property="productId"/>
         <result column="sc_id" property="scId"/>
-        <result column="lot_id" property="lotId"/>
         <result column="ori_stock_num" property="oriStockNum"/>
         <result column="cur_stock_num" property="curStockNum"/>
         <result column="ori_tax_price" property="oriTaxPrice"/>
@@ -28,7 +27,6 @@
             gsl.id,
             gsl.product_id,
             gsl.sc_id,
-            gsl.lot_id,
             gsl.ori_stock_num,
             gsl.cur_stock_num,
             gsl.ori_tax_price,
@@ -49,22 +47,12 @@
     <select id="query" resultMap="ProductStockLog">
         <include refid="ProductStockLogDto_sql"/>
         INNER JOIN base_data_store_center AS sc ON sc.id = gsl.sc_id
-        INNER JOIN tbl_product_lot AS l ON l.id = gsl.lot_id
-        INNER JOIN tbl_product_lot_stock AS ls ON ls.lot_id = l.id
-        INNER JOIN base_data_supplier AS supplier ON supplier.id = l.supplier_id
-        INNER JOIN base_data_product AS product ON product.id = l.product_id
-        INNER JOIN base_data_product_poly AS poly ON poly.id = product.poly_id
-        LEFT JOIN recursion_mapping AS rm ON rm.node_id = poly.category_id and rm.node_type = 2
+        INNER JOIN base_data_product AS product ON product.id = gsl.product_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = product.category_id and rm.node_type = 2
         <where>
             <if test="vo != null">
                 <if test="vo.scId != null and vo.scId != ''">
-                    AND ls.sc_id = #{vo.scId}
-                </if>
-                <if test="vo.lotCode != null and vo.lotCode != ''">
-                    AND l.lot_code = #{vo.lotCode}
-                </if>
-                <if test="vo.supplierId != null and vo.supplierId != ''">
-                    AND l.supplier_id = #{vo.supplierId}
+                    AND gsl.sc_id = #{vo.scId}
                 </if>
                 <if test="vo.productCode != null and vo.productCode != ''">
                     AND product.code = #{vo.productCode}
@@ -73,10 +61,10 @@
                     AND product.name LIKE CONCAT('%', #{vo.productName}, '%')
                 </if>
                 <if test="vo.brandId != null and vo.brandId != ''">
-                    AND poly.brand_id = #{vo.brandId}
+                    AND product.brand_id = #{vo.brandId}
                 </if>
                 <if test="vo.categoryId != null and vo.categoryId != ''">
-                    AND (poly.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                    AND (product.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
                 </if>
                 <if test="vo.createStartTime != null">
                     AND gsl.create_time >= #{vo.createStartTime}
@@ -93,6 +81,6 @@
                 </if>
             </if>
         </where>
-        ORDER BY gsl.create_time DESC, sc.code, supplier.code, product.code
+        ORDER BY gsl.create_time DESC, sc.code, product.code
     </select>
 </mapper>

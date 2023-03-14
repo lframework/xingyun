@@ -2,15 +2,15 @@ package com.lframework.xingyun.sc.impl.stock.take;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.ObjectUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.mappers.TakeStockConfigMapper;
-import com.lframework.xingyun.sc.service.stock.take.ITakeStockConfigService;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import com.lframework.xingyun.sc.vo.stock.take.config.UpdateTakeStockConfigVo;
 import java.io.Serializable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -21,17 +21,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TakeStockConfigServiceImpl extends
     BaseMpServiceImpl<TakeStockConfigMapper, TakeStockConfig>
-    implements ITakeStockConfigService {
+    implements TakeStockConfigService {
 
-  @Cacheable(value = TakeStockConfig.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Cacheable(value = TakeStockConfig.CACHE_NAME, key = "@cacheVariables.tenantId() + 'config'", unless = "#result == null")
   @Override
   public TakeStockConfig get() {
 
     return getBaseMapper().selectOne(Wrappers.query());
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改盘点参数，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改盘点参数，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateTakeStockConfigVo vo) {
 
@@ -55,7 +55,7 @@ public class TakeStockConfigServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @CacheEvict(value = TakeStockConfig.CACHE_NAME, key = "'config'")
+  @CacheEvict(value = TakeStockConfig.CACHE_NAME, key = "@cacheVariables.tenantId() + 'config'")
   @Override
   public void cleanCacheByKey(Serializable key) {
 

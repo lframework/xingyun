@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
 import com.lframework.xingyun.core.mappers.OrderTimeLineMapper;
-import com.lframework.xingyun.core.service.IOrderTimeLineService;
+import com.lframework.xingyun.core.service.OrderTimeLineService;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class OrderTimeLineServiceImpl extends BaseMpServiceImpl<OrderTimeLineMapper, OrderTimeLine> implements
-    IOrderTimeLineService {
+    OrderTimeLineService {
 
-  @Cacheable(value = OrderTimeLine.CACHE_NAME, key = "#orderId", unless = "#result == null")
+  @Cacheable(value = OrderTimeLine.CACHE_NAME, key = "@cacheVariables.tenantId() + #orderId", unless = "#result == null")
   @Override
   public List<OrderTimeLine> getByOrder(String orderId) {
     Wrapper<OrderTimeLine> queryWrapper = Wrappers.lambdaQuery(OrderTimeLine.class).eq(OrderTimeLine::getOrderId, orderId).orderByAsc(OrderTimeLine::getCreateTime);
@@ -29,14 +29,14 @@ public class OrderTimeLineServiceImpl extends BaseMpServiceImpl<OrderTimeLineMap
     return this.list(queryWrapper);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByOrder(String orderId) {
     Wrapper<OrderTimeLine> deleteWrapper = Wrappers.lambdaQuery(OrderTimeLine.class).eq(OrderTimeLine::getOrderId, orderId);
     this.remove(deleteWrapper);
   }
 
-  @CacheEvict(value = OrderTimeLine.CACHE_NAME, key = "#key")
+  @CacheEvict(value = OrderTimeLine.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
   @Override
   public void cleanCacheByKey(Serializable key) {
     super.cleanCacheByKey(key);

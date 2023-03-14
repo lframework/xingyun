@@ -1,7 +1,0 @@
-DROP TABLE IF EXISTS `tbl_member_level_config`;
-DROP TABLE IF EXISTS `crm_member`;
-DROP TABLE IF EXISTS `tbl_member_level`;
-DELETE
-FROM sys_menu
-WHERE id IN ('0003', '0003001', '0003001000', '0003001001', '0003001001001', '0003001001002',
-             '0003001002');

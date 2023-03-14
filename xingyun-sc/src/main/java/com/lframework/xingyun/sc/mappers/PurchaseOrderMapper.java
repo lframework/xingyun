@@ -1,8 +1,10 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
+import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
@@ -69,4 +71,28 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    */
   List<PurchaseOrder> queryWithReceive(@Param("vo") QueryPurchaseOrderWithRecevieVo vo,
       @Param("multipleRelate") boolean multipleRelate);
+
+  /**
+   * 根据关键字查询采购商品信息
+   *
+   * @param condition
+   * @return
+   */
+  List<PurchaseProductDto> queryPurchaseByCondition(String condition);
+
+  /**
+   * 查询可采购商品信息
+   *
+   * @param vo
+   * @return
+   */
+  List<PurchaseProductDto> queryPurchaseList(@Param("vo") QueryPurchaseProductVo vo);
+
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  PurchaseProductDto getPurchaseById(String id);
 }

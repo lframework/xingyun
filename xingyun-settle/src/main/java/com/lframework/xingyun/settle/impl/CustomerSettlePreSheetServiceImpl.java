@@ -3,25 +3,25 @@ package com.lframework.xingyun.settle.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.starter.web.service.IGenerateCodeService;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.AbstractUserDetails;
-import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.security.AbstractUserDetails;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
@@ -32,9 +32,9 @@ import com.lframework.xingyun.settle.entity.CustomerSettlePreSheetDetail;
 import com.lframework.xingyun.settle.entity.SettleInItem;
 import com.lframework.xingyun.settle.enums.CustomerSettlePreSheetStatus;
 import com.lframework.xingyun.settle.mappers.CustomerSettlePreSheetMapper;
-import com.lframework.xingyun.settle.service.ICustomerSettlePreSheetDetailService;
-import com.lframework.xingyun.settle.service.ICustomerSettlePreSheetService;
-import com.lframework.xingyun.settle.service.ISettleInItemService;
+import com.lframework.xingyun.settle.service.CustomerSettlePreSheetDetailService;
+import com.lframework.xingyun.settle.service.CustomerSettlePreSheetService;
+import com.lframework.xingyun.settle.service.SettleInItemService;
 import com.lframework.xingyun.settle.vo.pre.customer.ApprovePassCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.ApproveRefuseCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.BatchApprovePassCustomerSettlePreSheetVo;
@@ -54,16 +54,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomerSettlePreSheetServiceImpl extends
     BaseMpServiceImpl<CustomerSettlePreSheetMapper, CustomerSettlePreSheet>
-    implements ICustomerSettlePreSheetService {
+    implements CustomerSettlePreSheetService {
 
   @Autowired
-  private ICustomerSettlePreSheetDetailService settlePreSheetDetailService;
+  private CustomerSettlePreSheetDetailService settlePreSheetDetailService;
 
   @Autowired
-  private ISettleInItemService settleInItemService;
+  private SettleInItemService settleInItemService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Override
   public PageResult<CustomerSettlePreSheet> query(Integer pageIndex, Integer pageSize,
@@ -90,9 +90,9 @@ public class CustomerSettlePreSheetServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建客户预付款单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建客户预付款单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建预付款单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateCustomerSettlePreSheetVo vo) {
 
@@ -113,9 +113,9 @@ public class CustomerSettlePreSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改客户预付款单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改客户预付款单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改预付款单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateCustomerSettlePreSheetVo vo) {
 
@@ -162,9 +162,9 @@ public class CustomerSettlePreSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过客户预付款单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过客户预付款单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassCustomerSettlePreSheetVo vo) {
 
@@ -205,11 +205,11 @@ public class CustomerSettlePreSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateCustomerSettlePreSheetVo vo) {
 
-    ICustomerSettlePreSheetService thisService = getThis(this.getClass());
+    CustomerSettlePreSheetService thisService = getThis(this.getClass());
 
     String id = thisService.create(vo);
 
@@ -221,9 +221,9 @@ public class CustomerSettlePreSheetServiceImpl extends
     return id;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝客户预付款单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝客户预付款单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseCustomerSettlePreSheetVo vo) {
 
@@ -264,11 +264,11 @@ public class CustomerSettlePreSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApprovePass(BatchApprovePassCustomerSettlePreSheetVo vo) {
 
-    ICustomerSettlePreSheetService thisService = getThis(this.getClass());
+    CustomerSettlePreSheetService thisService = getThis(this.getClass());
     int orderNo = 1;
     for (String id : vo.getIds()) {
       ApprovePassCustomerSettlePreSheetVo approveVo = new ApprovePassCustomerSettlePreSheetVo();
@@ -283,11 +283,11 @@ public class CustomerSettlePreSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApproveRefuse(BatchApproveRefuseCustomerSettlePreSheetVo vo) {
 
-    ICustomerSettlePreSheetService thisService = getThis(this.getClass());
+    CustomerSettlePreSheetService thisService = getThis(this.getClass());
     int orderNo = 1;
     for (String id : vo.getIds()) {
       ApproveRefuseCustomerSettlePreSheetVo approveVo = new ApproveRefuseCustomerSettlePreSheetVo();
@@ -303,9 +303,9 @@ public class CustomerSettlePreSheetServiceImpl extends
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除客户预付款单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除客户预付款单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -338,7 +338,7 @@ public class CustomerSettlePreSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByIds(List<String> ids) {
 
@@ -347,7 +347,7 @@ public class CustomerSettlePreSheetServiceImpl extends
       for (String id : ids) {
 
         try {
-          ICustomerSettlePreSheetService thisService = getThis(this.getClass());
+          CustomerSettlePreSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个客户预付款单删除失败，失败原因：" + e.getMsg());
@@ -358,7 +358,7 @@ public class CustomerSettlePreSheetServiceImpl extends
     }
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setUnSettle(String id) {
 
@@ -372,7 +372,7 @@ public class CustomerSettlePreSheetServiceImpl extends
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setPartSettle(String id) {
 
@@ -387,7 +387,7 @@ public class CustomerSettlePreSheetServiceImpl extends
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setSettled(String id) {
 

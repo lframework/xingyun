@@ -3,26 +3,26 @@ package com.lframework.xingyun.core.impl;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.JsonUtil;
-import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.entity.OnlineExcel;
 import com.lframework.xingyun.core.mappers.OnlineExcelMapper;
-import com.lframework.xingyun.core.service.IOnlineExcelService;
+import com.lframework.xingyun.core.service.OnlineExcelService;
 import com.lframework.xingyun.core.vo.sw.excel.BatchSendOnlineExcelVo;
 import com.lframework.xingyun.core.vo.sw.excel.CreateOnlineExcelVo;
 import com.lframework.xingyun.core.vo.sw.excel.QueryOnlineExcelVo;
@@ -38,10 +38,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OnlineExcelServiceImpl extends
-    BaseMpServiceImpl<OnlineExcelMapper, OnlineExcel> implements IOnlineExcelService {
+    BaseMpServiceImpl<OnlineExcelMapper, OnlineExcel> implements OnlineExcelService {
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Override
   public PageResult<OnlineExcel> query(Integer pageIndex, Integer pageSize, QueryOnlineExcelVo vo) {
@@ -67,8 +67,8 @@ public class OnlineExcelServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增在线Excel，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "新增在线Excel，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateOnlineExcelVo vo) {
 
@@ -87,8 +87,8 @@ public class OnlineExcelServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改在线Excel，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改在线Excel，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateOnlineExcelVo vo) {
 
@@ -109,8 +109,8 @@ public class OnlineExcelServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改在线Excel内容，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改在线Excel内容，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void updateContent(UpdateOnlineExcelContentVo vo) {
     OnlineExcel data = getBaseMapper().selectById(vo.getId());
@@ -132,8 +132,8 @@ public class OnlineExcelServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "发送Excel文件，发送方{}, 接收方{}", params = {"#sender", "#receiver"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "发送Excel文件，发送方{}, 接收方{}", params = {"#sender", "#receiver"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void send(SendOnlineExcelVo vo) {
 
@@ -165,9 +165,9 @@ public class OnlineExcelServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "批量发送Excel文件，发送方{}, 接收方{}", params = {"#sender",
+  @OpLog(type = DefaultOpLogType.OTHER, name = "批量发送Excel文件，发送方{}, 接收方{}", params = {"#sender",
       "#receiver"})
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchSend(BatchSendOnlineExcelVo vo) {
 

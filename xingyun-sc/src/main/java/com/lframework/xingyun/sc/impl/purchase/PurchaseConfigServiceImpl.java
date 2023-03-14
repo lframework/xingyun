@@ -2,12 +2,12 @@ package com.lframework.xingyun.sc.impl.purchase;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.mappers.PurchaseConfigMapper;
-import com.lframework.xingyun.sc.service.purchase.IPurchaseConfigService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.vo.purchase.config.UpdatePurchaseConfigVo;
 import java.io.Serializable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,9 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PurchaseConfigServiceImpl extends
     BaseMpServiceImpl<PurchaseConfigMapper, PurchaseConfig>
-    implements IPurchaseConfigService {
+    implements PurchaseConfigService {
 
-  @Cacheable(value = PurchaseConfig.CACHE_NAME, key = "'config'", unless = "#result == null")
+  @Cacheable(value = PurchaseConfig.CACHE_NAME, key = "@cacheVariables.tenantId() + 'config'", unless = "#result == null")
   @Override
   public PurchaseConfig get() {
 
@@ -29,8 +29,8 @@ public class PurchaseConfigServiceImpl extends
     return config;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改采购参数设置")
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改采购参数设置")
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdatePurchaseConfigVo vo) {
 
@@ -45,7 +45,7 @@ public class PurchaseConfigServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @CacheEvict(value = PurchaseConfig.CACHE_NAME, key = "'config'")
+  @CacheEvict(value = PurchaseConfig.CACHE_NAME, key = "@cacheVariables.tenantId() + 'config'")
   @Override
   public void cleanCacheByKey(Serializable key) {
 

@@ -3,25 +3,25 @@ package com.lframework.xingyun.core.impl;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.ObjectUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.ObjectUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.IUserService;
+import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.entity.FileBox;
 import com.lframework.xingyun.core.mappers.FileBoxMapper;
-import com.lframework.xingyun.core.service.IFileBoxService;
+import com.lframework.xingyun.core.service.FileBoxService;
 import com.lframework.xingyun.core.vo.sw.filebox.BatchSendFileBoxVo;
 import com.lframework.xingyun.core.vo.sw.filebox.CreateFileBoxVo;
 import com.lframework.xingyun.core.vo.sw.filebox.QueryFileBoxVo;
@@ -35,10 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FileBoxServiceImpl extends
-    BaseMpServiceImpl<FileBoxMapper, FileBox> implements IFileBoxService {
+    BaseMpServiceImpl<FileBoxMapper, FileBox> implements FileBoxService {
 
   @Autowired
-  private IUserService userService;
+  private UserService userService;
 
   @Override
   public PageResult<FileBox> query(Integer pageIndex, Integer pageSize, QueryFileBoxVo vo) {
@@ -64,8 +64,8 @@ public class FileBoxServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "新增文件收纳箱，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "新增文件收纳箱，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateFileBoxVo vo) {
 
@@ -84,8 +84,8 @@ public class FileBoxServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改文件收纳箱，ID：{}", params = {"#id"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改文件收纳箱，ID：{}", params = {"#id"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateFileBoxVo vo) {
 
@@ -106,8 +106,8 @@ public class FileBoxServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "发送文件收纳箱，发送方{}, 接收方{}", params = {"#sender", "#receiver"})
-  @Transactional
+  @OpLog(type = DefaultOpLogType.OTHER, name = "发送文件收纳箱，发送方{}, 接收方{}", params = {"#sender", "#receiver"})
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void send(SendFileBoxVo vo) {
 
@@ -139,9 +139,9 @@ public class FileBoxServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "批量发送文件收纳箱，发送方{}, 接收方{}", params = {"#sender",
+  @OpLog(type = DefaultOpLogType.OTHER, name = "批量发送文件收纳箱，发送方{}, 接收方{}", params = {"#sender",
       "#receiver"})
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchSend(BatchSendFileBoxVo vo) {
 

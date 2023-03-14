@@ -1,15 +1,15 @@
 package com.lframework.xingyun.sc.vo.retail.out;
 
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.entity.RetailConfig;
-import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
+import com.lframework.xingyun.sc.service.retail.RetailConfigService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -70,10 +70,9 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
   @ApiModelProperty("备注")
   private String description;
 
-  @Override
   public void validate() {
 
-    IRetailConfigService retailConfigService = ApplicationUtil.getBean(IRetailConfigService.class);
+    RetailConfigService retailConfigService = ApplicationUtil.getBean(RetailConfigService.class);
     RetailConfig config = retailConfigService.get();
     if (config.getRetailOutSheetRequireMember()) {
       if (StringUtil.isBlank(this.memberId)) {
@@ -81,8 +80,8 @@ public class CreateRetailOutSheetVo implements BaseVo, Serializable {
       }
     }
 
-    IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
-        IRetailOutSheetService.class);
+    RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
+        RetailOutSheetService.class);
     GetPaymentDateDto paymentDate = retailOutSheetService.getPaymentDate(this.getMemberId());
     if (paymentDate.getAllowModify()) {
       if (this.getPaymentDate() == null) {

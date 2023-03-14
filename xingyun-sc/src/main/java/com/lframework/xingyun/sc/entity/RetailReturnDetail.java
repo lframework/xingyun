@@ -39,11 +39,6 @@ public class RetailReturnDetail extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
-   * 供应商ID
-   */
-  private String supplierId;
-
-  /**
    * 退货数量
    */
   private Integer returnNum;

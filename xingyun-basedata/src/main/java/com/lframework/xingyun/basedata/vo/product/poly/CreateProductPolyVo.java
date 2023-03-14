@@ -1,9 +1,9 @@
 package com.lframework.xingyun.basedata.vo.product.poly;
 
-import com.lframework.common.constants.PatternPool;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.RegUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.PatternPool;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.RegUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.validation.IsCode;
 import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
@@ -98,7 +98,6 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   @NotEmpty
   private List<ProductVo> products;
 
-  @Override
   public void validate() {
 
     int orderNo = 1;

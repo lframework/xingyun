@@ -3,26 +3,26 @@ package com.lframework.xingyun.settle.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
-import com.lframework.common.constants.StringPool;
-import com.lframework.common.exceptions.ClientException;
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.Assert;
-import com.lframework.common.utils.CollectionUtil;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
+import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.ClientException;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.OpLogType;
+import com.lframework.starter.mybatis.enums.DefaultOpLogType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
-import com.lframework.starter.web.service.IGenerateCodeService;
+import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.web.common.security.AbstractUserDetails;
-import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.security.AbstractUserDetails;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
@@ -35,10 +35,10 @@ import com.lframework.xingyun.settle.entity.SettleOutItem;
 import com.lframework.xingyun.settle.enums.CustomerSettleFeeSheetStatus;
 import com.lframework.xingyun.settle.enums.CustomerSettleFeeSheetType;
 import com.lframework.xingyun.settle.mappers.CustomerSettleFeeSheetMapper;
-import com.lframework.xingyun.settle.service.ICustomerSettleFeeSheetDetailService;
-import com.lframework.xingyun.settle.service.ICustomerSettleFeeSheetService;
-import com.lframework.xingyun.settle.service.ISettleInItemService;
-import com.lframework.xingyun.settle.service.ISettleOutItemService;
+import com.lframework.xingyun.settle.service.CustomerSettleFeeSheetDetailService;
+import com.lframework.xingyun.settle.service.CustomerSettleFeeSheetService;
+import com.lframework.xingyun.settle.service.SettleInItemService;
+import com.lframework.xingyun.settle.service.SettleOutItemService;
 import com.lframework.xingyun.settle.vo.fee.customer.ApprovePassCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.ApproveRefuseCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.BatchApprovePassCustomerSettleFeeSheetVo;
@@ -58,19 +58,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomerSettleFeeSheetServiceImpl extends
     BaseMpServiceImpl<CustomerSettleFeeSheetMapper, CustomerSettleFeeSheet>
-    implements ICustomerSettleFeeSheetService {
+    implements CustomerSettleFeeSheetService {
 
   @Autowired
-  private ICustomerSettleFeeSheetDetailService customerSettleFeeSheetDetailService;
+  private CustomerSettleFeeSheetDetailService customerSettleFeeSheetDetailService;
 
   @Autowired
-  private ISettleOutItemService settleOutItemService;
+  private SettleOutItemService settleOutItemService;
 
   @Autowired
-  private ISettleInItemService settleInItemService;
+  private SettleInItemService settleInItemService;
 
   @Autowired
-  private IGenerateCodeService generateCodeService;
+  private GenerateCodeService generateCodeService;
 
   @Override
   public PageResult<CustomerSettleFeeSheet> query(Integer pageIndex, Integer pageSize,
@@ -97,9 +97,9 @@ public class CustomerSettleFeeSheetServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "创建客户费用单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建客户费用单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建费用单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateCustomerSettleFeeSheetVo vo) {
 
@@ -120,9 +120,9 @@ public class CustomerSettleFeeSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "修改客户费用单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改客户费用单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改费用单")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateCustomerSettleFeeSheetVo vo) {
 
@@ -169,9 +169,9 @@ public class CustomerSettleFeeSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核通过客户费用单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过客户费用单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassCustomerSettleFeeSheetVo vo) {
 
@@ -212,11 +212,11 @@ public class CustomerSettleFeeSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateCustomerSettleFeeSheetVo vo) {
 
-    ICustomerSettleFeeSheetService thisService = getThis(this.getClass());
+    CustomerSettleFeeSheetService thisService = getThis(this.getClass());
 
     String id = thisService.create(vo);
 
@@ -228,9 +228,9 @@ public class CustomerSettleFeeSheetServiceImpl extends
     return id;
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "审核拒绝客户费用单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝客户费用单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseCustomerSettleFeeSheetVo vo) {
 
@@ -271,11 +271,11 @@ public class CustomerSettleFeeSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApprovePass(BatchApprovePassCustomerSettleFeeSheetVo vo) {
 
-    ICustomerSettleFeeSheetService thisService = getThis(this.getClass());
+    CustomerSettleFeeSheetService thisService = getThis(this.getClass());
     int orderNo = 1;
     for (String id : vo.getIds()) {
       ApprovePassCustomerSettleFeeSheetVo approveVo = new ApprovePassCustomerSettleFeeSheetVo();
@@ -290,11 +290,11 @@ public class CustomerSettleFeeSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchApproveRefuse(BatchApproveRefuseCustomerSettleFeeSheetVo vo) {
 
-    ICustomerSettleFeeSheetService thisService = getThis(this.getClass());
+    CustomerSettleFeeSheetService thisService = getThis(this.getClass());
     int orderNo = 1;
     for (String id : vo.getIds()) {
       ApproveRefuseCustomerSettleFeeSheetVo approveVo = new ApproveRefuseCustomerSettleFeeSheetVo();
@@ -310,9 +310,9 @@ public class CustomerSettleFeeSheetServiceImpl extends
     }
   }
 
-  @OpLog(type = OpLogType.OTHER, name = "删除客户费用单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除客户费用单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
 
@@ -345,7 +345,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteByIds(List<String> ids) {
 
@@ -354,7 +354,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
       for (String id : ids) {
 
         try {
-          ICustomerSettleFeeSheetService thisService = getThis(this.getClass());
+          CustomerSettleFeeSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException("第" + orderNo + "个客户费用单删除失败，失败原因：" + e.getMsg());
@@ -365,7 +365,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
     }
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setUnSettle(String id) {
 
@@ -379,7 +379,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setPartSettle(String id) {
 
@@ -394,7 +394,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
     return count;
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public int setSettled(String id) {
 

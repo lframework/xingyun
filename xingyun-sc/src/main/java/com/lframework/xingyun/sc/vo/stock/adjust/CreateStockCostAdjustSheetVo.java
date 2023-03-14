@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.adjust;
 
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.NumberUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -38,7 +38,6 @@ public class CreateStockCostAdjustSheetVo implements BaseVo, Serializable {
   @NotEmpty(message = "请录入商品！")
   private List<StockCostAdjustProductVo> products;
 
-  @Override
   public void validate() {
 
     int orderNo = 1;

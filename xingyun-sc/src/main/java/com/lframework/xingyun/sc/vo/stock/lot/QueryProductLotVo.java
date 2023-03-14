@@ -47,12 +47,6 @@ public class QueryProductLotVo extends PageVo {
   private String supplierId;
 
   /**
-   * 批次号
-   */
-  @ApiModelProperty("批次号")
-  private String lotCode;
-
-  /**
    * 生成起始时间
    */
   @ApiModelProperty("生成起始时间")

@@ -1,17 +1,17 @@
 package com.lframework.xingyun.api.controller.sw;
 
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.utils.CollectionUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
-import com.lframework.web.common.security.SecurityUtil;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.api.bo.sw.excel.GetOnlineExcelBo;
 import com.lframework.xingyun.api.bo.sw.excel.QueryOnlineExcelBo;
 import com.lframework.xingyun.core.entity.OnlineExcel;
-import com.lframework.xingyun.core.service.IOnlineExcelService;
+import com.lframework.xingyun.core.service.OnlineExcelService;
 import com.lframework.xingyun.core.vo.sw.excel.BatchSendOnlineExcelVo;
 import com.lframework.xingyun.core.vo.sw.excel.CreateOnlineExcelVo;
 import com.lframework.xingyun.core.vo.sw.excel.QueryOnlineExcelVo;
@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OnlineExcelController extends DefaultBaseController {
 
   @Autowired
-  private IOnlineExcelService onlineExcelService;
+  private OnlineExcelService onlineExcelService;
 
   /**
    * 查询列表

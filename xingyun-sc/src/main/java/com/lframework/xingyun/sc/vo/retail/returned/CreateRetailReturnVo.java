@@ -1,15 +1,15 @@
 package com.lframework.xingyun.sc.vo.retail.returned;
 
-import com.lframework.common.exceptions.impl.DefaultClientException;
-import com.lframework.common.exceptions.impl.InputErrorException;
-import com.lframework.common.utils.NumberUtil;
-import com.lframework.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.entity.RetailConfig;
-import com.lframework.xingyun.sc.service.retail.IRetailConfigService;
-import com.lframework.xingyun.sc.service.retail.IRetailOutSheetService;
+import com.lframework.xingyun.sc.service.retail.RetailConfigService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -82,10 +82,9 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
   @ApiModelProperty("是否关联零售出库单")
   private Boolean required;
 
-  @Override
   public void validate() {
 
-    IRetailConfigService retailConfigService = ApplicationUtil.getBean(IRetailConfigService.class);
+    RetailConfigService retailConfigService = ApplicationUtil.getBean(RetailConfigService.class);
     RetailConfig retailConfig = retailConfigService.get();
 
     if (retailConfig.getRetailReturnRequireMember()) {
@@ -103,8 +102,8 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
 
   protected void validate(boolean requireOut) {
 
-    IRetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
-        IRetailOutSheetService.class);
+    RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
+        RetailOutSheetService.class);
     GetPaymentDateDto paymentDate = retailOutSheetService.getPaymentDate(this.getMemberId());
     if (paymentDate.getAllowModify()) {
       if (this.getPaymentDate() == null) {
@@ -134,9 +133,6 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
       }
 
       if (!requireOut) {
-        if (StringUtil.isBlank(product.getSupplierId())) {
-          throw new InputErrorException("第" + orderNo + "行商品供应商不能为空！");
-        }
 
         if (product.getOriPrice() == null) {
           throw new InputErrorException("第" + orderNo + "行商品参考零售价不能为空！");

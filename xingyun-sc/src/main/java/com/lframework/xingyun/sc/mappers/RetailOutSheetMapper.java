@@ -1,6 +1,8 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.xingyun.sc.vo.retail.out.QueryRetailProductVo;
+import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
@@ -69,4 +71,28 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    */
   List<RetailOutSheet> queryWithReturn(@Param("vo") QueryRetailOutSheetWithReturnVo vo,
       @Param("multipleRelate") boolean multipleRelate);
+
+  /**
+   * 根据关键字零售采购商品信息
+   *
+   * @param condition
+   * @return
+   */
+  List<RetailProductDto> queryRetailByCondition(String condition);
+
+  /**
+   * 查询可零售商品信息
+   *
+   * @param vo
+   * @return
+   */
+  List<RetailProductDto> queryRetailList(@Param("vo") QueryRetailProductVo vo);
+
+  /**
+   * 根据ID查询
+   *
+   * @param id
+   * @return
+   */
+  RetailProductDto getRetailById(String id);
 }

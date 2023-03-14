@@ -5,13 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- *
+ * 商品
  * </p>
  *
  * @author zmj
@@ -23,6 +24,8 @@ import lombok.EqualsAndHashCode;
 public class Product extends BaseEntity implements BaseDto {
 
   private static final long serialVersionUID = 1L;
+
+  public static final String CACHE_NAME = "Product";
 
   /**
    * ID
@@ -40,9 +43,9 @@ public class Product extends BaseEntity implements BaseDto {
   private String name;
 
   /**
-   * 聚合ID
+   * 简称
    */
-  private String polyId;
+  private String shortName;
 
   /**
    * SKU
@@ -53,6 +56,26 @@ public class Product extends BaseEntity implements BaseDto {
    * 外部编号
    */
   private String externalCode;
+
+  /**
+   * 类目ID
+   */
+  private String categoryId;
+
+  /**
+   * 品牌ID
+   */
+  private String brandId;
+
+  /**
+   * 进项税率（%）
+   */
+  private BigDecimal taxRate;
+
+  /**
+   * 销项税率（%）
+   */
+  private BigDecimal saleTaxRate;
 
   /**
    * 规格

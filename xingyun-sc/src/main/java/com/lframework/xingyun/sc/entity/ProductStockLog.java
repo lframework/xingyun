@@ -42,11 +42,6 @@ public class ProductStockLog extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
-   * 批次ID
-   */
-  private String lotId;
-
-  /**
    * 原库存数量
    */
   private Integer oriStockNum;

@@ -1,9 +1,7 @@
 package com.lframework.xingyun.basedata.vo.customer;
 
 import com.lframework.starter.web.components.validation.IsCode;
-import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.xingyun.basedata.enums.SettleType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.Email;
@@ -87,32 +85,6 @@ public class UpdateCustomerVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("地址")
   private String address;
-
-  /**
-   * 收货人
-   */
-  @ApiModelProperty("收货人")
-  private String receiver;
-
-  /**
-   * 收货手机号
-   */
-  @ApiModelProperty("收货手机号")
-  private String receiveTelephone;
-
-  /**
-   * 收货地址
-   */
-  @ApiModelProperty("收货地址")
-  private String receiveAddress;
-
-  /**
-   * 结账方式
-   */
-  @ApiModelProperty(value = "结账方式", required = true)
-  @NotNull(message = "请选择结账方式！")
-  @IsEnum(message = "请选择结账方式！", enumClass = SettleType.class)
-  private Integer settleType;
 
   /**
    * 统一社会信用代码

@@ -13,7 +13,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -40,6 +42,7 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
@@ -49,6 +52,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.RetailReturnMapper;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.retail.RetailConfigService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailService;
@@ -68,6 +72,7 @@ import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,6 +118,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
   @Autowired
   private ProductPurchaseService productPurchaseService;
 
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
+
   @Override
   public PageResult<RetailReturn> query(Integer pageIndex, Integer pageSize,
       QueryRetailReturnVo vo) {
@@ -129,7 +137,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
   @Override
   public List<RetailReturn> query(QueryRetailReturnVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("r")));
   }
 
   @Override
@@ -277,6 +287,13 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     }
     if (getBaseMapper().update(retailReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("零售退货单信息已过期，请刷新重试！");
+    }
+
+    if (NumberUtil.gt(retailReturn.getTotalAmount(), BigDecimal.ZERO)) {
+      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(retailReturn.getId());
+      if (CollectionUtil.isEmpty(orderPayTypes)) {
+        throw new DefaultClientException("单据没有支付方式，请检查！");
+      }
     }
 
     Wrapper<RetailReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(RetailReturnDetail.class)
@@ -452,6 +469,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     // 删除退货单
     getBaseMapper().deleteById(id);
 
+    orderPayTypeService.deleteByOrderId(id);
+
     OpLogUtil.setVariable("code", retailReturn.getCode());
   }
 
@@ -615,6 +634,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     retailReturn.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     retailReturn.setSettleStatus(this.getInitSettleStatus(member));
+
+    orderPayTypeService.create(retailReturn.getId(), vo.getPayTypes());
   }
 
   /**

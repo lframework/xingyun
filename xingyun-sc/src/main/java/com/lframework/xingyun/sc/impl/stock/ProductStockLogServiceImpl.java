@@ -3,6 +3,8 @@ package com.lframework.xingyun.sc.impl.stock;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -17,6 +19,7 @@ import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +45,11 @@ public class ProductStockLogServiceImpl extends
   @Override
   public List<ProductStockLog> query(QueryProductStockLogVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
   }
 
   @Transactional(rollbackFor = Exception.class)

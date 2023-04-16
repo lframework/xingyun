@@ -12,7 +12,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -49,6 +51,7 @@ import com.lframework.xingyun.sc.vo.stock.take.sheet.TakeStockSheetProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.UpdateTakeStockSheetVo;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +92,9 @@ public class TakeStockSheetServiceImpl extends
   @Override
   public List<TakeStockSheet> query(QueryTakeStockSheetVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("tb")));
   }
 
   @Override
@@ -470,7 +475,11 @@ public class TakeStockSheetServiceImpl extends
     PageHelperUtil.startPage(pageIndex, pageSize);
 
     List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockByCondition(planId,
-        condition);
+        condition,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -485,7 +494,11 @@ public class TakeStockSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockList(vo);
+    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockList(vo,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;

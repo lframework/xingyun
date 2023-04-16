@@ -28,7 +28,8 @@ public interface SaleOutSheetMapper extends BaseMapper<SaleOutSheet> {
    * @param vo
    * @return
    */
-  List<SaleOutSheet> query(@Param("vo") QuerySaleOutSheetVo vo);
+  List<SaleOutSheet> query(@Param("vo") QuerySaleOutSheetVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 选择器
@@ -36,7 +37,8 @@ public interface SaleOutSheetMapper extends BaseMapper<SaleOutSheet> {
    * @param vo
    * @return
    */
-  List<SaleOutSheet> selector(@Param("vo") SaleOutSheetSelectorVo vo);
+  List<SaleOutSheet> selector(@Param("vo") SaleOutSheetSelectorVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询
@@ -45,14 +47,6 @@ public interface SaleOutSheetMapper extends BaseMapper<SaleOutSheet> {
    * @return
    */
   SaleOutSheetFullDto getDetail(String id);
-
-  /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<SaleOutSheetFullDto> queryFulls(@Param("vo") QuerySaleOutSheetVo vo);
 
   /**
    * 根据ID查询（销售退货业务）
@@ -70,7 +64,8 @@ public interface SaleOutSheetMapper extends BaseMapper<SaleOutSheet> {
    * @return
    */
   List<SaleOutSheet> queryWithReturn(@Param("vo") QuerySaleOutSheetWithReturnVo vo,
-      @Param("multipleRelate") boolean multipleRelate);
+      @Param("multipleRelate") boolean multipleRelate,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 查询已审核列表

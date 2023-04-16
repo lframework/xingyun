@@ -25,7 +25,8 @@ public interface CustomerSettlePreSheetMapper extends BaseMapper<CustomerSettleP
      * @param vo
      * @return
      */
-    List<CustomerSettlePreSheet> query(@Param("vo") QueryCustomerSettlePreSheetVo vo);
+    List<CustomerSettlePreSheet> query(@Param("vo") QueryCustomerSettlePreSheetVo vo,
+        @Param("dataPermission") String dataPermission);
 
     /**
      * 根据ID查询
@@ -34,14 +35,6 @@ public interface CustomerSettlePreSheetMapper extends BaseMapper<CustomerSettleP
      * @return
      */
     CustomerSettlePreSheetFullDto getDetail(String id);
-
-    /**
-     * 查询列表
-     *
-     * @param vo
-     * @return
-     */
-    List<CustomerSettlePreSheetFullDto> queryFulls(@Param("vo") QueryCustomerSettlePreSheetVo vo);
 
     /**
      * 查询已审核列表

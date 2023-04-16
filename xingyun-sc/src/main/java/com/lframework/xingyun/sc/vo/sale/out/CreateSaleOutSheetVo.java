@@ -2,14 +2,18 @@ package com.lframework.xingyun.sc.vo.sale.out;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.entity.SaleConfig;
+import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
+import com.lframework.xingyun.sc.service.sale.SaleOrderDetailService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
+import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -66,6 +70,13 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
   private List<SaleOutProductVo> products;
 
   /**
+   * 支付方式
+   */
+  @ApiModelProperty("支付方式")
+  @Valid
+  private List<OrderPayTypeVo> payTypes;
+
+  /**
    * 备注
    */
   @ApiModelProperty("备注")
@@ -111,6 +122,9 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
       }
     }
 
+    SaleOrderDetailService saleOrderDetailService = ApplicationUtil.getBean(
+        SaleOrderDetailService.class);
+
     int orderNo = 1;
     for (SaleOutProductVo product : this.products) {
 
@@ -142,11 +156,20 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
 
         if (!NumberUtil.equal(product.getOriPrice(), 0D)) {
           // 由 根据原价和折扣率校验现价 更改为 根据原价、现价计算折扣率，即：不以传入的折扣率为准
-          BigDecimal discountRate = NumberUtil.getNumber(NumberUtil.mul(NumberUtil.div(product.getTaxPrice(), product.getOriPrice()), 100), 2);
+          BigDecimal discountRate = NumberUtil.getNumber(
+              NumberUtil.mul(NumberUtil.div(product.getTaxPrice(), product.getOriPrice()), 100), 2);
           product.setDiscountRate(discountRate);
         } else {
           //如果原价为0，折扣率固定为100
           product.setDiscountRate(BigDecimal.valueOf(100));
+        }
+      } else {
+        if (StringUtil.isNotBlank(product.getSaleOrderDetailId())) {
+          SaleOrderDetail orderDetail = saleOrderDetailService.getById(
+              product.getSaleOrderDetailId());
+          product.setTaxPrice(orderDetail.getTaxPrice());
+        } else {
+          product.setTaxPrice(BigDecimal.ZERO);
         }
       }
 
@@ -157,6 +180,16 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
       if (this.products.stream().allMatch(t -> StringUtil.isBlank(t.getSaleOrderDetailId()))) {
         throw new InputErrorException("销售订单中的商品必须全部或部分出库！");
       }
+    }
+
+    BigDecimal totalAmount = this.products.stream()
+        .map(t -> NumberUtil.mul(t.getOrderNum(), t.getTaxPrice())).reduce(NumberUtil::add)
+        .orElse(BigDecimal.ZERO);
+    BigDecimal payTypeAmount = CollectionUtil.isEmpty(this.payTypes) ? BigDecimal.ZERO
+        : this.payTypes.stream().map(OrderPayTypeVo::getPayAmount).reduce(NumberUtil::add)
+            .orElse(BigDecimal.ZERO);
+    if (!NumberUtil.equal(totalAmount, payTypeAmount)) {
+      throw new InputErrorException("所有支付方式的支付金额不等于含税总金额，请检查！");
     }
   }
 }

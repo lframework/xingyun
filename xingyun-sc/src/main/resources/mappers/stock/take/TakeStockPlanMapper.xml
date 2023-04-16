@@ -126,6 +126,7 @@
                 AND tb.update_time <= #{vo.updateTimeEnd}
                 ]]>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY tb.update_time DESC
     </select>
@@ -164,6 +165,7 @@
             <if test="vo.taking != null and !vo.taking">
                 AND tb.take_status != 0
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY tb.update_time DESC
     </select>

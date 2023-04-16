@@ -25,7 +25,8 @@ public interface SettleCheckSheetMapper extends BaseMapper<SettleCheckSheet> {
      * @param vo
      * @return
      */
-    List<SettleCheckSheet> query(@Param("vo") QuerySettleCheckSheetVo vo);
+    List<SettleCheckSheet> query(@Param("vo") QuerySettleCheckSheetVo vo,
+        @Param("dataPermission") String dataPermission);
 
     /**
      * 根据ID查询
@@ -34,14 +35,6 @@ public interface SettleCheckSheetMapper extends BaseMapper<SettleCheckSheet> {
      * @return
      */
     SettleCheckSheetFullDto getDetail(String id);
-
-    /**
-     * 查询列表
-     *
-     * @param vo
-     * @return
-     */
-    List<SettleCheckSheetFullDto> queryFulls(@Param("vo") QuerySettleCheckSheetVo vo);
 
     /**
      * 查询已审核列表

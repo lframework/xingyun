@@ -120,10 +120,9 @@ public class CustomerImportListener extends ExcelImportListener<CustomerImportMo
       record.setFax(data.getFax());
       record.setCityId(data.getAreaId());
       record.setAddress(data.getAddress());
-      record.setReceiver(data.getReceiver());
-      record.setReceiveTelephone(data.getReceiveTelephone());
-      record.setReceiveAddress(data.getReceiveAddress());
-      record.setSettleType(data.getSettleTypeEnum());
+      if (isInsert) {
+        record.setSettleType(data.getSettleTypeEnum());
+      }
       record.setCreditCode(data.getCreditCode());
       record.setTaxIdentifyNo(data.getTaxIdentifyNo());
       record.setBankName(data.getBankName());
@@ -135,7 +134,7 @@ public class CustomerImportListener extends ExcelImportListener<CustomerImportMo
         record.setAvailable(Boolean.TRUE);
       }
 
-      customerService.saveOrUpdate(record);
+      customerService.saveOrUpdateAllColumn(record);
       data.setId(record.getId());
 
       this.setSuccessProcess(i);

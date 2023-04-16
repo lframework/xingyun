@@ -214,7 +214,7 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
         record.setAvailable(Boolean.TRUE);
       }
 
-      productService.saveOrUpdate(record);
+      productService.saveOrUpdateAllColumn(record);
       data.setId(record.getId());
 
       if (data.getPurchasePrice() != null) {

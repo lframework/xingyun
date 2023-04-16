@@ -1,5 +1,6 @@
 package com.lframework.xingyun.basedata.controller;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,32 +8,43 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.xingyun.basedata.bo.address.AddressSelectorBo;
 import com.lframework.xingyun.basedata.bo.customer.CustomerSelectorBo;
 import com.lframework.xingyun.basedata.bo.member.MemberSelectorBo;
+import com.lframework.xingyun.basedata.bo.paytype.PayTypeSelectorBo;
 import com.lframework.xingyun.basedata.bo.product.brand.ProductBrandSelectorBo;
 import com.lframework.xingyun.basedata.bo.product.brand.ProductCategorySelectorBo;
 import com.lframework.xingyun.basedata.bo.shop.ShopSelectorBo;
 import com.lframework.xingyun.basedata.bo.storecenter.StoreCenterSelectorBo;
 import com.lframework.xingyun.basedata.bo.supplier.SupplierSelectorBo;
+import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Member;
+import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
+import com.lframework.xingyun.basedata.enums.AddressEntityType;
+import com.lframework.xingyun.basedata.enums.AddressType;
+import com.lframework.xingyun.basedata.service.address.AddressService;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.member.MemberService;
+import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
+import com.lframework.xingyun.basedata.vo.address.AddressSelectorVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
+import com.lframework.xingyun.basedata.vo.paytype.PayTypeSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import com.lframework.xingyun.basedata.vo.shop.ShopSelectorVo;
@@ -44,6 +56,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,6 +97,12 @@ public class BaseDataSelectorController extends DefaultBaseController {
 
   @Autowired
   private ShopService shopService;
+
+  @Autowired
+  private AddressService addressService;
+
+  @Autowired
+  private PayTypeService payTypeService;
 
   /**
    * 品牌
@@ -369,6 +389,107 @@ public class BaseDataSelectorController extends DefaultBaseController {
         .map(t -> shopService.findById(t))
         .filter(Objects::nonNull).collect(Collectors.toList());
     List<ShopSelectorBo> results = datas.stream().map(ShopSelectorBo::new)
+        .collect(
+            Collectors.toList());
+    return InvokeResultBuilder.success(results);
+  }
+
+  /**
+   * 地址
+   */
+  @ApiOperation("地址")
+  @GetMapping("/address")
+  public InvokeResult<PageResult<AddressSelectorBo>> selector(@Valid AddressSelectorVo vo) {
+
+    PageResult<Address> pageResult = addressService.selector(getPageIndex(vo), getPageSize(vo),
+        vo);
+
+    List<Address> datas = pageResult.getDatas();
+    List<AddressSelectorBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(AddressSelectorBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 加载地址
+   */
+  @ApiOperation("加载地址")
+  @PostMapping("/address/load")
+  public InvokeResult<List<AddressSelectorBo>> loadAddress(
+      @RequestBody(required = false) List<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return InvokeResultBuilder.success(CollectionUtil.emptyList());
+    }
+
+    List<Address> datas = ids.stream().filter(StringUtil::isNotBlank)
+        .map(t -> addressService.findById(t))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    List<AddressSelectorBo> results = datas.stream().map(AddressSelectorBo::new)
+        .collect(
+            Collectors.toList());
+    return InvokeResultBuilder.success(results);
+  }
+
+  /**
+   * 默认地址
+   */
+  @ApiOperation("默认地址")
+  @GetMapping("/address/default")
+  public InvokeResult<AddressSelectorBo> selector(
+      @NotBlank(message = "实体ID不能为空！") String entityId,
+      @NotNull(message = "实体类型不能为空！") @IsEnum(message = "实体类型格式错误！", enumClass = AddressEntityType.class) Integer entityType,
+      @NotNull(message = "地址类型不能为空！") @IsEnum(message = "地址类型格式错误！", enumClass = AddressType.class) Integer addressType) {
+
+    Wrapper<Address> queryWrapper = Wrappers.lambdaQuery(Address.class)
+        .eq(Address::getEntityId, entityId).eq(Address::getEntityType, entityType)
+        .eq(Address::getAddressType, addressType)
+        .eq(Address::getIsDefault, Boolean.TRUE);
+    Address address = addressService.getOne(queryWrapper);
+
+    return InvokeResultBuilder.success(address == null ? null : new AddressSelectorBo(address));
+  }
+
+  /**
+   * 支付方式
+   */
+  @ApiOperation("支付方式")
+  @GetMapping("/paytype")
+  public InvokeResult<PageResult<PayTypeSelectorBo>> selector(@Valid PayTypeSelectorVo vo) {
+
+    PageResult<PayType> pageResult = payTypeService.selector(getPageIndex(vo), getPageSize(vo),
+        vo);
+
+    List<PayType> datas = pageResult.getDatas();
+    List<PayTypeSelectorBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(PayTypeSelectorBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 加载支付方式
+   */
+  @ApiOperation("加载支付方式")
+  @PostMapping("/paytype/load")
+  public InvokeResult<List<PayTypeSelectorBo>> loadPayType(
+      @RequestBody(required = false) List<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return InvokeResultBuilder.success(CollectionUtil.emptyList());
+    }
+
+    List<PayType> datas = ids.stream().filter(StringUtil::isNotBlank)
+        .map(t -> payTypeService.findById(t))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    List<PayTypeSelectorBo> results = datas.stream().map(PayTypeSelectorBo::new)
         .collect(
             Collectors.toList());
     return InvokeResultBuilder.success(results);

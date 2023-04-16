@@ -5,16 +5,15 @@ import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.dto.UserDto;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.dto.UserDto;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

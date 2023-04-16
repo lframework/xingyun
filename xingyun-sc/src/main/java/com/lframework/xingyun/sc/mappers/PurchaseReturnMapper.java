@@ -25,7 +25,8 @@ public interface PurchaseReturnMapper extends BaseMapper<PurchaseReturn> {
    * @param vo
    * @return
    */
-  List<PurchaseReturn> query(@Param("vo") QueryPurchaseReturnVo vo);
+  List<PurchaseReturn> query(@Param("vo") QueryPurchaseReturnVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询
@@ -34,14 +35,6 @@ public interface PurchaseReturnMapper extends BaseMapper<PurchaseReturn> {
    * @return
    */
   PurchaseReturnFullDto getDetail(String id);
-
-  /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<PurchaseReturnFullDto> queryFulls(@Param("vo") QueryPurchaseReturnVo vo);
 
   /**
    * 查询已审核列表

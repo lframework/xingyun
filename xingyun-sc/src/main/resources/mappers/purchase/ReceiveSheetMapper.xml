@@ -206,6 +206,7 @@
                     AND r.settle_status = #{vo.settleStatus}
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY r.create_time DESC
     </select>
@@ -213,58 +214,6 @@
         <include refid="ReceiveSheetFullDto_sql"/>
         WHERE r.id = #{id}
         ORDER BY d.order_no
-    </select>
-    <select id="queryFulls" resultMap="ReceiveSheetFullDto">
-        <include refid="ReceiveSheetFullDto_sql"/>
-        LEFT JOIN tbl_purchase_order AS o ON o.id = r.purchase_order_id
-        <where>
-            <if test="vo != null">
-                <if test="vo.code != null and vo.code != ''">
-                    AND r.code = #{vo.code}
-                </if>
-                <if test="vo.supplierId != null and vo.supplierId != ''">
-                    AND r.supplier_id = #{vo.supplierId}
-                </if>
-                <if test="vo.scId != null and vo.scId != ''">
-                    AND r.sc_id = #{vo.scId}
-                </if>
-                <if test="vo.purchaserId != null and vo.purchaserId != ''">
-                    AND r.purchaser_id = #{vo.purchaserId}
-                </if>
-                <if test="vo.status != null">
-                    AND r.status = #{vo.status}
-                </if>
-                <if test="vo.createBy != null and vo.createBy != ''">
-                    AND r.create_by_id = #{vo.createBy}
-                </if>
-                <if test="vo.approveBy != null and vo.approveBy != ''">
-                    AND r.approve_by = #{vo.approveBy}
-                </if>
-                <if test="vo.createStartTime != null">
-                    AND r.create_time >= #{vo.createStartTime}
-                </if>
-                <if test="vo.createEndTime != null">
-                    <![CDATA[
-                    AND r.create_time <= #{vo.createEndTime}
-                    ]]>
-                </if>
-                <if test="vo.approveStartTime != null">
-                    AND r.approve_time >= #{vo.approveStartTime}
-                </if>
-                <if test="vo.approveEndTime != null">
-                    <![CDATA[
-                    AND r.approve_time <= #{vo.approveEndTime}
-                    ]]>
-                </if>
-                <if test="vo.purchaseOrderCode != null and vo.purchaseOrderCode != ''">
-                    AND o.code = #{vo.purchaseOrderCode}
-                </if>
-                <if test="vo.settleStatus != null">
-                    AND r.settle_status = #{vo.settleStatus}
-                </if>
-            </if>
-        </where>
-        ORDER BY r.create_time DESC, d.order_no
     </select>
     <select id="selector" resultMap="ReceiveSheet">
         <include refid="ReceiveSheetDto_sql"/>
@@ -294,6 +243,7 @@
                     ]]>
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY r.create_time DESC
     </select>
@@ -338,6 +288,7 @@
                 </if>
             </if>
             <if test="!multipleRelate">AND p.id IS NULL</if>
+            AND ${dataPermission}
         </where>
         <if test="!multipleRelate">GROUP BY r.id</if>
         ORDER BY r.create_time DESC

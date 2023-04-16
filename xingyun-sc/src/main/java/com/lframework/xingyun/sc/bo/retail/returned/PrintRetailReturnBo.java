@@ -13,7 +13,6 @@ import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
@@ -181,12 +180,6 @@ public class PrintRetailReturnBo extends BasePrintDataBo<RetailReturnFullDto> {
   public static class ReturnDetailBo extends BaseBo<RetailReturnFullDto.ReturnDetailDto> {
 
     /**
-     * 供应商名称
-     */
-    @ApiModelProperty("供应商名称")
-    private String supplierName;
-
-    /**
      * 商品编号
      */
     @ApiModelProperty("商品编号")
@@ -246,9 +239,6 @@ public class PrintRetailReturnBo extends BasePrintDataBo<RetailReturnFullDto> {
       this.returnNum = dto.getReturnNum();
       this.taxPrice = dto.getTaxPrice();
       this.returnAmount = NumberUtil.mul(dto.getTaxPrice(), dto.getReturnNum());
-
-      SupplierService supplierService = ApplicationUtil.getBean(SupplierService.class);
-      this.supplierName = supplierService.findById(dto.getSupplierId()).getName();
 
       RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
           RetailOutSheetService.class);

@@ -13,7 +13,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -40,6 +42,7 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
@@ -49,6 +52,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.SaleReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.SaleReturnMapper;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailService;
@@ -68,6 +72,7 @@ import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,6 +118,9 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
   @Autowired
   private ProductPurchaseService productPurchaseService;
 
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
+
   @Override
   public PageResult<SaleReturn> query(Integer pageIndex, Integer pageSize, QuerySaleReturnVo vo) {
 
@@ -128,7 +136,9 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
   @Override
   public List<SaleReturn> query(QuerySaleReturnVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("r")));
   }
 
   @Override
@@ -254,7 +264,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         SaleOutSheet saleOutSheet = saleOutSheetService.getById(saleReturn.getOutSheetId());
         throw new DefaultClientException(
-            "销售出库单号：" + saleOutSheet.getCode() + "，已关联其他销售退货单，不允许关联多个销售退货单！");
+            "销售出库单号：" + saleOutSheet.getCode()
+                + "，已关联其他销售退货单，不允许关联多个销售退货单！");
       }
     }
 
@@ -274,6 +285,13 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     }
     if (getBaseMapper().update(saleReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售退货单信息已过期，请刷新重试！");
+    }
+
+    if (NumberUtil.gt(saleReturn.getTotalAmount(), BigDecimal.ZERO)) {
+      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(saleReturn.getId());
+      if (CollectionUtil.isEmpty(orderPayTypes)) {
+        throw new DefaultClientException("单据没有支付方式，请检查！");
+      }
     }
 
     Wrapper<SaleReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(SaleReturnDetail.class)
@@ -317,7 +335,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
         SaleReturnService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个销售退货单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个销售退货单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -397,7 +416,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
         SaleReturnService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个销售退货单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个销售退货单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -448,6 +468,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     // 删除退货单
     getBaseMapper().deleteById(id);
 
+    orderPayTypeService.deleteByOrderId(id);
+
     OpLogUtil.setVariable("code", saleReturn.getCode());
   }
 
@@ -464,7 +486,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
           SaleReturnService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个销售退货单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个销售退货单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -564,7 +587,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
             .ne(SaleReturn::getId, saleReturn.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
           throw new DefaultClientException(
-              "销售出库单号：" + saleOutSheet.getCode() + "，已关联其他销售退货单，不允许关联多个销售退货单！");
+              "销售出库单号：" + saleOutSheet.getCode()
+                  + "，已关联其他销售退货单，不允许关联多个销售退货单！");
         }
       }
     }
@@ -647,6 +671,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     saleReturn.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     saleReturn.setSettleStatus(this.getInitSettleStatus(customer));
+
+    orderPayTypeService.create(saleReturn.getId(), vo.getPayTypes());
   }
 
   /**

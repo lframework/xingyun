@@ -12,17 +12,19 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
+import com.lframework.starter.web.common.security.AbstractUserDetails;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.common.security.AbstractUserDetails;
-import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
@@ -50,6 +52,7 @@ import com.lframework.xingyun.settle.vo.fee.customer.UpdateCustomerSettleFeeShee
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,7 +91,9 @@ public class CustomerSettleFeeSheetServiceImpl extends
   @Override
   public List<CustomerSettleFeeSheet> query(QueryCustomerSettleFeeSheetVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("s")));
   }
 
   @Override
@@ -283,7 +288,8 @@ public class CustomerSettleFeeSheetServiceImpl extends
       try {
         thisService.approvePass(approveVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个客户费用单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个客户费用单审核通过失败，失败原因：" + e.getMsg());
       }
       orderNo++;
     }
@@ -304,7 +310,8 @@ public class CustomerSettleFeeSheetServiceImpl extends
       try {
         thisService.approveRefuse(approveVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个客户费用单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个客户费用单审核拒绝失败，失败原因：" + e.getMsg());
       }
       orderNo++;
     }
@@ -357,7 +364,8 @@ public class CustomerSettleFeeSheetServiceImpl extends
           CustomerSettleFeeSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个客户费用单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个客户费用单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;

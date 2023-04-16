@@ -23,7 +23,8 @@ public interface RetailReturnMapper extends BaseMapper<RetailReturn> {
    * @param vo
    * @return
    */
-  List<RetailReturn> query(@Param("vo") QueryRetailReturnVo vo);
+  List<RetailReturn> query(@Param("vo") QueryRetailReturnVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询
@@ -32,12 +33,4 @@ public interface RetailReturnMapper extends BaseMapper<RetailReturn> {
    * @return
    */
   RetailReturnFullDto getDetail(String id);
-
-  /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<RetailReturnFullDto> queryFulls(@Param("vo") QueryRetailReturnVo vo);
 }

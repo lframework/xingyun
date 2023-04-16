@@ -13,7 +13,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -38,11 +40,13 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import com.lframework.xingyun.sc.mappers.PurchaseOrderMapper;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
@@ -60,6 +64,7 @@ import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,6 +95,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   @Autowired
   private PurchaseConfigService purchaseConfigService;
 
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
+
   @Override
   public PageResult<PurchaseOrder> query(Integer pageIndex, Integer pageSize,
       QueryPurchaseOrderVo vo) {
@@ -106,7 +114,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   @Override
   public List<PurchaseOrder> query(QueryPurchaseOrderVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("o")));
   }
 
   @Override
@@ -117,7 +127,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PurchaseOrder> datas = getBaseMapper().selector(vo);
+    List<PurchaseOrder> datas = getBaseMapper().selector(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("o")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -157,7 +169,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<PurchaseOrder> datas = getBaseMapper().queryWithReceive(vo,
-        purchaseConfig.getReceiveMultipleRelatePurchase());
+        purchaseConfig.getReceiveMultipleRelatePurchase(),
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("o")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -272,6 +286,13 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
+    if (NumberUtil.gt(order.getTotalAmount(), BigDecimal.ZERO)) {
+      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(order.getId());
+      if (CollectionUtil.isEmpty(orderPayTypes)) {
+        throw new DefaultClientException("单据没有支付方式，请检查！");
+      }
+    }
+
     OpLogUtil.setVariable("code", order.getCode());
     OpLogUtil.setExtra(vo);
 
@@ -292,7 +313,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         PurchaseOrderService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassPurchaseOrderVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个采购订单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个采购订单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -373,7 +395,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         PurchaseOrderService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefusePurchaseOrderVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个采购订单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个采购订单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -411,6 +434,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     // 删除订单
     getBaseMapper().deleteById(id);
 
+    orderPayTypeService.deleteByOrderId(id);
+
     OpLogUtil.setVariable("code", order.getCode());
   }
 
@@ -427,7 +452,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
           PurchaseOrderService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个采购订单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个采购订单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -541,6 +567,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     order.setTotalAmount(totalAmount);
     order.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+
+    orderPayTypeService.create(order.getId(), vo.getPayTypes());
   }
 
   @Override
@@ -552,7 +580,11 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(condition);
+    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(condition,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -567,7 +599,11 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseList(vo);
+    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseList(vo,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;

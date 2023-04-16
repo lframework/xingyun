@@ -152,15 +152,6 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         if (!StringUtil.isBlank(vo.getAddress())) {
             data.setAddress(vo.getAddress());
         }
-        if (!StringUtil.isBlank(vo.getReceiver())) {
-            data.setReceiver(vo.getReceiver());
-        }
-        if (!StringUtil.isBlank(vo.getReceiveTelephone())) {
-            data.setReceiveTelephone(vo.getReceiveTelephone());
-        }
-        if (!StringUtil.isBlank(vo.getReceiveAddress())) {
-            data.setReceiveAddress(vo.getReceiveAddress());
-        }
         data.setSettleType(EnumUtil.getByCode(SettleType.class, vo.getSettleType()));
         if (!StringUtil.isBlank(vo.getCreditCode())) {
             data.setCreditCode(vo.getCreditCode());
@@ -215,12 +206,6 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
                 .set(Customer::getZipCode, !StringUtil.isBlank(vo.getZipCode()) ? vo.getZipCode() : null)
                 .set(Customer::getFax, !StringUtil.isBlank(vo.getFax()) ? vo.getFax() : null)
                 .set(Customer::getAddress, !StringUtil.isBlank(vo.getAddress()) ? vo.getAddress() : null)
-                .set(Customer::getReceiver, !StringUtil.isBlank(vo.getReceiver()) ? vo.getReceiver() : null)
-                .set(Customer::getReceiveTelephone,
-                        !StringUtil.isBlank(vo.getReceiveTelephone()) ? vo.getReceiveTelephone() : null)
-                .set(Customer::getReceiveAddress,
-                        !StringUtil.isBlank(vo.getReceiveAddress()) ? vo.getReceiveAddress() : null)
-                .set(Customer::getSettleType, EnumUtil.getByCode(SettleType.class, vo.getSettleType()))
                 .set(Customer::getCreditCode, !StringUtil.isBlank(vo.getCreditCode()) ? vo.getCreditCode() : null)
                 .set(Customer::getTaxIdentifyNo,
                         !StringUtil.isBlank(vo.getTaxIdentifyNo()) ? vo.getTaxIdentifyNo() : null)

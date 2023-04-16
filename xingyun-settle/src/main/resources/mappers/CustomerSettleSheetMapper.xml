@@ -87,6 +87,7 @@
                     ]]>
         </if>
       </if>
+      AND ${dataPermission}
     </where>
     ORDER BY s.create_time DESC
   </select>
@@ -95,46 +96,6 @@
     <include refid="CustomerSettleSheetFullDto_sql"/>
     WHERE s.id = #{id}
     ORDER BY d.order_no
-  </select>
-
-  <select id="queryFulls" resultMap="CustomerSettleSheetFullDto">
-    <include refid="CustomerSettleSheetFullDto_sql"/>
-    <where>
-      <if test="vo != null">
-        <if test="vo.code != null and vo.code != ''">
-          AND s.code = #{vo.code}
-        </if>
-        <if test="vo.customerId != null and vo.customerId != ''">
-          AND s.customer_id = #{vo.customerId}
-        </if>
-        <if test="vo.status != null">
-          AND s.status = #{vo.status}
-        </if>
-        <if test="vo.createBy != null and vo.createBy != ''">
-          AND s.create_by_id = #{vo.createBy}
-        </if>
-        <if test="vo.approveBy != null and vo.approveBy != ''">
-          AND s.approve_by = #{vo.approveBy}
-        </if>
-        <if test="vo.createStartTime != null">
-          AND s.create_time >= #{vo.createStartTime}
-        </if>
-        <if test="vo.createEndTime != null">
-          <![CDATA[
-                    AND s.create_time <= #{vo.createEndTime}
-                    ]]>
-        </if>
-        <if test="vo.approveStartTime != null">
-          AND s.approve_time >= #{vo.approveStartTime}
-        </if>
-        <if test="vo.approveEndTime != null">
-          <![CDATA[
-                    AND s.approve_time <= #{vo.approveEndTime}
-                    ]]>
-        </if>
-      </if>
-    </where>
-    ORDER BY s.create_time DESC, d.order_no
   </select>
 
   <sql id="CustomerSettleSheetFullDto_sql">

@@ -11,9 +11,7 @@ import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.bo.purchase.GetPurchaseOrderBo;
 import com.lframework.xingyun.sc.bo.purchase.PrintPurchaseOrderBo;
@@ -23,10 +21,13 @@ import com.lframework.xingyun.sc.bo.purchase.QueryPurchaseOrderBo;
 import com.lframework.xingyun.sc.bo.purchase.QueryPurchaseOrderWithReceiveBo;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
+import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderExportModel;
 import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderImportListener;
 import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderImportModel;
+import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderPayTypeImportListener;
+import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderPayTypeImportModel;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
@@ -35,6 +36,7 @@ import com.lframework.xingyun.sc.vo.purchase.BatchApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -373,6 +375,13 @@ public class PurchaseOrderController extends DefaultBaseController {
     ExcelUtil.exportXls("采购订单导入模板", PurchaseOrderImportModel.class);
   }
 
+  @ApiOperation("下载导入支付方式模板")
+  @HasPermission({"purchase:order:import"})
+  @GetMapping("/import/template/paytype")
+  public void downloadImportPayTypeTemplate() {
+    ExcelUtil.exportXls("采购订单导入支付方式模板", PurchaseOrderPayTypeImportModel.class);
+  }
+
   @ApiOperation("导入")
   @HasPermission({"purchase:order:import"})
   @PostMapping("/import")
@@ -382,6 +391,19 @@ public class PurchaseOrderController extends DefaultBaseController {
     PurchaseOrderImportListener listener = new PurchaseOrderImportListener();
     listener.setTaskId(id);
     ExcelUtil.read(file, PurchaseOrderImportModel.class, listener).sheet().doRead();
+
+    return InvokeResultBuilder.success();
+  }
+
+  @ApiOperation("导入支付方式")
+  @HasPermission({"purchase:order:import"})
+  @PostMapping("/import/paytype")
+  public InvokeResult<Void> importPayTypeExcel(@NotBlank(message = "ID不能为空") String id,
+      @NotNull(message = "请上传文件") MultipartFile file) {
+
+    PurchaseOrderPayTypeImportListener listener = new PurchaseOrderPayTypeImportListener();
+    listener.setTaskId(id);
+    ExcelUtil.read(file, PurchaseOrderPayTypeImportModel.class, listener).sheet().doRead();
 
     return InvokeResultBuilder.success();
   }
@@ -425,7 +447,8 @@ public class PurchaseOrderController extends DefaultBaseController {
   public InvokeResult<PageResult<PurchaseProductBo>> queryPurchaseProductList(
       @Valid QueryPurchaseProductVo vo) {
 
-    PageResult<PurchaseProductDto> pageResult = purchaseOrderService.queryPurchaseList(getPageIndex(vo),
+    PageResult<PurchaseProductDto> pageResult = purchaseOrderService.queryPurchaseList(
+        getPageIndex(vo),
         getPageSize(vo), vo);
     List<PurchaseProductBo> results = null;
     List<PurchaseProductDto> datas = pageResult.getDatas();

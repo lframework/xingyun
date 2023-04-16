@@ -11,11 +11,14 @@ import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
+import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
 import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderDetailService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
@@ -116,6 +119,12 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
    */
   @ApiModelProperty("销售金额")
   private BigDecimal totalAmount;
+
+  /**
+   * 支付方式
+   */
+  @ApiModelProperty("支付方式")
+  private List<OrderPayTypeBo> payTypes;
 
   /**
    * 备注
@@ -224,6 +233,10 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
       this.details = dto.getDetails().stream().map(t -> new OrderDetailBo(this.getScId(), t))
           .collect(Collectors.toList());
     }
+
+    OrderPayTypeService orderPayTypeService = ApplicationUtil.getBean(OrderPayTypeService.class);
+    List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(dto.getId());
+    this.payTypes = orderPayTypes.stream().map(OrderPayTypeBo::new).collect(Collectors.toList());
   }
 
   @Data

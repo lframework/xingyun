@@ -10,7 +10,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.system.RecursionMappingService;
@@ -46,6 +48,7 @@ import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
 import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,7 +98,9 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
   @Override
   public List<Product> query(QueryProductVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo, DataPermissionHandler.getDataPermission(
+        SysDataPermissionDataPermissionType.PRODUCT, Arrays.asList("product", "brand", "category"),
+        Arrays.asList("g", "b", "c")));
   }
 
   @Override

@@ -24,7 +24,8 @@ public interface TakeStockPlanMapper extends BaseMapper<TakeStockPlan> {
    * @param vo
    * @return
    */
-  List<TakeStockPlan> query(@Param("vo") QueryTakeStockPlanVo vo);
+  List<TakeStockPlan> query(@Param("vo") QueryTakeStockPlanVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 选择器
@@ -32,7 +33,8 @@ public interface TakeStockPlanMapper extends BaseMapper<TakeStockPlan> {
    * @param vo
    * @return
    */
-  List<TakeStockPlan> selector(@Param("vo") TakeStockPlanSelectorVo vo);
+  List<TakeStockPlan> selector(@Param("vo") TakeStockPlanSelectorVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据盘点任务ID查询商品信息

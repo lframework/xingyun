@@ -13,7 +13,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -38,6 +40,7 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
@@ -47,6 +50,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.ReceiveSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.ReceiveSheetMapper;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
@@ -68,6 +72,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -107,6 +112,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   @Autowired
   private ProductStockService productStockService;
 
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
+
   @Override
   public PageResult<ReceiveSheet> query(Integer pageIndex, Integer pageSize,
       QueryReceiveSheetVo vo) {
@@ -123,7 +131,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   @Override
   public List<ReceiveSheet> query(QueryReceiveSheetVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("r")));
   }
 
   @Override
@@ -134,7 +144,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<ReceiveSheet> datas = getBaseMapper().selector(vo);
+    List<ReceiveSheet> datas = getBaseMapper().selector(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("r")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -194,7 +206,9 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<ReceiveSheet> datas = getBaseMapper().queryWithReturn(vo,
-        purchaseConfig.getPurchaseReturnMultipleRelateReceive());
+        purchaseConfig.getPurchaseReturnMultipleRelateReceive(),
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("r")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -317,7 +331,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         PurchaseOrder purchaseOrder = purchaseOrderService.getById(sheet.getPurchaseOrderId());
         throw new DefaultClientException(
-            "采购订单号：" + purchaseOrder.getCode() + "，已关联其他采购收货单，不允许关联多个采购收货单！");
+            "采购订单号：" + purchaseOrder.getCode()
+                + "，已关联其他采购收货单，不允许关联多个采购收货单！");
       }
     }
 
@@ -337,6 +352,13 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     }
     if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
+    }
+
+    if (NumberUtil.gt(sheet.getTotalAmount(), BigDecimal.ZERO)) {
+      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(sheet.getId());
+      if (CollectionUtil.isEmpty(orderPayTypes)) {
+        throw new DefaultClientException("单据没有支付方式，请检查！");
+      }
     }
 
     Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(ReceiveSheetDetail.class)
@@ -376,7 +398,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         ReceiveSheetService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个采购收货单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个采购收货单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -456,7 +479,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         ReceiveSheetService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个采购收货单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个采购收货单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -508,6 +532,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     // 删除订单
     getBaseMapper().deleteById(id);
 
+    orderPayTypeService.deleteByOrderId(id);
+
     OpLogUtil.setVariable("code", sheet.getCode());
   }
 
@@ -524,7 +550,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
           ReceiveSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个采购收货单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个采购收货单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -626,7 +653,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
             .ne(ReceiveSheet::getId, sheet.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
           throw new DefaultClientException(
-              "采购订单号：" + purchaseOrder.getCode() + "，已关联其他采购收货单，不允许关联多个采购收货单！");
+              "采购订单号：" + purchaseOrder.getCode()
+                  + "，已关联其他采购收货单，不允许关联多个采购收货单！");
         }
       }
     }
@@ -702,6 +730,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     sheet.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     sheet.setSettleStatus(this.getInitSettleStatus(supplier));
+
+    orderPayTypeService.create(sheet.getId(), vo.getPayTypes());
   }
 
   /**

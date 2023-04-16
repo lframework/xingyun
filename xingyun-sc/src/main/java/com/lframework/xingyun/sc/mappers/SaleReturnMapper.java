@@ -25,7 +25,8 @@ public interface SaleReturnMapper extends BaseMapper<SaleReturn> {
    * @param vo
    * @return
    */
-  List<SaleReturn> query(@Param("vo") QuerySaleReturnVo vo);
+  List<SaleReturn> query(@Param("vo") QuerySaleReturnVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询
@@ -34,14 +35,6 @@ public interface SaleReturnMapper extends BaseMapper<SaleReturn> {
    * @return
    */
   SaleReturnFullDto getDetail(String id);
-
-  /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<SaleReturnFullDto> queryFulls(@Param("vo") QuerySaleReturnVo vo);
 
   /**
    * 查询已审核列表

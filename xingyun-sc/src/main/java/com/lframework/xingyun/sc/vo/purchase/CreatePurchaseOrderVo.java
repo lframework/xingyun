@@ -1,10 +1,14 @@
 package com.lframework.xingyun.sc.vo.purchase;
 
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.Valid;
@@ -54,6 +58,13 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
   private List<PurchaseProductVo> products;
 
   /**
+   * 支付方式
+   */
+  @ApiModelProperty("支付方式")
+  @Valid
+  private List<OrderPayTypeVo> payTypes;
+
+  /**
    * 备注
    */
   @ApiModelProperty("备注")
@@ -85,6 +96,16 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
       }
 
       orderNo++;
+    }
+
+    BigDecimal totalAmount = this.products.stream()
+        .map(t -> NumberUtil.mul(t.getPurchaseNum(), t.getPurchasePrice())).reduce(NumberUtil::add)
+        .orElse(BigDecimal.ZERO);
+    BigDecimal payTypeAmount = CollectionUtil.isEmpty(this.payTypes) ? BigDecimal.ZERO
+        : this.payTypes.stream().map(OrderPayTypeVo::getPayAmount).reduce(NumberUtil::add)
+            .orElse(BigDecimal.ZERO);
+    if (!NumberUtil.equal(totalAmount, payTypeAmount)) {
+      throw new InputErrorException("所有支付方式的支付金额不等于含税总金额，请检查！");
     }
   }
 }

@@ -91,24 +91,6 @@ public class GetCustomerBo extends BaseBo<Customer> {
     private String address;
 
     /**
-     * 收货人
-     */
-    @ApiModelProperty("收货人")
-    private String receiver;
-
-    /**
-     * 收货手机号
-     */
-    @ApiModelProperty("收货手机号")
-    private String receiveTelephone;
-
-    /**
-     * 收货地址
-     */
-    @ApiModelProperty("收货地址")
-    private String receiveAddress;
-
-    /**
      * 结账方式
      */
     @ApiModelProperty("结账方式")

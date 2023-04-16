@@ -22,5 +22,6 @@ public interface ProductStockLogMapper extends BaseMapper<ProductStockLog> {
    * @param vo
    * @return
    */
-  List<ProductStockLog> query(@Param("vo") QueryProductStockLogVo vo);
+  List<ProductStockLog> query(@Param("vo") QueryProductStockLogVo vo,
+      @Param("dataPermission") String dataPermission);
 }

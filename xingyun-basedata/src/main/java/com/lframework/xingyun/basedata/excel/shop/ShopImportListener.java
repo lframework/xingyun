@@ -74,7 +74,7 @@ public class ShopImportListener extends ExcelImportListener<ShopImportModel> {
         record.setAvailable(Boolean.TRUE);
       }
 
-      shopService.saveOrUpdate(record);
+      shopService.saveOrUpdateAllColumn(record);
 
       data.setId(record.getId());
 

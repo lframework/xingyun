@@ -6,14 +6,17 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
 import com.lframework.xingyun.sc.bo.purchase.PurchaseOrderSelectorBo;
 import com.lframework.xingyun.sc.bo.purchase.receive.ReceiveSheetSelectorBo;
 import com.lframework.xingyun.sc.bo.stock.take.plan.TakeStockPlanSelectorBo;
 import com.lframework.xingyun.sc.bo.stock.take.pre.PreTakeStockSheetSelectorBo;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetService;
@@ -27,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +61,9 @@ public class ScSelectorController extends DefaultBaseController {
 
   @Autowired
   private PreTakeStockSheetService preTakeStockSheetService;
+
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
 
   /**
    * 采购订单
@@ -214,6 +221,16 @@ public class ScSelectorController extends DefaultBaseController {
     List<PreTakeStockSheetSelectorBo> results = datas.stream().map(PreTakeStockSheetSelectorBo::new)
         .collect(
             Collectors.toList());
+    return InvokeResultBuilder.success(results);
+  }
+
+  @ApiOperation("订单支付方式")
+  @GetMapping("/paytype/order")
+  public InvokeResult<List<OrderPayTypeBo>> getOrderPayType(
+      @NotBlank(message = "订单ID不能为空！") String orderId) {
+    List<OrderPayType> datas = orderPayTypeService.findByOrderId(orderId);
+    List<OrderPayTypeBo> results = datas.stream().map(OrderPayTypeBo::new)
+        .collect(Collectors.toList());
     return InvokeResultBuilder.success(results);
   }
 }

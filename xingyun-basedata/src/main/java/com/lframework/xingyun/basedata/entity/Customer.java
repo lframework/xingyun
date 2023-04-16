@@ -81,21 +81,6 @@ public class Customer extends BaseEntity implements BaseDto {
   private String address;
 
   /**
-   * 收货人
-   */
-  private String receiver;
-
-  /**
-   * 收货手机号
-   */
-  private String receiveTelephone;
-
-  /**
-   * 收货地址
-   */
-  private String receiveAddress;
-
-  /**
    * 结账方式
    */
   private SettleType settleType;

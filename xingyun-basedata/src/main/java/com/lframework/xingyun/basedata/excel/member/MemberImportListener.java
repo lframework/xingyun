@@ -133,7 +133,7 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
       data.setId(record.getId());
       data.setIsInsert(isInsert);
 
-      memberService.saveOrUpdate(record);
+      memberService.saveOrUpdateAllColumn(record);
 
       this.setSuccessProcess(i);
     }

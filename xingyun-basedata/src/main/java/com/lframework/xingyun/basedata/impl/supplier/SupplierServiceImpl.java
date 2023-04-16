@@ -140,9 +140,6 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
         if (!StringUtil.isBlank(vo.getAddress())) {
             data.setAddress(vo.getAddress());
         }
-        if (!StringUtil.isBlank(vo.getDeliveryAddress())) {
-            data.setDeliveryAddress(vo.getDeliveryAddress());
-        }
         if (vo.getDeliveryCycle() != null) {
             data.setDeliveryCycle(vo.getDeliveryCycle());
         }
@@ -203,10 +200,7 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
                 .set(Supplier::getZipCode, !StringUtil.isBlank(vo.getZipCode()) ? vo.getZipCode() : null)
                 .set(Supplier::getFax, !StringUtil.isBlank(vo.getFax()) ? vo.getFax() : null)
                 .set(Supplier::getAddress, !StringUtil.isBlank(vo.getAddress()) ? vo.getAddress() : null)
-                .set(Supplier::getDeliveryAddress,
-                        !StringUtil.isBlank(vo.getDeliveryAddress()) ? vo.getDeliveryAddress() : null)
                 .set(Supplier::getDeliveryCycle, vo.getDeliveryCycle())
-                .set(Supplier::getSettleType, EnumUtil.getByCode(SettleType.class, vo.getSettleType()))
                 .set(Supplier::getCreditCode, !StringUtil.isBlank(vo.getCreditCode()) ? vo.getCreditCode() : null)
                 .set(Supplier::getTaxIdentifyNo,
                         !StringUtil.isBlank(vo.getTaxIdentifyNo()) ? vo.getTaxIdentifyNo() : null)

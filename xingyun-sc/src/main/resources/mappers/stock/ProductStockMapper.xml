@@ -23,6 +23,9 @@
             gs.un_tax_price,
             gs.un_tax_amount
         FROM tbl_product_stock AS gs
+        LEFT JOIN base_data_product AS g ON g.id = gs.product_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
+        LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
     </sql>
 
     <update id="addStock">
@@ -56,38 +59,38 @@
     </update>
     <select id="getByProductIdAndScId" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
-        WHERE product_id = #{productId}
-        AND sc_id = #{scId}
+        WHERE gs.product_id = #{productId}
+        AND gs.sc_id = #{scId}
     </select>
     <select id="query" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
         INNER JOIN base_data_store_center AS sc ON sc.id = gs.sc_id
-        INNER JOIN base_data_product AS product ON product.id = gs.product_id
-        LEFT JOIN recursion_mapping AS rm ON rm.node_id = product.category_id and rm.node_type = 2
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = g.category_id and rm.node_type = 2
         <where>
             <if test="vo != null">
                 <if test="vo.scId != null and vo.scId != ''">
                     AND gs.sc_id = #{vo.scId}
                 </if>
                 <if test="vo.productCode != null and vo.productCode != ''">
-                    AND product.code = #{vo.productCode}
+                    AND g.code = #{vo.productCode}
                 </if>
                 <if test="vo.productName != null and vo.productName != ''">
-                    AND product.name LIKE CONCAT('%', #{vo.productName}, '%')
+                    AND g.name LIKE CONCAT('%', #{vo.productName}, '%')
                 </if>
                 <if test="vo.brandId != null and vo.brandId != ''">
-                    AND product.brand_id = #{vo.brandId}
+                    AND g.brand_id = #{vo.brandId}
                 </if>
                 <if test="vo.categoryId != null and vo.categoryId != ''">
-                    AND (product.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                    AND (g.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
-        ORDER BY sc.code, product.code
+        ORDER BY sc.code, g.code
     </select>
     <select id="getByProductIdsAndScId" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
-        WHERE product_id IN <foreach collection="productIds" open="(" separator="," close=")" item="item">#{item}</foreach>
-        AND sc_id = #{scId}
+        WHERE gs.product_id IN <foreach collection="productIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        AND gs.sc_id = #{scId}
     </select>
 </mapper>

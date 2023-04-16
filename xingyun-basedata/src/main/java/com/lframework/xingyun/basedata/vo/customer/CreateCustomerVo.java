@@ -82,24 +82,6 @@ public class CreateCustomerVo implements BaseVo, Serializable {
   private String address;
 
   /**
-   * 收货人
-   */
-  @ApiModelProperty("收货人")
-  private String receiver;
-
-  /**
-   * 收货手机号
-   */
-  @ApiModelProperty("收货手机号")
-  private String receiveTelephone;
-
-  /**
-   * 收货地址
-   */
-  @ApiModelProperty("收货地址")
-  private String receiveAddress;
-
-  /**
    * 结账方式
    */
   @ApiModelProperty(value = "结账方式", required = true)

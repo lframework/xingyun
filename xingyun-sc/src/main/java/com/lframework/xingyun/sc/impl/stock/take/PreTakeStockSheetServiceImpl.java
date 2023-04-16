@@ -10,7 +10,9 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -37,6 +39,7 @@ import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,7 +75,9 @@ public class PreTakeStockSheetServiceImpl extends
   @Override
   public List<PreTakeStockSheet> query(QueryPreTakeStockSheetVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("tb")));
   }
 
   @Override
@@ -83,7 +88,9 @@ public class PreTakeStockSheetServiceImpl extends
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PreTakeStockSheet> datas = getBaseMapper().selector(vo);
+    List<PreTakeStockSheet> datas = getBaseMapper().selector(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("tb")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -218,7 +225,11 @@ public class PreTakeStockSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockByCondition(condition);
+    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockByCondition(condition,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -233,7 +244,11 @@ public class PreTakeStockSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockList(vo);
+    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockList(vo,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;

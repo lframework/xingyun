@@ -160,6 +160,7 @@
                 AND tb.approve_time <= #{vo.approveTimeEnd}
                 ]]>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY tb.update_time DESC
     </select>
@@ -194,6 +195,7 @@
             <if test="planId != null and planId != ''">
                 AND g.id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{planId})
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>
@@ -219,6 +221,7 @@
                     AND g.id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{vo.planId})
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>

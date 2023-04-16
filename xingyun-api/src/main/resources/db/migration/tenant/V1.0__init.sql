@@ -5153,7 +5153,7 @@ CREATE TABLE `sys_data_dic_item` (
   `id` varchar(32) NOT NULL COMMENT 'ID',
   `code` varchar(20) NOT NULL COMMENT '编号',
   `name` varchar(20) NOT NULL COMMENT '名称',
-  `dic_id` varchar(255) NOT NULL COMMENT '字典ID',
+  `dic_id` varchar(32) NOT NULL COMMENT '字典ID',
   `order_no` int(11) NOT NULL COMMENT '排序编号',
   `create_by` varchar(32) NOT NULL COMMENT '创建人',
   `create_by_id` varchar(32) NOT NULL COMMENT '创建人ID',

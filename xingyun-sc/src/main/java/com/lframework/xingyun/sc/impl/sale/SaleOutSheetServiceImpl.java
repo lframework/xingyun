@@ -13,7 +13,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -38,6 +40,7 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
@@ -48,6 +51,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.SaleOutSheetMapper;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderDetailService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
@@ -70,6 +74,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,6 +117,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
   @Autowired
   private ProductStockService productStockService;
 
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
+
   @Override
   public PageResult<SaleOutSheet> query(Integer pageIndex, Integer pageSize,
       QuerySaleOutSheetVo vo) {
@@ -128,7 +136,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
   @Override
   public List<SaleOutSheet> query(QuerySaleOutSheetVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("s")));
   }
 
   @Override
@@ -139,7 +149,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOutSheet> datas = getBaseMapper().selector(vo);
+    List<SaleOutSheet> datas = getBaseMapper().selector(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("s")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -196,7 +208,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<SaleOutSheet> datas = getBaseMapper().queryWithReturn(vo,
-        saleConfig.getSaleReturnMultipleRelateOutStock());
+        saleConfig.getSaleReturnMultipleRelateOutStock(),
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("s")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -338,6 +352,13 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     }
     if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
+    }
+
+    if (NumberUtil.gt(sheet.getTotalAmount(), BigDecimal.ZERO)) {
+      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(sheet.getId());
+      if (CollectionUtil.isEmpty(orderPayTypes)) {
+        throw new DefaultClientException("单据没有支付方式，请检查！");
+      }
     }
 
     Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(SaleOutSheetDetail.class)
@@ -521,6 +542,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
 
     // 删除订单
     getBaseMapper().deleteById(id);
+
+    orderPayTypeService.deleteByOrderId(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
   }
@@ -720,6 +743,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     sheet.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     sheet.setSettleStatus(this.getInitSettleStatus(customer));
+
+    orderPayTypeService.create(sheet.getId(), vo.getPayTypes());
   }
 
   /**

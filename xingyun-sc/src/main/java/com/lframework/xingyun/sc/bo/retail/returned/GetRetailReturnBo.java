@@ -11,11 +11,13 @@ import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.basedata.service.supplier.SupplierService;
+import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import io.swagger.annotations.ApiModelProperty;
@@ -115,6 +117,12 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
    */
   @ApiModelProperty("退货金额")
   private BigDecimal totalAmount;
+
+  /**
+   * 支付方式
+   */
+  @ApiModelProperty("支付方式")
+  private List<OrderPayTypeBo> payTypes;
 
   /**
    * 备注
@@ -222,6 +230,10 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
       this.details = dto.getDetails().stream().map(t -> new ReturnDetailBo(this.getScId(), t))
           .collect(Collectors.toList());
     }
+
+    OrderPayTypeService orderPayTypeService = ApplicationUtil.getBean(OrderPayTypeService.class);
+    List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(dto.getId());
+    this.payTypes = orderPayTypes.stream().map(OrderPayTypeBo::new).collect(Collectors.toList());
   }
 
   @Data
@@ -239,18 +251,6 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
      */
     @ApiModelProperty("商品ID")
     private String productId;
-
-    /**
-     * 供应商ID
-     */
-    @ApiModelProperty("供应商ID")
-    private String supplierId;
-
-    /**
-     * 供应商名称
-     */
-    @ApiModelProperty("供应商名称")
-    private String supplierName;
 
     /**
      * 商品编号
@@ -391,10 +391,6 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
       this.retailPrice = dto.getTaxPrice();
       this.taxPrice = dto.getTaxPrice();
       this.discountRate = dto.getDiscountRate();
-
-      this.supplierId = dto.getSupplierId();
-      SupplierService supplierService = ApplicationUtil.getBean(SupplierService.class);
-      this.supplierName = supplierService.findById(dto.getSupplierId()).getName();
 
       RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
           RetailOutSheetService.class);

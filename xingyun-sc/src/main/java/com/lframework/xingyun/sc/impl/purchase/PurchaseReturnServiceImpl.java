@@ -13,7 +13,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -38,6 +40,7 @@ import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseReturnEv
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.entity.PurchaseReturnDetail;
@@ -47,6 +50,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.PurchaseReturnMapper;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseReturnDetailService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseReturnService;
@@ -65,6 +69,7 @@ import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -105,6 +110,9 @@ public class PurchaseReturnServiceImpl extends
   @Autowired
   private ProductStockService productStockService;
 
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
+
   @Override
   public PageResult<PurchaseReturn> query(Integer pageIndex, Integer pageSize,
       QueryPurchaseReturnVo vo) {
@@ -121,7 +129,9 @@ public class PurchaseReturnServiceImpl extends
   @Override
   public List<PurchaseReturn> query(QueryPurchaseReturnVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("r")));
   }
 
   @Override
@@ -270,6 +280,13 @@ public class PurchaseReturnServiceImpl extends
     }
     if (getBaseMapper().update(purchaseReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购退货单信息已过期，请刷新重试！");
+    }
+
+    if (NumberUtil.gt(purchaseReturn.getTotalAmount(), BigDecimal.ZERO)) {
+      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(purchaseReturn.getId());
+      if (CollectionUtil.isEmpty(orderPayTypes)) {
+        throw new DefaultClientException("单据没有支付方式，请检查！");
+      }
     }
 
     Wrapper<PurchaseReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
@@ -447,6 +464,8 @@ public class PurchaseReturnServiceImpl extends
 
     // 删除退货单
     getBaseMapper().deleteById(id);
+
+    orderPayTypeService.deleteByOrderId(purchaseReturn.getId());
 
     OpLogUtil.setVariable("code", purchaseReturn.getCode());
   }
@@ -642,6 +661,8 @@ public class PurchaseReturnServiceImpl extends
     purchaseReturn.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     purchaseReturn.setSettleStatus(this.getInitSettleStatus(supplier));
+
+    orderPayTypeService.create(purchaseReturn.getId(), vo.getPayTypes());
   }
 
   /**

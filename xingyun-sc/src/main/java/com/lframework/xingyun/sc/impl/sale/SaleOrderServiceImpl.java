@@ -13,7 +13,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -38,11 +40,13 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
 import com.lframework.xingyun.sc.mappers.SaleOrderMapper;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderDetailService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
@@ -60,6 +64,7 @@ import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,6 +95,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   @Autowired
   private SaleConfigService saleConfigService;
 
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
+
   @Override
   public PageResult<SaleOrder> query(Integer pageIndex, Integer pageSize, QuerySaleOrderVo vo) {
 
@@ -105,7 +113,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   @Override
   public List<SaleOrder> query(QuerySaleOrderVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("o")));
   }
 
   @Override
@@ -116,7 +126,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOrder> datas = getBaseMapper().selector(vo);
+    List<SaleOrder> datas = getBaseMapper().selector(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("o")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -155,7 +167,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<SaleOrder> datas = getBaseMapper().queryWithOut(vo,
-        saleConfig.getOutStockMultipleRelateSale());
+        saleConfig.getOutStockMultipleRelateSale(),
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("o")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -266,6 +280,13 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
+    if (NumberUtil.gt(order.getTotalAmount(), BigDecimal.ZERO)) {
+      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(order.getId());
+      if (CollectionUtil.isEmpty(orderPayTypes)) {
+        throw new DefaultClientException("单据没有支付方式，请检查！");
+      }
+    }
+
     OpLogUtil.setVariable("code", order.getCode());
     OpLogUtil.setExtra(vo);
 
@@ -286,7 +307,8 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
         SaleOrderService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassSaleOrderVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个销售订单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个销售订单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -365,7 +387,8 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
         SaleOrderService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseSaleOrderVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个销售订单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个销售订单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -402,6 +425,8 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     // 删除订单
     getBaseMapper().deleteById(id);
 
+    orderPayTypeService.deleteByOrderId(id);
+
     OpLogUtil.setVariable("code", order.getCode());
   }
 
@@ -418,7 +443,8 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
           SaleOrderService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个销售订单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个销售订单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -435,7 +461,11 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition);
+    List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -450,7 +480,11 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<SaleProductDto> datas = getBaseMapper().querySaleList(vo);
+    List<SaleProductDto> datas = getBaseMapper().querySaleList(vo,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -538,6 +572,8 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     order.setTotalAmount(totalAmount);
     order.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
+
+    orderPayTypeService.create(order.getId(), vo.getPayTypes());
   }
 
   private void sendApprovePassEvent(SaleOrder order) {

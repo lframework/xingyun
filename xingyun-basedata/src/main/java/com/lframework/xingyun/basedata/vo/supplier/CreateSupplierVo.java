@@ -84,12 +84,6 @@ public class CreateSupplierVo implements BaseVo, Serializable {
   private String address;
 
   /**
-   * 发货地址
-   */
-  @ApiModelProperty("发货地址")
-  private String deliveryAddress;
-
-  /**
    * 送货周期（天）
    */
   @ApiModelProperty("送货周期（天）")

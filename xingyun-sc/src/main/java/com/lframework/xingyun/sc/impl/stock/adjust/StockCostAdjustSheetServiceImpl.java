@@ -12,7 +12,9 @@ import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -53,6 +55,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,7 +97,9 @@ public class StockCostAdjustSheetServiceImpl extends
   @Override
   public List<StockCostAdjustSheet> query(QueryStockCostAdjustSheetVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("tb")));
   }
 
   @Override
@@ -215,7 +220,8 @@ public class StockCostAdjustSheetServiceImpl extends
           StockCostAdjustSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个库存成本调整单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个库存成本调整单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -308,7 +314,8 @@ public class StockCostAdjustSheetServiceImpl extends
         StockCostAdjustSheetService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个库存成本调整单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个库存成本调整单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -385,7 +392,8 @@ public class StockCostAdjustSheetServiceImpl extends
         StockCostAdjustSheetService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个库存成本调整单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个库存成本调整单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -403,7 +411,11 @@ public class StockCostAdjustSheetServiceImpl extends
     PageHelperUtil.startPage(pageIndex, pageSize);
 
     List<StockCostAdjustProductDto> datas = getBaseMapper().queryStockCostAdjustByCondition(scId,
-        condition);
+        condition,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(
         new PageInfo<>(datas));
 
@@ -419,7 +431,11 @@ public class StockCostAdjustSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<StockCostAdjustProductDto> datas = getBaseMapper().queryStockCostAdjustList(vo);
+    List<StockCostAdjustProductDto> datas = getBaseMapper().queryStockCostAdjustList(vo,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(
         new PageInfo<>(datas));
 

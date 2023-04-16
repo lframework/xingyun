@@ -12,7 +12,9 @@ import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -58,6 +60,7 @@ import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -109,7 +112,9 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
   @Override
   public List<TakeStockPlan> query(QueryTakeStockPlanVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("tb")));
   }
 
   @Override
@@ -120,7 +125,9 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<TakeStockPlan> datas = getBaseMapper().selector(vo);
+    List<TakeStockPlan> datas = getBaseMapper().selector(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("tb")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }

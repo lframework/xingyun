@@ -106,7 +106,7 @@ public class StoreCenterImportListener extends ExcelImportListener<StoreCenterIm
         record.setAvailable(Boolean.TRUE);
       }
 
-      storeCenterService.saveOrUpdate(record);
+      storeCenterService.saveOrUpdateAllColumn(record);
       data.setId(record.getId());
 
       this.setSuccessProcessByIndex(i);

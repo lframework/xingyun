@@ -26,7 +26,8 @@ public interface SettleFeeSheetMapper extends BaseMapper<SettleFeeSheet> {
      * @param vo
      * @return
      */
-    List<SettleFeeSheet> query(@Param("vo") QuerySettleFeeSheetVo vo);
+    List<SettleFeeSheet> query(@Param("vo") QuerySettleFeeSheetVo vo,
+        @Param("dataPermission") String dataPermission);
 
     /**
      * 根据ID查询
@@ -35,14 +36,6 @@ public interface SettleFeeSheetMapper extends BaseMapper<SettleFeeSheet> {
      * @return
      */
     SettleFeeSheetFullDto getDetail(String id);
-
-    /**
-     * 查询列表
-     *
-     * @param vo
-     * @return
-     */
-    List<SettleFeeSheetFullDto> queryFulls(@Param("vo") QuerySettleFeeSheetVo vo);
 
     /**
      * 查询已审核列表

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.AddressMapper">
+
+  <sql id="Address_sql">
+    SELECT
+        tb.*
+    FROM base_data_address AS tb
+  </sql>
+  <select id="query" resultType="com.lframework.xingyun.basedata.entity.Address">
+    <include refid="Address_sql" />
+    <where>
+      <if test="vo != null">
+        <if test="vo.entityType != null">
+          AND tb.entity_type = #{vo.entityType}
+        </if>
+        <if test="vo.addressType != null">
+          AND tb.address_type = #{vo.addressType}
+        </if>
+        <if test="vo.name != null and vo.name != ''">
+          AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+        </if>
+        <if test="vo.telephone != null and vo.telephone != ''">
+          AND tb.telephone = #{vo.telephone}
+        </if>
+        <if test="vo.address != null and vo.address != ''">
+          AND tb.address LIKE CONCAT('%', #{vo.address}, '%')
+        </if>
+        <if test="vo.isDefault != null">
+          AND tb.is_default = #{vo.isDefault}
+        </if>
+      </if>
+    </where>
+    ORDER BY tb.create_time DESC
+  </select>
+  <select id="selector" resultType="com.lframework.xingyun.basedata.entity.Address">
+    <include refid="Address_sql" />
+    <where>
+      <if test="vo != null">
+        <if test="vo.entityId != null and vo.entityId != ''">
+          AND tb.entity_id = #{vo.entityId}
+        </if>
+        <if test="vo.entityType != null">
+          AND tb.entity_type = #{vo.entityType}
+        </if>
+        <if test="vo.addressType != null">
+          AND tb.address_type = #{vo.addressType}
+        </if>
+        <if test="vo.name != null and vo.name != ''">
+          AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+        </if>
+        <if test="vo.telephone != null and vo.telephone != ''">
+          AND tb.telephone = #{vo.telephone}
+        </if>
+        <if test="vo.address != null and vo.address != ''">
+          AND tb.address LIKE CONCAT('%', #{vo.address}, '%')
+        </if>
+        <if test="vo.isDefault != null">
+          AND tb.is_default = #{vo.isDefault}
+        </if>
+      </if>
+    </where>
+    ORDER BY tb.create_time DESC
+  </select>
+</mapper>

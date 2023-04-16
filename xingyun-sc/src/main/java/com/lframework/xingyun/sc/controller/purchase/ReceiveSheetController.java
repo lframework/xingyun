@@ -25,6 +25,8 @@ import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetExportModel;
 import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetImportListener;
 import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetImportModel;
+import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetPayTypeImportListener;
+import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetPayTypeImportModel;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApprovePassReceiveSheetVo;
@@ -368,6 +370,13 @@ public class ReceiveSheetController extends DefaultBaseController {
     ExcelUtil.exportXls("采购收货单导入模板", ReceiveSheetImportModel.class);
   }
 
+  @ApiOperation("下载导入支付方式模板")
+  @HasPermission({"purchase:receive:import"})
+  @GetMapping("/import/template/paytype")
+  public void downloadImportPayTypeTemplate() {
+    ExcelUtil.exportXls("采购收货单导入支付方式模板", ReceiveSheetPayTypeImportModel.class);
+  }
+
   @ApiOperation("导入")
   @HasPermission({"purchase:receive:import"})
   @PostMapping("/import")
@@ -382,6 +391,19 @@ public class ReceiveSheetController extends DefaultBaseController {
     ReceiveSheetImportListener listener = new ReceiveSheetImportListener();
     listener.setTaskId(id);
     ExcelUtil.read(file, ReceiveSheetImportModel.class, listener).sheet().doRead();
+
+    return InvokeResultBuilder.success();
+  }
+
+  @ApiOperation("导入支付方式")
+  @HasPermission({"purchase:receive:import"})
+  @PostMapping("/import/paytype")
+  public InvokeResult<Void> importPayTypeExcel(@NotBlank(message = "ID不能为空") String id,
+      @NotNull(message = "请上传文件") MultipartFile file) {
+
+    ReceiveSheetPayTypeImportListener listener = new ReceiveSheetPayTypeImportListener();
+    listener.setTaskId(id);
+    ExcelUtil.read(file, ReceiveSheetPayTypeImportModel.class, listener).sheet().doRead();
 
     return InvokeResultBuilder.success();
   }

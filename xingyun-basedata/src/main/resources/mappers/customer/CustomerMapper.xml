@@ -14,9 +14,6 @@
         <result column="fax" property="fax"/>
         <result column="city_id" property="cityId"/>
         <result column="address" property="address"/>
-        <result column="receiver" property="receiver"/>
-        <result column="receive_telephone" property="receiveTelephone"/>
-        <result column="receive_address" property="receiveAddress"/>
         <result column="settle_type" property="settleType"/>
         <result column="credit_code" property="creditCode"/>
         <result column="tax_identify_no" property="taxIdentifyNo"/>
@@ -44,9 +41,6 @@
             fax,
             city_id,
             address,
-            receiver,
-            receive_telephone,
-            receive_address,
             settle_type,
             credit_code,
             tax_identify_no,

@@ -24,7 +24,8 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
    * @param vo
    * @return
    */
-  List<TakeStockSheet> query(@Param("vo") QueryTakeStockSheetVo vo);
+  List<TakeStockSheet> query(@Param("vo") QueryTakeStockSheetVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询详情
@@ -57,7 +58,7 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
    * @return
    */
   List<TakeStockSheetProductDto> queryTakeStockByCondition(@Param("planId") String planId,
-      @Param("condition") String condition);
+      @Param("condition") String condition, @Param("dataPermission") String dataPermission);
 
   /**
    * 查询盘点单商品信息
@@ -65,5 +66,6 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
    * @param vo
    * @return
    */
-  List<TakeStockSheetProductDto> queryTakeStockList(@Param("vo") QueryTakeStockSheetProductVo vo);
+  List<TakeStockSheetProductDto> queryTakeStockList(@Param("vo") QueryTakeStockSheetProductVo vo,
+      @Param("dataPermission") String dataPermission);
 }

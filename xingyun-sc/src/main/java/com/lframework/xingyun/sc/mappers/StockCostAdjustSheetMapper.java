@@ -24,7 +24,8 @@ public interface StockCostAdjustSheetMapper extends BaseMapper<StockCostAdjustSh
    * @param vo
    * @return
    */
-  List<StockCostAdjustSheet> query(@Param("vo") QueryStockCostAdjustSheetVo vo);
+  List<StockCostAdjustSheet> query(@Param("vo") QueryStockCostAdjustSheetVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询
@@ -42,7 +43,8 @@ public interface StockCostAdjustSheetMapper extends BaseMapper<StockCostAdjustSh
    * @return
    */
   List<StockCostAdjustProductDto> queryStockCostAdjustByCondition(
-      @Param("scId") String scId, @Param("condition") String condition);
+      @Param("scId") String scId, @Param("condition") String condition,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 查询库存成本调整单商品信息
@@ -50,5 +52,7 @@ public interface StockCostAdjustSheetMapper extends BaseMapper<StockCostAdjustSh
    * @param vo
    * @return
    */
-  List<StockCostAdjustProductDto> queryStockCostAdjustList(@Param("vo") QueryStockCostAdjustProductVo vo);
+  List<StockCostAdjustProductDto> queryStockCostAdjustList(
+      @Param("vo") QueryStockCostAdjustProductVo vo,
+      @Param("dataPermission") String dataPermission);
 }

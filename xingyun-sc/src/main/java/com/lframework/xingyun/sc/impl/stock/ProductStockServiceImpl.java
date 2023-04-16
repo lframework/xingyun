@@ -8,6 +8,8 @@ import com.lframework.starter.common.exceptions.impl.DefaultSysException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
@@ -32,6 +34,7 @@ import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,7 +66,11 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   @Override
   public List<ProductStock> query(QueryProductStockVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
   }
 
   @Override
@@ -204,7 +211,8 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
 
     if (NumberUtil.lt(productStock.getStockNum(), vo.getStockNum())) {
       throw new DefaultClientException(
-          "商品（" + product.getCode() + "）" + product.getName() + "当前库存为" + productStock.getStockNum()
+          "商品（" + product.getCode() + "）" + product.getName() + "当前库存为"
+              + productStock.getStockNum()
               + "，库存不足，无法出库！");
     }
 
@@ -262,7 +270,6 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     addLogWithAddStockVo.setBizType(vo.getBizType());
 
     productStockLogService.addLogWithSubStock(addLogWithAddStockVo);
-
 
     ProductStockChangeDto stockChange = new ProductStockChangeDto();
     stockChange.setScId(vo.getScId());

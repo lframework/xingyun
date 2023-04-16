@@ -1,9 +1,7 @@
 package com.lframework.xingyun.basedata.vo.supplier;
 
 import com.lframework.starter.web.components.validation.IsCode;
-import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.xingyun.basedata.enums.SettleType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.Email;
@@ -90,25 +88,11 @@ public class UpdateSupplierVo implements BaseVo, Serializable {
   private String address;
 
   /**
-   * 发货地址
-   */
-  @ApiModelProperty("发货地址")
-  private String deliveryAddress;
-
-  /**
    * 送货周期（天）
    */
   @ApiModelProperty("送货周期（天）")
   @Min(message = "送货周期（天）必须大于0！", value = 1)
   private Integer deliveryCycle;
-
-  /**
-   * 结账方式
-   */
-  @ApiModelProperty(value = "结账方式", required = true)
-  @NotNull(message = "请选择结账方式！")
-  @IsEnum(message = "请选择结账方式！", enumClass = SettleType.class)
-  private Integer settleType;
 
   /**
    * 统一社会信用代码

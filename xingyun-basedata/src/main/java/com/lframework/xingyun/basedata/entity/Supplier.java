@@ -82,11 +82,6 @@ public class Supplier extends BaseEntity implements BaseDto {
   private String address;
 
   /**
-   * 发货地址
-   */
-  private String deliveryAddress;
-
-  /**
    * 送货周期（天）
    */
   private Integer deliveryCycle;

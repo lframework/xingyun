@@ -26,7 +26,8 @@ public interface SettlePreSheetMapper extends BaseMapper<SettlePreSheet> {
      * @param vo
      * @return
      */
-    List<SettlePreSheet> query(@Param("vo") QuerySettlePreSheetVo vo);
+    List<SettlePreSheet> query(@Param("vo") QuerySettlePreSheetVo vo,
+        @Param("dataPermission") String dataPermission);
 
     /**
      * 根据ID查询
@@ -35,14 +36,6 @@ public interface SettlePreSheetMapper extends BaseMapper<SettlePreSheet> {
      * @return
      */
     SettlePreSheetFullDto getDetail(String id);
-
-    /**
-     * 查询列表
-     *
-     * @param vo
-     * @return
-     */
-    List<SettlePreSheetFullDto> queryFulls(@Param("vo") QuerySettlePreSheetVo vo);
 
     /**
      * 查询已审核列表

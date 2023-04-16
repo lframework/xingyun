@@ -28,7 +28,8 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param vo
    * @return
    */
-  List<ReceiveSheet> query(@Param("vo") QueryReceiveSheetVo vo);
+  List<ReceiveSheet> query(@Param("vo") QueryReceiveSheetVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 选择器
@@ -36,7 +37,8 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param vo
    * @return
    */
-  List<ReceiveSheet> selector(@Param("vo") ReceiveSheetSelectorVo vo);
+  List<ReceiveSheet> selector(@Param("vo") ReceiveSheetSelectorVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询
@@ -45,14 +47,6 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @return
    */
   ReceiveSheetFullDto getDetail(String id);
-
-  /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<ReceiveSheetFullDto> queryFulls(@Param("vo") QueryReceiveSheetVo vo);
 
   /**
    * 根据ID查询（采购退货业务）
@@ -70,7 +64,8 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @return
    */
   List<ReceiveSheet> queryWithReturn(@Param("vo") QueryReceiveSheetWithReturnVo vo,
-      @Param("multipleRelate") boolean multipleRelate);
+      @Param("multipleRelate") boolean multipleRelate,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 查询已审核列表

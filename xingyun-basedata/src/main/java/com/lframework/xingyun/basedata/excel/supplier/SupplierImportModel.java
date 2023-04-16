@@ -83,12 +83,6 @@ public class SupplierImportModel implements ExcelModel {
   private String address;
 
   /**
-   * 发货地址
-   */
-  @ExcelProperty("发货地址")
-  private String deliveryAddress;
-
-  /**
    * 送货周期（天）
    */
   @ExcelProperty("送货周期（天）")

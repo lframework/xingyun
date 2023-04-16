@@ -28,7 +28,8 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleOrder> query(@Param("vo") QuerySaleOrderVo vo);
+  List<SaleOrder> query(@Param("vo") QuerySaleOrderVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询
@@ -39,20 +40,13 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
   SaleOrderFullDto getDetail(String id);
 
   /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<SaleOrderFullDto> queryFulls(@Param("vo") QuerySaleOrderVo vo);
-
-  /**
    * 选择器
    *
    * @param vo
    * @return
    */
-  List<SaleOrder> selector(@Param("vo") SaleOrderSelectorVo vo);
+  List<SaleOrder> selector(@Param("vo") SaleOrderSelectorVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询（出库业务）
@@ -69,7 +63,8 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @return
    */
   List<SaleOrder> queryWithOut(@Param("vo") QuerySaleOrderWithOutVo vo,
-      @Param("multipleRelate") boolean multipleRelate);
+      @Param("multipleRelate") boolean multipleRelate,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据关键字销售采购商品信息
@@ -77,7 +72,8 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param condition
    * @return
    */
-  List<SaleProductDto> querySaleByCondition(String condition);
+  List<SaleProductDto> querySaleByCondition(
+      @Param("condition") String condition, @Param("dataPermission") String dataPermission);
 
   /**
    * 查询可销售商品信息
@@ -85,7 +81,8 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleProductDto> querySaleList(@Param("vo") QuerySaleProductVo vo);
+  List<SaleProductDto> querySaleList(@Param("vo") QuerySaleProductVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询

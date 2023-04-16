@@ -23,7 +23,8 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @param vo
    * @return
    */
-  List<ProductStock> query(@Param("vo") QueryProductStockVo vo);
+  List<ProductStock> query(@Param("vo") QueryProductStockVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据商品ID、仓库ID查询

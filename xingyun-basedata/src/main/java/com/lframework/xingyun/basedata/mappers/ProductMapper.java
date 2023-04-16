@@ -22,7 +22,8 @@ public interface ProductMapper extends BaseMapper<Product> {
    * @param vo
    * @return
    */
-  List<Product> query(@Param("vo") QueryProductVo vo);
+  List<Product> query(@Param("vo") QueryProductVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 查询商品品种数

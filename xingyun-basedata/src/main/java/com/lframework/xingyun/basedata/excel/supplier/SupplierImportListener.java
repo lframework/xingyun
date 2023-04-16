@@ -140,7 +140,6 @@ public class SupplierImportListener extends ExcelImportListener<SupplierImportMo
       record.setFax(data.getFax());
       record.setCityId(data.getAreaId());
       record.setAddress(data.getAddress());
-      record.setDeliveryAddress(data.getDeliveryAddress());
       record.setDeliveryCycle(data.getDeliveryCycle());
       record.setManageType(data.getManageTypeEnum());
       if (isInsert) {
@@ -157,7 +156,7 @@ public class SupplierImportListener extends ExcelImportListener<SupplierImportMo
         record.setAvailable(Boolean.TRUE);
       }
 
-      supplierService.saveOrUpdate(record);
+      supplierService.saveOrUpdateAllColumn(record);
       data.setId(record.getId());
 
       this.setSuccessProcess(i);

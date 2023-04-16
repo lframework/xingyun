@@ -13,7 +13,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -40,6 +42,7 @@ import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
@@ -48,6 +51,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.RetailOutSheetMapper;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.retail.RetailConfigService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailService;
@@ -69,6 +73,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -106,6 +111,9 @@ public class RetailOutSheetServiceImpl extends
   @Autowired
   private ProductStockService productStockService;
 
+  @Autowired
+  private OrderPayTypeService orderPayTypeService;
+
   @Override
   public PageResult<RetailOutSheet> query(Integer pageIndex, Integer pageSize,
       QueryRetailOutSheetVo vo) {
@@ -122,7 +130,9 @@ public class RetailOutSheetServiceImpl extends
   @Override
   public List<RetailOutSheet> query(QueryRetailOutSheetVo vo) {
 
-    return getBaseMapper().query(vo);
+    return getBaseMapper().query(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("s")));
   }
 
   @Override
@@ -133,7 +143,9 @@ public class RetailOutSheetServiceImpl extends
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<RetailOutSheet> datas = getBaseMapper().selector(vo);
+    List<RetailOutSheet> datas = getBaseMapper().selector(vo,
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("s")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -179,7 +191,9 @@ public class RetailOutSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<RetailOutSheet> datas = getBaseMapper().queryWithReturn(vo,
-        retailConfig.getRetailReturnMultipleRelateOutStock());
+        retailConfig.getRetailReturnMultipleRelateOutStock(),
+        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+            Arrays.asList("order"), Arrays.asList("s")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -293,6 +307,13 @@ public class RetailOutSheetServiceImpl extends
     }
     if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
+    }
+
+    if (NumberUtil.gt(sheet.getTotalAmount(), BigDecimal.ZERO)) {
+      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(sheet.getId());
+      if (CollectionUtil.isEmpty(orderPayTypes)) {
+        throw new DefaultClientException("单据没有支付方式，请检查！");
+      }
     }
 
     Wrapper<RetailOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
@@ -468,6 +489,8 @@ public class RetailOutSheetServiceImpl extends
     // 删除订单
     getBaseMapper().deleteById(id);
 
+    orderPayTypeService.deleteByOrderId(id);
+
     OpLogUtil.setVariable("code", sheet.getCode());
   }
 
@@ -502,7 +525,11 @@ public class RetailOutSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition);
+    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -517,7 +544,11 @@ public class RetailOutSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<RetailProductDto> datas = getBaseMapper().queryRetailList(vo);
+    List<RetailProductDto> datas = getBaseMapper().queryRetailList(vo,
+        DataPermissionHandler.getDataPermission(
+            SysDataPermissionDataPermissionType.PRODUCT,
+            Arrays.asList("product", "brand", "category"),
+            Arrays.asList("g", "b", "c")));
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -616,6 +647,8 @@ public class RetailOutSheetServiceImpl extends
     sheet.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     sheet.setSettleStatus(this.getInitSettleStatus(member));
+
+    orderPayTypeService.create(sheet.getId(), vo.getPayTypes());
   }
 
   /**

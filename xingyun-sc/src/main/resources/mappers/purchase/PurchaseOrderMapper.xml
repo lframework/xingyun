@@ -209,6 +209,7 @@
                     ]]>
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY o.create_time DESC
     </select>
@@ -216,51 +217,6 @@
         <include refid="PurchaseOrderFullDto_sql"/>
         WHERE o.id = #{id}
         ORDER BY d.order_no
-    </select>
-    <select id="queryFulls" resultMap="PurchaseOrderFullDto">
-        <include refid="PurchaseOrderFullDto_sql"/>
-        <where>
-            <if test="vo != null">
-                <if test="vo.code != null and vo.code != ''">
-                    AND o.code = #{vo.code}
-                </if>
-                <if test="vo.supplierId != null and vo.supplierId != ''">
-                    AND o.supplier_id = #{vo.supplierId}
-                </if>
-                <if test="vo.scId != null and vo.scId != ''">
-                    AND o.sc_id = #{vo.scId}
-                </if>
-                <if test="vo.purchaserId != null and vo.purchaserId != ''">
-                    AND o.purchaser_id = #{vo.purchaserId}
-                </if>
-                <if test="vo.status != null">
-                    AND o.status = #{vo.status}
-                </if>
-                <if test="vo.createBy != null and vo.createBy != ''">
-                    AND o.create_by_id = #{vo.createBy}
-                </if>
-                <if test="vo.approveBy != null and vo.approveBy != ''">
-                    AND o.approve_by = #{vo.approveBy}
-                </if>
-                <if test="vo.createStartTime != null">
-                    AND o.create_time >= #{vo.createStartTime}
-                </if>
-                <if test="vo.createEndTime != null">
-                    <![CDATA[
-                    AND o.create_time <= #{vo.createEndTime}
-                    ]]>
-                </if>
-                <if test="vo.approveStartTime != null">
-                    AND o.approve_time >= #{vo.approveStartTime}
-                </if>
-                <if test="vo.approveEndTime != null">
-                    <![CDATA[
-                    AND o.approve_time <= #{vo.approveEndTime}
-                    ]]>
-                </if>
-            </if>
-        </where>
-        ORDER BY o.create_time DESC, d.order_no
     </select>
     <select id="selector" resultMap="PurchaseOrder">
         <include refid="PurchaseOrderDto_sql"/>
@@ -290,6 +246,7 @@
                     ]]>
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY o.create_time DESC
     </select>
@@ -333,6 +290,7 @@
                 </if>
             </if>
             <if test="!multipleRelate">AND s.id IS NULL</if>
+            AND ${dataPermission}
         </where>
         <if test="!multipleRelate">GROUP BY o.id</if>
         ORDER BY o.create_time DESC
@@ -347,6 +305,7 @@
             OR g.external_code LIKE CONCAT('%', #{condition}, '%')
             )
             AND g.available = TRUE
+            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>
@@ -370,6 +329,7 @@
                 </if>
             </if>
             AND g.available = TRUE
+            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>

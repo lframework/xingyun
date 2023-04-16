@@ -218,6 +218,7 @@
                     AND s.settle_status = #{vo.settleStatus}
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY s.create_time DESC
     </select>
@@ -249,43 +250,13 @@
                     ]]>
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY s.create_time DESC
     </select>
     <select id="getDetail" resultMap="RetailOutSheetFullDto">
         <include refid="RetailOutSheetFullDto_sql"/>
         WHERE s.id = #{id}
-    </select>
-    <select id="queryFulls" resultMap="RetailOutSheetFullDto">
-        <include refid="RetailOutSheetFullDto_sql"/>
-        <where>
-            <if test="vo != null">
-                <if test="vo.code != null and vo.code != ''">
-                    AND s.code = #{vo.code}
-                </if>
-                <if test="vo.memberId != null and vo.memberId != ''">
-                    AND s.member_id = #{vo.memberId}
-                </if>
-                <if test="vo.scId != null and vo.scId != ''">
-                    AND s.sc_id = #{vo.scId}
-                </if>
-                <if test="vo.status != null">
-                    AND s.status = #{vo.status}
-                </if>
-                <if test="vo.createBy != null and vo.createBy != ''">
-                    AND s.create_by_id = #{vo.createBy}
-                </if>
-                <if test="vo.createStartTime != null">
-                    AND s.create_time >= #{vo.createStartTime}
-                </if>
-                <if test="vo.createEndTime != null">
-                    <![CDATA[
-                    AND s.create_time <= #{vo.createEndTime}
-                    ]]>
-                </if>
-            </if>
-        </where>
-        ORDER BY s.create_time DESC, d.order_no
     </select>
     <select id="getWithReturn" resultMap="RetailOutSheetWithReturnDto">
         SELECT
@@ -336,6 +307,7 @@
                 </if>
             </if>
             <if test="!multipleRelate">AND p.id IS NULL</if>
+            AND ${dataPermission}
         </where>
         <if test="!multipleRelate">GROUP BY s.id</if>
         ORDER BY s.create_time DESC
@@ -351,6 +323,7 @@
             OR g.external_code LIKE CONCAT('%', #{condition}, '%')
             )
             AND g.available = TRUE
+            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>
@@ -374,6 +347,7 @@
                 </if>
             </if>
             AND g.available = TRUE
+            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>

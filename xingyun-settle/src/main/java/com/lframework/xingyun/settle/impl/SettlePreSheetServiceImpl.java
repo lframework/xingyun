@@ -12,7 +12,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
+import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
+import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -46,6 +48,7 @@ import com.lframework.xingyun.settle.vo.pre.UpdateSettlePreSheetVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,7 +82,9 @@ public class SettlePreSheetServiceImpl extends BaseMpServiceImpl<SettlePreSheetM
     @Override
     public List<SettlePreSheet> query(QuerySettlePreSheetVo vo) {
 
-        return getBaseMapper().query(vo);
+      return getBaseMapper().query(vo,
+          DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+              Arrays.asList("order"), Arrays.asList("s")));
     }
 
     @Override

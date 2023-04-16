@@ -142,6 +142,7 @@
                     AND r.settle_status = #{vo.settleStatus}
                 </if>
             </if>
+            AND ${dataPermission}
         </where>
         ORDER BY r.create_time DESC
     </select>
@@ -150,73 +151,20 @@
         WHERE r.id = #{id}
         ORDER BY d.order_no
     </select>
-    <select id="queryFulls" resultMap="SaleReturnFullDto">
-        <include refid="SaleReturnFullDto_sql"/>
-        LEFT JOIN tbl_sale_out_sheet AS s ON s.id = r.out_sheet_id
-        <where>
-            <if test="vo != null">
-                <if test="vo.code != null and vo.code != ''">
-                    AND r.code = #{vo.code}
-                </if>
-                <if test="vo.customerId != null and vo.customerId != ''">
-                    AND r.customer_id = #{vo.customerId}
-                </if>
-                <if test="vo.scId != null and vo.scId != ''">
-                    AND r.sc_id = #{vo.scId}
-                </if>
-                <if test="vo.salerId != null and vo.salerId != ''">
-                    AND r.saler_id = #{vo.salerId}
-                </if>
-                <if test="vo.status != null">
-                    AND r.status = #{vo.status}
-                </if>
-                <if test="vo.createBy != null and vo.createBy != ''">
-                    AND r.create_by_id = #{vo.createBy}
-                </if>
-                <if test="vo.approveBy != null and vo.approveBy != ''">
-                    AND r.approve_by = #{vo.approveBy}
-                </if>
-                <if test="vo.createStartTime != null">
-                    AND r.create_time >= #{vo.createStartTime}
-                </if>
-                <if test="vo.createEndTime != null">
-                    <![CDATA[
-                    AND r.create_time <= #{vo.createEndTime}
-                    ]]>
-                </if>
-                <if test="vo.approveStartTime != null">
-                    AND r.approve_time >= #{vo.approveStartTime}
-                </if>
-                <if test="vo.approveEndTime != null">
-                    <![CDATA[
-                    AND r.approve_time <= #{vo.approveEndTime}
-                    ]]>
-                </if>
-              <if test="vo.outSheetCode != null and vo.outSheetCode != ''">
-                AND s.code = #{vo.outSheetCode}
-              </if>
-              <if test="vo.settleStatus != null">
-                AND r.settle_status = #{vo.settleStatus}
-              </if>
-            </if>
-        </where>
-      ORDER BY r.create_time DESC, d.order_no
+    <select id="getApprovedList" resultMap="SaleReturn">
+        <include refid="SaleReturnDto_sql"/>
+        WHERE r.customer_id = #{customerId}
+        <if test="startTime != null">
+          AND r.approve_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+        <![CDATA[
+            AND r.approve_time <= #{endTime}
+        ]]>
+        </if>
+        AND r.status = 3
+        AND r.settle_status = #{settleStatus}
+        AND r.tx_id IS NULL
+        ORDER BY r.approve_time DESC
     </select>
-  <select id="getApprovedList" resultMap="SaleReturn">
-    <include refid="SaleReturnDto_sql"/>
-    WHERE r.customer_id = #{customerId}
-    <if test="startTime != null">
-      AND r.approve_time >= #{startTime}
-    </if>
-
-    <if test="endTime != null">
-    <![CDATA[
-        AND r.approve_time <= #{endTime}
-    ]]>
-    </if>
-    AND r.status = 3
-    AND r.settle_status = #{settleStatus}
-    AND r.tx_id IS NULL
-    ORDER BY r.approve_time DESC
-  </select>
 </mapper>

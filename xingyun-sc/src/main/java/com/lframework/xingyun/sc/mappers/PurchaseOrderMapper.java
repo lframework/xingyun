@@ -28,7 +28,8 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseOrder> query(@Param("vo") QueryPurchaseOrderVo vo);
+  List<PurchaseOrder> query(@Param("vo") QueryPurchaseOrderVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询
@@ -39,20 +40,13 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
   PurchaseOrderFullDto getDetail(String id);
 
   /**
-   * 查询列表
-   *
-   * @param vo
-   * @return
-   */
-  List<PurchaseOrderFullDto> queryFulls(@Param("vo") QueryPurchaseOrderVo vo);
-
-  /**
    * 选择器
    *
    * @param vo
    * @return
    */
-  List<PurchaseOrder> selector(@Param("vo") PurchaseOrderSelectorVo vo);
+  List<PurchaseOrder> selector(@Param("vo") PurchaseOrderSelectorVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询（收货业务）
@@ -70,7 +64,8 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @return
    */
   List<PurchaseOrder> queryWithReceive(@Param("vo") QueryPurchaseOrderWithRecevieVo vo,
-      @Param("multipleRelate") boolean multipleRelate);
+      @Param("multipleRelate") boolean multipleRelate,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据关键字查询采购商品信息
@@ -78,7 +73,8 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param condition
    * @return
    */
-  List<PurchaseProductDto> queryPurchaseByCondition(String condition);
+  List<PurchaseProductDto> queryPurchaseByCondition(
+      @Param("condition") String condition, @Param("dataPermission") String dataPermission);
 
   /**
    * 查询可采购商品信息
@@ -86,7 +82,8 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseProductDto> queryPurchaseList(@Param("vo") QueryPurchaseProductVo vo);
+  List<PurchaseProductDto> queryPurchaseList(@Param("vo") QueryPurchaseProductVo vo,
+      @Param("dataPermission") String dataPermission);
 
   /**
    * 根据ID查询

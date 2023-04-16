@@ -37,6 +37,11 @@
             <groupId>com.lframework</groupId>
             <artifactId>gen-starter</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.lframework</groupId>
+            <artifactId>activemq-starter</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

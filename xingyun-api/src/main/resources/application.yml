@@ -149,6 +149,9 @@ cache:
   #  cacheName: 3600
   #  cacheName2: 7200
 
+# 锁类型，如果注释掉的话就使用的JCU的可重入锁
+locker-type: redis
+
 #开启多租户
 tenant:
   enabled: true

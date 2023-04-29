@@ -1,4 +1,4 @@
-package com.lframework.xingyun.sc.vo.stock.adjust;
+package com.lframework.xingyun.sc.vo.stock.adjust.stock;
 
 import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,15 +9,15 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class BatchApproveRefuseStockCostAdjustSheetVo implements BaseVo, Serializable {
+public class BatchApproveRefuseStockAdjustSheetVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 
   /**
-   * 库存成本调整单ID
+   * 库存调整单ID
    */
-  @ApiModelProperty(value = "库存成本调整单ID", required = true)
-  @NotEmpty(message = "库存成本调整单ID不能为空！")
+  @ApiModelProperty(value = "库存调整单ID", required = true)
+  @NotEmpty(message = "库存调整单ID不能为空！")
   private List<String> ids;
 
   /**

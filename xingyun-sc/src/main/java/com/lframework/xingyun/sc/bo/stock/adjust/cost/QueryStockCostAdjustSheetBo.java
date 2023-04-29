@@ -1,4 +1,4 @@
-package com.lframework.xingyun.sc.bo.stock.adjust;
+package com.lframework.xingyun.sc.bo.stock.adjust.cost;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;

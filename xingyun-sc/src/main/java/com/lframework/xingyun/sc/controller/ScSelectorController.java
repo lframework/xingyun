@@ -9,25 +9,30 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
 import com.lframework.xingyun.sc.bo.purchase.PurchaseOrderSelectorBo;
 import com.lframework.xingyun.sc.bo.purchase.receive.ReceiveSheetSelectorBo;
+import com.lframework.xingyun.sc.bo.stock.adjust.stock.reason.StockAdjustReasonSelectorBo;
 import com.lframework.xingyun.sc.bo.stock.take.plan.TakeStockPlanSelectorBo;
 import com.lframework.xingyun.sc.bo.stock.take.pre.PreTakeStockSheetSelectorBo;
 import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
+import com.lframework.xingyun.sc.entity.StockAdjustReason;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
+import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveSheetSelectorVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.StockAdjustReasonSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -65,6 +70,9 @@ public class ScSelectorController extends DefaultBaseController {
   @Autowired
   private OrderPayTypeService orderPayTypeService;
 
+  @Autowired
+  private StockAdjustReasonService stockAdjustReasonService;
+
   /**
    * 采购订单
    */
@@ -100,8 +108,7 @@ public class ScSelectorController extends DefaultBaseController {
 
     List<PurchaseOrder> datas = purchaseOrderService.listByIds(ids);
     List<PurchaseOrderSelectorBo> results = datas.stream().map(PurchaseOrderSelectorBo::new)
-        .collect(
-            Collectors.toList());
+        .collect(Collectors.toList());
     return InvokeResultBuilder.success(results);
   }
 
@@ -139,8 +146,8 @@ public class ScSelectorController extends DefaultBaseController {
     }
 
     List<ReceiveSheet> datas = receiveSheetService.listByIds(ids);
-    List<ReceiveSheetSelectorBo> results = datas.stream().map(ReceiveSheetSelectorBo::new).collect(
-        Collectors.toList());
+    List<ReceiveSheetSelectorBo> results = datas.stream().map(ReceiveSheetSelectorBo::new)
+        .collect(Collectors.toList());
     return InvokeResultBuilder.success(results);
   }
 
@@ -152,8 +159,8 @@ public class ScSelectorController extends DefaultBaseController {
   public InvokeResult<PageResult<TakeStockPlanSelectorBo>> selector(
       @Valid TakeStockPlanSelectorVo vo) {
 
-    PageResult<TakeStockPlan> pageResult = takeStockPlanService.selector(
-        getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<TakeStockPlan> pageResult = takeStockPlanService.selector(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<TakeStockPlan> datas = pageResult.getDatas();
     List<TakeStockPlanSelectorBo> results = null;
@@ -179,8 +186,7 @@ public class ScSelectorController extends DefaultBaseController {
 
     List<TakeStockPlan> datas = takeStockPlanService.listByIds(ids);
     List<TakeStockPlanSelectorBo> results = datas.stream().map(TakeStockPlanSelectorBo::new)
-        .collect(
-            Collectors.toList());
+        .collect(Collectors.toList());
     return InvokeResultBuilder.success(results);
   }
 
@@ -192,8 +198,8 @@ public class ScSelectorController extends DefaultBaseController {
   public InvokeResult<PageResult<PreTakeStockSheetSelectorBo>> selector(
       @Valid PreTakeStockSheetSelectorVo vo) {
 
-    PageResult<PreTakeStockSheet> pageResult = preTakeStockSheetService.selector(
-        getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<PreTakeStockSheet> pageResult = preTakeStockSheetService.selector(getPageIndex(vo),
+        getPageSize(vo), vo);
 
     List<PreTakeStockSheet> datas = pageResult.getDatas();
     List<PreTakeStockSheetSelectorBo> results = null;
@@ -219,8 +225,7 @@ public class ScSelectorController extends DefaultBaseController {
 
     List<PreTakeStockSheet> datas = preTakeStockSheetService.listByIds(ids);
     List<PreTakeStockSheetSelectorBo> results = datas.stream().map(PreTakeStockSheetSelectorBo::new)
-        .collect(
-            Collectors.toList());
+        .collect(Collectors.toList());
     return InvokeResultBuilder.success(results);
   }
 
@@ -230,6 +235,46 @@ public class ScSelectorController extends DefaultBaseController {
       @NotBlank(message = "订单ID不能为空！") String orderId) {
     List<OrderPayType> datas = orderPayTypeService.findByOrderId(orderId);
     List<OrderPayTypeBo> results = datas.stream().map(OrderPayTypeBo::new)
+        .collect(Collectors.toList());
+    return InvokeResultBuilder.success(results);
+  }
+
+  /**
+   * 库存调整原因
+   */
+  @ApiOperation("库存调整原因")
+  @GetMapping("/stock/adjust/reason")
+  public InvokeResult<PageResult<StockAdjustReasonSelectorBo>> selector(
+      @Valid StockAdjustReasonSelectorVo vo) {
+
+    PageResult<StockAdjustReason> pageResult = stockAdjustReasonService.selector(getPageIndex(vo),
+        getPageSize(vo), vo);
+
+    List<StockAdjustReason> datas = pageResult.getDatas();
+    List<StockAdjustReasonSelectorBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(StockAdjustReasonSelectorBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 加载库存调整原因
+   */
+  @ApiOperation("加载库存调整原因")
+  @PostMapping("/stock/adjust/reason/load")
+  public InvokeResult<List<StockAdjustReasonSelectorBo>> loadStockAdjustReason(
+      @RequestBody(required = false) List<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return InvokeResultBuilder.success(CollectionUtil.emptyList());
+    }
+
+    List<StockAdjustReason> datas = ids.stream().map(t -> stockAdjustReasonService.findById(t))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    List<StockAdjustReasonSelectorBo> results = datas.stream().map(StockAdjustReasonSelectorBo::new)
         .collect(Collectors.toList());
     return InvokeResultBuilder.success(results);
   }

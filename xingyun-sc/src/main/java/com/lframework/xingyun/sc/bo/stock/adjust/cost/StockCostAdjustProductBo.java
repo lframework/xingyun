@@ -1,7 +1,7 @@
-package com.lframework.xingyun.sc.bo.stock.adjust;
+package com.lframework.xingyun.sc.bo.stock.adjust.cost;
 
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustProductDto;
+import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustProductDto;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import lombok.Data;

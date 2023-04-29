@@ -32,12 +32,6 @@ public class SubProductStockVo implements BaseVo, Serializable {
   private String scId;
 
   /**
-   * 供应商ID
-   */
-  @ApiModelProperty("供应商ID")
-  private String supplierId;
-
-  /**
    * 出库数量
    */
   @ApiModelProperty(value = "出库数量", required = true)

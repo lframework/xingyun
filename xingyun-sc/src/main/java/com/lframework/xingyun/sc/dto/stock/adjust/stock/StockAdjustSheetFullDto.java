@@ -1,7 +1,8 @@
-package com.lframework.xingyun.sc.dto.stock.adjust;
+package com.lframework.xingyun.sc.dto.stock.adjust.stock;
 
 import com.lframework.starter.web.dto.BaseDto;
-import com.lframework.xingyun.sc.enums.StockCostAdjustSheetStatus;
+import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
+import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import lombok.Data;
  * @author zmj
  */
 @Data
-public class StockCostAdjustSheetFullDto implements BaseDto, Serializable {
+public class StockAdjustSheetFullDto implements BaseDto, Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -36,19 +37,19 @@ public class StockCostAdjustSheetFullDto implements BaseDto, Serializable {
   private String scId;
 
   /**
-   * 调价品种数
+   * 业务类型
    */
-  private Integer productNum;
+  private StockAdjustSheetBizType bizType;
 
   /**
-   * 库存调价差额
+   * 调整原因ID
    */
-  private BigDecimal diffAmount;
+  private String reasonId;
 
   /**
    * 状态
    */
-  private StockCostAdjustSheetStatus status;
+  private StockAdjustSheetStatus status;
 
   /**
    * 备注
@@ -101,29 +102,9 @@ public class StockCostAdjustSheetFullDto implements BaseDto, Serializable {
     private String productId;
 
     /**
-     * 档案采购价
-     */
-    private BigDecimal purchasePrice;
-
-    /**
-     * 库存数量
+     * 调整库存数量
      */
     private Integer stockNum;
-
-    /**
-     * 调整前成本价
-     */
-    private BigDecimal oriPrice;
-
-    /**
-     * 调整后成本价
-     */
-    private BigDecimal price;
-
-    /**
-     * 库存调价差额
-     */
-    private BigDecimal diffAmount;
 
     /**
      * 备注

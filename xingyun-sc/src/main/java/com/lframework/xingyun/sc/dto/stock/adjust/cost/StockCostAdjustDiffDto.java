@@ -1,4 +1,4 @@
-package com.lframework.xingyun.sc.dto.stock.adjust;
+package com.lframework.xingyun.sc.dto.stock.adjust.cost;
 
 import com.lframework.starter.web.dto.BaseDto;
 import java.io.Serializable;

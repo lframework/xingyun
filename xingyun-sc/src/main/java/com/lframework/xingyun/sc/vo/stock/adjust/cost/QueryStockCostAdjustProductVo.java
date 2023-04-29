@@ -1,4 +1,4 @@
-package com.lframework.xingyun.sc.vo.stock.adjust;
+package com.lframework.xingyun.sc.vo.stock.adjust.cost;
 
 import com.lframework.starter.web.vo.PageVo;
 import io.swagger.annotations.ApiModelProperty;

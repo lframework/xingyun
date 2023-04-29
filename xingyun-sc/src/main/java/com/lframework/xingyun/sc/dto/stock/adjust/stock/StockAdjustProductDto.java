@@ -1,4 +1,4 @@
-package com.lframework.xingyun.sc.dto.stock.adjust;
+package com.lframework.xingyun.sc.dto.stock.adjust.stock;
 
 import com.lframework.starter.web.dto.BaseDto;
 import java.io.Serializable;
@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
-public class StockCostAdjustProductDto implements BaseDto, Serializable {
+public class StockAdjustProductDto implements BaseDto, Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -69,14 +69,4 @@ public class StockCostAdjustProductDto implements BaseDto, Serializable {
    * 档案采购价
    */
   private BigDecimal purchasePrice;
-
-  /**
-   * 库存数量
-   */
-  private Integer stockNum;
-
-  /**
-   * 调价前成本价
-   */
-  private BigDecimal oriPrice;
 }

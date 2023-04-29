@@ -1,30 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lframework.xingyun.sc.mappers.StockCostAdjustSheetMapper">
+<mapper namespace="com.lframework.xingyun.sc.mappers.StockAdjustSheetMapper">
 
-    <resultMap id="StockCostAdjustSheet" type="com.lframework.xingyun.sc.entity.StockCostAdjustSheet">
+    <resultMap id="StockAdjustSheetFullDto" type="com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="sc_id" property="scId"/>
-        <result column="product_num" property="productNum"/>
-        <result column="diff_amount" property="diffAmount"/>
-        <result column="status" property="status"/>
-        <result column="description" property="description"/>
-        <result column="create_by" property="createBy"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_by" property="updateBy"/>
-        <result column="update_time" property="updateTime"/>
-        <result column="approve_by" property="approveBy"/>
-        <result column="approve_time" property="approveTime"/>
-        <result column="refuse_reason" property="refuseReason"/>
-    </resultMap>
-
-    <resultMap id="StockCostAdjustSheetFullDto" type="com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustSheetFullDto">
-        <id column="id" property="id"/>
-        <result column="code" property="code"/>
-        <result column="sc_id" property="scId"/>
-        <result column="product_num" property="productNum"/>
-        <result column="diff_amount" property="diffAmount"/>
+        <result column="biz_type" property="bizType"/>
+        <result column="reason_id" property="reasonId"/>
         <result column="status" property="status"/>
         <result column="description" property="description"/>
         <result column="update_by" property="updateBy"/>
@@ -32,19 +15,15 @@
         <result column="approve_by" property="approveBy"/>
         <result column="approve_time" property="approveTime"/>
         <result column="refuse_reason" property="refuseReason"/>
-        <collection property="details" ofType="com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustSheetFullDto$DetailDto" javaType="java.util.ArrayList">
+        <collection property="details" ofType="com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto$DetailDto" javaType="java.util.ArrayList">
             <id column="detail_id" property="id" />
             <result column="detail_product_id" property="productId" />
-            <result column="detail_purchase_price" property="purchasePrice" />
             <result column="detail_stock_num" property="stockNum" />
-            <result column="detail_ori_price" property="oriPrice" />
-            <result column="detail_price" property="price" />
-            <result column="detail_diff_amount" property="diffAmount" />
             <result column="detail_description" property="description" />
         </collection>
     </resultMap>
 
-    <resultMap id="StockCostAdjustProductDto" type="com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustProductDto">
+    <resultMap id="StockAdjustProductDto" type="com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -57,36 +36,21 @@
         <result column="spec" property="spec"/>
         <result column="unit" property="unit"/>
         <result column="purchase_price" property="purchasePrice"/>
-        <result column="stock_num" property="stockNum"/>
-        <result column="ori_price" property="oriPrice"/>
     </resultMap>
 
-    <sql id="StockCostAdjustSheetDto_sql">
+    <sql id="StockAdjustSheetDto_sql">
         SELECT
-            tb.id,
-            tb.code,
-            tb.sc_id,
-            tb.product_num,
-            tb.diff_amount,
-            tb.status,
-            tb.description,
-            tb.create_by,
-            tb.create_time,
-            tb.update_by,
-            tb.update_time,
-            tb.approve_by,
-            tb.approve_time,
-            tb.refuse_reason
-        FROM tbl_stock_cost_adjust_sheet AS tb
+            tb.*
+        FROM tbl_stock_adjust_sheet AS tb
     </sql>
 
-    <sql id="StockCostAdjustSheetFullDto_sql">
+    <sql id="StockAdjustSheetFullDto_sql">
         SELECT
             tb.id,
             tb.code,
             tb.sc_id,
-            tb.product_num,
-            tb.diff_amount,
+            tb.biz_type,
+            tb.reason_id,
             tb.status,
             tb.description,
             tb.create_by,
@@ -98,17 +62,13 @@
             tb.refuse_reason,
             d.id AS detail_id,
             d.product_id AS detail_product_id,
-            d.purchase_price AS detail_purchase_price,
             d.stock_num AS detail_stock_num,
-            d.ori_price AS detail_ori_price,
-            d.price AS detail_price,
-            d.diff_amount AS detail_diff_amount,
             d.description AS detail_description
-        FROM tbl_stock_cost_adjust_sheet AS tb
-        LEFT JOIN tbl_stock_cost_adjust_sheet_detail AS d ON d.sheet_id = tb.id
+        FROM tbl_stock_adjust_sheet AS tb
+        LEFT JOIN tbl_stock_adjust_sheet_detail AS d ON d.sheet_id = tb.id
     </sql>
 
-    <sql id="StockCostAdjustProductDto_sql">
+    <sql id="StockAdjustProductDto_sql">
         SELECT
             g.id,
             g.code,
@@ -121,25 +81,28 @@
             g.external_code,
             g.spec,
             g.unit,
-            purchase.price AS purchase_price,
-            s.tax_price AS ori_price,
-            s.stock_num
-        FROM tbl_product_stock AS s
-        INNER JOIN base_data_product AS g ON g.id = s.product_id
+            purchase.price AS purchase_price
+        FROM base_data_product AS g
         INNER JOIN base_data_product_purchase AS purchase ON purchase.id = g.id
         LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
         LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
         LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
     </sql>
 
-    <select id="query" resultMap="StockCostAdjustSheet">
-        <include refid="StockCostAdjustSheetDto_sql"/>
+    <select id="query" resultType="com.lframework.xingyun.sc.entity.StockAdjustSheet">
+        <include refid="StockAdjustSheetDto_sql"/>
         <where>
             <if test="vo.code != null and vo.code != ''">
                 AND tb.code = #{vo.code}
             </if>
             <if test="vo.scId != null and vo.scId != ''">
                 AND tb.sc_id = #{vo.scId}
+            </if>
+            <if test="vo.bizType != null">
+                AND tb.biz_type = #{vo.bizType}
+            </if>
+            <if test="vo.reasonId != null and vo.reasonId != ''">
+                AND tb.reason_id = #{vo.reasonId}
             </if>
             <if test="vo.status != null">
                 AND tb.status = #{vo.status}
@@ -171,16 +134,15 @@
         ORDER BY tb.update_time DESC
     </select>
 
-    <select id="getDetail" resultMap="StockCostAdjustSheetFullDto">
-        <include refid="StockCostAdjustSheetFullDto_sql"/>
+    <select id="getDetail" resultMap="StockAdjustSheetFullDto">
+        <include refid="StockAdjustSheetFullDto_sql"/>
         WHERE tb.id = #{id}
         ORDER BY d.order_no
     </select>
 
-    <select id="queryStockCostAdjustByCondition" resultMap="StockCostAdjustProductDto">
-        <include refid="StockCostAdjustProductDto_sql"/>
+    <select id="queryStockAdjustByCondition" resultMap="StockAdjustProductDto">
+        <include refid="StockAdjustProductDto_sql"/>
         <where>
-            AND s.sc_id = #{scId}
             AND (
             g.code LIKE CONCAT('%', #{condition}, '%')
             OR g.name LIKE CONCAT('%', #{condition}, '%')
@@ -191,10 +153,9 @@
         </where>
         ORDER BY g.code
     </select>
-    <select id="queryStockCostAdjustList" resultMap="StockCostAdjustProductDto">
-        <include refid="StockCostAdjustProductDto_sql"/>
+    <select id="queryStockAdjustList" resultMap="StockAdjustProductDto">
+        <include refid="StockAdjustProductDto_sql"/>
         <where>
-            AND s.sc_id = #{vo.scId}
             <if test="vo != null">
                 <if test="vo.condition != null and vo.condition != ''">
                     AND (

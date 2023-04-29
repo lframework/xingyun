@@ -2,17 +2,17 @@ package com.lframework.xingyun.sc.service.stock.adjust;
 
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
-import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustProductVo;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustProductDto;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.QueryStockCostAdjustProductVo;
+import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustProductDto;
+import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
-import com.lframework.xingyun.sc.vo.stock.adjust.ApprovePassStockCostAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.ApproveRefuseStockCostAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.BatchApprovePassStockCostAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.BatchApproveRefuseStockCostAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.CreateStockCostAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.UpdateStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.ApprovePassStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.ApproveRefuseStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.BatchApprovePassStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.BatchApproveRefuseStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.CreateStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.QueryStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.UpdateStockCostAdjustSheetVo;
 import java.util.List;
 
 /**

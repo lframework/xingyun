@@ -21,7 +21,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.events.stock.AddStockEvent;
 import com.lframework.xingyun.core.events.stock.SubStockEvent;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustDiffDto;
+import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustDiffDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.mappers.ProductStockMapper;
 import com.lframework.xingyun.sc.service.stock.ProductStockLogService;

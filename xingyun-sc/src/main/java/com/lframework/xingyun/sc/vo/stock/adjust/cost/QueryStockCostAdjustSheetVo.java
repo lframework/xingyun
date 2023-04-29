@@ -1,4 +1,4 @@
-package com.lframework.xingyun.sc.vo.stock.adjust;
+package com.lframework.xingyun.sc.vo.stock.adjust.cost;
 
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.components.validation.TypeMismatch;

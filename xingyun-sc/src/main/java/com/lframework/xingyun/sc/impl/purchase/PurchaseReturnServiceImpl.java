@@ -299,7 +299,6 @@ public class PurchaseReturnServiceImpl extends
 
       subproductStockVo.setProductId(detail.getProductId());
       subproductStockVo.setScId(purchaseReturn.getScId());
-      subproductStockVo.setSupplierId(purchaseReturn.getSupplierId());
       subproductStockVo.setStockNum(detail.getReturnNum());
       subproductStockVo.setTaxAmount(NumberUtil.mul(detail.getTaxPrice(), detail.getReturnNum()));
       subproductStockVo.setTaxRate(detail.getTaxRate());

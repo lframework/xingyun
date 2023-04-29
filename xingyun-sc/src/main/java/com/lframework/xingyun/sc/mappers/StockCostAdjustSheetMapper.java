@@ -1,11 +1,11 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
-import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustProductVo;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustProductDto;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.QueryStockCostAdjustProductVo;
+import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustProductDto;
+import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
-import com.lframework.xingyun.sc.vo.stock.adjust.QueryStockCostAdjustSheetVo;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.QueryStockCostAdjustSheetVo;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

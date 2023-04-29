@@ -1,4 +1,4 @@
-package com.lframework.xingyun.sc.bo.stock.adjust;
+package com.lframework.xingyun.sc.bo.stock.adjust.cost;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +17,7 @@ import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.sc.dto.stock.adjust.StockCostAdjustSheetFullDto;
+import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.enums.StockCostAdjustSheetStatus;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;

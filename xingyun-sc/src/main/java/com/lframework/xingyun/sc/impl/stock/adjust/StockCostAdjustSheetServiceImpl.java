@@ -129,7 +129,7 @@ public class StockCostAdjustSheetServiceImpl extends
   }
 
   @OpLog(type = DefaultOpLogType.OTHER, name = "修改库存成本调整单，ID：{}", params = {"#id"})
-  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#_result", name = "修改调整单")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改调整单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateStockCostAdjustSheetVo vo) {

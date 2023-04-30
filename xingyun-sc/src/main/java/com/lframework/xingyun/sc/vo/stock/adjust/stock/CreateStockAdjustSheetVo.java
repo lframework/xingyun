@@ -61,7 +61,7 @@ public class CreateStockAdjustSheetVo implements BaseVo, Serializable {
     int orderNo = 1;
     for (StockAdjustProductVo product : this.products) {
       if (NumberUtil.le(product.getStockNum(), BigDecimal.ZERO)) {
-        throw new DefaultClientException("第" + orderNo + "行商品的调整后成本价必须大于0！");
+        throw new DefaultClientException("第" + orderNo + "行商品的调整库存数量必须大于0！");
       }
     }
   }

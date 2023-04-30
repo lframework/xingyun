@@ -35,7 +35,6 @@
         <result column="external_code" property="externalCode"/>
         <result column="spec" property="spec"/>
         <result column="unit" property="unit"/>
-        <result column="purchase_price" property="purchasePrice"/>
     </resultMap>
 
     <sql id="StockAdjustSheetDto_sql">
@@ -80,10 +79,8 @@
             g.sku_code,
             g.external_code,
             g.spec,
-            g.unit,
-            purchase.price AS purchase_price
+            g.unit
         FROM base_data_product AS g
-        INNER JOIN base_data_product_purchase AS purchase ON purchase.id = g.id
         LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
         LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
         LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2

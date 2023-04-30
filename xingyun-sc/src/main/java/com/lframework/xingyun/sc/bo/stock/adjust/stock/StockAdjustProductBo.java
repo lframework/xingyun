@@ -1,19 +1,18 @@
-package com.lframework.xingyun.sc.bo.retail;
+package com.lframework.xingyun.sc.bo.stock.adjust.stock;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
-import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
+import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RetailProductBo extends BaseBo<RetailProductDto> {
+public class StockAdjustProductBo extends BaseBo<StockAdjustProductDto> {
 
   /**
    * ID
@@ -46,12 +45,6 @@ public class RetailProductBo extends BaseBo<RetailProductDto> {
   private String brandName;
 
   /**
-   * 是否多销售属性
-   */
-  @ApiModelProperty("是否多销售属性")
-  private Boolean multiSaleProp;
-
-  /**
    * SKU
    */
   @ApiModelProperty("SKU")
@@ -76,47 +69,42 @@ public class RetailProductBo extends BaseBo<RetailProductDto> {
   private String unit;
 
   /**
-   * 零售价
+   * 当前库存数量
    */
-  @ApiModelProperty("零售价")
-  private BigDecimal retailPrice;
-
-  /**
-   * 库存数量
-   */
-  @ApiModelProperty("库存数量")
-  private Integer stockNum;
-
-  /**
-   * 税率（%）
-   */
-  @ApiModelProperty("税率（%）")
-  private BigDecimal taxRate;
+  @ApiModelProperty("当前库存数量")
+  private Integer curStockNum;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", hidden = true)
+  /**
+   * 仓库ID
+   */
   @JsonIgnore
+  @ApiModelProperty(hidden = true)
   private String scId;
 
-  public RetailProductBo(String scId, RetailProductDto dto) {
+  public StockAdjustProductBo() {
 
+  }
+
+  public StockAdjustProductBo(String scId, StockAdjustProductDto dto) {
     this.scId = scId;
 
     this.init(dto);
   }
 
   @Override
-  protected void afterInit(RetailProductDto dto) {
+  protected void afterInit(StockAdjustProductDto dto) {
 
     this.productId = dto.getId();
     this.productCode = dto.getCode();
     this.productName = dto.getName();
 
-    ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
-    ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
-        this.getScId());
-    this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+    ProductStockService productStockService = ApplicationUtil.getBean(
+        ProductStockService.class);
+    ProductStock productStock = productStockService.getByProductIdAndScId(dto.getId(),
+        this.scId);
+    this.curStockNum = productStock == null ? 0 : productStock.getStockNum();
   }
 }

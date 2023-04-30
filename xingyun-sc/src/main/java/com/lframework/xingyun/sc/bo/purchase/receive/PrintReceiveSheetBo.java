@@ -234,11 +234,7 @@ public class PrintReceiveSheetBo extends BasePrintDataBo<ReceiveSheetFullDto> {
 
     public OrderDetailBo(ReceiveSheetFullDto.OrderDetailDto dto) {
 
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

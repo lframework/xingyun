@@ -326,11 +326,7 @@ public class GetPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
     public OrderDetailBo(String scId, PurchaseOrderFullDto.OrderDetailDto dto) {
 
       this.scId = scId;
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

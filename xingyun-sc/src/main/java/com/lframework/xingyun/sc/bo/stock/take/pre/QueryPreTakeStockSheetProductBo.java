@@ -100,11 +100,7 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
 
         this.scId = scId;
 
-        if (dto != null) {
-            this.convert(dto);
-
-            this.afterInit(dto);
-        }
+        this.init(dto);
     }
 
     @Override

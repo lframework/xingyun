@@ -249,11 +249,7 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
     public DetailBo(String scId, SaleOrderWithOutDto.DetailDto dto) {
 
       this.scId = scId;
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

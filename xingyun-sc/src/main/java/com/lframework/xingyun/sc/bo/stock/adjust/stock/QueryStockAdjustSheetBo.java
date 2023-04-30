@@ -62,6 +62,7 @@ public class QueryStockAdjustSheetBo extends BaseBo<StockAdjustSheet> {
   /**
    * 调整原因
    */
+  @ApiModelProperty("调整原因")
   private String reasonName;
 
   /**

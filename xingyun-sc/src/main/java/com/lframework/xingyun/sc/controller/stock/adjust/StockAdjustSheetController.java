@@ -60,7 +60,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StockAdjustSheetController extends DefaultBaseController {
 
   @Autowired
-  private StockAdjustSheetService stockCostAdjustSheetService;
+  private StockAdjustSheetService stockAdjustSheetService;
 
   /**
    * 查询列表
@@ -71,7 +71,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<PageResult<QueryStockAdjustSheetBo>> query(
       @Valid QueryStockAdjustSheetVo vo) {
 
-    PageResult<StockAdjustSheet> pageResult = stockCostAdjustSheetService.query(
+    PageResult<StockAdjustSheet> pageResult = stockAdjustSheetService.query(
         getPageIndex(vo),
         getPageSize(vo), vo);
 
@@ -95,7 +95,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<StockAdjustSheetFullBo> getDetail(
       @NotBlank(message = "id不能为空！") String id) {
 
-    StockAdjustSheetFullDto data = stockCostAdjustSheetService.getDetail(id);
+    StockAdjustSheetFullDto data = stockAdjustSheetService.getDetail(id);
     if (data == null) {
       throw new DefaultClientException("库存调整单不存在！");
     }
@@ -119,7 +119,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
     try {
       int pageIndex = 1;
       while (true) {
-        PageResult<StockAdjustSheet> pageResult = stockCostAdjustSheetService.query(pageIndex,
+        PageResult<StockAdjustSheet> pageResult = stockAdjustSheetService.query(pageIndex,
             getExportSize(), vo);
         List<StockAdjustSheet> datas = pageResult.getDatas();
         List<StockAdjustSheetExportModel> models = datas.stream()
@@ -153,12 +153,13 @@ public class StockAdjustSheetController extends DefaultBaseController {
     if (StringUtil.isBlank(condition)) {
       return InvokeResultBuilder.success(CollectionUtil.emptyList());
     }
-    PageResult<StockAdjustProductDto> pageResult = stockCostAdjustSheetService.queryStockAdjustByCondition(
+    PageResult<StockAdjustProductDto> pageResult = stockAdjustSheetService.queryStockAdjustByCondition(
         getPageIndex(), getPageSize(), scId, condition);
     List<StockAdjustProductBo> results = CollectionUtil.emptyList();
     List<StockAdjustProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(StockAdjustProductBo::new).collect(Collectors.toList());
+      results = datas.stream().map(t -> new StockAdjustProductBo(scId, t))
+          .collect(Collectors.toList());
     }
 
     return InvokeResultBuilder.success(results);
@@ -173,14 +174,15 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<PageResult<StockAdjustProductBo>> queryProductList(
       @Valid QueryStockAdjustProductVo vo) {
 
-    PageResult<StockAdjustProductDto> pageResult = stockCostAdjustSheetService.queryStockAdjustList(
+    PageResult<StockAdjustProductDto> pageResult = stockAdjustSheetService.queryStockAdjustList(
         getPageIndex(),
         getPageSize(), vo);
     List<StockAdjustProductBo> results = null;
     List<StockAdjustProductDto> datas = pageResult.getDatas();
 
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(StockAdjustProductBo::new).collect(Collectors.toList());
+      results = datas.stream().map(t -> new StockAdjustProductBo(vo.getScId(), t))
+          .collect(Collectors.toList());
     }
 
     return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
@@ -196,7 +198,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    stockCostAdjustSheetService.create(vo);
+    stockAdjustSheetService.create(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -211,7 +213,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    stockCostAdjustSheetService.update(vo);
+    stockAdjustSheetService.update(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -225,7 +227,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "id不能为空！") String id) {
 
-    stockCostAdjustSheetService.deleteById(id);
+    stockAdjustSheetService.deleteById(id);
 
     return InvokeResultBuilder.success();
   }
@@ -239,7 +241,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<Void> deleteByIds(
       @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的库存调整单！") List<String> ids) {
 
-    stockCostAdjustSheetService.deleteByIds(ids);
+    stockAdjustSheetService.deleteByIds(ids);
 
     return InvokeResultBuilder.success();
   }
@@ -252,7 +254,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassStockAdjustSheetVo vo) {
 
-    stockCostAdjustSheetService.approvePass(vo);
+    stockAdjustSheetService.approvePass(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -266,7 +268,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<Void> batchApprovePass(
       @RequestBody @Valid BatchApprovePassStockAdjustSheetVo vo) {
 
-    stockCostAdjustSheetService.batchApprovePass(vo);
+    stockAdjustSheetService.batchApprovePass(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -279,7 +281,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateStockAdjustSheetVo vo) {
 
-    stockCostAdjustSheetService.directApprovePass(vo);
+    stockAdjustSheetService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -293,7 +295,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<Void> approveRefuse(
       @RequestBody @Valid ApproveRefuseStockAdjustSheetVo vo) {
 
-    stockCostAdjustSheetService.approveRefuse(vo);
+    stockAdjustSheetService.approveRefuse(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -307,7 +309,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<Void> batchApproveRefuse(
       @RequestBody @Valid BatchApproveRefuseStockAdjustSheetVo vo) {
 
-    stockCostAdjustSheetService.batchApproveRefuse(vo);
+    stockAdjustSheetService.batchApproveRefuse(vo);
 
     return InvokeResultBuilder.success();
   }

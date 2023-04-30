@@ -119,7 +119,7 @@ public class StockAdjustSheetServiceImpl extends
 
     StockAdjustSheet data = new StockAdjustSheet();
     data.setId(IdUtil.getId());
-    data.setCode(generateCodeService.generate(GenerateCodeTypePool.STOCK_COST_ADJUST_SHEET));
+    data.setCode(generateCodeService.generate(GenerateCodeTypePool.STOCK_ADJUST_SHEET));
 
     this.create(data, vo);
 
@@ -132,7 +132,7 @@ public class StockAdjustSheetServiceImpl extends
   }
 
   @OpLog(type = DefaultOpLogType.OTHER, name = "修改库存调整单，ID：{}", params = {"#id"})
-  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#_result", name = "修改调整单")
+  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改调整单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateStockAdjustSheetVo vo) {
@@ -274,7 +274,6 @@ public class StockAdjustSheetServiceImpl extends
     List<StockAdjustSheetDetail> details = stockCostAdjustSheetDetailService.list(
         queryDetailWrapper);
 
-    BigDecimal totalDiffAmount = BigDecimal.ZERO;
     for (StockAdjustSheetDetail detail : details) {
       Product product = productService.findById(detail.getProductId());
       ProductPurchase productPurchase = productPurchaseService.getById(product.getId());
@@ -284,7 +283,6 @@ public class StockAdjustSheetServiceImpl extends
         addProductStockVo.setProductId(product.getId());
         addProductStockVo.setScId(data.getScId());
         addProductStockVo.setStockNum(detail.getStockNum());
-        // addProductStockVo.setTaxAmount();
         addProductStockVo.setDefaultTaxAmount(
             NumberUtil.getNumber(NumberUtil.mul(productPurchase.getPrice(), detail.getStockNum()),
                 2));
@@ -478,10 +476,7 @@ public class StockAdjustSheetServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setSheetId(data.getId());
       detail.setProductId(product.getProductId());
-      ProductStock productStock = productStockService.getByProductIdAndScId(product.getProductId(),
-          data.getScId());
-      ProductPurchase productPurchase = productPurchaseService.getById(product.getProductId());
-      detail.setStockNum(productStock == null ? 0 : productStock.getStockNum());
+      detail.setStockNum(product.getStockNum());
       detail.setDescription(
           StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
               : product.getDescription());

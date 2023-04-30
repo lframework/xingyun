@@ -243,11 +243,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
     public DetailBo(String scId, PurchaseOrderWithReceiveDto.DetailDto dto) {
 
       this.scId = scId;
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

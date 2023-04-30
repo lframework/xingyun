@@ -353,11 +353,7 @@ public class GetRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
     public OrderDetailBo(String scId, RetailOutSheetFullDto.SheetDetailDto dto) {
 
       this.scId = scId;
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

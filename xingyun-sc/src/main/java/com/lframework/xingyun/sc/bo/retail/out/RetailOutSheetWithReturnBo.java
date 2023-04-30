@@ -249,11 +249,7 @@ public class RetailOutSheetWithReturnBo extends BaseBo<RetailOutSheetWithReturnD
 
       this.scId = scId;
 
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

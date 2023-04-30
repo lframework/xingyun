@@ -192,11 +192,7 @@ public class GetCustomerSettleFeeSheetBo extends BaseBo<CustomerSettleFeeSheetFu
 
       this.sheetType = sheetType;
 
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

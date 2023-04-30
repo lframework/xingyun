@@ -66,7 +66,7 @@ public class StockAdjustProductDto implements BaseDto, Serializable {
   private String unit;
 
   /**
-   * 档案采购价
+   * 当前库存数量
    */
-  private BigDecimal purchasePrice;
+  private Integer curStockNum;
 }

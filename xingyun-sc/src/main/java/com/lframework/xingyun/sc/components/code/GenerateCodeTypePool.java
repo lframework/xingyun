@@ -63,4 +63,9 @@ public interface GenerateCodeTypePool {
    * 库存成本调整单
    */
   GenerateCodeType STOCK_COST_ADJUST_SHEET = GenerateCodeType.FLOW;
+
+  /**
+   * 库存调整单
+   */
+  GenerateCodeType STOCK_ADJUST_SHEET = GenerateCodeType.FLOW;
 }

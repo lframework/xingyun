@@ -274,10 +274,7 @@ public class StockCostAdjustSheetFullBo extends BaseBo<StockCostAdjustSheetFullD
       this.scId = scId;
       this.status = status;
 
-      if (dto != null) {
-        this.convert(dto);
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

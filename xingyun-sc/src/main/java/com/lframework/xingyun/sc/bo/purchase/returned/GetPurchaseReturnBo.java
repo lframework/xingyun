@@ -370,11 +370,7 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
     public ReturnDetailBo(String scId, PurchaseReturnFullDto.ReturnDetailDto dto) {
 
       this.scId = scId;
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

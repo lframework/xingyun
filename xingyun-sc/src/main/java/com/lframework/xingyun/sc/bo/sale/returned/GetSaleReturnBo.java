@@ -368,11 +368,7 @@ public class GetSaleReturnBo extends BaseBo<SaleReturnFullDto> {
     public ReturnDetailBo(String scId, SaleReturnFullDto.ReturnDetailDto dto) {
 
       this.scId = scId;
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

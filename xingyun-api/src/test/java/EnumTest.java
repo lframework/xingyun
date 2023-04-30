@@ -2,6 +2,8 @@ import cn.hutool.core.util.ClassUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.enums.BaseEnum;
 import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
+import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Test;
@@ -13,7 +15,7 @@ public class EnumTest {
    */
   public static void main(String[] args) {
     Map<Object, Object> map = new LinkedHashMap<>();
-    Class clazz = Object.class;
+    Class clazz = StockAdjustSheetStatus.class;
 
     BaseEnum[] objs = ClassUtil.invoke(clazz.getName() + "#values", new Object[0]);
 

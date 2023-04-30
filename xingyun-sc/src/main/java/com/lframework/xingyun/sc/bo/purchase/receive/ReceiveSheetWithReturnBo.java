@@ -241,11 +241,7 @@ public class ReceiveSheetWithReturnBo extends BaseBo<ReceiveSheetWithReturnDto> 
 
       this.scId = scId;
 
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

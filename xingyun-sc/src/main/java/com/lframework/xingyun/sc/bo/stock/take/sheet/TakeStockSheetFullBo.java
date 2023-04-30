@@ -312,11 +312,7 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
 
       this.planId = planId;
 
-      if (dto != null) {
-        this.convert(dto);
-
-        this.afterInit(dto);
-      }
+      this.init(dto);
     }
 
     @Override

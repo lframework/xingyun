@@ -306,9 +306,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(retailReturn.getScId());
       addProductStockVo.setStockNum(detail.getReturnNum());
-      addProductStockVo.setDefaultTaxAmount(
-          NumberUtil.mul(productPurchase.getPrice(), detail.getReturnNum()));
-      addProductStockVo.setTaxRate(detail.getTaxRate());
+      addProductStockVo.setDefaultTaxPrice(productPurchase.getPrice());
       addProductStockVo.setBizId(retailReturn.getId());
       addProductStockVo.setBizDetailId(detail.getId());
       addProductStockVo.setBizCode(retailReturn.getCode());
@@ -613,7 +611,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       detail.setTaxPrice(productVo.getTaxPrice());
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getTaxRate());
+      detail.setTaxRate(product.getSaleTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

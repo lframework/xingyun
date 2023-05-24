@@ -77,9 +77,6 @@ public class StockAdjustProductBo extends BaseBo<StockAdjustProductDto> {
   /**
    * 仓库ID
    */
-  /**
-   * 仓库ID
-   */
   @JsonIgnore
   @ApiModelProperty(hidden = true)
   private String scId;

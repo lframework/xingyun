@@ -28,6 +28,7 @@
 ### 后端开发的一些约定
 * cacheName不使用{}
 * 主库的名称为master
+* 创建子线程时使用DefaultCallable或DefaultRunnable包装
 
 ### 关于多租户
 application.yml中的tenant.enabled改为true则代表开启多租户模式；false则代表关闭多租户模式。

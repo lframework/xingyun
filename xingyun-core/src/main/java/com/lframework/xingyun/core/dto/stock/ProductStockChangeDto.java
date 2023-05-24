@@ -32,7 +32,7 @@ public class ProductStockChangeDto implements BaseDto, Serializable {
   private BigDecimal taxAmount;
 
   /**
-   * 无税金额
+   * 当前含税均价
    */
-  private BigDecimal unTaxAmount;
+  private BigDecimal curTaxPrice;
 }

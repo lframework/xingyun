@@ -14,7 +14,8 @@ public enum OrderTimeLineBizType implements BaseEnum<Integer> {
   SEND(3, "发送"),
   APPROVE_PASS(4, "审核通过"),
   APPROVE_RETURN(5, "审核拒绝"),
-  CANCEL_APPROVE(6, "取消审核")
+  CANCEL_APPROVE(6, "取消审核"),
+  RECEIVE(7, "收货")
   ;
 
   @EnumValue

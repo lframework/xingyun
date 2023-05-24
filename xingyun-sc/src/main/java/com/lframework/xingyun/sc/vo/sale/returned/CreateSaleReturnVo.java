@@ -10,10 +10,11 @@ import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
+import com.lframework.xingyun.sc.entity.SaleOutSheetDetailLot;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
+import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
-import com.lframework.xingyun.sc.service.sale.SaleReturnDetailService;
 import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -117,8 +118,10 @@ public class CreateSaleReturnVo implements BaseVo, Serializable {
       }
     }
 
-    SaleOutSheetDetailService saleReturnDetailService = ApplicationUtil.getBean(
+    SaleOutSheetDetailService saleOutSheetDetailService = ApplicationUtil.getBean(
         SaleOutSheetDetailService.class);
+    SaleOutSheetDetailLotService saleOutSheetDetailLotService = ApplicationUtil.getBean(
+        SaleOutSheetDetailLotService.class);
 
     int orderNo = 1;
     for (SaleReturnProductVo product : this.products) {
@@ -159,8 +162,10 @@ public class CreateSaleReturnVo implements BaseVo, Serializable {
         }
       } else {
         if (StringUtil.isNotBlank(product.getOutSheetDetailId())) {
-          SaleOutSheetDetail outSheetDetail = saleReturnDetailService.getById(
+          SaleOutSheetDetailLot detailLot = saleOutSheetDetailLotService.getById(
               product.getOutSheetDetailId());
+          SaleOutSheetDetail outSheetDetail = saleOutSheetDetailService.getById(
+              detailLot.getDetailId());
           product.setTaxPrice(outSheetDetail.getTaxPrice());
         } else {
           product.setTaxPrice(BigDecimal.ZERO);

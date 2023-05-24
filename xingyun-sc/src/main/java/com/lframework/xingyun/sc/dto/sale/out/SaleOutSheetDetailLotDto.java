@@ -37,11 +37,6 @@ public class SaleOutSheetDetailLotDto implements BaseDto, Serializable {
   private BigDecimal costTaxAmount;
 
   /**
-   * 无税成本金额
-   */
-  private BigDecimal costUnTaxAmount;
-
-  /**
    * 结算状态
    */
   private SettleStatus settleStatus;

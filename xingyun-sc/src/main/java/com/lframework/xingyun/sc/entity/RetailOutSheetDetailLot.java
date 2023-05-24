@@ -49,11 +49,6 @@ public class RetailOutSheetDetailLot extends BaseEntity implements BaseDto {
   private BigDecimal costTaxAmount;
 
   /**
-   * 无税成本金额
-   */
-  private BigDecimal costUnTaxAmount;
-
-  /**
    * 结算状态
    */
   private SettleStatus settleStatus;

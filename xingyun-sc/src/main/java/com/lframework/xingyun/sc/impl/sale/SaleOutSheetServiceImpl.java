@@ -76,6 +76,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -332,7 +333,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         SaleOrder purchaseOrder = saleOrderService.getById(sheet.getSaleOrderId());
         throw new DefaultClientException(
-            "销售订单号：" + purchaseOrder.getCode() + "，已关联其他销售出库单，不允许关联多个销售出库单！");
+            "销售订单号：" + purchaseOrder.getCode()
+                + "，已关联其他销售出库单，不允许关联多个销售出库单！");
       }
     }
 
@@ -384,7 +386,6 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       detailLot.setDetailId(detail.getId());
       detailLot.setOrderNum(detail.getOrderNum());
       detailLot.setCostTaxAmount(stockChange.getTaxAmount());
-      detailLot.setCostUnTaxAmount(stockChange.getUnTaxAmount());
       detailLot.setSettleStatus(detail.getSettleStatus());
       detailLot.setOrderNo(orderNo);
       saleOutSheetDetailLotService.save(detailLot);
@@ -412,7 +413,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         SaleOutSheetService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个销售出库单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个销售出库单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -492,7 +494,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         SaleOutSheetService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个销售出库单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个销售出库单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -521,12 +524,13 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       throw new DefaultClientException("销售出库单无法删除！");
     }
 
+    //查询销售出库单明细
+    Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            SaleOutSheetDetail.class)
+        .eq(SaleOutSheetDetail::getSheetId, sheet.getId());
+    List<SaleOutSheetDetail> details = saleOutSheetDetailService.list(queryDetailWrapper);
+
     if (!StringUtil.isBlank(sheet.getSaleOrderId())) {
-      //查询销售出库单明细
-      Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-              SaleOutSheetDetail.class)
-          .eq(SaleOutSheetDetail::getSheetId, sheet.getId());
-      List<SaleOutSheetDetail> details = saleOutSheetDetailService.list(queryDetailWrapper);
       for (SaleOutSheetDetail detail : details) {
         if (!StringUtil.isBlank(detail.getSaleOrderDetailId())) {
           //恢复已出库数量
@@ -539,6 +543,13 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     Wrapper<SaleOutSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(SaleOutSheetDetail.class)
         .eq(SaleOutSheetDetail::getSheetId, sheet.getId());
     saleOutSheetDetailService.remove(deleteDetailWrapper);
+
+    Wrapper<SaleOutSheetDetailLot> deleteDetailLotWrapper = Wrappers.lambdaQuery(
+            SaleOutSheetDetailLot.class)
+        .in(SaleOutSheetDetailLot::getDetailId,
+            details.stream().map(SaleOutSheetDetail::getId).collect(
+                Collectors.toList()));
+    saleOutSheetDetailLotService.remove(deleteDetailLotWrapper);
 
     // 删除订单
     getBaseMapper().deleteById(id);
@@ -561,7 +572,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
           SaleOutSheetService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个销售出库单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个销售出库单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -662,7 +674,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
             .ne(SaleOutSheet::getId, sheet.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
           throw new DefaultClientException(
-              "销售订单号：" + saleOrder.getCode() + "，已关联其他销售出库单，不允许关联多个销售出库单！");
+              "销售订单号：" + saleOrder.getCode()
+                  + "，已关联其他销售出库单，不允许关联多个销售出库单！");
         }
       }
     }
@@ -723,7 +736,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       detail.setTaxPrice(productVo.getTaxPrice());
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getTaxRate());
+      detail.setTaxRate(product.getSaleTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

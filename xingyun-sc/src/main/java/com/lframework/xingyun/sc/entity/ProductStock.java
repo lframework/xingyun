@@ -51,14 +51,4 @@ public class ProductStock extends BaseEntity implements BaseDto {
    * 含税金额
    */
   private BigDecimal taxAmount;
-
-  /**
-   * 无税价格
-   */
-  private BigDecimal unTaxPrice;
-
-  /**
-   * 无税金额
-   */
-  private BigDecimal unTaxAmount;
 }

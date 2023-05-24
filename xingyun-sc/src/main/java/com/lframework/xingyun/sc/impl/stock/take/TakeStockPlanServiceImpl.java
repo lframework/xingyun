@@ -359,9 +359,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
           addProductStockVo.setProductId(detail.getProductId());
           addProductStockVo.setScId(data.getScId());
           addProductStockVo.setStockNum(detail.getTakeNum() - detail.getStockNum());
-          addProductStockVo.setDefaultTaxAmount(
-              NumberUtil.mul(purchase.getPrice(), addProductStockVo.getStockNum()));
-          addProductStockVo.setTaxRate(product.getTaxRate());
+          addProductStockVo.setDefaultTaxPrice(purchase.getPrice());
           addProductStockVo.setBizId(data.getId());
           addProductStockVo.setBizDetailId(detail.getId());
           addProductStockVo.setBizCode(data.getCode());

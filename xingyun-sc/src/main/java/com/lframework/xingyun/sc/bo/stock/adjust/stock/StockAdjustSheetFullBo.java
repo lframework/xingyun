@@ -69,7 +69,7 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
   /**
    * 业务类型
    */
-  @ApiModelProperty("仓库名称")
+  @ApiModelProperty("业务类型")
   @EnumConvert
   private Integer bizType;
 

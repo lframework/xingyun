@@ -7,7 +7,6 @@
         <result column="order_num" property="orderNum"/>
         <result column="return_num" property="returnNum"/>
         <result column="cost_tax_amount" property="costTaxAmount"/>
-        <result column="cost_un_tax_amount" property="costUnTaxAmount"/>
         <result column="settle_status" property="settleStatus"/>
         <result column="order_no" property="orderNo"/>
     </resultMap>
@@ -19,7 +18,6 @@
             d.order_num,
             d.return_num,
             d.cost_tax_amount,
-            d.cost_un_tax_amount,
             d.settle_status,
             d.order_no
         FROM tbl_retail_out_sheet_detail_lot AS d

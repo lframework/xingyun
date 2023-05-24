@@ -9,11 +9,8 @@
         <result column="cur_stock_num" property="curStockNum"/>
         <result column="ori_tax_price" property="oriTaxPrice"/>
         <result column="cur_tax_price" property="curTaxPrice"/>
-        <result column="ori_un_tax_price" property="oriUnTaxPrice"/>
-        <result column="cur_un_tax_price" property="curUnTaxPrice"/>
         <result column="stock_num" property="stockNum"/>
         <result column="tax_amount" property="taxAmount"/>
-        <result column="un_tax_amount" property="unTaxAmount"/>
         <result column="create_by" property="createBy"/>
         <result column="create_time" property="createTime"/>
         <result column="biz_id" property="bizId"/>
@@ -31,11 +28,8 @@
             gsl.cur_stock_num,
             gsl.ori_tax_price,
             gsl.cur_tax_price,
-            gsl.ori_un_tax_price,
-            gsl.cur_un_tax_price,
             gsl.stock_num,
             gsl.tax_amount,
-            gsl.un_tax_amount,
             gsl.create_by,
             gsl.create_time,
             gsl.biz_id,

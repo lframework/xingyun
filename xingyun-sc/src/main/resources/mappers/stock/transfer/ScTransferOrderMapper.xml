@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.ScTransferOrderMapper">
+
+    <resultMap id="ScTransferOrderFullDto" type="com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="source_sc_id" property="sourceScId"/>
+        <result column="target_sc_id" property="targetScId"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="refuse_reason" property="refuseReason"/>
+        <collection property="details" ofType="com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto$DetailDto" javaType="java.util.ArrayList">
+            <id column="detail_id" property="id" />
+            <result column="detail_product_id" property="productId" />
+            <result column="detail_transfer_num" property="transferNum" />
+            <result column="detail_receive_num" property="receiveNum" />
+            <result column="detail_description" property="description" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="ScTransferProductDto" type="com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="external_code" property="externalCode"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+    </resultMap>
+
+    <sql id="ScTransferOrderDto_sql">
+        SELECT
+            tb.*
+        FROM tbl_sc_transfer_order AS tb
+    </sql>
+
+    <sql id="ScTransferOrderFullDto_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.source_sc_id,
+            tb.target_sc_id,
+            tb.total_num,
+            tb.total_amount,
+            tb.status,
+            tb.description,
+            tb.create_by,
+            tb.create_time,
+            tb.update_by,
+            tb.update_time,
+            tb.approve_by,
+            tb.approve_time,
+            tb.refuse_reason,
+            d.id AS detail_id,
+            d.product_id AS detail_product_id,
+            d.transfer_num AS detail_transfer_num,
+            d.receive_num AS detail_receive_num,
+            d.description AS detail_description
+        FROM tbl_sc_transfer_order AS tb
+        LEFT JOIN tbl_sc_transfer_order_detail AS d ON d.order_id = tb.id
+    </sql>
+
+    <sql id="ScTransferProductDto_sql">
+        SELECT
+            g.id,
+            g.code,
+            g.name,
+            c.id AS category_id,
+            c.name AS category_name,
+            b.id AS brand_id,
+            b.name AS brand_name,
+            g.sku_code,
+            g.external_code,
+            g.spec,
+            g.unit
+        FROM tbl_product_stock AS ps
+        LEFT JOIN base_data_product AS g ON g.id = ps.product_id
+        LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
+    </sql>
+
+    <select id="query" resultType="com.lframework.xingyun.sc.entity.ScTransferOrder">
+        <include refid="ScTransferOrderDto_sql"/>
+        <where>
+            <if test="vo.code != null and vo.code != ''">
+                AND tb.code = #{vo.code}
+            </if>
+            <if test="vo.sourceScId != null and vo.sourceScId != ''">
+                AND tb.source_sc_id = #{vo.sourceScId}
+            </if>
+            <if test="vo.targetScId != null and vo.targetScId != ''">
+                AND tb.target_sc_id = #{vo.targetScId}
+            </if>
+            <if test="vo.status != null">
+                AND tb.status = #{vo.status}
+            </if>
+            <if test="vo.updateBy != null and vo.updateBy != ''">
+                AND tb.update_by_id = #{vo.updateBy}
+            </if>
+            <if test="vo.updateTimeStart != null">
+                AND tb.update_time >= #{vo.updateTimeStart}
+            </if>
+            <if test="vo.updateTimeEnd != null">
+                <![CDATA[
+                AND tb.update_time <= #{vo.updateTimeEnd}
+                ]]>
+            </if>
+            <if test="vo.approveBy != null and vo.approveBy != ''">
+                AND tb.approve_by = #{vo.approveBy}
+            </if>
+            <if test="vo.approveTimeStart != null">
+                AND tb.approve_time >= #{vo.approveTimeStart}
+            </if>
+            <if test="vo.approveTimeEnd != null">
+                <![CDATA[
+            AND tb.approve_time <= #{vo.approveTimeEnd}
+            ]]>
+            </if>
+            AND ${dataPermission}
+        </where>
+        ORDER BY tb.update_time DESC
+    </select>
+
+    <select id="getDetail" resultMap="ScTransferOrderFullDto">
+        <include refid="ScTransferOrderFullDto_sql"/>
+        WHERE tb.id = #{id}
+        ORDER BY d.order_no
+    </select>
+
+    <select id="queryScTransferByCondition" resultMap="ScTransferProductDto">
+        <include refid="ScTransferProductDto_sql"/>
+        <where>
+            AND ps.sc_id = #{scId}
+            AND (
+            g.code LIKE CONCAT('%', #{condition}, '%')
+            OR g.name LIKE CONCAT('%', #{condition}, '%')
+            OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
+            OR g.external_code LIKE CONCAT('%', #{condition}, '%')
+            )
+            AND ${dataPermission}
+        </where>
+        ORDER BY g.code
+    </select>
+    <select id="queryScTransferList" resultMap="ScTransferProductDto">
+        <include refid="ScTransferProductDto_sql"/>
+        <where>
+            <if test="vo != null">
+                AND ps.sc_id = #{vo.scId}
+                <if test="vo.condition != null and vo.condition != ''">
+                    AND (
+                    g.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.name LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.sku_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR g.external_code LIKE CONCAT('%', #{vo.condition}, '%')
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND b.id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+            </if>
+            AND ${dataPermission}
+        </where>
+        ORDER BY g.code
+    </select>
+</mapper>

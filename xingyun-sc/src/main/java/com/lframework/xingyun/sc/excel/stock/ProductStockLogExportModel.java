@@ -93,28 +93,10 @@ public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implemen
   private BigDecimal curTaxPrice;
 
   /**
-   * 原无税成本价
-   */
-  @ExcelProperty("变动前无税成本价")
-  private BigDecimal oriUnTaxPrice;
-
-  /**
-   * 现无税成本价
-   */
-  @ExcelProperty("变动后无税成本价")
-  private BigDecimal curUnTaxPrice;
-
-  /**
    * 含税金额
    */
   @ExcelProperty("变动含税金额")
   private BigDecimal taxAmount;
-
-  /**
-   * 无税金额
-   */
-  @ExcelProperty("变动无税金额")
-  private BigDecimal unTaxAmount;
 
   /**
    * 创建时间
@@ -183,10 +165,7 @@ public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implemen
     this.setStockNum(dto.getStockNum());
     this.setOriTaxPrice(NumberUtil.getNumber(dto.getOriTaxPrice(), 2));
     this.setCurTaxPrice(NumberUtil.getNumber(dto.getCurTaxPrice(), 2));
-    this.setOriUnTaxPrice(NumberUtil.getNumber(dto.getOriUnTaxPrice(), 2));
-    this.setCurUnTaxPrice(NumberUtil.getNumber(dto.getCurUnTaxPrice(), 2));
     this.setTaxAmount(NumberUtil.getNumber(dto.getTaxAmount(), 2));
-    this.setUnTaxAmount(NumberUtil.getNumber(dto.getUnTaxAmount(), 2));
 
     this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
     this.setBizCode(dto.getBizCode());

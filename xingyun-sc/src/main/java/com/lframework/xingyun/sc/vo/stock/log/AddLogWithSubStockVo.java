@@ -48,14 +48,6 @@ public class AddLogWithSubStockVo implements BaseVo, Serializable {
   private BigDecimal taxAmount;
 
   /**
-   * 无税成本总金额
-   */
-  @ApiModelProperty(value = "无税成本总金额", required = true)
-  @NotNull(message = "无税成本总金额不能为空！")
-  @Min(message = "无税成本总金额不能小于0！", value = 0)
-  private BigDecimal unTaxAmount;
-
-  /**
    * 原库存数量
    */
   @ApiModelProperty(value = "原库存数量", required = true)
@@ -82,20 +74,6 @@ public class AddLogWithSubStockVo implements BaseVo, Serializable {
   @ApiModelProperty(value = "现含税成本价", required = true)
   @NotNull(message = "现含税成本价不能为空！")
   private BigDecimal curTaxPrice;
-
-  /**
-   * 原无税成本价
-   */
-  @ApiModelProperty(value = "原无税成本价", required = true)
-  @NotNull(message = "原无税成本价不能为空！")
-  private BigDecimal oriUnTaxPrice;
-
-  /**
-   * 现无税成本价
-   */
-  @ApiModelProperty(value = "现无税成本价", required = true)
-  @NotNull(message = "现无税成本价不能为空！")
-  private BigDecimal curUnTaxPrice;
 
   /**
    * 创建人ID

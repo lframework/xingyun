@@ -93,18 +93,6 @@ public class QueryProductStockBo extends BaseBo<ProductStock> {
   @ApiModelProperty("含税金额")
   private BigDecimal taxAmount;
 
-  /**
-   * 无税价格
-   */
-  @ApiModelProperty("无税价格")
-  private BigDecimal unTaxPrice;
-
-  /**
-   * 无税金额
-   */
-  @ApiModelProperty("无税金额")
-  private BigDecimal unTaxAmount;
-
   public QueryProductStockBo() {
 
   }
@@ -139,7 +127,5 @@ public class QueryProductStockBo extends BaseBo<ProductStock> {
 
     this.taxPrice = NumberUtil.getNumber(dto.getTaxPrice(), 2);
     this.taxAmount = NumberUtil.getNumber(dto.getTaxAmount(), 2);
-    this.unTaxPrice = NumberUtil.getNumber(dto.getUnTaxPrice(), 2);
-    this.unTaxAmount = NumberUtil.getNumber(dto.getUnTaxAmount(), 2);
   }
 }

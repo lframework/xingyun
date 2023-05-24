@@ -33,7 +33,6 @@ import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;
 import com.lframework.xingyun.sc.entity.StockAdjustSheetDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
@@ -283,10 +282,7 @@ public class StockAdjustSheetServiceImpl extends
         addProductStockVo.setProductId(product.getId());
         addProductStockVo.setScId(data.getScId());
         addProductStockVo.setStockNum(detail.getStockNum());
-        addProductStockVo.setDefaultTaxAmount(
-            NumberUtil.getNumber(NumberUtil.mul(productPurchase.getPrice(), detail.getStockNum()),
-                2));
-        addProductStockVo.setTaxRate(product.getTaxRate());
+        addProductStockVo.setDefaultTaxPrice(productPurchase.getPrice());
         addProductStockVo.setCreateTime(now);
         addProductStockVo.setBizId(data.getId());
         addProductStockVo.setBizDetailId(detail.getId());
@@ -299,8 +295,6 @@ public class StockAdjustSheetServiceImpl extends
         subProductStockVo.setProductId(product.getId());
         subProductStockVo.setScId(data.getScId());
         subProductStockVo.setStockNum(detail.getStockNum());
-        // subProductStockVo.setTaxAmount();
-        subProductStockVo.setTaxRate(product.getTaxRate());
         subProductStockVo.setCreateTime(now);
         subProductStockVo.setBizId(data.getId());
         subProductStockVo.setBizDetailId(detail.getId());

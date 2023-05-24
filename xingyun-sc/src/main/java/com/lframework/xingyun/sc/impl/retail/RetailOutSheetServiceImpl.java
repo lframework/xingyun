@@ -75,6 +75,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -340,7 +341,6 @@ public class RetailOutSheetServiceImpl extends
       detailLot.setDetailId(detail.getId());
       detailLot.setOrderNum(detail.getOrderNum());
       detailLot.setCostTaxAmount(stockChange.getTaxAmount());
-      detailLot.setCostUnTaxAmount(stockChange.getUnTaxAmount());
       detailLot.setSettleStatus(detail.getSettleStatus());
       detailLot.setOrderNo(orderNo);
       retailOutSheetDetailLotService.save(detailLot);
@@ -481,10 +481,17 @@ public class RetailOutSheetServiceImpl extends
     }
 
     // 删除订单明细
-    Wrapper<RetailOutSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+    Wrapper<RetailOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
             RetailOutSheetDetail.class)
         .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
-    retailOutSheetDetailService.remove(deleteDetailWrapper);
+    List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
+    retailOutSheetDetailService.remove(queryDetailWrapper);
+
+    Wrapper<RetailOutSheetDetailLot> deleteDetailLotWrapper = Wrappers.lambdaQuery(
+        RetailOutSheetDetailLot.class).in(RetailOutSheetDetailLot::getDetailId,
+        details.stream().map(RetailOutSheetDetail::getId).collect(
+            Collectors.toList()));
+    retailOutSheetDetailLotService.remove(deleteDetailLotWrapper);
 
     // 删除订单
     getBaseMapper().deleteById(id);
@@ -631,7 +638,7 @@ public class RetailOutSheetServiceImpl extends
       detail.setTaxPrice(productVo.getTaxPrice());
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getTaxRate());
+      detail.setTaxRate(product.getSaleTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

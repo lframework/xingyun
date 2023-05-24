@@ -68,4 +68,9 @@ public interface GenerateCodeTypePool {
    * 库存调整单
    */
   GenerateCodeType STOCK_ADJUST_SHEET = GenerateCodeType.FLOW;
+
+  /**
+   * 仓库调拨单
+   */
+  GenerateCodeType SC_TRANSFER_ORDER = GenerateCodeType.FLOW;
 }

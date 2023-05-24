@@ -109,28 +109,10 @@ public class QueryProductStockLogBo extends BaseBo<ProductStockLog> {
   private BigDecimal curTaxPrice;
 
   /**
-   * 原无税成本价
-   */
-  @ApiModelProperty("原无税成本价")
-  private BigDecimal oriUnTaxPrice;
-
-  /**
-   * 现无税成本价
-   */
-  @ApiModelProperty("现无税成本价")
-  private BigDecimal curUnTaxPrice;
-
-  /**
    * 含税金额
    */
   @ApiModelProperty("含税金额")
   private BigDecimal taxAmount;
-
-  /**
-   * 无税金额
-   */
-  @ApiModelProperty("无税金额")
-  private BigDecimal unTaxAmount;
 
   /**
    * 创建人
@@ -203,10 +185,7 @@ public class QueryProductStockLogBo extends BaseBo<ProductStockLog> {
 
     this.oriTaxPrice = NumberUtil.getNumber(dto.getOriTaxPrice(), 2);
     this.curTaxPrice = NumberUtil.getNumber(dto.getCurTaxPrice(), 2);
-    this.oriUnTaxPrice = NumberUtil.getNumber(dto.getOriUnTaxPrice(), 2);
-    this.curUnTaxPrice = NumberUtil.getNumber(dto.getCurUnTaxPrice(), 2);
     this.taxAmount = NumberUtil.getNumber(dto.getTaxAmount(), 2);
-    this.unTaxAmount = NumberUtil.getNumber(dto.getUnTaxAmount(), 2);
 
     this.bizType = dto.getBizType().getCode();
   }

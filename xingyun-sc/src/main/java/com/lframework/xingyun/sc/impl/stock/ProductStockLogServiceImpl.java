@@ -64,11 +64,8 @@ public class ProductStockLogServiceImpl extends
     record.setCurStockNum(vo.getCurStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());
     record.setCurTaxPrice(vo.getCurTaxPrice());
-    record.setOriUnTaxPrice(vo.getOriUnTaxPrice());
-    record.setCurUnTaxPrice(vo.getCurUnTaxPrice());
     record.setStockNum(vo.getStockNum());
     record.setTaxAmount(vo.getTaxAmount());
-    record.setUnTaxAmount(vo.getUnTaxAmount());
     if (!StringUtil.isBlank(vo.getCreateBy())) {
       record.setCreateBy(vo.getCreateBy());
     }
@@ -102,11 +99,8 @@ public class ProductStockLogServiceImpl extends
     record.setCurStockNum(vo.getCurStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());
     record.setCurTaxPrice(vo.getCurTaxPrice());
-    record.setOriUnTaxPrice(vo.getOriUnTaxPrice());
-    record.setCurUnTaxPrice(vo.getCurUnTaxPrice());
     record.setStockNum(-Math.abs(vo.getStockNum()));
     record.setTaxAmount(vo.getTaxAmount().abs().negate());
-    record.setUnTaxAmount(vo.getUnTaxAmount().abs().negate());
     if (!StringUtil.isBlank(vo.getCreateBy())) {
       record.setCreateBy(vo.getCreateBy());
     }
@@ -140,11 +134,8 @@ public class ProductStockLogServiceImpl extends
     record.setCurStockNum(vo.getOriStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());
     record.setCurTaxPrice(vo.getCurTaxPrice());
-    record.setOriUnTaxPrice(vo.getOriUnTaxPrice());
-    record.setCurUnTaxPrice(vo.getCurUnTaxPrice());
     record.setStockNum(0);
     record.setTaxAmount(vo.getTaxAmount());
-    record.setUnTaxAmount(vo.getUnTaxAmount());
     if (!StringUtil.isBlank(vo.getCreateBy())) {
       record.setCreateBy(vo.getCreateBy());
     }

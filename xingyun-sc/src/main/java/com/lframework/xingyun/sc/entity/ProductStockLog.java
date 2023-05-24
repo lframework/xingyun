@@ -62,16 +62,6 @@ public class ProductStockLog extends BaseEntity implements BaseDto {
   private BigDecimal curTaxPrice;
 
   /**
-   * 原无税成本价
-   */
-  private BigDecimal oriUnTaxPrice;
-
-  /**
-   * 现无税成本价
-   */
-  private BigDecimal curUnTaxPrice;
-
-  /**
    * 变动库存数量
    */
   private Integer stockNum;
@@ -80,11 +70,6 @@ public class ProductStockLog extends BaseEntity implements BaseDto {
    * 变动含税金额
    */
   private BigDecimal taxAmount;
-
-  /**
-   * 变动无税金额
-   */
-  private BigDecimal unTaxAmount;
 
   /**
    * 创建人ID 新增时赋值

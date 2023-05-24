@@ -47,13 +47,6 @@ public class SubProductStockVo implements BaseVo, Serializable {
   private BigDecimal taxAmount;
 
   /**
-   * 税率（%）
-   */
-  @ApiModelProperty("税率（%）")
-  @Min(message = "税率（%）不能小于0！", value = 0)
-  private BigDecimal taxRate;
-
-  /**
    * 出库时间
    */
   @ApiModelProperty("出库时间")

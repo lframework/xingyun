@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.ScTransferOrderDetailMapper">
+  <update id="receive">
+    UPDATE tbl_sc_transfer_order_detail SET receive_num = receive_num + #{receiveNum}
+    WHERE order_id = #{orderId}
+    AND product_id = #{productId}
+    AND transfer_num - receive_num >= #{receiveNum}
+  </update>
+
+  <select id="countUnReceive" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM tbl_sc_transfer_order_detail
+    WHERE order_id = #{orderId}
+    AND transfer_num > receive_num
+  </select>
+</mapper>

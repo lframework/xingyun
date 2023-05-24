@@ -89,7 +89,7 @@
         <result column="spec" property="spec"/>
         <result column="unit" property="unit"/>
         <result column="retail_price" property="retailPrice"/>
-        <result column="retail_tax_rate" property="taxRate"/>
+        <result column="sale_tax_rate" property="taxRate"/>
         <result column="available" property="available"/>
     </resultMap>
 

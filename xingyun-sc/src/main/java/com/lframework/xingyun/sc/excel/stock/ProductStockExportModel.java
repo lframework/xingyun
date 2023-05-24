@@ -76,18 +76,6 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
   @ExcelProperty("含税金额")
   private BigDecimal taxAmount;
 
-  /**
-   * 无税价格
-   */
-  @ExcelProperty("无税价格")
-  private BigDecimal unTaxPrice;
-
-  /**
-   * 无税金额
-   */
-  @ExcelProperty("无税金额")
-  private BigDecimal unTaxAmount;
-
   public ProductStockExportModel() {
 
   }
@@ -130,7 +118,5 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
     this.setStockNum(dto.getStockNum());
     this.setTaxPrice(NumberUtil.getNumber(dto.getTaxPrice(), 2));
     this.setTaxAmount(NumberUtil.getNumber(dto.getTaxAmount(), 2));
-    this.setUnTaxPrice(NumberUtil.getNumber(dto.getUnTaxPrice(), 2));
-    this.setUnTaxAmount(NumberUtil.getNumber(dto.getUnTaxAmount(), 2));
   }
 }

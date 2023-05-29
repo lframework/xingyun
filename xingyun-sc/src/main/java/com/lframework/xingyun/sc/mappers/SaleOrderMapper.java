@@ -73,7 +73,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @return
    */
   List<SaleProductDto> querySaleByCondition(
-      @Param("condition") String condition, @Param("dataPermission") String dataPermission);
+      @Param("condition") String condition, @Param("isReturn") Boolean isReturn, @Param("dataPermission") String dataPermission);
 
   /**
    * 查询可销售商品信息

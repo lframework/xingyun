@@ -313,6 +313,9 @@
             OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
             OR g.external_code LIKE CONCAT('%', #{condition}, '%')
             )
+            <if test="isReturn != null and isReturn">
+                AND g.product_type = 1
+            </if>
             AND g.available = TRUE
             AND ${dataPermission}
         </where>
@@ -335,6 +338,9 @@
                 </if>
                 <if test="vo.categoryId != null and vo.categoryId != ''">
                     AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+                <if test="vo.isReturn != null and vo.isReturn">
+                    AND g.product_type = 1
                 </if>
             </if>
             AND g.available = TRUE

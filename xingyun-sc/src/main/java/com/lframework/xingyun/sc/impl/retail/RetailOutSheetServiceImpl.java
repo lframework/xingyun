@@ -629,14 +629,14 @@ public class RetailOutSheetServiceImpl extends
 
   @Override
   public PageResult<RetailProductDto> queryRetailByCondition(Integer pageIndex, Integer pageSize,
-      String condition) {
+      String condition, Boolean isReturn) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition,
+    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition, isReturn,
         DataPermissionHandler.getDataPermission(
             SysDataPermissionDataPermissionType.PRODUCT,
             Arrays.asList("product", "brand", "category"),

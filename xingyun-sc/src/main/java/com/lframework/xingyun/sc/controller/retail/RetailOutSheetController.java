@@ -374,7 +374,11 @@ public class RetailOutSheetController extends DefaultBaseController {
       "retail:return:modify"})
   @GetMapping("/product/search")
   public InvokeResult<List<RetailProductBo>> searchRetailProducts(
-      @NotBlank(message = "仓库ID不能为空！") String scId, String condition) {
+      @NotBlank(message = "仓库ID不能为空！") String scId, String condition, Boolean isReturn) {
+
+    if (isReturn == null) {
+      isReturn = false;
+    }
 
     if (StringUtil.isBlank(condition)) {
       return InvokeResultBuilder.success(CollectionUtil.emptyList());
@@ -382,7 +386,7 @@ public class RetailOutSheetController extends DefaultBaseController {
 
     PageResult<RetailProductDto> pageResult = retailOutSheetService.queryRetailByCondition(
         getPageIndex(),
-        getPageSize(), condition);
+        getPageSize(), condition, isReturn);
     List<RetailProductBo> results = CollectionUtil.emptyList();
     List<RetailProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {

@@ -147,7 +147,7 @@ public interface SaleOrderService extends BaseMpService<SaleOrder> {
    * @param condition
    * @return
    */
-  PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize, String condition);
+  PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize, String condition, Boolean isReturn);
 
   /**
    * 查询可销售商品信息

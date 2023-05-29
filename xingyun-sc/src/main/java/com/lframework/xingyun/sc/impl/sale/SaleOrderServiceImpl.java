@@ -544,7 +544,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
   @Override
   public PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize,
-      String condition) {
+      String condition, Boolean isReturn) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
@@ -552,6 +552,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     PageHelperUtil.startPage(pageIndex, pageSize);
 
     List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition,
+        isReturn,
         DataPermissionHandler.getDataPermission(
             SysDataPermissionDataPermissionType.PRODUCT,
             Arrays.asList("product", "brand", "category"),

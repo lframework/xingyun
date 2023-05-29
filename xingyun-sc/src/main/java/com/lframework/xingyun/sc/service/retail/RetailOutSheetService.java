@@ -157,7 +157,7 @@ public interface RetailOutSheetService extends BaseMpService<RetailOutSheet> {
    * @return
    */
   PageResult<RetailProductDto> queryRetailByCondition(Integer pageIndex, Integer pageSize,
-      String condition);
+      String condition, Boolean isReturn);
 
   /**
    * 查询可零售商品信息

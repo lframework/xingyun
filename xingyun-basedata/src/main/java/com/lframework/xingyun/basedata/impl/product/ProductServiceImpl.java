@@ -7,6 +7,7 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
@@ -20,14 +21,18 @@ import com.lframework.starter.mybatis.utils.OpLogUtil;
 import com.lframework.starter.mybatis.utils.PageHelperUtil;
 import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.entity.ProductPropertyItem;
 import com.lframework.xingyun.basedata.enums.ColumnType;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.mappers.ProductMapper;
+import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyItemService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
@@ -37,6 +42,7 @@ import com.lframework.xingyun.basedata.service.product.ProductSaleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.ProductPropertyRelationVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryProductSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.UpdateProductVo;
 import com.lframework.xingyun.basedata.vo.product.property.realtion.CreateProductPropertyRelationVo;
@@ -47,6 +53,7 @@ import com.lframework.xingyun.basedata.vo.product.retail.UpdateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
 import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -83,6 +90,9 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
   @Autowired
   private ProductPropertyRelationService productPropertyRelationService;
 
+  @Autowired
+  private ProductBundleService productBundleService;
+
   @Override
   public PageResult<Product> query(Integer pageIndex, Integer pageSize, QueryProductVo vo) {
 
@@ -101,6 +111,21 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     return getBaseMapper().query(vo, DataPermissionHandler.getDataPermission(
         SysDataPermissionDataPermissionType.PRODUCT, Arrays.asList("product", "brand", "category"),
         Arrays.asList("g", "b", "c")));
+  }
+
+  @Override
+  public PageResult<Product> selector(Integer pageIndex, Integer pageSize,
+      QueryProductSelectorVo vo) {
+
+    Assert.greaterThanZero(pageIndex);
+    Assert.greaterThanZero(pageSize);
+
+    PageHelperUtil.startPage(pageIndex, pageSize);
+    List<Product> datas = getBaseMapper().selector(vo, DataPermissionHandler.getDataPermission(
+        SysDataPermissionDataPermissionType.PRODUCT, Arrays.asList("product", "brand", "category"),
+        Arrays.asList("g", "b", "c")));
+
+    return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
@@ -196,12 +221,48 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       data.setUnit(vo.getUnit());
     }
 
+    data.setProductType(EnumUtil.getByCode(ProductType.class, vo.getProductType()));
     data.setTaxRate(vo.getTaxRate());
     data.setSaleTaxRate(vo.getSaleTaxRate());
 
     data.setAvailable(Boolean.TRUE);
 
     getBaseMapper().insert(data);
+
+    // 组合商品
+    if (data.getProductType() == ProductType.BUNDLE) {
+      if (CollectionUtil.isEmpty(vo.getProductBundles())) {
+        throw new DefaultClientException("单品数据不能为空！");
+      }
+
+      BigDecimal salePrice = vo.getProductBundles().stream().map(
+          productBundleVo -> NumberUtil.mul(productBundleVo.getBundleNum(),
+              productBundleVo.getSalePrice())).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
+      if (!NumberUtil.equal(vo.getSalePrice(), salePrice)) {
+        throw new DefaultClientException("单品的销售价设置错误！");
+      }
+
+      BigDecimal retailPrice = vo.getProductBundles().stream().map(
+          productBundleVo -> NumberUtil.mul(productBundleVo.getBundleNum(),
+              productBundleVo.getRetailPrice())).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
+      if (!NumberUtil.equal(vo.getRetailPrice(), retailPrice)) {
+        throw new DefaultClientException("单品的零售价设置错误！");
+      }
+
+      List<ProductBundle> productBundles = vo.getProductBundles().stream().map(productBundleVo -> {
+        ProductBundle productBundle = new ProductBundle();
+        productBundle.setId(IdUtil.getId());
+        productBundle.setMainProductId(data.getId());
+        productBundle.setProductId(productBundleVo.getProductId());
+        productBundle.setBundleNum(productBundleVo.getBundleNum());
+        productBundle.setSalePrice(productBundleVo.getSalePrice());
+        productBundle.setRetailPrice(productBundleVo.getRetailPrice());
+
+        return productBundle;
+      }).collect(Collectors.toList());
+
+      productBundleService.saveBatch(productBundles);
+    }
 
     if (vo.getPurchasePrice() == null) {
       throw new DefaultClientException("采购价不能为空！");
@@ -333,6 +394,45 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
 
     getBaseMapper().update(updateWrapper);
 
+    // 组合商品
+    if (data.getProductType() == ProductType.BUNDLE) {
+      if (CollectionUtil.isEmpty(vo.getProductBundles())) {
+        throw new DefaultClientException("单品数据不能为空！");
+      }
+
+      BigDecimal salePrice = vo.getProductBundles().stream().map(
+          productBundleVo -> NumberUtil.mul(productBundleVo.getBundleNum(),
+              productBundleVo.getSalePrice())).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
+      if (!NumberUtil.equal(vo.getSalePrice(), salePrice)) {
+        throw new DefaultClientException("单品的销售价设置错误！");
+      }
+
+      BigDecimal retailPrice = vo.getProductBundles().stream().map(
+          productBundleVo -> NumberUtil.mul(productBundleVo.getBundleNum(),
+              productBundleVo.getRetailPrice())).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
+      if (!NumberUtil.equal(vo.getRetailPrice(), retailPrice)) {
+        throw new DefaultClientException("单品的零售价设置错误！");
+      }
+
+      Wrapper<ProductBundle> deleteBundleWrapper = Wrappers.lambdaQuery(ProductBundle.class)
+          .eq(ProductBundle::getMainProductId, data.getId());
+      productBundleService.remove(deleteBundleWrapper);
+
+      List<ProductBundle> productBundles = vo.getProductBundles().stream().map(productBundleVo -> {
+        ProductBundle productBundle = new ProductBundle();
+        productBundle.setId(IdUtil.getId());
+        productBundle.setMainProductId(data.getId());
+        productBundle.setProductId(productBundleVo.getProductId());
+        productBundle.setBundleNum(productBundleVo.getBundleNum());
+        productBundle.setSalePrice(productBundleVo.getSalePrice());
+        productBundle.setRetailPrice(productBundleVo.getRetailPrice());
+
+        return productBundle;
+      }).collect(Collectors.toList());
+
+      productBundleService.saveBatch(productBundles);
+    }
+
     productPropertyRelationService.deleteByProductId(data.getId());
     if (!CollectionUtil.isEmpty(vo.getProperties())) {
       // 商品和商品属性的关系
@@ -415,7 +515,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
   }
 
   @Override
-  public List<Product> getByCategoryIds(List<String> categoryIds) {
+  public List<Product> getByCategoryIds(List<String> categoryIds, Integer productType) {
 
     if (CollectionUtil.isEmpty(categoryIds)) {
       return CollectionUtil.emptyList();
@@ -432,19 +532,19 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
 
     children = children.stream().distinct().collect(Collectors.toList());
 
-    List<Product> datas = getBaseMapper().getByCategoryIds(children);
+    List<Product> datas = getBaseMapper().getByCategoryIds(children, productType);
 
     return datas;
   }
 
   @Override
-  public List<Product> getByBrandIds(List<String> brandIds) {
+  public List<Product> getByBrandIds(List<String> brandIds, Integer productType) {
 
     if (CollectionUtil.isEmpty(brandIds)) {
       return CollectionUtil.emptyList();
     }
 
-    return getBaseMapper().getByBrandIds(brandIds);
+    return getBaseMapper().getByBrandIds(brandIds, productType);
   }
 
   @CacheEvict(value = Product.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")

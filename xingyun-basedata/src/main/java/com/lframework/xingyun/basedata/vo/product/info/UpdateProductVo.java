@@ -1,7 +1,9 @@
 package com.lframework.xingyun.basedata.vo.product.info;
 
 import com.lframework.starter.web.components.validation.IsCode;
+import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -88,20 +90,33 @@ public class UpdateProductVo implements BaseVo, Serializable {
   /**
    * 进项税率（%）
    */
-  @ApiModelProperty(value = "进项税率（%）", required = true)
-  @NotNull(message = "进项税率（%）不能为空！")
+  @ApiModelProperty(value = "进项税率（%）")
   @Min(value = 0, message = "进项税率（%）不允许小于0！")
   @Digits(integer = 10, fraction = 0, message = "进项税率（%）必须为整数！")
-  private BigDecimal taxRate;
+  private BigDecimal taxRate = BigDecimal.ZERO;
 
   /**
    * 销项税率（%）
    */
-  @ApiModelProperty(value = "销项税率（%）", required = true)
-  @NotNull(message = "销项税率（%）不能为空！")
+  @ApiModelProperty(value = "销项税率（%）")
   @Min(value = 0, message = "销项税率（%）不允许小于0！")
   @Digits(integer = 10, fraction = 0, message = "销项税率（%）必须为整数！")
-  private BigDecimal saleTaxRate;
+  private BigDecimal saleTaxRate = BigDecimal.ZERO;
+
+  /**
+   * 商品类型
+   */
+  @ApiModelProperty(value = "商品类型", required = true)
+  @NotNull(message = "商品类型不能为空！")
+  @IsEnum(message = "商品类型格式错误！", enumClass = ProductType.class)
+  private Integer productType;
+
+  /**
+   * 单品
+   */
+  @ApiModelProperty(value = "单品")
+  @Valid
+  private List<ProductBundleVo> productBundles;
 
   /**
    * 商品属性
@@ -114,7 +129,7 @@ public class UpdateProductVo implements BaseVo, Serializable {
    * 采购价
    */
   @ApiModelProperty("采购价")
-  private BigDecimal purchasePrice;
+  private BigDecimal purchasePrice = BigDecimal.ZERO;
 
   /**
    * 销售价

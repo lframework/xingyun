@@ -146,6 +146,7 @@ CREATE TABLE `base_data_product`  (
   `external_code` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '外部编号',
   `category_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '类目ID',
   `brand_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '品牌ID',
+  `product_type` tinyint(3) NOT NULL DEFAULT 1 COMMENT '商品类型',
   `tax_rate` decimal(16, 2) NOT NULL COMMENT '进项税率（%）',
   `sale_tax_rate` decimal(16, 2) NOT NULL COMMENT '销项税率',
   `spec` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '规格',
@@ -191,6 +192,31 @@ CREATE TABLE `base_data_product_brand`  (
 
 -- ----------------------------
 -- Records of base_data_product_brand
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for base_data_product_bundle
+-- ----------------------------
+DROP TABLE IF EXISTS `base_data_product_bundle`;
+CREATE TABLE `base_data_product_bundle`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `main_product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '主商品ID',
+  `product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单品ID',
+  `bundle_num` int(11) NOT NULL COMMENT '包含数量',
+  `sale_price` decimal(24, 2) NOT NULL COMMENT '销售价',
+  `retail_price` decimal(24, 2) NOT NULL COMMENT '零售价',
+  `create_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人',
+  `create_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人',
+  `update_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人ID',
+  `update_time` datetime NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `main_product_id`(`main_product_id`, `product_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '组合商品' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of base_data_product_bundle
 -- ----------------------------
 
 -- ----------------------------
@@ -6199,6 +6225,7 @@ CREATE TABLE `tbl_retail_out_sheet_detail`  (
   `order_no` int(11) NOT NULL COMMENT '排序编号',
   `settle_status` tinyint(3) NOT NULL DEFAULT 0 COMMENT '结算状态',
   `return_num` int(11) NOT NULL DEFAULT 0 COMMENT '已退货数量',
+  `ori_bundle_detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '组合商品原始明细ID',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `sheet_id`(`sheet_id`) USING BTREE,
   INDEX `product_id`(`product_id`) USING BTREE
@@ -6206,6 +6233,31 @@ CREATE TABLE `tbl_retail_out_sheet_detail`  (
 
 -- ----------------------------
 -- Records of tbl_retail_out_sheet_detail
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for tbl_retail_out_sheet_detail_bundle
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_retail_out_sheet_detail_bundle`;
+CREATE TABLE `tbl_retail_out_sheet_detail_bundle`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `sheet_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '出库单ID',
+  `detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '明细ID',
+  `main_product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组合商品ID',
+  `order_num` int(11) NOT NULL DEFAULT 0 COMMENT '组合商品数量',
+  `product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单品ID',
+  `product_order_num` int(11) NOT NULL COMMENT '单品数量',
+  `product_ori_price` decimal(16, 2) NOT NULL COMMENT '单品原价',
+  `product_tax_price` decimal(16, 2) NOT NULL COMMENT '单品含税价格',
+  `product_tax_rate` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单品税率',
+  `product_detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '单品明细ID',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `sheet_id`(`sheet_id`, `product_detail_id`) USING BTREE,
+  INDEX `detail_id`(`detail_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '零售出库单组合商品明细' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tbl_retail_out_sheet_detail_bundle
 -- ----------------------------
 
 -- ----------------------------
@@ -6365,6 +6417,7 @@ CREATE TABLE `tbl_sale_order_detail`  (
   `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
   `order_no` int(11) NOT NULL COMMENT '排序编号',
   `out_num` int(11) NOT NULL DEFAULT 0 COMMENT '已出库数量',
+  `ori_bundle_detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '组合商品原始明细ID',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `order_id`(`order_id`) USING BTREE,
   INDEX `product_id`(`product_id`) USING BTREE
@@ -6372,6 +6425,31 @@ CREATE TABLE `tbl_sale_order_detail`  (
 
 -- ----------------------------
 -- Records of tbl_sale_order_detail
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for tbl_sale_order_detail_bundle
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_sale_order_detail_bundle`;
+CREATE TABLE `tbl_sale_order_detail_bundle`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `order_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '销售单ID',
+  `detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '明细ID',
+  `main_product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组合商品ID',
+  `order_num` int(11) NOT NULL DEFAULT 0 COMMENT '组合商品数量',
+  `product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单品ID',
+  `product_order_num` int(11) NOT NULL COMMENT '单品数量',
+  `product_ori_price` decimal(16, 2) NOT NULL COMMENT '单品原价',
+  `product_tax_price` decimal(16, 2) NOT NULL COMMENT '单品含税价格',
+  `product_tax_rate` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单品税率',
+  `product_detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '单品明细ID',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `order_id`(`order_id`, `product_detail_id`) USING BTREE,
+  INDEX `detail_id`(`detail_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '销售单组合商品明细' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tbl_sale_order_detail_bundle
 -- ----------------------------
 
 -- ----------------------------
@@ -6433,6 +6511,7 @@ CREATE TABLE `tbl_sale_out_sheet_detail`  (
   `order_no` int(11) NOT NULL COMMENT '排序编号',
   `settle_status` tinyint(3) NOT NULL DEFAULT 0 COMMENT '结算状态',
   `sale_order_detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '销售订单明细ID',
+  `ori_bundle_detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '组合商品原始明细ID',
   `return_num` int(11) NOT NULL DEFAULT 0 COMMENT '已退货数量',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `sheet_id`(`sheet_id`) USING BTREE,
@@ -6442,6 +6521,31 @@ CREATE TABLE `tbl_sale_out_sheet_detail`  (
 
 -- ----------------------------
 -- Records of tbl_sale_out_sheet_detail
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for tbl_sale_out_sheet_detail_bundle
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_sale_out_sheet_detail_bundle`;
+CREATE TABLE `tbl_sale_out_sheet_detail_bundle`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `sheet_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '出库单ID',
+  `detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '明细ID',
+  `main_product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组合商品ID',
+  `order_num` int(11) NOT NULL DEFAULT 0 COMMENT '组合商品数量',
+  `product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单品ID',
+  `product_order_num` int(11) NOT NULL COMMENT '单品数量',
+  `product_ori_price` decimal(16, 2) NOT NULL COMMENT '单品原价',
+  `product_tax_price` decimal(16, 2) NOT NULL COMMENT '单品含税价格',
+  `product_tax_rate` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单品税率',
+  `product_detail_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '单品明细ID',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `sheet_id`(`sheet_id`, `product_detail_id`) USING BTREE,
+  INDEX `detail_id`(`detail_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '销售出库单组合商品明细' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tbl_sale_out_sheet_detail_bundle
 -- ----------------------------
 
 -- ----------------------------
@@ -6686,7 +6790,7 @@ CREATE TABLE `tbl_stock_adjust_sheet`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `code`(`code`) USING BTREE,
   INDEX `sc_id`(`sc_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '库存调整单' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '库存调整单' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tbl_stock_adjust_sheet
@@ -6705,7 +6809,7 @@ CREATE TABLE `tbl_stock_adjust_sheet_detail`  (
   `order_no` int(11) NOT NULL COMMENT '排序',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `sheet_id`(`sheet_id`, `product_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '库存调整单明细' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '库存调整单明细' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tbl_stock_adjust_sheet_detail

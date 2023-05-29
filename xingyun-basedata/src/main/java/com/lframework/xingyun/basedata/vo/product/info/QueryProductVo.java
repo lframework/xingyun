@@ -1,7 +1,9 @@
 package com.lframework.xingyun.basedata.vo.product.info;
 
+import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.starter.web.vo.PageVo;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -47,6 +49,13 @@ public class QueryProductVo extends PageVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("类目ID")
   private String categoryId;
+
+  /**
+   * 商品类型
+   */
+  @ApiModelProperty("商品类型")
+  @IsEnum(message = "商品类型格式错误！", enumClass = ProductType.class)
+  private Integer productType;
 
   /**
    * 创建起始时间

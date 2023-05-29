@@ -43,6 +43,7 @@
         <result column="settle_status" property="settleStatus"/>
         <collection property="details" javaType="java.util.ArrayList" ofType="com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto$SheetDetailDto">
             <id column="detail_id" property="id"/>
+            <result column="detail_main_product_id" property="mainProductId"/>
             <result column="detail_product_id" property="productId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
@@ -136,6 +137,7 @@
             s.refuse_reason,
             s.settle_status,
             d.id AS detail_id,
+            b.main_product_id AS detail_main_product_id,
             d.product_id AS detail_product_id,
             d.order_num AS detail_order_num,
             d.ori_price AS detail_ori_price,
@@ -148,6 +150,7 @@
             d.settle_status AS detail_settle_status
         FROM tbl_retail_out_sheet AS s
         LEFT JOIN tbl_retail_out_sheet_detail AS d ON d.sheet_id = s.id
+        LEFT JOIN tbl_retail_out_sheet_detail_bundle AS b ON b.sheet_id = s.id AND b.product_detail_id = d.id
     </sql>
 
     <sql id="RetailProductDto_sql">

@@ -87,4 +87,9 @@ public class RetailOutSheetDetail extends BaseEntity implements BaseDto {
    * 已退货数量
    */
   private Integer returnNum;
+
+  /**
+   * 组合商品原始明细ID
+   */
+  private String oriBundleDetailId;
 }

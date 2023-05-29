@@ -29,14 +29,18 @@ import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.member.MemberService;
+import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailOutSheetEvent;
+import com.lframework.xingyun.core.utils.SplitNumberUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
@@ -46,13 +50,16 @@ import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
+import com.lframework.xingyun.sc.entity.RetailOutSheetDetailBundle;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
+import com.lframework.xingyun.sc.entity.SaleOutSheetDetailBundle;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.RetailOutSheetMapper;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.retail.RetailConfigService;
+import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailBundleService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
@@ -74,7 +81,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,6 +99,12 @@ public class RetailOutSheetServiceImpl extends
 
   @Autowired
   private RetailOutSheetDetailLotService retailOutSheetDetailLotService;
+
+  @Autowired
+  private RetailOutSheetDetailBundleService retailOutSheetDetailBundleService;
+
+  @Autowired
+  private ProductBundleService productBundleService;
 
   @Autowired
   private StoreCenterService storeCenterService;
@@ -248,6 +263,11 @@ public class RetailOutSheetServiceImpl extends
         .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
     retailOutSheetDetailService.remove(deleteDetailWrapper);
 
+    // 删除组合商品信息
+    Wrapper<RetailOutSheetDetailBundle> deleteDetailBundleWrapper = Wrappers.lambdaQuery(
+        RetailOutSheetDetailBundle.class).eq(RetailOutSheetDetailBundle::getSheetId, sheet.getId());
+    retailOutSheetDetailBundleService.remove(deleteDetailBundleWrapper);
+
     this.create(sheet, vo);
 
     sheet.setStatus(RetailOutSheetStatus.CREATED);
@@ -322,33 +342,112 @@ public class RetailOutSheetServiceImpl extends
         .eq(RetailOutSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(RetailOutSheetDetail::getOrderNo);
     List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
+
+    int totalNum = 0;
+    int giftNum = 0;
+    BigDecimal totalAmount = BigDecimal.ZERO;
+
     int orderNo = 1;
     for (RetailOutSheetDetail detail : details) {
-      SubProductStockVo subProductStockVo = new SubProductStockVo();
-      subProductStockVo.setProductId(detail.getProductId());
-      subProductStockVo.setScId(sheet.getScId());
-      subProductStockVo.setStockNum(detail.getOrderNum());
-      subProductStockVo.setBizId(sheet.getId());
-      subProductStockVo.setBizDetailId(detail.getId());
-      subProductStockVo.setBizCode(sheet.getCode());
-      subProductStockVo.setBizType(ProductStockBizType.RETAIL.getCode());
+      boolean isGift = detail.getIsGift();
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.mul(detail.getTaxPrice(), detail.getOrderNum()));
 
-      ProductStockChangeDto stockChange = productStockService.subStock(subProductStockVo);
+      Product product = productService.findById(detail.getProductId());
+      if (product.getProductType() == ProductType.NORMAL) {
+        SubProductStockVo subProductStockVo = new SubProductStockVo();
+        subProductStockVo.setProductId(detail.getProductId());
+        subProductStockVo.setScId(sheet.getScId());
+        subProductStockVo.setStockNum(detail.getOrderNum());
+        subProductStockVo.setBizId(sheet.getId());
+        subProductStockVo.setBizDetailId(detail.getId());
+        subProductStockVo.setBizCode(sheet.getCode());
+        subProductStockVo.setBizType(ProductStockBizType.RETAIL.getCode());
 
-      RetailOutSheetDetailLot detailLot = new RetailOutSheetDetailLot();
+        ProductStockChangeDto stockChange = productStockService.subStock(subProductStockVo);
 
-      detailLot.setId(IdUtil.getId());
-      detailLot.setDetailId(detail.getId());
-      detailLot.setOrderNum(detail.getOrderNum());
-      detailLot.setCostTaxAmount(stockChange.getTaxAmount());
-      detailLot.setSettleStatus(detail.getSettleStatus());
-      detailLot.setOrderNo(orderNo);
-      retailOutSheetDetailLotService.save(detailLot);
+        RetailOutSheetDetailLot detailLot = new RetailOutSheetDetailLot();
 
+        detailLot.setId(IdUtil.getId());
+        detailLot.setDetailId(detail.getId());
+        detailLot.setOrderNum(detail.getOrderNum());
+        detailLot.setCostTaxAmount(stockChange.getTaxAmount());
+        detailLot.setSettleStatus(detail.getSettleStatus());
+        detailLot.setOrderNo(orderNo);
+        retailOutSheetDetailLotService.save(detailLot);
+
+        if (isGift) {
+          giftNum += detail.getOrderNum();
+        } else {
+          totalNum += detail.getOrderNum();
+        }
+      } else {
+        Wrapper<RetailOutSheetDetailBundle> queryBundleWrapper = Wrappers.lambdaQuery(
+                RetailOutSheetDetailBundle.class)
+            .eq(RetailOutSheetDetailBundle::getSheetId, sheet.getId())
+            .eq(RetailOutSheetDetailBundle::getDetailId, detail.getId());
+        List<RetailOutSheetDetailBundle> retailOutSheetDetailBundles = retailOutSheetDetailBundleService.list(
+            queryBundleWrapper);
+        Assert.notEmpty(retailOutSheetDetailBundles);
+
+        for (RetailOutSheetDetailBundle retailOutSheetDetailBundle : retailOutSheetDetailBundles) {
+          RetailOutSheetDetail newDetail = new RetailOutSheetDetail();
+          newDetail.setId(IdUtil.getId());
+          newDetail.setSheetId(sheet.getId());
+          newDetail.setProductId(retailOutSheetDetailBundle.getProductId());
+          newDetail.setOrderNum(retailOutSheetDetailBundle.getProductOrderNum());
+          newDetail.setOriPrice(retailOutSheetDetailBundle.getProductOriPrice());
+          newDetail.setTaxPrice(retailOutSheetDetailBundle.getProductTaxPrice());
+          newDetail.setDiscountRate(detail.getDiscountRate());
+          newDetail.setIsGift(detail.getIsGift());
+          newDetail.setTaxRate(retailOutSheetDetailBundle.getProductTaxRate());
+          newDetail.setDescription(detail.getDescription());
+          newDetail.setOrderNo(orderNo++);
+          newDetail.setSettleStatus(detail.getSettleStatus());
+          newDetail.setOriBundleDetailId(detail.getId());
+
+          SubProductStockVo subProductStockVo = new SubProductStockVo();
+          subProductStockVo.setProductId(newDetail.getProductId());
+          subProductStockVo.setScId(sheet.getScId());
+          subProductStockVo.setStockNum(newDetail.getOrderNum());
+          subProductStockVo.setBizId(sheet.getId());
+          subProductStockVo.setBizDetailId(newDetail.getId());
+          subProductStockVo.setBizCode(sheet.getCode());
+          subProductStockVo.setBizType(ProductStockBizType.RETAIL.getCode());
+
+          ProductStockChangeDto stockChange = productStockService.subStock(subProductStockVo);
+
+          RetailOutSheetDetailLot detailLot = new RetailOutSheetDetailLot();
+
+          detailLot.setId(IdUtil.getId());
+          detailLot.setDetailId(newDetail.getId());
+          detailLot.setOrderNum(newDetail.getOrderNum());
+          detailLot.setCostTaxAmount(stockChange.getTaxAmount());
+          detailLot.setSettleStatus(newDetail.getSettleStatus());
+          detailLot.setOrderNo(orderNo);
+          retailOutSheetDetailLotService.save(detailLot);
+
+          retailOutSheetDetailService.save(newDetail);
+          retailOutSheetDetailService.removeById(detail.getId());
+
+          retailOutSheetDetailBundle.setProductDetailId(newDetail.getId());
+          retailOutSheetDetailBundleService.updateById(retailOutSheetDetailBundle);
+
+          if (isGift) {
+            giftNum += newDetail.getOrderNum();
+          } else {
+            totalNum += newDetail.getOrderNum();
+          }
+        }
+      }
       orderNo++;
-
-      retailOutSheetDetailService.updateById(detail);
     }
+
+    // 这里需要重新统计明细信息，因为明细发生变动了
+    Wrapper<RetailOutSheet> updateWrapper = Wrappers.lambdaUpdate(RetailOutSheet.class)
+        .set(RetailOutSheet::getTotalNum, totalNum).set(RetailOutSheet::getTotalGiftNum, giftNum)
+        .set(RetailOutSheet::getTotalAmount, totalAmount).eq(RetailOutSheet::getId, sheet.getId());
+    this.update(updateWrapper);
 
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
@@ -486,6 +585,11 @@ public class RetailOutSheetServiceImpl extends
         .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
     List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
     retailOutSheetDetailService.remove(queryDetailWrapper);
+
+    // 删除组合商品信息
+    Wrapper<RetailOutSheetDetailBundle> deleteDetailBundleWrapper = Wrappers.lambdaQuery(
+        RetailOutSheetDetailBundle.class).eq(RetailOutSheetDetailBundle::getSheetId, sheet.getId());
+    retailOutSheetDetailBundleService.remove(deleteDetailBundleWrapper);
 
     Wrapper<RetailOutSheetDetailLot> deleteDetailLotWrapper = Wrappers.lambdaQuery(
         RetailOutSheetDetailLot.class).in(RetailOutSheetDetailLot::getDetailId,
@@ -646,6 +750,44 @@ public class RetailOutSheetServiceImpl extends
       detail.setSettleStatus(this.getInitSettleStatus(member));
 
       retailOutSheetDetailService.save(detail);
+
+      // 这里处理组合商品
+      if (product.getProductType() == ProductType.BUNDLE) {
+        List<ProductBundle> productBundles = productBundleService.getByMainProductId(
+            product.getId());
+        // 构建指标项
+        Map<Object, Number> bundleWeight = new HashMap<>(productBundles.size());
+        for (ProductBundle productBundle : productBundles) {
+          bundleWeight.put(productBundle.getProductId(),
+              NumberUtil.mul(productBundle.getRetailPrice(), productBundle.getBundleNum()));
+        }
+        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxPrice(),
+            bundleWeight, 2);
+        List<RetailOutSheetDetailBundle> retailOutSheetDetailBundles = productBundles.stream()
+            .map(productBundle -> {
+              Product bundle = productService.findById(productBundle.getProductId());
+              RetailOutSheetDetailBundle retailOutSheetDetailBundle = new RetailOutSheetDetailBundle();
+              retailOutSheetDetailBundle.setId(IdUtil.getId());
+              retailOutSheetDetailBundle.setSheetId(sheet.getId());
+              retailOutSheetDetailBundle.setDetailId(detail.getId());
+              retailOutSheetDetailBundle.setMainProductId(product.getId());
+              retailOutSheetDetailBundle.setOrderNum(detail.getOrderNum());
+              retailOutSheetDetailBundle.setProductId(productBundle.getProductId());
+              retailOutSheetDetailBundle.setProductOrderNum(
+                  NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()).intValue());
+              retailOutSheetDetailBundle.setProductOriPrice(productBundle.getRetailPrice());
+              // 这里会有尾差
+              retailOutSheetDetailBundle.setProductTaxPrice(
+                  NumberUtil.getNumber(NumberUtil.div(BigDecimal.valueOf(
+                          splitPriceMap.get(productBundle.getProductId()).doubleValue()),
+                      productBundle.getBundleNum()), 2));
+              retailOutSheetDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
+
+              return retailOutSheetDetailBundle;
+            }).collect(Collectors.toList());
+
+        retailOutSheetDetailBundleService.saveBatch(retailOutSheetDetailBundles);
+      }
       orderNo++;
     }
     sheet.setTotalNum(purchaseNum);

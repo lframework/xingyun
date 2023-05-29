@@ -4,6 +4,7 @@ import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryProductSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.UpdateProductVo;
 import java.util.Collection;
@@ -25,6 +26,13 @@ public interface ProductService extends BaseMpService<Product> {
    * @return
    */
   List<Product> query(QueryProductVo vo);
+
+  /**
+   * 选择器
+   *
+   * @return
+   */
+  PageResult<Product> selector(Integer pageIndex, Integer pageSize, QueryProductSelectorVo vo);
 
   /**
    * 查询商品品种数
@@ -93,7 +101,7 @@ public interface ProductService extends BaseMpService<Product> {
    * @param categoryIds
    * @return
    */
-  List<Product> getByCategoryIds(List<String> categoryIds);
+  List<Product> getByCategoryIds(List<String> categoryIds, Integer productType);
 
   /**
    * 根据品牌ID查询
@@ -101,5 +109,5 @@ public interface ProductService extends BaseMpService<Product> {
    * @param brandIds
    * @return
    */
-  List<Product> getByBrandIds(List<String> brandIds);
+  List<Product> getByBrandIds(List<String> brandIds, Integer productType);
 }

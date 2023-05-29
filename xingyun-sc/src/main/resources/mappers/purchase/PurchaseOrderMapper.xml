@@ -304,6 +304,7 @@
             OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
             OR g.external_code LIKE CONCAT('%', #{condition}, '%')
             )
+            AND g.product_type = 1
             AND g.available = TRUE
             AND ${dataPermission}
         </where>
@@ -328,6 +329,7 @@
                     AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
                 </if>
             </if>
+            AND g.product_type = 1
             AND g.available = TRUE
             AND ${dataPermission}
         </where>

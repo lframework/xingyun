@@ -42,6 +42,7 @@
         <result column="refuse_reason" property="refuseReason"/>
         <collection property="details" javaType="java.util.ArrayList" ofType="com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto$OrderDetailDto">
             <id column="detail_id" property="id"/>
+            <result column="detail_main_product_id" property="mainProductId"/>
             <result column="detail_product_id" property="productId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
@@ -61,6 +62,7 @@
         <result column="saler_id" property="salerId"/>
         <collection property="details" ofType="com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto$DetailDto" javaType="java.util.ArrayList">
             <id column="detail_id" property="id"/>
+            <result column="detail_main_product_id" property="mainProductId"/>
             <result column="detail_product_id" property="productId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
@@ -133,6 +135,7 @@
             o.status,
             o.refuse_reason,
             d.id AS detail_id,
+            b.main_product_id AS detail_main_product_id,
             d.product_id AS detail_product_id,
             d.order_num AS detail_order_num,
             d.ori_price AS detail_ori_price,
@@ -144,6 +147,7 @@
             d.order_no AS detail_order_no
         FROM tbl_sale_order AS o
         LEFT JOIN tbl_sale_order_detail AS d ON d.order_id = o.id
+        LEFT JOIN tbl_sale_order_detail_bundle AS b ON b.order_id = o.id AND b.product_detail_id = d.id
     </sql>
 
     <sql id="SaleProductDto_sql">
@@ -254,7 +258,7 @@
     </select>
     <select id="getWithOut" resultMap="SaleOrderWithOutDto">
         SELECT
-        o.id, o.sc_id, o.customer_id, o.saler_id, d.id AS detail_id, d.product_id AS detail_product_id,
+        o.id, o.sc_id, o.customer_id, o.saler_id, d.id AS detail_id, b.main_product_id AS detail_main_product_id, d.product_id AS detail_product_id,
         d.order_num AS detail_order_num, d.ori_price AS detail_ori_price, d.tax_price AS detail_tax_price,
         d.discount_rate AS detail_discount_rate,
         d.is_gift AS detail_is_gift, d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS
@@ -263,6 +267,7 @@
         FROM tbl_sale_order AS o
         LEFT JOIN tbl_sale_order_detail AS d ON d.order_id = o.id
         <if test="requireSale">AND d.order_num > d.out_num</if>
+        LEFT JOIN tbl_sale_order_detail_bundle AS b ON b.order_id = o.id AND b.product_detail_id = d.id
         WHERE o.id = #{id}
     </select>
     <select id="queryWithOut" resultMap="SaleOrder">

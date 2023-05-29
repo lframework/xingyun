@@ -37,7 +37,7 @@
             gsl.biz_detail_id,
             gsl.biz_type
         FROM tbl_product_stock_log AS gsl
-        LEFT JOIN base_data_product AS g ON g.id = gsl.product_id
+        INNER JOIN base_data_product AS g ON g.id = gsl.product_id AND g.product_type = 1
         LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
         LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
     </sql>

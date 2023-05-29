@@ -10,8 +10,10 @@ import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.dto.UserDto;
 import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
@@ -126,6 +128,18 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
      */
     @ApiModelProperty("ID")
     private String id;
+
+    /**
+     * 组合商品ID
+     */
+    @ApiModelProperty("组合商品ID")
+    private String mainProductId;
+
+    /**
+     * 组合商品名称
+     */
+    @ApiModelProperty("组合商品名称")
+    private String mainProductName;
 
     /**
      * 商品ID
@@ -295,6 +309,13 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
       ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
           this.getScId());
       this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+
+      if (StringUtil.isNotBlank(dto.getMainProductId())) {
+        ProductService productService = ApplicationUtil.getBean(ProductService.class);
+        Product mainProduct = productService.findById(dto.getMainProductId());
+        this.mainProductId = dto.getMainProductId();
+        this.mainProductName = mainProduct.getName();
+      }
     }
   }
 }

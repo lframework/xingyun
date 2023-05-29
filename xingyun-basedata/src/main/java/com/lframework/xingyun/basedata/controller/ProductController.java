@@ -13,6 +13,7 @@ import com.lframework.xingyun.basedata.bo.product.info.QueryProductBo;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.excel.product.ProductImportListener;
 import com.lframework.xingyun.basedata.excel.product.ProductImportModel;
+import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
@@ -49,6 +50,9 @@ public class ProductController extends DefaultBaseController {
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductBundleService productBundleService;
 
   @Autowired
   private ProductPropertyRelationService productPropertyRelationService;
@@ -118,6 +122,8 @@ public class ProductController extends DefaultBaseController {
     productService.cleanCacheByKey(vo.getId());
 
     productPropertyRelationService.cleanCacheByKey(vo.getId());
+
+    productBundleService.cleanCacheByKey(vo.getId());
 
     return InvokeResultBuilder.success();
   }

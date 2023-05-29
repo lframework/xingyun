@@ -50,6 +50,11 @@ public class SaleOrderWithOutDto implements BaseDto, Serializable {
     private String id;
 
     /**
+     * 组合商品ID
+     */
+    private String mainProductId;
+
+    /**
      * 商品ID
      */
     private String productId;

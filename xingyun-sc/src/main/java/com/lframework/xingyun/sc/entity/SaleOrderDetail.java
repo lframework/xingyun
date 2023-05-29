@@ -82,5 +82,8 @@ public class SaleOrderDetail extends BaseEntity implements BaseDto {
    */
   private Integer outNum;
 
-
+  /**
+   * 组合商品原始明细ID
+   */
+  private String oriBundleDetailId;
 }

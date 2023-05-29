@@ -27,6 +27,7 @@ import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
@@ -166,6 +167,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
         // 全场盘点
         // 将所有商品添加明细
         QueryProductVo queryProductVo = new QueryProductVo();
+        queryProductVo.setAvailable(Boolean.TRUE);
+        queryProductVo.setProductType(ProductType.NORMAL.getCode());
         Integer count = productService.queryCount(queryProductVo);
         if (count > 2000) {
           throw new DefaultClientException(
@@ -175,10 +178,10 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
         products = productService.query(queryProductVo);
       } else if (data.getTakeType() == TakeStockPlanType.CATEGORY) {
         // 类目盘点
-        products = productService.getByCategoryIds(vo.getBizIds());
+        products = productService.getByCategoryIds(vo.getBizIds(), ProductType.NORMAL.getCode());
       } else if (data.getTakeType() == TakeStockPlanType.BRAND) {
         // 品牌盘点
-        products = productService.getByBrandIds(vo.getBizIds());
+        products = productService.getByBrandIds(vo.getBizIds(), ProductType.NORMAL.getCode());
       }
     }
 
@@ -190,7 +193,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
       List<String> productIds = products.stream().map(Product::getId)
           .collect(Collectors.toList());
       List<ProductStock> productStocks = productStockService.getByProductIdsAndScId(productIds,
-          vo.getScId());
+          vo.getScId(), ProductType.NORMAL.getCode());
       int orderNo = 1;
       for (Product product : products) {
         ProductStock productStock = productStocks.stream()

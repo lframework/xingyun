@@ -15,6 +15,7 @@ import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
@@ -61,6 +62,10 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
         .eq(Product::getSkuCode, data.getSkuCode());
     if (product != null) {
       checkSkuCodeWrapper.ne(Product::getId, product.getId());
+      if (product.getProductType() != ProductType.NORMAL) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行商品类型必须为" + ProductType.NORMAL.getDesc() + "，请检查");
+      }
     }
 
     if (productService.count(checkSkuCodeWrapper) > 0) {
@@ -209,6 +214,7 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       }
       record.setSpec(data.getSpec());
       record.setUnit(data.getUnit());
+      record.setProductType(ProductType.NORMAL);
 
       if (isInsert) {
         record.setAvailable(Boolean.TRUE);

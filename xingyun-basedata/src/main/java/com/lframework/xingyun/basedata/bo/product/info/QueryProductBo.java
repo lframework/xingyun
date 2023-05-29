@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.bo.product.info;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.web.annotations.convert.EnumConvert;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
@@ -59,6 +60,13 @@ public class QueryProductBo extends BaseBo<Product> {
    */
   @ApiModelProperty("品牌名称")
   private String brandName;
+
+  /**
+   * 商品类型
+   */
+  @ApiModelProperty("商品类型")
+  @EnumConvert
+  private Integer productType;
 
   /**
    * 状态

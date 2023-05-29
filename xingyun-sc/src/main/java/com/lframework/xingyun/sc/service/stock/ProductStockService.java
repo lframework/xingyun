@@ -47,7 +47,8 @@ public interface ProductStockService extends BaseMpService<ProductStock> {
    * @param scId
    * @return
    */
-  List<ProductStock> getByProductIdsAndScId(List<String> productIds, String scId);
+  List<ProductStock> getByProductIdsAndScId(List<String> productIds, String scId,
+      Integer productType);
 
   /**
    * 入库

@@ -18,6 +18,7 @@ import com.lframework.xingyun.basedata.bo.member.MemberSelectorBo;
 import com.lframework.xingyun.basedata.bo.paytype.PayTypeSelectorBo;
 import com.lframework.xingyun.basedata.bo.product.brand.ProductBrandSelectorBo;
 import com.lframework.xingyun.basedata.bo.product.brand.ProductCategorySelectorBo;
+import com.lframework.xingyun.basedata.bo.product.info.ProductSelectorBo;
 import com.lframework.xingyun.basedata.bo.shop.ShopSelectorBo;
 import com.lframework.xingyun.basedata.bo.storecenter.StoreCenterSelectorBo;
 import com.lframework.xingyun.basedata.bo.supplier.SupplierSelectorBo;
@@ -25,6 +26,7 @@ import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.PayType;
+import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.Shop;
@@ -38,6 +40,7 @@ import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
@@ -47,6 +50,7 @@ import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.paytype.PayTypeSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
+import com.lframework.xingyun.basedata.vo.product.info.QueryProductSelectorVo;
 import com.lframework.xingyun.basedata.vo.shop.ShopSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierSelectorVo;
@@ -103,6 +107,49 @@ public class BaseDataSelectorController extends DefaultBaseController {
 
   @Autowired
   private PayTypeService payTypeService;
+
+  @Autowired
+  private ProductService productService;
+
+  /**
+   * 商品
+   */
+  @ApiOperation("商品")
+  @GetMapping("/product")
+  public InvokeResult<PageResult<ProductSelectorBo>> product(
+      @Valid QueryProductSelectorVo vo) {
+
+    PageResult<Product> pageResult = productService.selector(getPageIndex(vo),
+        getPageSize(vo), vo);
+    List<Product> datas = pageResult.getDatas();
+    List<ProductSelectorBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(ProductSelectorBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 加载商品
+   */
+  @ApiOperation("加载商品")
+  @PostMapping("/product/load")
+  public InvokeResult<List<ProductSelectorBo>> loadProduct(
+      @RequestBody(required = false) List<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return InvokeResultBuilder.success(CollectionUtil.emptyList());
+    }
+
+    List<Product> datas = ids.stream().filter(StringUtil::isNotBlank)
+        .map(t -> productService.findById(t))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    List<ProductSelectorBo> results = datas.stream().map(ProductSelectorBo::new).collect(
+        Collectors.toList());
+    return InvokeResultBuilder.success(results);
+  }
 
   /**
    * 品牌

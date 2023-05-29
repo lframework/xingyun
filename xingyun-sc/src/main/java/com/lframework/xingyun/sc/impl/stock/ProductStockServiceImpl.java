@@ -17,6 +17,9 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductBundle;
+import com.lframework.xingyun.basedata.enums.ProductType;
+import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.events.stock.AddStockEvent;
@@ -36,6 +39,7 @@ import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +50,9 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductBundleService productBundleService;
 
   @Autowired
   private ProductStockLogService productStockLogService;
@@ -76,22 +83,69 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   @Override
   public ProductStock getByProductIdAndScId(String productId, String scId) {
 
-    return getBaseMapper().getByProductIdAndScId(productId, scId);
+    Product product = productService.findById(productId);
+    if (product == null) {
+      return null;
+    }
+
+    if (product.getProductType() == ProductType.NORMAL) {
+      return getBaseMapper().getByProductIdAndScId(productId, scId);
+    } else {
+      List<ProductBundle> productBundles = productBundleService.getByMainProductId(productId);
+      if (CollectionUtil.isEmpty(productBundles)) {
+        return null;
+      }
+
+      List<String> productIds = productBundles.stream().map(ProductBundle::getProductId).collect(
+          Collectors.toList());
+      List<ProductStock> productStocks = this.getByProductIdsAndScId(productIds, scId,
+          ProductType.NORMAL.getCode());
+
+      int stockNum = Integer.MAX_VALUE;
+      for (ProductBundle productBundle : productBundles) {
+        String id = productBundle.getProductId();
+        ProductStock productStock = productStocks.stream().filter(t -> t.getProductId().equals(id))
+            .findFirst().orElse(null);
+        if (productStock == null || productStock.getStockNum() <= 0) {
+          // 此处说明有单品没有库存
+          return null;
+        }
+
+        stockNum = Math.min(productStock.getStockNum() / productBundle.getBundleNum(), stockNum);
+      }
+
+      ProductStock productStock = new ProductStock();
+      productStock.setId(IdUtil.getId());
+      productStock.setScId(scId);
+      productStock.setProductId(productId);
+      productStock.setStockNum(stockNum);
+      productStock.setTaxPrice(BigDecimal.ZERO);
+      productStock.setTaxAmount(BigDecimal.ZERO);
+
+      return productStock;
+    }
   }
 
   @Override
-  public List<ProductStock> getByProductIdsAndScId(List<String> productIds, String scId) {
+  public List<ProductStock> getByProductIdsAndScId(List<String> productIds, String scId,
+      Integer productType) {
 
     if (CollectionUtil.isEmpty(productIds)) {
       return CollectionUtil.emptyList();
     }
 
-    return getBaseMapper().getByProductIdsAndScId(productIds, scId);
+    return getBaseMapper().getByProductIdsAndScId(productIds, scId, productType);
   }
 
   @Transactional(rollbackFor = Exception.class)
   @Override
   public ProductStockChangeDto addStock(AddProductStockVo vo) {
+
+    Product product = productService.findById(vo.getProductId());
+    if (product.getProductType() != ProductType.NORMAL) {
+      throw new DefaultClientException(
+          "只有商品类型为【" + ProductType.NORMAL.getDesc() + "】的商品支持入库！");
+    }
 
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
         .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
@@ -138,7 +192,6 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
         NumberUtil.mul(vo.getTaxPrice(), vo.getStockNum()), productStock.getStockNum(),
         productStock.getTaxAmount(), reCalcCostPrice);
     if (count != 1) {
-      Product product = productService.findById(vo.getProductId());
       throw new DefaultClientException(
           "商品（" + product.getCode() + "）" + product.getName() + "入库失败，请稍后重试！");
     }
@@ -157,7 +210,8 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
         addLogWithAddStockVo.getCurStockNum() == 0 ?
             BigDecimal.ZERO :
             NumberUtil.getNumber(
-                NumberUtil.div(NumberUtil.add(productStock.getTaxAmount(), NumberUtil.mul(vo.getTaxPrice(), vo.getStockNum())),
+                NumberUtil.div(NumberUtil.add(productStock.getTaxAmount(),
+                        NumberUtil.mul(vo.getTaxPrice(), vo.getStockNum())),
                     addLogWithAddStockVo.getCurStockNum()), 6));
     addLogWithAddStockVo.setCreateTime(vo.getCreateTime());
     addLogWithAddStockVo.setBizId(vo.getBizId());
@@ -184,11 +238,16 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   @Override
   public ProductStockChangeDto subStock(SubProductStockVo vo) {
 
+    Product product = productService.findById(vo.getProductId());
+    if (product.getProductType() != ProductType.NORMAL) {
+      throw new DefaultClientException(
+          "只有商品类型为【" + ProductType.NORMAL.getDesc() + "】的商品支持出库！");
+    }
+
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
         .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
 
     ProductStock productStock = getBaseMapper().selectOne(queryWrapper);
-    Product product = productService.findById(vo.getProductId());
     if (productStock == null) {
       throw new DefaultClientException(
           "商品（" + product.getCode() + "）" + product.getName() + "当前库存为0，无法出库！");
@@ -259,6 +318,12 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   @Transactional(rollbackFor = Exception.class)
   @Override
   public StockCostAdjustDiffDto stockCostAdjust(StockCostAdjustVo vo) {
+
+    Product product = productService.findById(vo.getProductId());
+    if (product.getProductType() != ProductType.NORMAL) {
+      throw new DefaultClientException(
+          "只有商品类型为【" + ProductType.NORMAL.getDesc() + "】的商品支持库存成本调整！");
+    }
 
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
         .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());

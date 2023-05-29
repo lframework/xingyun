@@ -44,7 +44,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @return
    */
   List<ProductStock> getByProductIdsAndScId(@Param("productIds") List<String> productIds,
-      @Param("scId") String scId);
+      @Param("scId") String scId, @Param("productType") Integer productType);
 
   /**
    * 入库

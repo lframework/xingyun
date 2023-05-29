@@ -2,17 +2,21 @@ package com.lframework.xingyun.basedata.bo.product.info;
 
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.web.annotations.convert.EnumConvert;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.dto.product.ProductPropertyRelationDto;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
+import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.entity.ProductRetail;
 import com.lframework.xingyun.basedata.entity.ProductSale;
 import com.lframework.xingyun.basedata.enums.ColumnType;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
+import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
@@ -22,6 +26,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -114,6 +119,19 @@ public class GetProductBo extends BaseBo<Product> {
   private String unit;
 
   /**
+   * 商品类型
+   */
+  @ApiModelProperty("商品类型")
+  @EnumConvert
+  private Integer productType;
+
+  /**
+   * 单品
+   */
+  @ApiModelProperty("单品")
+  private List<ProductBundleBo> productBundles;
+
+  /**
    * 采购价
    */
   @ApiModelProperty("采购价")
@@ -170,6 +188,13 @@ public class GetProductBo extends BaseBo<Product> {
     ProductBrand productBrand = productBrandService.findById(dto.getBrandId());
     this.brandName = productBrand.getName();
 
+    if (dto.getProductType() == ProductType.BUNDLE) {
+      ProductBundleService productBundleService = ApplicationUtil.getBean(
+          ProductBundleService.class);
+      List<ProductBundle> bundles = productBundleService.getByMainProductId(dto.getId());
+      this.productBundles = bundles.stream().map(ProductBundleBo::new).collect(Collectors.toList());
+    }
+
     ProductPurchaseService productPurchaseService = ApplicationUtil.getBean(
         ProductPurchaseService.class);
     ProductPurchase productPurchase = productPurchaseService.getById(dto.getId());
@@ -197,8 +222,10 @@ public class GetProductBo extends BaseBo<Product> {
           if (propertyBo == null) {
             this.properties.add(new PropertyBo(property));
           } else {
-            propertyBo.setText(propertyBo.getText().concat(StringPool.STR_SPLIT).concat(property.getPropertyItemId()));
-            propertyBo.setTextStr(propertyBo.getTextStr().concat(StringPool.STR_SPLIT_CN).concat(property.getPropertyText()));
+            propertyBo.setText(propertyBo.getText().concat(StringPool.STR_SPLIT)
+                .concat(property.getPropertyItemId()));
+            propertyBo.setTextStr(propertyBo.getTextStr().concat(StringPool.STR_SPLIT_CN)
+                .concat(property.getPropertyText()));
           }
         } else {
           this.properties.add(new PropertyBo(property));
@@ -261,7 +288,8 @@ public class GetProductBo extends BaseBo<Product> {
 
       this.id = dto.getPropertyId();
       this.name = dto.getPropertyName();
-      this.text = dto.getPropertyColumnType() == ColumnType.CUSTOM ? dto.getPropertyText() : dto.getPropertyItemId();
+      this.text = dto.getPropertyColumnType() == ColumnType.CUSTOM ? dto.getPropertyText()
+          : dto.getPropertyItemId();
       this.textStr = dto.getPropertyText();
       this.columnType = dto.getPropertyColumnType().getCode();
     }

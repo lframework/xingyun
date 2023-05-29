@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.mybatis.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.vo.product.info.QueryProductSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -34,6 +35,15 @@ public interface ProductMapper extends BaseMapper<Product> {
   Integer queryCount(@Param("vo") QueryProductVo vo);
 
   /**
+   * 选择器
+   *
+   * @param vo
+   * @return
+   */
+  List<Product> selector(@Param("vo") QueryProductSelectorVo vo,
+      @Param("dataPermission") String dataPermission);
+
+  /**
    * 根据ID查询
    *
    * @param id
@@ -63,7 +73,8 @@ public interface ProductMapper extends BaseMapper<Product> {
    * @param categoryIds
    * @return
    */
-  List<Product> getByCategoryIds(@Param("categoryIds") List<String> categoryIds);
+  List<Product> getByCategoryIds(@Param("categoryIds") List<String> categoryIds,
+      @Param("productType") Integer productType);
 
   /**
    * 根据品牌ID查询
@@ -71,5 +82,6 @@ public interface ProductMapper extends BaseMapper<Product> {
    * @param brandIds
    * @return
    */
-  List<Product> getByBrandIds(@Param("brandIds") List<String> brandIds);
+  List<Product> getByBrandIds(@Param("brandIds") List<String> brandIds,
+      @Param("productType") Integer productType);
 }

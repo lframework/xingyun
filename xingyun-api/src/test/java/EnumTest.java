@@ -3,6 +3,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.web.enums.BaseEnum;
 import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
@@ -16,7 +17,7 @@ public class EnumTest {
    */
   public static void main(String[] args) {
     Map<Object, Object> map = new LinkedHashMap<>();
-    Class clazz = ScTransferOrderStatus.class;
+    Class clazz = ProductType.class;
 
     BaseEnum[] objs = ClassUtil.invoke(clazz.getName() + "#values", new Object[0]);
 

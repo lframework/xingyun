@@ -33,6 +33,9 @@
                 <if test="vo.shortName != null and vo.shortName != ''">
                     AND g.short_name LIKE CONCAT('%', #{vo.shortName}, '%')
                 </if>
+                <if test="vo.productType != null">
+                    AND g.product_type = #{vo.productType}
+                </if>
                 <if test="vo.available != null">
                     AND g.available = #{vo.available}
                 </if>
@@ -56,14 +59,18 @@
     </select>
     <select id="getByCategoryIds" resultType="com.lframework.xingyun.basedata.entity.Product">
         <include refid="ProductDto_sql"/>
-        LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
         WHERE c.id IN <foreach collection="categoryIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        <if test="productType != null">
+            AND g.product_type = #{productType}
+        </if>
         ORDER BY g.code
     </select>
     <select id="getByBrandIds" resultType="com.lframework.xingyun.basedata.entity.Product">
         <include refid="ProductDto_sql"/>
-        LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
         WHERE b.id IN <foreach collection="brandIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        <if test="productType != null">
+            AND g.product_type = #{productType}
+        </if>
         ORDER BY g.code
     </select>
     <select id="queryCount" resultType="java.lang.Integer">
@@ -86,6 +93,9 @@
                 </if>
                 <if test="vo.categoryId != null and vo.categoryId != ''">
                     AND (g.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+                <if test="vo.productType != null">
+                    AND g.product_type = #{vo.productType}
                 </if>
                 <if test="vo.available != null">
                     AND g.available = #{vo.available}
@@ -112,5 +122,47 @@
         SELECT id
         FROM base_data_product AS p
         WHERE p.category_id = #{categoryId}
+    </select>
+
+    <select id="selector" resultType="com.lframework.xingyun.basedata.entity.Product">
+        <include refid="ProductDto_sql"/>
+        <where>
+          <if test="vo != null">
+              <if test="vo.code != null and vo.code != ''">
+                  AND g.code = #{vo.code}
+              </if>
+              <if test="vo.skuCode != null and vo.skuCode != ''">
+                  AND g.sku_code = #{vo.skuCode}
+              </if>
+              <if test="vo.brandId != null and vo.brandId != ''">
+                  AND g.brand_id = #{vo.brandId}
+              </if>
+              <if test="vo.categoryId != null and vo.categoryId != ''">
+                  AND (g.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+              </if>
+              <if test="vo.name != null and vo.name != ''">
+                  AND g.name LIKE CONCAT('%', #{vo.name}, '%')
+              </if>
+              <if test="vo.shortName != null and vo.shortName != ''">
+                  AND g.short_name LIKE CONCAT('%', #{vo.shortName}, '%')
+              </if>
+              <if test="vo.productType != null">
+                  AND g.product_type = #{vo.productType}
+              </if>
+              <if test="vo.available != null">
+                  AND g.available = #{vo.available}
+              </if>
+              <if test="vo.startTime != null">
+                  AND g.create_time >= #{vo.startTime}
+              </if>
+              <if test="vo.endTime != null">
+                  <![CDATA[
+                  AND g.create_time <= #{vo.endTime}
+                  ]]>
+              </if>
+          </if>
+          AND ${dataPermission}
+        </where>
+        ORDER BY g.code
     </select>
 </mapper>

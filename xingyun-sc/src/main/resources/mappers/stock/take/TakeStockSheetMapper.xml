@@ -195,6 +195,7 @@
             <if test="planId != null and planId != ''">
                 AND g.id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{planId})
             </if>
+            AND g.product_type = 1
             AND ${dataPermission}
         </where>
         ORDER BY g.code
@@ -221,6 +222,7 @@
                     AND g.id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{vo.planId})
                 </if>
             </if>
+            AND g.product_type = 1
             AND ${dataPermission}
         </where>
         ORDER BY g.code

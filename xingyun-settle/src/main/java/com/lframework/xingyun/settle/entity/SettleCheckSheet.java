@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -22,7 +21,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-12-02
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("settle_check_sheet")
 public class SettleCheckSheet extends BaseEntity implements BaseDto {
 

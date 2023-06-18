@@ -7,9 +7,9 @@ import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import com.lframework.starter.web.dto.UserDto;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
@@ -19,10 +19,8 @@ import com.lframework.xingyun.settle.enums.SettlePreSheetStatus;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class SettlePreSheetExportModel extends BaseBo<SettlePreSheet> implements ExcelModel {
 
     /**

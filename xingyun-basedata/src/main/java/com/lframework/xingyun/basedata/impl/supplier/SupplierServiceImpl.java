@@ -195,7 +195,6 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
                 .set(Supplier::getMnemonicCode, !StringUtil.isBlank(vo.getMnemonicCode()) ? vo.getMnemonicCode() : null)
                 .set(Supplier::getContact, !StringUtil.isBlank(vo.getContact()) ? vo.getContact() : null)
                 .set(Supplier::getTelephone, !StringUtil.isBlank(vo.getTelephone()) ? vo.getTelephone() : null)
-                .set(Supplier::getAddress, !StringUtil.isBlank(vo.getAddress()) ? vo.getAddress() : null)
                 .set(Supplier::getEmail, !StringUtil.isBlank(vo.getEmail()) ? vo.getEmail() : null)
                 .set(Supplier::getZipCode, !StringUtil.isBlank(vo.getZipCode()) ? vo.getZipCode() : null)
                 .set(Supplier::getFax, !StringUtil.isBlank(vo.getFax()) ? vo.getFax() : null)

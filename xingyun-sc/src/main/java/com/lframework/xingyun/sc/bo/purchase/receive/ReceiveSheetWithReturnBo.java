@@ -23,10 +23,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class ReceiveSheetWithReturnBo extends BaseBo<ReceiveSheetWithReturnDto> {
 
   /**
@@ -119,7 +117,6 @@ public class ReceiveSheetWithReturnBo extends BaseBo<ReceiveSheetWithReturnDto> 
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class DetailBo extends BaseBo<ReceiveSheetWithReturnDto.DetailDto> {
 
     /**

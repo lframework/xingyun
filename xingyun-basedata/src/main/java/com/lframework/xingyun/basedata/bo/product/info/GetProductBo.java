@@ -28,10 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetProductBo extends BaseBo<Product> {
 
   /**
@@ -93,6 +91,18 @@ public class GetProductBo extends BaseBo<Product> {
    */
   @ApiModelProperty("品牌名称")
   private String brandName;
+
+  /**
+   * 重量（kg）
+   */
+  @ApiModelProperty("重量（kg）")
+  private BigDecimal weight;
+
+  /**
+   * 体积（cm3）
+   */
+  @ApiModelProperty("体积（cm3）")
+  private BigDecimal volume;
 
   /**
    * 进项税率（%）
@@ -235,7 +245,6 @@ public class GetProductBo extends BaseBo<Product> {
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class PropertyBo extends BaseBo<ProductPropertyRelationDto> {
 
     /**

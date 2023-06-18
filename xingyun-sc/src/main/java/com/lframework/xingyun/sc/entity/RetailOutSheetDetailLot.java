@@ -6,7 +6,6 @@ import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import java.math.BigDecimal;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -17,7 +16,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-11-03
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_retail_out_sheet_detail_lot")
 public class RetailOutSheetDetailLot extends BaseEntity implements BaseDto {
 

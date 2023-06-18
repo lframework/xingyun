@@ -15,7 +15,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -35,6 +35,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
@@ -132,7 +133,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   public List<ReceiveSheet> query(QueryReceiveSheetVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("r")));
   }
 
@@ -145,7 +146,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<ReceiveSheet> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("r")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -207,7 +208,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<ReceiveSheet> datas = getBaseMapper().queryWithReturn(vo,
         purchaseConfig.getPurchaseReturnMultipleRelateReceive(),
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("r")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -293,7 +294,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         .set(ReceiveSheet::getRefuseReason, StringPool.EMPTY_STR)
         .eq(ReceiveSheet::getId, sheet.getId())
         .in(ReceiveSheet::getStatus, statusList);
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
 
@@ -350,7 +351,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(ReceiveSheet::getDescription, vo.getDescription());
     }
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
 
@@ -455,7 +456,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         .set(ReceiveSheet::getRefuseReason, vo.getRefuseReason())
         .eq(ReceiveSheet::getId, sheet.getId())
         .eq(ReceiveSheet::getStatus, ReceiveSheetStatus.CREATED);
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
 

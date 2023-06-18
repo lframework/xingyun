@@ -6,10 +6,8 @@ import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class RetailOutSheetSelectorVo extends PageVo {
 
   private static final long serialVersionUID = 1L;

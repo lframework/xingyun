@@ -160,12 +160,6 @@ public class CreatePurchaseReturnVo implements BaseVo, Serializable {
       orderNo++;
     }
 
-    if (requireReceive) {
-      if (this.products.stream().allMatch(t -> StringUtil.isBlank(t.getReceiveSheetDetailId()))) {
-        throw new InputErrorException("采购收货单中的商品必须全部或部分退货！");
-      }
-    }
-
     BigDecimal totalAmount = this.products.stream()
         .map(t -> NumberUtil.mul(t.getReturnNum(), t.getPurchasePrice())).reduce(NumberUtil::add)
         .orElse(BigDecimal.ZERO);

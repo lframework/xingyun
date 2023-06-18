@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -15,7 +14,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-09-12
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_retail_config")
 public class RetailConfig extends BaseEntity implements BaseDto {
 
@@ -45,4 +43,9 @@ public class RetailConfig extends BaseEntity implements BaseDto {
    * 零售退货单上的会员是否必填
    */
   private Boolean retailReturnRequireMember;
+
+  /**
+   * 零售出库单是否需要发货
+   */
+  private Boolean retailOutSheetRequireLogistics;
 }

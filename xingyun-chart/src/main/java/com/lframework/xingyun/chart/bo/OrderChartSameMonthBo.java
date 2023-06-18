@@ -3,13 +3,10 @@ package com.lframework.xingyun.chart.bo;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.chart.dto.OrderChartSameMonthDto;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class OrderChartSameMonthBo extends BaseBo<OrderChartSameMonthDto> {
 
     /**

@@ -14,7 +14,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -28,6 +28,7 @@ import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustDiffDto;
@@ -98,7 +99,7 @@ public class StockCostAdjustSheetServiceImpl extends
   public List<StockCostAdjustSheet> query(QueryStockCostAdjustSheetVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("tb")));
   }
 
@@ -170,7 +171,7 @@ public class StockCostAdjustSheetServiceImpl extends
         .set(StockCostAdjustSheet::getRefuseReason, StringPool.EMPTY_STR)
         .eq(StockCostAdjustSheet::getId, data.getId())
         .in(StockCostAdjustSheet::getStatus, statusList);
-    if (getBaseMapper().update(data, updateSheetWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(data, updateSheetWrapper) != 1) {
       throw new DefaultClientException("库存成本调整单信息已过期，请刷新重试！");
     }
 
@@ -413,7 +414,7 @@ public class StockCostAdjustSheetServiceImpl extends
     List<StockCostAdjustProductDto> datas = getBaseMapper().queryStockCostAdjustByCondition(scId,
         condition,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(
@@ -433,7 +434,7 @@ public class StockCostAdjustSheetServiceImpl extends
 
     List<StockCostAdjustProductDto> datas = getBaseMapper().queryStockCostAdjustList(vo,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<StockCostAdjustProductDto> pageResult = PageResultUtil.convert(

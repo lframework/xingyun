@@ -24,10 +24,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class PrintPurchaseReturnBo extends BasePrintDataBo<PurchaseReturnFullDto> {
 
   /**
@@ -174,7 +172,6 @@ public class PrintPurchaseReturnBo extends BasePrintDataBo<PurchaseReturnFullDto
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class ReturnDetailBo extends BaseBo<PurchaseReturnFullDto.ReturnDetailDto> {
 
     /**

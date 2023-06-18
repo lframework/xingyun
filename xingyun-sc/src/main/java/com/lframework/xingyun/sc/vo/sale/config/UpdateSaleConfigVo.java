@@ -38,4 +38,11 @@ public class UpdateSaleConfigVo implements BaseVo, Serializable {
   @ApiModelProperty(value = "销售退货单是否多次关联销售出库单", required = true)
   @NotNull(message = "销售退货单是否多次关联销售出库单不能为空！")
   private Boolean saleReturnMultipleRelateOutStock;
+
+  /**
+   * 销售出库单是否关联物流单
+   */
+  @ApiModelProperty(value = "销售出库单是否关联物流单", required = true)
+  @NotNull(message = "销售出库单是否关联物流单不能为空！")
+  private Boolean outStockRequireLogistics;
 }

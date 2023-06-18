@@ -23,10 +23,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class PrintSaleOutSheetBo extends BasePrintDataBo<SaleOutSheetFullDto> {
 
   /**
@@ -176,7 +174,6 @@ public class PrintSaleOutSheetBo extends BasePrintDataBo<SaleOutSheetFullDto> {
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class OrderDetailBo extends BaseBo<SaleOutSheetFullDto.SheetDetailDto> {
 
     /**

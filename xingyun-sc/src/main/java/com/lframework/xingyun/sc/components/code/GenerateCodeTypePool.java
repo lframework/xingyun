@@ -73,4 +73,9 @@ public interface GenerateCodeTypePool {
    * 仓库调拨单
    */
   GenerateCodeType SC_TRANSFER_ORDER = GenerateCodeType.FLOW;
+
+  /**
+   * 物流单
+   */
+  GenerateCodeType LOGISTICS_SHEET = GenerateCodeType.FLOW;
 }

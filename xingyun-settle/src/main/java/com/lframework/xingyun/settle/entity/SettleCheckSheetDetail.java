@@ -5,10 +5,8 @@ import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetCalcType;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 /**
  * <p>
@@ -19,7 +17,6 @@ import java.math.BigDecimal;
  * @since 2021-12-02
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("settle_check_sheet_detail")
 public class SettleCheckSheetDetail extends BaseEntity implements BaseDto {
 

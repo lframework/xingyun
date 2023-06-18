@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -36,7 +35,6 @@ import lombok.EqualsAndHashCode;
  * @author zmj
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
 
   /**
@@ -170,7 +168,6 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class DetailBo extends BaseBo<ScTransferOrderFullDto.DetailDto> {
 
     /**

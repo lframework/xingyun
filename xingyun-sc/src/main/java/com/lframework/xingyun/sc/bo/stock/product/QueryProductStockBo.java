@@ -15,10 +15,8 @@ import com.lframework.xingyun.sc.entity.ProductStock;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QueryProductStockBo extends BaseBo<ProductStock> {
 
   /**

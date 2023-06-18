@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -39,7 +38,6 @@ import lombok.EqualsAndHashCode;
  * @author zmj
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
 
   /**
@@ -227,7 +225,6 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class SheetDetailBo extends BaseBo<TakeStockSheetFullDto.SheetDetailDto> {
 
     /**

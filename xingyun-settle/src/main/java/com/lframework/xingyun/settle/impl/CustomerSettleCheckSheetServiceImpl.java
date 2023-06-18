@@ -15,7 +15,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -27,6 +27,7 @@ import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.common.security.AbstractUserDetails;
 import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.entity.SaleReturn;
@@ -107,7 +108,7 @@ public class CustomerSettleCheckSheetServiceImpl extends
     public List<CustomerSettleCheckSheet> query(QueryCustomerSettleCheckSheetVo vo) {
 
       return getBaseMapper().query(vo,
-          DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+          DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
               Arrays.asList("order"), Arrays.asList("s")));
     }
 
@@ -193,7 +194,7 @@ public class CustomerSettleCheckSheetServiceImpl extends
                 .set(CustomerSettleCheckSheet::getRefuseReason, StringPool.EMPTY_STR)
                 .eq(CustomerSettleCheckSheet::getId, sheet.getId())
                 .in(CustomerSettleCheckSheet::getStatus, statusList);
-        if (getBaseMapper().update(sheet, updateWrapper) != 1) {
+        if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
             throw new DefaultClientException("客户对账单信息已过期，请刷新重试！");
         }
 
@@ -235,7 +236,7 @@ public class CustomerSettleCheckSheetServiceImpl extends
                         CustomerSettleCheckSheet.class)
                 .eq(CustomerSettleCheckSheet::getId, sheet.getId())
                 .in(CustomerSettleCheckSheet::getStatus, statusList);
-        if (getBaseMapper().update(sheet, updateWrapper) != 1) {
+        if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
             throw new DefaultClientException("客户对账单信息已过期，请刷新重试！");
         }
 
@@ -294,7 +295,7 @@ public class CustomerSettleCheckSheetServiceImpl extends
                         CustomerSettleCheckSheet.class)
                 .eq(CustomerSettleCheckSheet::getId, sheet.getId())
                 .in(CustomerSettleCheckSheet::getStatus, statusList);
-        if (getBaseMapper().update(sheet, updateWrapper) != 1) {
+        if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
             throw new DefaultClientException("客户对账单信息已过期，请刷新重试！");
         }
 

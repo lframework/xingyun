@@ -9,7 +9,6 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -20,7 +19,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-10-14
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_product_stock_log")
 public class ProductStockLog extends BaseEntity implements BaseDto {
 

@@ -3,14 +3,11 @@ package com.lframework.xingyun.chart.bo;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.chart.dto.OrderChartSumDto;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.Data;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class OrderChartTodaySumBo extends BaseBo<OrderChartSumDto> {
 
     /**

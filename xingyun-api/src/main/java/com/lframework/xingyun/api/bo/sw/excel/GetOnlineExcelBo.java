@@ -7,7 +7,6 @@ import com.lframework.xingyun.core.entity.OnlineExcel;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -15,7 +14,6 @@ import lombok.EqualsAndHashCode;
  * </p>
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetOnlineExcelBo extends BaseBo<OnlineExcel> {
 
   /**

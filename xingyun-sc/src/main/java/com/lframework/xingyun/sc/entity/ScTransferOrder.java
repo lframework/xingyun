@@ -9,7 +9,6 @@ import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -20,7 +19,6 @@ import lombok.EqualsAndHashCode;
  * @since 2023-04-18
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_sc_transfer_order")
 public class ScTransferOrder extends BaseEntity implements BaseDto {
 

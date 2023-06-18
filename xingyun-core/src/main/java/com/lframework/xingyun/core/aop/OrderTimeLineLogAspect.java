@@ -3,10 +3,8 @@ package com.lframework.xingyun.core.aop;
 import com.lframework.starter.common.utils.ArrayUtil;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.common.utils.ThreadUtil;
 import com.lframework.starter.web.common.security.AbstractUserDetails;
 import com.lframework.starter.web.common.security.SecurityUtil;
-import com.lframework.starter.web.common.threads.DefaultRunnable;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.SpelUtil;
@@ -182,12 +180,11 @@ public class OrderTimeLineLogAspect {
 
         if (orderTimeLineLog.delete()) {
           for (String orderId : orderIdList) {
-            ThreadUtil.execAsync(new DefaultRunnable(() -> {
-              OrderTimeLineService orderTimeLineService = ApplicationUtil.getBean(
-                  OrderTimeLineService.class);
-              orderTimeLineService.deleteByOrder(orderId);
-              orderTimeLineService.cleanCacheByKey(orderId);
-            }));
+            // 这里不异步，在同事务内执行
+            OrderTimeLineService orderTimeLineService = ApplicationUtil.getBean(
+                OrderTimeLineService.class);
+            orderTimeLineService.deleteByOrder(orderId);
+            orderTimeLineService.cleanCacheByKey(orderId);
           }
         } else {
           List<OrderTimeLine> records = new ArrayList<>();
@@ -206,10 +203,9 @@ public class OrderTimeLineLogAspect {
             }
           }
           if (CollectionUtil.isNotEmpty(records)) {
-            ThreadUtil.execAsync(new DefaultRunnable(() -> {
-              orderTimeLineService.saveBatch(records);
-              orderTimeLineService.cleanCacheByKeys(orderIdList);
-            }));
+            // 这里不异步，在同事务内执行
+            orderTimeLineService.saveBatch(records);
+            orderTimeLineService.cleanCacheByKeys(orderIdList);
           }
         }
       } catch (Exception e) {

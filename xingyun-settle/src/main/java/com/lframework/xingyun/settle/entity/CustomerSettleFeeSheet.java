@@ -11,7 +11,6 @@ import com.lframework.xingyun.settle.enums.CustomerSettleFeeSheetType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -22,7 +21,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-11-30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("customer_settle_fee_sheet")
 public class CustomerSettleFeeSheet extends BaseEntity implements BaseDto {
 

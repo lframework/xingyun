@@ -225,7 +225,7 @@
         ORDER BY d.order_no
     </select>
     <select id="selector" resultMap="SaleOrder">
-        <include refid="SaleOrderFullDto_sql"/>
+        <include refid="SaleOrderDto_sql"/>
         <where>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">

@@ -3,10 +3,8 @@ package com.lframework.xingyun.sc.vo.stock;
 import com.lframework.starter.web.vo.PageVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QueryProductStockVo extends PageVo {
 
   /**

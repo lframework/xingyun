@@ -14,6 +14,7 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.xingyun.basedata.bo.address.AddressSelectorBo;
 import com.lframework.xingyun.basedata.bo.customer.CustomerSelectorBo;
+import com.lframework.xingyun.basedata.bo.logistics.company.LogisticsCompanySelectorBo;
 import com.lframework.xingyun.basedata.bo.member.MemberSelectorBo;
 import com.lframework.xingyun.basedata.bo.paytype.PayTypeSelectorBo;
 import com.lframework.xingyun.basedata.bo.product.brand.ProductBrandSelectorBo;
@@ -24,6 +25,7 @@ import com.lframework.xingyun.basedata.bo.storecenter.StoreCenterSelectorBo;
 import com.lframework.xingyun.basedata.bo.supplier.SupplierSelectorBo;
 import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.entity.LogisticsCompany;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.entity.Product;
@@ -36,6 +38,7 @@ import com.lframework.xingyun.basedata.enums.AddressEntityType;
 import com.lframework.xingyun.basedata.enums.AddressType;
 import com.lframework.xingyun.basedata.service.address.AddressService;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
+import com.lframework.xingyun.basedata.service.logistics.LogisticsCompanyService;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
@@ -46,6 +49,7 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.basedata.vo.address.AddressSelectorVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;
+import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanySelectorVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.paytype.PayTypeSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
@@ -110,6 +114,9 @@ public class BaseDataSelectorController extends DefaultBaseController {
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private LogisticsCompanyService logisticsCompanyService;
 
   /**
    * 商品
@@ -537,6 +544,49 @@ public class BaseDataSelectorController extends DefaultBaseController {
         .map(t -> payTypeService.findById(t))
         .filter(Objects::nonNull).collect(Collectors.toList());
     List<PayTypeSelectorBo> results = datas.stream().map(PayTypeSelectorBo::new)
+        .collect(
+            Collectors.toList());
+    return InvokeResultBuilder.success(results);
+  }
+
+  /**
+   * 物流公司
+   */
+  @ApiOperation("物流公司")
+  @GetMapping("/logistics/company")
+  public InvokeResult<PageResult<LogisticsCompanySelectorBo>> selector(
+      @Valid QueryLogisticsCompanySelectorVo vo) {
+
+    PageResult<LogisticsCompany> pageResult = logisticsCompanyService.selector(getPageIndex(vo),
+        getPageSize(vo),
+        vo);
+
+    List<LogisticsCompany> datas = pageResult.getDatas();
+    List<LogisticsCompanySelectorBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(LogisticsCompanySelectorBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 加载物流公司
+   */
+  @ApiOperation("加载物流公司")
+  @PostMapping("/logistics/company/load")
+  public InvokeResult<List<LogisticsCompanySelectorBo>> loadLogisticsCompany(
+      @RequestBody(required = false) List<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return InvokeResultBuilder.success(CollectionUtil.emptyList());
+    }
+
+    List<LogisticsCompany> datas = ids.stream().filter(StringUtil::isNotBlank)
+        .map(t -> logisticsCompanyService.findById(t))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    List<LogisticsCompanySelectorBo> results = datas.stream().map(LogisticsCompanySelectorBo::new)
         .collect(
             Collectors.toList());
     return InvokeResultBuilder.success(results);

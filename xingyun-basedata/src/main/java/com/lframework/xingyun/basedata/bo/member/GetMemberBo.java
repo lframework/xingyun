@@ -13,10 +13,8 @@ import com.lframework.xingyun.basedata.service.shop.ShopService;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetMemberBo extends BaseBo<Member> {
 
     /**

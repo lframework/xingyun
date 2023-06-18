@@ -15,7 +15,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -34,6 +34,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseOrderEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -115,7 +116,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   public List<PurchaseOrder> query(QueryPurchaseOrderVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("o")));
   }
 
@@ -128,7 +129,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<PurchaseOrder> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("o")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -170,7 +171,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<PurchaseOrder> datas = getBaseMapper().queryWithReceive(vo,
         purchaseConfig.getReceiveMultipleRelatePurchase(),
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("o")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -238,7 +239,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         .set(PurchaseOrder::getRefuseReason, StringPool.EMPTY_STR)
         .eq(PurchaseOrder::getId, order.getId())
         .in(PurchaseOrder::getStatus, statusList);
-    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -282,7 +283,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(PurchaseOrder::getDescription, vo.getDescription());
     }
-    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -372,7 +373,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         .set(PurchaseOrder::getRefuseReason, vo.getRefuseReason())
         .eq(PurchaseOrder::getId, order.getId())
         .eq(PurchaseOrder::getStatus, PurchaseOrderStatus.CREATED);
-    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -486,7 +487,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         .set(PurchaseOrder::getRefuseReason, StringPool.EMPTY_STR)
         .eq(PurchaseOrder::getId, order.getId())
         .eq(PurchaseOrder::getStatus, PurchaseOrderStatus.APPROVE_PASS);
-    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -582,7 +583,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(condition,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
@@ -601,7 +602,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseList(vo,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));

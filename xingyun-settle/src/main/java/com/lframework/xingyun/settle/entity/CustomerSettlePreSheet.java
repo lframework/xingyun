@@ -10,7 +10,6 @@ import com.lframework.xingyun.settle.enums.CustomerSettlePreSheetStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -21,7 +20,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-12-02
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("customer_settle_pre_sheet")
 public class CustomerSettlePreSheet extends BaseEntity implements BaseDto {
 

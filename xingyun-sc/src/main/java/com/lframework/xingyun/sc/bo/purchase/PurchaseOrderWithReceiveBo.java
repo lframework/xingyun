@@ -23,10 +23,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveDto> {
 
   /**
@@ -118,7 +116,6 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class DetailBo extends BaseBo<PurchaseOrderWithReceiveDto.DetailDto> {
 
     /**

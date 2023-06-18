@@ -187,12 +187,6 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
       orderNo++;
     }
 
-    if (requireOut) {
-      if (this.products.stream().allMatch(t -> StringUtil.isBlank(t.getOutSheetDetailId()))) {
-        throw new InputErrorException("零售出库单中的商品必须全部或部分退货！");
-      }
-    }
-
     BigDecimal totalAmount = this.products.stream()
         .map(t -> NumberUtil.mul(t.getReturnNum(), t.getTaxPrice())).reduce(NumberUtil::add)
         .orElse(BigDecimal.ZERO);

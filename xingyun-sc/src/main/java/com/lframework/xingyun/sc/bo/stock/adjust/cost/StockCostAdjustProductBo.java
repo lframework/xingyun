@@ -5,10 +5,8 @@ import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustProductDto
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class StockCostAdjustProductBo extends BaseBo<StockCostAdjustProductDto> {
 
     /**

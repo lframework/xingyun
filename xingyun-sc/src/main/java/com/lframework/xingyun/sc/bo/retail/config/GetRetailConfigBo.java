@@ -4,10 +4,8 @@ import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetRetailConfigBo extends BaseBo<RetailConfig> {
 
   /**
@@ -33,6 +31,12 @@ public class GetRetailConfigBo extends BaseBo<RetailConfig> {
    */
   @ApiModelProperty("零售退货单是否多次关联零售出库单")
   private Boolean retailReturnMultipleRelateOutStock;
+
+  /**
+   * 零售出库单是否需要发货
+   */
+  @ApiModelProperty("零售出库单是否需要发货")
+  private Boolean retailOutSheetRequireLogistics;
 
   public GetRetailConfigBo() {
 

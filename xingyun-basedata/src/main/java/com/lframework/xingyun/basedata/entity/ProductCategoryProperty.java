@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -15,7 +14,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-07-05
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("base_data_product_category_property")
 public class ProductCategoryProperty extends BaseEntity implements BaseDto {
 

@@ -105,6 +105,20 @@ public class CreateProductVo implements BaseVo, Serializable {
   private Integer productType;
 
   /**
+   * 重量（kg）
+   */
+  @ApiModelProperty(value = "重量（kg）")
+  @Digits(integer = 10, fraction = 2, message = "重量最多允许2位小数！")
+  private BigDecimal weight;
+
+  /**
+   * 体积（cm3）
+   */
+  @ApiModelProperty(value = "体积（cm3）")
+  @Digits(integer = 10, fraction = 2, message = "体积最多允许2位小数！")
+  private BigDecimal volume;
+
+  /**
    * 单品
    */
   @ApiModelProperty(value = "单品")

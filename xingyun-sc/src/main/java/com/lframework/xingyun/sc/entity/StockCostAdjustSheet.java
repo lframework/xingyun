@@ -9,7 +9,6 @@ import com.lframework.xingyun.sc.enums.StockCostAdjustSheetStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -19,7 +18,6 @@ import lombok.EqualsAndHashCode;
  * @author zmj
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_stock_cost_adjust_sheet")
 public class StockCostAdjustSheet extends BaseEntity implements BaseDto {
 

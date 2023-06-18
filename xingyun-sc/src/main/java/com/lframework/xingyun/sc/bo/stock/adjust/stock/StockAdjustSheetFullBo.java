@@ -24,12 +24,10 @@ import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -39,7 +37,6 @@ import lombok.EqualsAndHashCode;
  * @author zmj
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
 
   /**
@@ -169,7 +166,6 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class DetailBo extends BaseBo<StockAdjustSheetFullDto.DetailDto> {
 
     /**

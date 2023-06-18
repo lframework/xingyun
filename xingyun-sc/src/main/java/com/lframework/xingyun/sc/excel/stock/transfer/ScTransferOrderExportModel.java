@@ -15,10 +15,8 @@ import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class ScTransferOrderExportModel extends BaseBo<ScTransferOrder> implements ExcelModel {
 
   /**

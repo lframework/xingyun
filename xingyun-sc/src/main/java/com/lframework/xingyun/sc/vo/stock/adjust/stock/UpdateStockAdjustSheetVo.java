@@ -3,10 +3,8 @@ package com.lframework.xingyun.sc.vo.stock.adjust.stock;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class UpdateStockAdjustSheetVo extends CreateStockAdjustSheetVo {
 
   private static final long serialVersionUID = 1L;

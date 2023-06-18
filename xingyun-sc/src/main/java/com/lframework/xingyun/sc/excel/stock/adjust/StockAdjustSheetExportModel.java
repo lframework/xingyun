@@ -18,10 +18,8 @@ import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustSheetDetailServ
 import java.util.Date;
 import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class StockAdjustSheetExportModel extends BaseBo<StockAdjustSheet> implements ExcelModel {
 
   /**

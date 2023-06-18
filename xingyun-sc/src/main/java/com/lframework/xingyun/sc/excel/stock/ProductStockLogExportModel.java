@@ -20,10 +20,8 @@ import com.lframework.xingyun.sc.entity.ProductStockLog;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implements ExcelModel {
 
   /**

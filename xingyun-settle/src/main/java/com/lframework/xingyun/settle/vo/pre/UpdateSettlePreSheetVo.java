@@ -3,10 +3,8 @@ package com.lframework.xingyun.settle.vo.pre;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class UpdateSettlePreSheetVo extends CreateSettlePreSheetVo {
 
   private static final long serialVersionUID = 1L;

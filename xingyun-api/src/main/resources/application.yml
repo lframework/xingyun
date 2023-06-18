@@ -152,6 +152,9 @@ cache:
 # 锁类型，如果注释掉的话就使用的JCU的可重入锁
 locker-type: redis
 
+# 是否移除内置权限，针对admin等内置权限，因为内置权限等同于通配符权限，设置为true时会用具体的权限将内置权限替换掉，生产环境建议设置为true
+remove-fixed-permissions: false
+
 #开启多租户
 tenant:
   enabled: true

@@ -9,7 +9,6 @@ import com.lframework.xingyun.chart.enums.OrderChartBizType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -20,7 +19,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-11-19
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_order_chart")
 public class OrderChart extends BaseEntity implements BaseDto {
 

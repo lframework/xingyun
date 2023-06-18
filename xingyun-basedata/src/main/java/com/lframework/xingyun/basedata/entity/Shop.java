@@ -8,7 +8,6 @@ import com.lframework.starter.web.dto.BaseDto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -18,7 +17,6 @@ import lombok.EqualsAndHashCode;
  * @author zmj
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_shop")
 public class Shop extends BaseEntity implements BaseDto {
 

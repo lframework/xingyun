@@ -3,10 +3,8 @@ package com.lframework.xingyun.settle.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 /**
  * <p>
@@ -17,7 +15,6 @@ import java.math.BigDecimal;
  * @since 2021-11-30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("settle_fee_sheet_detail")
 public class SettleFeeSheetDetail extends BaseEntity implements BaseDto {
 

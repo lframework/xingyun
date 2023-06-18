@@ -15,7 +15,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -37,6 +36,7 @@ import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
@@ -44,6 +44,7 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.LogisticsSheetDetail;
 import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOrder;
@@ -53,10 +54,12 @@ import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetailBundle;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetailLot;
+import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.SaleOutSheetMapper;
+import com.lframework.xingyun.sc.service.logistics.LogisticsSheetDetailService;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderDetailBundleService;
@@ -140,6 +143,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
   @Autowired
   private OrderPayTypeService orderPayTypeService;
 
+  @Autowired
+  private LogisticsSheetDetailService logisticsSheetDetailService;
+
   @Override
   public PageResult<SaleOutSheet> query(Integer pageIndex, Integer pageSize,
       QuerySaleOutSheetVo vo) {
@@ -157,7 +163,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
   public List<SaleOutSheet> query(QuerySaleOutSheetVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("s")));
   }
 
@@ -170,7 +176,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<SaleOutSheet> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("s")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -229,7 +235,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<SaleOutSheet> datas = getBaseMapper().queryWithReturn(vo,
         saleConfig.getSaleReturnMultipleRelateOutStock(),
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("s")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -319,7 +325,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         .set(SaleOutSheet::getRefuseReason, StringPool.EMPTY_STR)
         .eq(SaleOutSheet::getId, sheet.getId())
         .in(SaleOutSheet::getStatus, statusList);
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
 
@@ -362,6 +368,15 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       }
     }
 
+    if (saleConfig.getOutStockRequireLogistics()) {
+      // 关联物流单
+      LogisticsSheetDetail logisticsSheetDetail = logisticsSheetDetailService.getByBizId(
+          sheet.getId(), LogisticsSheetDetailBizType.SALE_OUT_SHEET);
+      if (logisticsSheetDetail == null) {
+        throw new DefaultClientException("销售出库单尚未发货，无法审核通过！");
+      }
+    }
+
     sheet.setStatus(SaleOutSheetStatus.APPROVE_PASS);
 
     List<SaleOutSheetStatus> statusList = new ArrayList<>();
@@ -376,7 +391,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(SaleOutSheet::getDescription, vo.getDescription());
     }
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
 
@@ -574,7 +589,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         .set(SaleOutSheet::getRefuseReason, vo.getRefuseReason())
         .eq(SaleOutSheet::getId, sheet.getId())
         .eq(SaleOutSheet::getStatus, SaleOutSheetStatus.CREATED);
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
 
@@ -625,6 +640,11 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       }
 
       throw new DefaultClientException("销售出库单无法删除！");
+    }
+
+    if (logisticsSheetDetailService.getByBizId(sheet.getId(),
+        LogisticsSheetDetailBizType.SALE_OUT_SHEET) != null) {
+      throw new DefaultClientException("销售出库单已关联物流单，请先删除物流单！");
     }
 
     //查询销售出库单明细

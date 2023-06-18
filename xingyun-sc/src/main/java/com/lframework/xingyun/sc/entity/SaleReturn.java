@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -22,7 +21,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-11-04
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_sale_return")
 public class SaleReturn extends BaseEntity implements BaseDto {
 

@@ -14,7 +14,6 @@ import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -24,7 +23,6 @@ import lombok.EqualsAndHashCode;
  * @author zmj
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QueryTakeStockSheetBo extends BaseBo<TakeStockSheet> {
 
     /**

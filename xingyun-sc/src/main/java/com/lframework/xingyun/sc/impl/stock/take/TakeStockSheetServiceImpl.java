@@ -14,7 +14,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -23,6 +23,7 @@ import com.lframework.starter.mybatis.utils.PageResultUtil;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
@@ -93,7 +94,7 @@ public class TakeStockSheetServiceImpl extends
   public List<TakeStockSheet> query(QueryTakeStockSheetVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("tb")));
   }
 
@@ -477,7 +478,7 @@ public class TakeStockSheetServiceImpl extends
     List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockByCondition(planId,
         condition,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
@@ -496,7 +497,7 @@ public class TakeStockSheetServiceImpl extends
 
     List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockList(vo,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));

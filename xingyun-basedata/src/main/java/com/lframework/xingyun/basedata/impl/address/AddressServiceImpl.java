@@ -84,7 +84,8 @@ public class AddressServiceImpl extends BaseMpServiceImpl<AddressMapper, Address
 
     if (vo.getIsDefault()) {
       Wrapper<Address> checkWrapper = Wrappers.lambdaQuery(Address.class)
-          .eq(Address::getEntityId, vo.getEntityId()).eq(Address::getIsDefault, Boolean.TRUE);
+          .eq(Address::getEntityId, vo.getEntityId())
+          .eq(Address::getAddressType, vo.getAddressType()).eq(Address::getIsDefault, Boolean.TRUE);
       if (this.count(checkWrapper) > 0) {
         throw new DefaultClientException("实体已存在默认地址，不允许再新增默认地址！");
       }
@@ -123,7 +124,8 @@ public class AddressServiceImpl extends BaseMpServiceImpl<AddressMapper, Address
     }
     if (vo.getIsDefault()) {
       Wrapper<Address> checkWrapper = Wrappers.lambdaQuery(Address.class)
-          .eq(Address::getEntityId, vo.getEntityId()).eq(Address::getIsDefault, Boolean.TRUE)
+          .eq(Address::getEntityId, vo.getEntityId())
+          .eq(Address::getAddressType, vo.getAddressType()).eq(Address::getIsDefault, Boolean.TRUE)
           .ne(Address::getId, vo.getId());
       if (this.count(checkWrapper) > 0) {
         throw new DefaultClientException("实体已存在默认地址，不允许再新增默认地址！");

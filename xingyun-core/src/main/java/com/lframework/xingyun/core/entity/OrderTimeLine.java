@@ -8,7 +8,6 @@ import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -19,7 +18,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-07-07
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_order_time_line")
 public class OrderTimeLine extends BaseEntity implements BaseDto {
 

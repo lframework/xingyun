@@ -8,14 +8,11 @@ import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.DicCityService;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetCustomerBo extends BaseBo<Customer> {
 
     /**

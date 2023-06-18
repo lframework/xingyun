@@ -8,7 +8,6 @@ import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -18,7 +17,6 @@ import lombok.EqualsAndHashCode;
  * @author zmj
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_pre_take_stock_sheet")
 public class PreTakeStockSheet extends BaseEntity implements BaseDto {
 

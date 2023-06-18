@@ -22,10 +22,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetCustomerSettleFeeSheetBo extends BaseBo<CustomerSettleFeeSheetFullDto> {
 
   /**
@@ -157,7 +155,6 @@ public class GetCustomerSettleFeeSheetBo extends BaseBo<CustomerSettleFeeSheetFu
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class SheetDetailBo extends BaseBo<CustomerSettleFeeSheetFullDto.SheetDetailDto> {
 
     /**

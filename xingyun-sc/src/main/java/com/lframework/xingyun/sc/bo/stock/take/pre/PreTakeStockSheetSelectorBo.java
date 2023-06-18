@@ -8,13 +8,10 @@ import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.time.LocalDateTime;
+import lombok.Data;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class PreTakeStockSheetSelectorBo extends BaseBo<PreTakeStockSheet> {
 
     /**

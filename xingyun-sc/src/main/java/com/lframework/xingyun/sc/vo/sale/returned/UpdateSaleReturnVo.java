@@ -7,10 +7,8 @@ import com.lframework.xingyun.sc.service.sale.SaleReturnService;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class UpdateSaleReturnVo extends CreateSaleReturnVo {
 
   private static final long serialVersionUID = 1L;

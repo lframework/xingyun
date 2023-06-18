@@ -8,7 +8,6 @@ import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -19,7 +18,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-07-10
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("base_data_customer")
 public class Customer extends BaseEntity implements BaseDto {
 

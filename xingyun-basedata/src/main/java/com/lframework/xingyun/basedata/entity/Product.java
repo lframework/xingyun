@@ -9,7 +9,6 @@ import com.lframework.xingyun.basedata.enums.ProductType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -20,7 +19,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-07-11
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("base_data_product")
 public class Product extends BaseEntity implements BaseDto {
 
@@ -92,6 +90,16 @@ public class Product extends BaseEntity implements BaseDto {
    * 单位
    */
   private String unit;
+
+  /**
+   * 重量（kg）
+   */
+  private BigDecimal weight;
+
+  /**
+   * 体积（cm3）
+   */
+  private BigDecimal volume;
 
   /**
    * 状态

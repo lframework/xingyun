@@ -15,7 +15,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -37,6 +37,7 @@ import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleOrderEvent;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
@@ -129,7 +130,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   public List<SaleOrder> query(QuerySaleOrderVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("o")));
   }
 
@@ -142,7 +143,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<SaleOrder> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("o")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -183,13 +184,13 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<SaleOrder> datas = getBaseMapper().queryWithOut(vo,
         saleConfig.getOutStockMultipleRelateSale(),
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("o")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "创建订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建订单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -211,7 +212,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     return order.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改订单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -254,7 +255,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
         .set(SaleOrder::getApproveBy, null).set(SaleOrder::getApproveTime, null)
         .set(SaleOrder::getRefuseReason, StringPool.EMPTY_STR).eq(SaleOrder::getId, order.getId())
         .in(SaleOrder::getStatus, statusList);
-    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -262,7 +263,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -296,7 +297,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(SaleOrder::getDescription, vo.getDescription());
     }
-    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -418,7 +419,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     return orderId;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -449,7 +450,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
         .set(SaleOrder::getApproveTime, LocalDateTime.now())
         .set(SaleOrder::getRefuseReason, vo.getRefuseReason()).eq(SaleOrder::getId, order.getId())
         .eq(SaleOrder::getStatus, SaleOrderStatus.CREATED);
-    if (getBaseMapper().update(order, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
 
@@ -480,7 +481,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除订单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -554,7 +555,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition,
         isReturn,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
@@ -573,7 +574,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
     List<SaleProductDto> datas = getBaseMapper().querySaleList(vo,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));

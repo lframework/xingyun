@@ -28,10 +28,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetSaleReturnBo extends BaseBo<SaleReturnFullDto> {
 
   /**
@@ -235,7 +233,6 @@ public class GetSaleReturnBo extends BaseBo<SaleReturnFullDto> {
   }
 
   @Data
-  @EqualsAndHashCode(callSuper = true)
   public static class ReturnDetailBo extends BaseBo<SaleReturnFullDto.ReturnDetailDto> {
 
     /**

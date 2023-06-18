@@ -4,14 +4,11 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
-import com.lframework.starter.mybatis.enums.Gender;
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.basedata.enums.AddressEntityType;
 import com.lframework.xingyun.basedata.enums.AddressType;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -22,7 +19,6 @@ import lombok.EqualsAndHashCode;
  * @since 2023-03-26
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("base_data_address")
 public class Address extends BaseEntity implements BaseDto {
 

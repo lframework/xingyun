@@ -15,7 +15,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -37,6 +36,7 @@ import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailOutSheetEvent;
@@ -46,17 +46,19 @@ import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.entity.LogisticsSheetDetail;
 import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetailBundle;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
-import com.lframework.xingyun.sc.entity.SaleOutSheetDetailBundle;
+import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.RetailOutSheetMapper;
+import com.lframework.xingyun.sc.service.logistics.LogisticsSheetDetailService;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.retail.RetailConfigService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailBundleService;
@@ -130,6 +132,9 @@ public class RetailOutSheetServiceImpl extends
   @Autowired
   private OrderPayTypeService orderPayTypeService;
 
+  @Autowired
+  private LogisticsSheetDetailService logisticsSheetDetailService;
+
   @Override
   public PageResult<RetailOutSheet> query(Integer pageIndex, Integer pageSize,
       QueryRetailOutSheetVo vo) {
@@ -147,7 +152,7 @@ public class RetailOutSheetServiceImpl extends
   public List<RetailOutSheet> query(QueryRetailOutSheetVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("s")));
   }
 
@@ -160,7 +165,7 @@ public class RetailOutSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<RetailOutSheet> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("s")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -190,7 +195,7 @@ public class RetailOutSheetServiceImpl extends
     RetailOutSheetWithReturnDto sheet = getBaseMapper().getWithReturn(id,
         retailConfig.getRetailReturnRequireOutStock());
     if (sheet == null) {
-      throw new InputErrorException("销售出库单不存在！");
+      throw new InputErrorException("零售出库单不存在！");
     }
 
     return sheet;
@@ -208,13 +213,13 @@ public class RetailOutSheetServiceImpl extends
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<RetailOutSheet> datas = getBaseMapper().queryWithReturn(vo,
         retailConfig.getRetailReturnMultipleRelateOutStock(),
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("s")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "创建销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "创建零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建出库单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -236,7 +241,7 @@ public class RetailOutSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "修改零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改出库单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -244,17 +249,17 @@ public class RetailOutSheetServiceImpl extends
 
     RetailOutSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
-      throw new InputErrorException("销售出库单不存在！");
+      throw new InputErrorException("零售出库单不存在！");
     }
 
     if (sheet.getStatus() != RetailOutSheetStatus.CREATED
         && sheet.getStatus() != RetailOutSheetStatus.APPROVE_REFUSE) {
 
       if (sheet.getStatus() == RetailOutSheetStatus.APPROVE_PASS) {
-        throw new DefaultClientException("销售出库单已审核通过，无法修改！");
+        throw new DefaultClientException("零售出库单已审核通过，无法修改！");
       }
 
-      throw new DefaultClientException("销售出库单无法修改！");
+      throw new DefaultClientException("零售出库单无法修改！");
     }
 
     // 删除出库单明细
@@ -282,15 +287,15 @@ public class RetailOutSheetServiceImpl extends
         .set(RetailOutSheet::getMemberId, sheet.getMemberId())
         .eq(RetailOutSheet::getId, sheet.getId())
         .in(RetailOutSheet::getStatus, statusList);
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
-      throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
+      throw new DefaultClientException("零售出库单信息已过期，请刷新重试！");
     }
 
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -298,17 +303,27 @@ public class RetailOutSheetServiceImpl extends
 
     RetailOutSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
-      throw new InputErrorException("销售出库单不存在！");
+      throw new InputErrorException("零售出库单不存在！");
     }
 
     if (sheet.getStatus() != RetailOutSheetStatus.CREATED
         && sheet.getStatus() != RetailOutSheetStatus.APPROVE_REFUSE) {
 
       if (sheet.getStatus() == RetailOutSheetStatus.APPROVE_PASS) {
-        throw new DefaultClientException("销售出库单已审核通过，不允许继续执行审核！");
+        throw new DefaultClientException("零售出库单已审核通过，不允许继续执行审核！");
       }
 
-      throw new DefaultClientException("销售出库单无法审核通过！");
+      throw new DefaultClientException("零售出库单无法审核通过！");
+    }
+
+    RetailConfig retailConfig = retailConfigService.get();
+    if (retailConfig.getRetailOutSheetRequireLogistics()) {
+      // 关联物流单
+      LogisticsSheetDetail logisticsSheetDetail = logisticsSheetDetailService.getByBizId(
+          sheet.getId(), LogisticsSheetDetailBizType.RETAIL_OUT_SHEET);
+      if (logisticsSheetDetail == null) {
+        throw new DefaultClientException("零售出库单尚未发货，无法审核通过！");
+      }
     }
 
     sheet.setStatus(RetailOutSheetStatus.APPROVE_PASS);
@@ -326,8 +341,8 @@ public class RetailOutSheetServiceImpl extends
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(RetailOutSheet::getDescription, vo.getDescription());
     }
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
-      throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
+      throw new DefaultClientException("零售出库单信息已过期，请刷新重试！");
     }
 
     if (NumberUtil.gt(sheet.getTotalAmount(), BigDecimal.ZERO)) {
@@ -468,7 +483,7 @@ public class RetailOutSheetServiceImpl extends
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
         throw new DefaultClientException(
-            "第" + orderNo + "个销售出库单审核通过失败，失败原因：" + e.getMsg());
+            "第" + orderNo + "个零售出库单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -493,7 +508,7 @@ public class RetailOutSheetServiceImpl extends
     return sheetId;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -501,20 +516,20 @@ public class RetailOutSheetServiceImpl extends
 
     RetailOutSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
-      throw new InputErrorException("销售出库单不存在！");
+      throw new InputErrorException("零售出库单不存在！");
     }
 
     if (sheet.getStatus() != RetailOutSheetStatus.CREATED) {
 
       if (sheet.getStatus() == RetailOutSheetStatus.APPROVE_PASS) {
-        throw new DefaultClientException("销售出库单已审核通过，不允许继续执行审核！");
+        throw new DefaultClientException("零售出库单已审核通过，不允许继续执行审核！");
       }
 
       if (sheet.getStatus() == RetailOutSheetStatus.APPROVE_REFUSE) {
-        throw new DefaultClientException("销售出库单已审核拒绝，不允许继续执行审核！");
+        throw new DefaultClientException("零售出库单已审核拒绝，不允许继续执行审核！");
       }
 
-      throw new DefaultClientException("销售出库单无法审核拒绝！");
+      throw new DefaultClientException("零售出库单无法审核拒绝！");
     }
 
     sheet.setStatus(RetailOutSheetStatus.APPROVE_REFUSE);
@@ -526,8 +541,8 @@ public class RetailOutSheetServiceImpl extends
         .set(RetailOutSheet::getRefuseReason, vo.getRefuseReason())
         .eq(RetailOutSheet::getId, sheet.getId())
         .eq(RetailOutSheet::getStatus, RetailOutSheetStatus.CREATED);
-    if (getBaseMapper().update(sheet, updateOrderWrapper) != 1) {
-      throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
+    if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
+      throw new DefaultClientException("零售出库单信息已过期，请刷新重试！");
     }
 
     OpLogUtil.setVariable("code", sheet.getCode());
@@ -550,14 +565,14 @@ public class RetailOutSheetServiceImpl extends
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
         throw new DefaultClientException(
-            "第" + orderNo + "个销售出库单审核拒绝失败，失败原因：" + e.getMsg());
+            "第" + orderNo + "个零售出库单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除销售出库单，单号：{}", params = "#code")
+  @OpLog(type = DefaultOpLogType.OTHER, name = "删除零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -566,17 +581,22 @@ public class RetailOutSheetServiceImpl extends
     Assert.notBlank(id);
     RetailOutSheet sheet = getBaseMapper().selectById(id);
     if (sheet == null) {
-      throw new InputErrorException("销售出库单不存在！");
+      throw new InputErrorException("零售出库单不存在！");
     }
 
     if (sheet.getStatus() != RetailOutSheetStatus.CREATED
         && sheet.getStatus() != RetailOutSheetStatus.APPROVE_REFUSE) {
 
       if (sheet.getStatus() == RetailOutSheetStatus.APPROVE_PASS) {
-        throw new DefaultClientException("“审核通过”的销售出库单不允许执行删除操作！");
+        throw new DefaultClientException("“审核通过”的零售出库单不允许执行删除操作！");
       }
 
-      throw new DefaultClientException("销售出库单无法删除！");
+      throw new DefaultClientException("零售出库单无法删除！");
+    }
+
+    if (logisticsSheetDetailService.getByBizId(sheet.getId(),
+        LogisticsSheetDetailBizType.RETAIL_OUT_SHEET) != null) {
+      throw new DefaultClientException("零售出库单已关联物流单，请先删除物流单！");
     }
 
     // 删除订单明细
@@ -619,7 +639,7 @@ public class RetailOutSheetServiceImpl extends
           thisService.deleteById(id);
         } catch (ClientException e) {
           throw new DefaultClientException(
-              "第" + orderNo + "个销售出库单删除失败，失败原因：" + e.getMsg());
+              "第" + orderNo + "个零售出库单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -638,7 +658,7 @@ public class RetailOutSheetServiceImpl extends
 
     List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition, isReturn,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
@@ -657,7 +677,7 @@ public class RetailOutSheetServiceImpl extends
 
     List<RetailProductDto> datas = getBaseMapper().queryRetailList(vo,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));

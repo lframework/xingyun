@@ -15,7 +15,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -36,6 +36,7 @@ import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleReturnEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -137,7 +138,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
   public List<SaleReturn> query(QuerySaleReturnVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("r")));
   }
 
@@ -226,7 +227,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
         .set(SaleReturn::getRefuseReason, StringPool.EMPTY_STR)
         .eq(SaleReturn::getId, saleReturn.getId())
         .in(SaleReturn::getStatus, statusList);
-    if (getBaseMapper().update(saleReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(saleReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售退货单信息已过期，请刷新重试！");
     }
 
@@ -283,7 +284,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(SaleReturn::getDescription, vo.getDescription());
     }
-    if (getBaseMapper().update(saleReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(saleReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售退货单信息已过期，请刷新重试！");
     }
 
@@ -391,7 +392,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
         .set(SaleReturn::getRefuseReason, vo.getRefuseReason())
         .eq(SaleReturn::getId, saleReturn.getId())
         .eq(SaleReturn::getStatus, SaleReturnStatus.CREATED);
-    if (getBaseMapper().update(saleReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(saleReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售退货单信息已过期，请刷新重试！");
     }
 

@@ -10,7 +10,6 @@ import com.lframework.xingyun.basedata.enums.ColumnType;
 import com.lframework.xingyun.basedata.enums.PropertyType;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -21,7 +20,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-07-30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("base_data_product_property")
 public class ProductProperty extends BaseEntity implements BaseDto {
 

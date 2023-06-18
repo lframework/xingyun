@@ -9,7 +9,6 @@ import com.lframework.xingyun.sc.enums.SaleOrderStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -20,7 +19,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-10-21
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_sale_order")
 public class SaleOrder extends BaseEntity implements BaseDto {
 

@@ -13,7 +13,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.system.RecursionMappingService;
@@ -52,6 +51,7 @@ import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.retail.UpdateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
 import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -109,7 +109,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
   public List<Product> query(QueryProductVo vo) {
 
     return getBaseMapper().query(vo, DataPermissionHandler.getDataPermission(
-        SysDataPermissionDataPermissionType.PRODUCT, Arrays.asList("product", "brand", "category"),
+        DataPermissionPool.PRODUCT, Arrays.asList("product", "brand", "category"),
         Arrays.asList("g", "b", "c")));
   }
 
@@ -122,7 +122,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<Product> datas = getBaseMapper().selector(vo, DataPermissionHandler.getDataPermission(
-        SysDataPermissionDataPermissionType.PRODUCT, Arrays.asList("product", "brand", "category"),
+        DataPermissionPool.PRODUCT, Arrays.asList("product", "brand", "category"),
         Arrays.asList("g", "b", "c")));
 
     return PageResultUtil.convert(new PageInfo<>(datas));
@@ -224,6 +224,8 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     data.setProductType(EnumUtil.getByCode(ProductType.class, vo.getProductType()));
     data.setTaxRate(vo.getTaxRate());
     data.setSaleTaxRate(vo.getSaleTaxRate());
+    data.setWeight(vo.getWeight());
+    data.setVolume(vo.getVolume());
 
     data.setAvailable(Boolean.TRUE);
 
@@ -390,6 +392,8 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         .set(Product::getBrandId, StringUtil.isBlank(vo.getBrandId()) ? null : vo.getBrandId())
         .set(Product::getTaxRate, vo.getTaxRate())
         .set(Product::getSaleTaxRate, vo.getSaleTaxRate())
+        .set(Product::getWeight, vo.getWeight())
+        .set(Product::getVolume, vo.getVolume())
         .eq(Product::getId, vo.getId());
 
     getBaseMapper().update(updateWrapper);

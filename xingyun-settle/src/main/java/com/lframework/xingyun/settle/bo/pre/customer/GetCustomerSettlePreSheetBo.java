@@ -18,10 +18,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetCustomerSettlePreSheetBo extends BaseBo<CustomerSettlePreSheetFullDto> {
 
     /**
@@ -145,7 +143,6 @@ public class GetCustomerSettlePreSheetBo extends BaseBo<CustomerSettlePreSheetFu
     }
 
     @Data
-    @EqualsAndHashCode(callSuper = true)
     public static class SheetDetailBo extends BaseBo<CustomerSettlePreSheetFullDto.SheetDetailDto> {
 
         /**

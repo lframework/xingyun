@@ -14,7 +14,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -25,6 +25,7 @@ import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.common.security.AbstractUserDetails;
 import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.settle.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.settle.dto.sheet.customer.CustomerSettleBizItemDto;
@@ -86,7 +87,7 @@ public class CustomerSettleSheetServiceImpl extends
   public List<CustomerSettleSheet> query(QueryCustomerSettleSheetVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("s")));
   }
 
@@ -169,7 +170,7 @@ public class CustomerSettleSheetServiceImpl extends
         .set(CustomerSettleSheet::getRefuseReason, StringPool.EMPTY_STR)
         .eq(CustomerSettleSheet::getId, sheet.getId())
         .in(CustomerSettleSheet::getStatus, statusList);
-    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("客户结算单信息已过期，请刷新重试！");
     }
 
@@ -210,7 +211,7 @@ public class CustomerSettleSheetServiceImpl extends
     Wrapper<CustomerSettleSheet> updateWrapper = Wrappers.lambdaUpdate(CustomerSettleSheet.class)
         .eq(CustomerSettleSheet::getId, sheet.getId())
         .in(CustomerSettleSheet::getStatus, statusList);
-    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("客户结算单信息已过期，请刷新重试！");
     }
 
@@ -279,7 +280,7 @@ public class CustomerSettleSheetServiceImpl extends
     Wrapper<CustomerSettleSheet> updateWrapper = Wrappers.lambdaUpdate(CustomerSettleSheet.class)
         .eq(CustomerSettleSheet::getId, sheet.getId())
         .in(CustomerSettleSheet::getStatus, statusList);
-    if (getBaseMapper().update(sheet, updateWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
       throw new DefaultClientException("客户结算单信息已过期，请刷新重试！");
     }
 

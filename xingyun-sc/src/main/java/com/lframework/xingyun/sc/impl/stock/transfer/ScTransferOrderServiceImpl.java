@@ -14,7 +14,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -26,6 +26,7 @@ import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -101,7 +102,7 @@ public class ScTransferOrderServiceImpl extends
   public List<ScTransferOrder> query(QueryScTransferOrderVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("tb")));
   }
 
@@ -173,7 +174,7 @@ public class ScTransferOrderServiceImpl extends
         .set(ScTransferOrder::getRefuseReason, StringPool.EMPTY_STR)
         .eq(ScTransferOrder::getId, data.getId())
         .in(ScTransferOrder::getStatus, statusList);
-    if (getBaseMapper().update(data, updateSheetWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(data, updateSheetWrapper) != 1) {
       throw new DefaultClientException("仓库调拨单信息已过期，请刷新重试！");
     }
 
@@ -487,7 +488,7 @@ public class ScTransferOrderServiceImpl extends
     List<ScTransferProductDto> datas = getBaseMapper().queryScTransferByCondition(scId,
         condition,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<ScTransferProductDto> pageResult = PageResultUtil.convert(
@@ -507,7 +508,7 @@ public class ScTransferOrderServiceImpl extends
 
     List<ScTransferProductDto> datas = getBaseMapper().queryScTransferList(vo,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<ScTransferProductDto> pageResult = PageResultUtil.convert(

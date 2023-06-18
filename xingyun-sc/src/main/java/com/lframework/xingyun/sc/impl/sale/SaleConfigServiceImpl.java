@@ -38,6 +38,7 @@ public class SaleConfigServiceImpl extends BaseMpServiceImpl<SaleConfigMapper, S
     config.setOutStockMultipleRelateSale(vo.getOutStockMultipleRelateSale());
     config.setSaleReturnRequireOutStock(vo.getSaleReturnRequireOutStock());
     config.setSaleReturnMultipleRelateOutStock(vo.getSaleReturnMultipleRelateOutStock());
+    config.setOutStockRequireLogistics(vo.getOutStockRequireLogistics());
 
     getBaseMapper().updateById(config);
 

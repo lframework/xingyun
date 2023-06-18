@@ -7,10 +7,8 @@ import com.lframework.xingyun.sc.enums.SettleStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QueryPurchaseReturnVo extends PageVo {
 
   private static final long serialVersionUID = 1L;

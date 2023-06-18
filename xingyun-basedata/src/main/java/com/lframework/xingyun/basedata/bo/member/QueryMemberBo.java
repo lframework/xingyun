@@ -7,10 +7,8 @@ import com.lframework.xingyun.basedata.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QueryMemberBo extends BaseBo<Member> {
 
     /**

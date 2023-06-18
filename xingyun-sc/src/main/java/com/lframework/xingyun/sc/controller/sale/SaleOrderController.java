@@ -11,9 +11,6 @@ import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.ExcelUtil;
-import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
-import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.bo.sale.GetSaleOrderBo;
 import com.lframework.xingyun.sc.bo.sale.PrintSaleOrderBo;
@@ -23,6 +20,7 @@ import com.lframework.xingyun.sc.bo.sale.SaleOrderWithOutBo;
 import com.lframework.xingyun.sc.bo.sale.SaleProductBo;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
+import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.excel.sale.SaleOrderExportModel;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
@@ -33,6 +31,7 @@ import com.lframework.xingyun.sc.vo.sale.BatchApproveRefuseSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.CreateSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
+import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -68,9 +67,6 @@ public class SaleOrderController extends DefaultBaseController {
 
   @Autowired
   private SaleOrderService saleOrderService;
-
-  @Autowired
-  private ProductService productService;
 
   /**
    * 打印

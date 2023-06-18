@@ -7,10 +7,8 @@ import com.lframework.xingyun.settle.enums.SettleCheckSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QuerySettleCheckSheetVo extends PageVo {
 
   private static final long serialVersionUID = 1L;

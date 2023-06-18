@@ -4,10 +4,8 @@ import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetPurchaseConfigBo extends BaseBo<PurchaseConfig> {
 
     /**

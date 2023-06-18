@@ -6,18 +6,16 @@ import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.service.UserService;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.components.excel.ExcelModel;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.excel.ExcelModel;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class StockCostAdjustSheetExportModel extends BaseBo<StockCostAdjustSheet> implements ExcelModel {
 
     /**

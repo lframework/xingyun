@@ -7,10 +7,8 @@ import com.lframework.xingyun.basedata.entity.StoreCenter;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QueryStoreCenterBo extends BaseBo<StoreCenter> {
 
     /**

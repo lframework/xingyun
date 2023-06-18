@@ -174,12 +174,6 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
       orderNo++;
     }
 
-    if (requirePurchase) {
-      if (this.products.stream().allMatch(t -> StringUtil.isBlank(t.getPurchaseOrderDetailId()))) {
-        throw new InputErrorException("采购订单中的商品必须全部或部分收货！");
-      }
-    }
-
     BigDecimal totalAmount = this.products.stream()
         .map(t -> NumberUtil.mul(t.getReceiveNum(), t.getPurchasePrice())).reduce(NumberUtil::add)
         .orElse(BigDecimal.ZERO);

@@ -1,9 +1,7 @@
 package com.lframework.xingyun.chart.controller;
 
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.security.SecurityConstants;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
@@ -47,7 +45,6 @@ public class ChartController extends DefaultBaseController {
    * 订单报表
    */
   @ApiOperation("订单报表")
-  @HasPermission({SecurityConstants.PERMISSION_ADMIN_NAME})
   @GetMapping("/order")
   public InvokeResult<Map<String, Map<String, ? extends BaseBo>>> orderChart() {
 

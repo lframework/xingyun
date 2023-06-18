@@ -9,7 +9,6 @@ import com.lframework.starter.web.dto.BaseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -20,7 +19,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-07-11
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("base_data_member")
 public class Member extends BaseEntity implements BaseDto {
 

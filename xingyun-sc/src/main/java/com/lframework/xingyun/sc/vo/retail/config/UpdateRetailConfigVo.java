@@ -38,4 +38,11 @@ public class UpdateRetailConfigVo implements BaseVo, Serializable {
   @ApiModelProperty(value = "零售退货单上的会员是否必填", required = true)
   @NotNull(message = "零售退货单上的会员是否必填不能为空！")
   private Boolean retailReturnRequireMember;
+
+  /**
+   * 零售出库单是否需要发货
+   */
+  @ApiModelProperty(value = "零售出库单是否需要发货", required = true)
+  @NotNull(message = "零售出库单是否需要发货不能为空！")
+  private Boolean retailOutSheetRequireLogistics;
 }

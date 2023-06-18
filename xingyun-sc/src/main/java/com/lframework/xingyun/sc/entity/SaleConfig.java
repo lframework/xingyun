@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -15,7 +14,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-09-12
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_sale_config")
 public class SaleConfig extends BaseEntity implements BaseDto {
 
@@ -45,4 +43,9 @@ public class SaleConfig extends BaseEntity implements BaseDto {
    * 销售退货单是否多次关联销售出库单
    */
   private Boolean saleReturnMultipleRelateOutStock;
+
+  /**
+   * 销售出库单是否需要物流单
+   */
+  private Boolean outStockRequireLogistics;
 }

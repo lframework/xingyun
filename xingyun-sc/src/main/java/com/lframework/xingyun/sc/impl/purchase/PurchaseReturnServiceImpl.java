@@ -15,7 +15,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.service.UserService;
@@ -35,6 +35,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseReturnEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -130,7 +131,7 @@ public class PurchaseReturnServiceImpl extends
   public List<PurchaseReturn> query(QueryPurchaseReturnVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("r")));
   }
 
@@ -221,7 +222,7 @@ public class PurchaseReturnServiceImpl extends
         .set(PurchaseReturn::getRefuseReason, StringPool.EMPTY_STR)
         .eq(PurchaseReturn::getId, purchaseReturn.getId())
         .in(PurchaseReturn::getStatus, statusList);
-    if (getBaseMapper().update(purchaseReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(purchaseReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购退货单信息已过期，请刷新重试！");
     }
 
@@ -278,7 +279,7 @@ public class PurchaseReturnServiceImpl extends
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(PurchaseReturn::getDescription, vo.getDescription());
     }
-    if (getBaseMapper().update(purchaseReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(purchaseReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购退货单信息已过期，请刷新重试！");
     }
 
@@ -387,7 +388,7 @@ public class PurchaseReturnServiceImpl extends
         .set(PurchaseReturn::getRefuseReason, vo.getRefuseReason())
         .eq(PurchaseReturn::getId, purchaseReturn.getId())
         .eq(PurchaseReturn::getStatus, PurchaseReturnStatus.CREATED);
-    if (getBaseMapper().update(purchaseReturn, updateOrderWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(purchaseReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购退货单信息已过期，请刷新重试！");
     }
 

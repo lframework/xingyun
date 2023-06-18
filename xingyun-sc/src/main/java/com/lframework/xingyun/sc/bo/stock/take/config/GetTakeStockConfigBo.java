@@ -4,7 +4,6 @@ import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -14,7 +13,6 @@ import lombok.EqualsAndHashCode;
  * @author zmj
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class GetTakeStockConfigBo extends BaseBo<TakeStockConfig> {
 
     /**

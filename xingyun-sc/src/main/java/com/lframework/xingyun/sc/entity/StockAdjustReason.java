@@ -7,7 +7,6 @@ import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -18,7 +17,6 @@ import lombok.EqualsAndHashCode;
  * @since 2023-04-18
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_stock_adjust_reason")
 public class StockAdjustReason extends BaseEntity implements BaseDto {
 

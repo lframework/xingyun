@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.LogisticsSheetMapper">
+
+    <resultMap id="LogisticsSheetFullDto" type="com.lframework.xingyun.sc.dto.logistics.LogisticsSheetFullDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="logistics_no" property="logisticsNo"/>
+        <result column="logistics_company_id" property="logisticsCompanyId"/>
+        <result column="sender_name" property="senderName"/>
+        <result column="sender_telephone" property="senderTelephone"/>
+        <result column="sender_province_id" property="senderProvinceId"/>
+        <result column="sender_city_id" property="senderCityId"/>
+        <result column="sender_district_id" property="senderDistrictId"/>
+        <result column="sender_address" property="senderAddress"/>
+        <result column="receiver_name" property="receiverName"/>
+        <result column="receiver_telephone" property="receiverTelephone"/>
+        <result column="receiver_province_id" property="receiverProvinceId"/>
+        <result column="receiver_city_id" property="receiverCityId"/>
+        <result column="receiver_district_id" property="receiverDistrictId"/>
+        <result column="receiver_address" property="receiverAddress"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="total_weight" property="totalWeight"/>
+        <result column="total_volume" property="totalVolume"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="delivery_by" property="deliveryBy"/>
+        <result column="delivery_time" property="deliveryTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <collection property="details" javaType="java.util.ArrayList" ofType="com.lframework.xingyun.sc.dto.logistics.LogisticsSheetFullDto$DetailDto">
+            <id column="detail_id" property="id"/>
+            <result column="detail_sheet_id" property="sheetId"/>
+            <result column="detail_biz_id" property="bizId"/>
+            <result column="detail_biz_type" property="bizType"/>
+        </collection>
+    </resultMap>
+
+    <sql id="LogisticsSheetDto_sql">
+        SELECT
+            o.*
+        FROM tbl_logistics_sheet AS o
+    </sql>
+
+    <sql id="LogisticsSheetFullDto_sql">
+        SELECT
+            o.id,
+            o.code,
+            o.logistics_no,
+            o.logistics_company_id,
+            o.sender_name,
+            o.sender_telephone,
+            o.sender_province_id,
+            o.sender_city_id,
+            o.sender_district_id,
+            o.sender_address,
+            o.receiver_name,
+            o.receiver_telephone,
+            o.receiver_province_id,
+            o.receiver_city_id,
+            o.receiver_district_id,
+            o.receiver_address,
+            o.status,
+            o.description,
+            o.total_weight,
+            o.total_volume,
+            o.total_amount,
+            o.delivery_by,
+            o.delivery_time,
+            o.create_by,
+            o.create_time,
+            o.update_by,
+            o.update_time,
+            d.id AS detail_id,
+            d.sheet_id AS detail_sheet_id,
+            d.biz_id AS detail_biz_id,
+            d.biz_type AS detail_biz_type
+        FROM tbl_logistics_sheet AS o
+        LEFT JOIN tbl_logistics_sheet_detail AS d ON d.sheet_id = o.id
+    </sql>
+
+    <select id="query" resultType="com.lframework.xingyun.sc.entity.LogisticsSheet">
+        <include refid="LogisticsSheetDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND o.code = #{vo.code}
+                </if>
+                <if test="vo.logisticsNo != null and vo.logisticsNo != ''">
+                    AND o.logistics_no = #{vo.logisticsNo}
+                </if>
+                <if test="vo.logisticsCompanyId != null and vo.logisticsCompanyId != ''">
+                    AND o.logistics_company_id = #{vo.logisticsCompanyId}
+                </if>
+                <if test="vo.status != null">
+                    AND o.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND o.create_by_id = #{vo.createBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND o.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND o.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.deliveryBy != null and vo.deliveryBy != ''">
+                    AND o.delivery_by = #{vo.deliveryBy}
+                </if>
+                <if test="vo.deliveryStartTime != null">
+                    AND o.delivery_time >= #{vo.deliveryStartTime}
+                </if>
+                <if test="vo.deliveryEndTime != null">
+                    <![CDATA[
+                    AND o.delivery_time <= #{vo.deliveryEndTime}
+                    ]]>
+                </if>
+            </if>
+            AND ${dataPermission}
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+    <select id="getDetail" resultMap="LogisticsSheetFullDto">
+        <include refid="LogisticsSheetFullDto_sql"/>
+        WHERE o.id = #{id}
+    </select>
+    <select id="selector" resultType="com.lframework.xingyun.sc.entity.LogisticsSheet">
+        <include refid="LogisticsSheetDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND o.code = #{vo.code}
+                </if>
+                <if test="vo.logisticsNo != null and vo.logisticsNo != ''">
+                    AND o.logistics_no = #{vo.logisticsNo}
+                </if>
+                <if test="vo.logisticsCompanyId != null and vo.logisticsCompanyId != ''">
+                    AND o.logistics_company_id = #{vo.logisticsCompanyId}
+                </if>
+                <if test="vo.status != null">
+                    AND o.status = #{vo.status}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND o.create_by_id = #{vo.createBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                    AND o.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                    <![CDATA[
+                    AND o.create_time <= #{vo.createEndTime}
+                    ]]>
+                </if>
+                <if test="vo.deliveryBy != null and vo.deliveryBy != ''">
+                    AND o.delivery_by = #{vo.deliveryBy}
+                </if>
+                <if test="vo.deliveryStartTime != null">
+                    AND o.delivery_time >= #{vo.deliveryStartTime}
+                </if>
+                <if test="vo.deliveryEndTime != null">
+                    <![CDATA[
+                    AND o.delivery_time <= #{vo.deliveryEndTime}
+                    ]]>
+                </if>
+            </if>
+            AND ${dataPermission}
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+    <select id="queryBizOrder" resultType="com.lframework.xingyun.sc.dto.logistics.LogisticsSheetBizOrderDto">
+        SELECT * FROM (
+            SELECT
+                s.id AS biz_id,
+                s.code AS biz_code,
+                1 AS biz_type,
+                s.sc_id,
+                s.customer_id AS receiver_id,
+                s.create_by,
+                s.create_by_id,
+                s.create_time
+            FROM tbl_sale_out_sheet AS s
+            UNION ALL
+            SELECT
+                r.id AS biz_id,
+                r.code AS biz_code,
+                2 AS biz_type,
+                r.sc_id,
+                r.member_id AS receiver_id,
+                r.create_by,
+                r.create_by_id,
+                r.create_time
+            FROM tbl_retail_out_sheet AS r
+        ) AS o
+        LEFT JOIN tbl_logistics_sheet_detail AS d ON d.biz_id = o.biz_id
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND o.biz_code = #{vo.code}
+                </if>
+                <if test="vo.createBy != null and vo.createBy != ''">
+                   AND o.create_by_id = #{vo.createBy}
+                </if>
+                <if test="vo.createStartTime != null">
+                   AND o.create_time >= #{vo.createStartTime}
+                </if>
+                <if test="vo.createEndTime != null">
+                   <![CDATA[
+                   AND o.create_time <= #{vo.createEndTime}
+                   ]]>
+                </if>
+            </if>
+            AND d.id IS NULL
+            AND ${dataPermission}
+        </where>
+        ORDER BY o.create_time
+    </select>
+</mapper>

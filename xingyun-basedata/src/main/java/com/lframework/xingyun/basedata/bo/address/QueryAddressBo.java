@@ -20,10 +20,8 @@ import com.lframework.xingyun.core.service.DicCityService;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QueryAddressBo extends BaseBo<Address> {
 
   /**

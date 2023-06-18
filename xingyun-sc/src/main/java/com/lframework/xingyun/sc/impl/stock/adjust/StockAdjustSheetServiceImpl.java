@@ -8,13 +8,12 @@ import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.mybatis.annotations.OpLog;
 import com.lframework.starter.mybatis.components.permission.DataPermissionHandler;
 import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.enums.system.SysDataPermissionDataPermissionType;
+import com.lframework.starter.mybatis.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
 import com.lframework.starter.mybatis.resp.PageResult;
 import com.lframework.starter.mybatis.utils.OpLogUtil;
@@ -29,6 +28,7 @@ import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
@@ -100,7 +100,7 @@ public class StockAdjustSheetServiceImpl extends
   public List<StockAdjustSheet> query(QueryStockAdjustSheetVo vo) {
 
     return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(SysDataPermissionDataPermissionType.ORDER,
+        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
             Arrays.asList("order"), Arrays.asList("tb")));
   }
 
@@ -172,7 +172,7 @@ public class StockAdjustSheetServiceImpl extends
         .set(StockAdjustSheet::getRefuseReason, StringPool.EMPTY_STR)
         .eq(StockAdjustSheet::getId, data.getId())
         .in(StockAdjustSheet::getStatus, statusList);
-    if (getBaseMapper().update(data, updateSheetWrapper) != 1) {
+    if (getBaseMapper().updateAllColumn(data, updateSheetWrapper) != 1) {
       throw new DefaultClientException("库存调整单信息已过期，请刷新重试！");
     }
 
@@ -419,7 +419,7 @@ public class StockAdjustSheetServiceImpl extends
     List<StockAdjustProductDto> datas = getBaseMapper().queryStockAdjustByCondition(scId,
         condition,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<StockAdjustProductDto> pageResult = PageResultUtil.convert(
@@ -439,7 +439,7 @@ public class StockAdjustSheetServiceImpl extends
 
     List<StockAdjustProductDto> datas = getBaseMapper().queryStockAdjustList(vo,
         DataPermissionHandler.getDataPermission(
-            SysDataPermissionDataPermissionType.PRODUCT,
+            DataPermissionPool.PRODUCT,
             Arrays.asList("product", "brand", "category"),
             Arrays.asList("g", "b", "c")));
     PageResult<StockAdjustProductDto> pageResult = PageResultUtil.convert(

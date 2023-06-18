@@ -7,7 +7,6 @@ import com.lframework.xingyun.settle.enums.CustomerSettleCheckSheetBizType;
 import com.lframework.xingyun.settle.enums.CustomerSettleCheckSheetCalcType;
 import java.math.BigDecimal;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -18,7 +17,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-12-02
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("customer_settle_check_sheet_detail")
 public class CustomerSettleCheckSheetDetail extends BaseEntity implements BaseDto {
 

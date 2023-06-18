@@ -12,10 +12,8 @@ import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class QuerySaleOutSheetWithReturnBo extends BaseBo<SaleOutSheet> {
 
     /**

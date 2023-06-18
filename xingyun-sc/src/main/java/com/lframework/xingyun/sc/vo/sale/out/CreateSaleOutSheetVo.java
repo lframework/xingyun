@@ -176,12 +176,6 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
       orderNo++;
     }
 
-    if (requireSale) {
-      if (this.products.stream().allMatch(t -> StringUtil.isBlank(t.getSaleOrderDetailId()))) {
-        throw new InputErrorException("销售订单中的商品必须全部或部分出库！");
-      }
-    }
-
     BigDecimal totalAmount = this.products.stream()
         .map(t -> NumberUtil.mul(t.getOrderNum(), t.getTaxPrice())).reduce(NumberUtil::add)
         .orElse(BigDecimal.ZERO);

@@ -4,14 +4,11 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class ProductPropertyModelorBo extends BaseBo<ProductPropertyModelorDto> {
 
     /**
@@ -94,7 +91,6 @@ public class ProductPropertyModelorBo extends BaseBo<ProductPropertyModelorDto> 
     }
 
     @Data
-    @EqualsAndHashCode(callSuper = true)
     public static class ProductPropertyItemModelorBo
             extends BaseBo<ProductPropertyModelorDto.ProductPropertyItemModelorDto> {
 

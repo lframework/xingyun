@@ -4,13 +4,11 @@ import com.lframework.starter.web.bo.BasePrintBo;
 import com.lframework.starter.web.bo.BasePrintDataBo;
 import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * Excel文件的A4纸纵向打印的默认设置
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class A4ExcelPortraitPrintBo<T extends BasePrintDataBo<? extends BaseDto>> extends
     BasePrintBo<T> {
 

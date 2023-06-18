@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -15,7 +14,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-09-12
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tbl_purchase_config")
 public class PurchaseConfig extends BaseEntity implements BaseDto {
 

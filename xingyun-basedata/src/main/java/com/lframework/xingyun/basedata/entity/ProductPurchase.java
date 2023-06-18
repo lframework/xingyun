@@ -5,7 +5,6 @@ import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import java.math.BigDecimal;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -16,7 +15,6 @@ import lombok.EqualsAndHashCode;
  * @since 2021-07-11
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("base_data_product_purchase")
 public class ProductPurchase extends BaseEntity implements BaseDto {
 

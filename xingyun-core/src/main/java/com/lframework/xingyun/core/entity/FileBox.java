@@ -7,7 +7,6 @@ import com.lframework.starter.mybatis.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -15,7 +14,6 @@ import lombok.EqualsAndHashCode;
  * </p>
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("sw_file_box")
 public class FileBox extends BaseEntity implements BaseDto {
 

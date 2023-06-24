@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.excel.logistics;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.lframework.starter.web.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class LogisticsSheetDeliveryImportModel implements ExcelModel {
   /**
    * 单据号
    */
+  @ExcelRequired
   @ExcelProperty("单据号")
   private String code;
 

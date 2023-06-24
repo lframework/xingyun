@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.excel.supplier;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.lframework.starter.web.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import com.lframework.xingyun.basedata.enums.ManageType;
 import com.lframework.xingyun.basedata.enums.SettleType;
@@ -19,18 +20,21 @@ public class SupplierImportModel implements ExcelModel {
   /**
    * 编号
    */
+  @ExcelRequired
   @ExcelProperty("编号")
   private String code;
 
   /**
    * 名称
    */
+  @ExcelRequired
   @ExcelProperty("名称")
   private String name;
 
   /**
    * 助记码
    */
+  @ExcelRequired
   @ExcelProperty("助记码")
   private String mnemonicCode;
 
@@ -91,6 +95,7 @@ public class SupplierImportModel implements ExcelModel {
   /**
    * 经营方式
    */
+  @ExcelRequired
   @ExcelProperty("经营方式")
   private String manageType;
 
@@ -103,6 +108,7 @@ public class SupplierImportModel implements ExcelModel {
   /**
    * 结账方式
    */
+  @ExcelRequired
   @ExcelProperty(value = "结账方式")
   private String settleType;
 

@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.excel.logistics;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.lframework.starter.web.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import java.math.BigDecimal;
 import java.util.Map;
@@ -49,18 +50,21 @@ public class LogisticsSheetImportModel implements ExcelModel {
   /**
    * 物流公司编号
    */
+  @ExcelRequired
   @ExcelProperty("物流公司编号")
   private String logisticsCompanyCode;
 
   /**
    * 寄件人姓名
    */
+  @ExcelRequired
   @ExcelProperty("寄件人姓名")
   private String senderName;
 
   /**
    * 寄件人联系电话
    */
+  @ExcelRequired
   @ExcelProperty("寄件人联系电话")
   private String senderTelephone;
 
@@ -73,6 +77,7 @@ public class LogisticsSheetImportModel implements ExcelModel {
   /**
    * 寄件人省
    */
+  @ExcelRequired
   @ExcelProperty("寄件人省")
   private String senderProvinceName;
 
@@ -85,6 +90,7 @@ public class LogisticsSheetImportModel implements ExcelModel {
   /**
    * 寄件人市
    */
+  @ExcelRequired
   @ExcelProperty("寄件人市")
   private String senderCityName;
 
@@ -97,24 +103,28 @@ public class LogisticsSheetImportModel implements ExcelModel {
   /**
    * 寄件人区
    */
+  @ExcelRequired
   @ExcelProperty("寄件人区")
   private String senderDistrictName;
 
   /**
    * 寄件人地址
    */
+  @ExcelRequired
   @ExcelProperty("寄件人地址")
   private String senderAddress;
 
   /**
    * 收件人姓名
    */
+  @ExcelRequired
   @ExcelProperty("收件人姓名")
   private String receiverName;
 
   /**
    * 收件人联系电话
    */
+  @ExcelRequired
   @ExcelProperty("收件人联系电话")
   private String receiverTelephone;
 
@@ -127,6 +137,7 @@ public class LogisticsSheetImportModel implements ExcelModel {
   /**
    * 收件人省
    */
+  @ExcelRequired
   @ExcelProperty("收件人省")
   private String receiverProvinceName;
 
@@ -139,6 +150,7 @@ public class LogisticsSheetImportModel implements ExcelModel {
   /**
    * 收件人市
    */
+  @ExcelRequired
   @ExcelProperty("收件人市")
   private String receiverCityName;
 
@@ -151,12 +163,14 @@ public class LogisticsSheetImportModel implements ExcelModel {
   /**
    * 收件人区
    */
+  @ExcelRequired
   @ExcelProperty("收件人区")
   private String receiverDistrictName;
 
   /**
    * 收件人地址
    */
+  @ExcelRequired
   @ExcelProperty("收件人地址")
   private String receiverAddress;
 

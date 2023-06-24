@@ -49,7 +49,7 @@ public class ReceiveSheetImportListener extends ExcelImportListener<ReceiveSheet
     }
     if (StringUtil.isBlank(data.getSupplierCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“仓库编号”不能为空");
+          "第" + context.readRowHolder().getRowIndex() + "行“供应商编号”不能为空");
     } else {
       SupplierService supplierService = ApplicationUtil.getBean(SupplierService.class);
       Wrapper<Supplier> queryWrapper = Wrappers.lambdaQuery(Supplier.class)

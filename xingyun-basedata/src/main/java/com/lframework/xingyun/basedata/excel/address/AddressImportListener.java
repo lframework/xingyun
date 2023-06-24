@@ -109,39 +109,40 @@ public class AddressImportListener extends ExcelImportListener<AddressImportMode
     if (StringUtil.isBlank(data.getTelephone())) {
       throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“联系电话”不能为空");
     }
-    if (!StringUtil.isBlank(data.getCity())) {
-      String[] arr = data.getCity().split("/");
-      if (arr.length != 3) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“地区”格式错误，应为省/市/区（县），例如：北京市/市辖区/东城区");
-      }
-
-      DicCityService dicCityService = ApplicationUtil.getBean(DicCityService.class);
-      List<DicCityDto> allCitys = dicCityService.getAll();
-      DicCityDto province = allCitys.stream()
-          .filter(t -> StringUtil.isEmpty(t.getParentId()) && t.getName().equals(arr[0]))
-          .findFirst().orElse(null);
-      if (province == null) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“地区”错误，省份不存在");
-      }
-      DicCityDto city = allCitys.stream()
-          .filter(t -> province.getId().equals(t.getParentId()) && t.getName().equals(arr[1]))
-          .findFirst().orElse(null);
-      if (city == null) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“地区”错误，市不存在");
-      }
-      DicCityDto area = allCitys.stream()
-          .filter(t -> city.getId().equals(t.getParentId()) && t.getName().equals(arr[2]))
-          .findFirst().orElse(null);
-      if (area == null) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“地区”错误，区（县）不存在");
-      }
-
-      data.setAreaId(area.getId());
+    if (StringUtil.isBlank(data.getCity())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“地区”不能为空");
     }
+    String[] arr = data.getCity().split("/");
+    if (arr.length != 3) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“地区”格式错误，应为省/市/区（县），例如：北京市/市辖区/东城区");
+    }
+    DicCityService dicCityService = ApplicationUtil.getBean(DicCityService.class);
+    List<DicCityDto> allCitys = dicCityService.getAll();
+    DicCityDto province = allCitys.stream()
+        .filter(t -> StringUtil.isEmpty(t.getParentId()) && t.getName().equals(arr[0]))
+        .findFirst().orElse(null);
+    if (province == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“地区”错误，省份不存在");
+    }
+    DicCityDto city = allCitys.stream()
+        .filter(t -> province.getId().equals(t.getParentId()) && t.getName().equals(arr[1]))
+        .findFirst().orElse(null);
+    if (city == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“地区”错误，市不存在");
+    }
+    DicCityDto area = allCitys.stream()
+        .filter(t -> city.getId().equals(t.getParentId()) && t.getName().equals(arr[2]))
+        .findFirst().orElse(null);
+    if (area == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“地区”错误，区（县）不存在");
+    }
+
+    data.setAreaId(area.getId());
     if (StringUtil.isBlank(data.getAddress())) {
       throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“详细地址”不能为空");
     }

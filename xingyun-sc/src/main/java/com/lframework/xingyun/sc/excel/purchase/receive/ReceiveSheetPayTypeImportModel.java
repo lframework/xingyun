@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.excel.purchase.receive;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.lframework.starter.web.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class ReceiveSheetPayTypeImportModel implements ExcelModel {
   /**
    * 单据号
    */
+  @ExcelRequired
   @ExcelProperty("单据号")
   private String code;
 
@@ -30,12 +32,14 @@ public class ReceiveSheetPayTypeImportModel implements ExcelModel {
   /**
    * 支付方式编号
    */
+  @ExcelRequired
   @ExcelProperty("支付方式编号")
   private String payTypeCode;
 
   /**
    * 支付金额
    */
+  @ExcelRequired
   @ExcelProperty("支付金额")
   private BigDecimal payAmount;
 

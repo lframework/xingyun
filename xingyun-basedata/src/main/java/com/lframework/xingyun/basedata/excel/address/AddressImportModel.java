@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.excel.address;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.lframework.starter.web.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import com.lframework.xingyun.basedata.enums.AddressEntityType;
 import com.lframework.xingyun.basedata.enums.AddressType;
@@ -13,6 +14,7 @@ public class AddressImportModel implements ExcelModel {
   /**
    * 实体编号
    */
+  @ExcelRequired
   @ExcelProperty("实体编号")
   private String entityCode;
 
@@ -25,6 +27,7 @@ public class AddressImportModel implements ExcelModel {
   /**
    * 实体类型
    */
+  @ExcelRequired
   @ExcelProperty("实体类型")
   private String entityType;
 
@@ -37,6 +40,7 @@ public class AddressImportModel implements ExcelModel {
   /**
    * 地址类型
    */
+  @ExcelRequired
   @ExcelProperty("地址类型")
   private String addressType;
 
@@ -49,18 +53,21 @@ public class AddressImportModel implements ExcelModel {
   /**
    * 姓名
    */
+  @ExcelRequired
   @ExcelProperty("姓名")
   private String name;
 
   /**
    * 联系电话
    */
+  @ExcelRequired
   @ExcelProperty("联系电话")
   private String telephone;
 
   /**
    * 地区
    */
+  @ExcelRequired
   @ExcelProperty("地区")
   private String city;
 
@@ -73,12 +80,14 @@ public class AddressImportModel implements ExcelModel {
   /**
    * 详细地址
    */
+  @ExcelRequired
   @ExcelProperty("详细地址")
   private String address;
 
   /**
    * 是否默认地址
    */
+  @ExcelRequired
   @ExcelProperty("是否默认地址")
   private String isDefault;
 }

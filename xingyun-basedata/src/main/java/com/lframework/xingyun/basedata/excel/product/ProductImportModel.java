@@ -2,6 +2,7 @@ package com.lframework.xingyun.basedata.excel.product;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.lframework.starter.web.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -18,12 +19,14 @@ public class ProductImportModel implements ExcelModel {
   /**
    * 编号
    */
+  @ExcelRequired
   @ExcelProperty("编号")
   private String code;
 
   /**
    * 名称
    */
+  @ExcelRequired
   @ExcelProperty("名称")
   private String name;
 
@@ -36,6 +39,7 @@ public class ProductImportModel implements ExcelModel {
   /**
    * SKU编号
    */
+  @ExcelRequired
   @ExcelProperty("SKU编号")
   private String skuCode;
 
@@ -54,6 +58,7 @@ public class ProductImportModel implements ExcelModel {
   /**
    * 类目编号
    */
+  @ExcelRequired
   @ExcelProperty("类目编号")
   private String categoryCode;
 
@@ -66,6 +71,7 @@ public class ProductImportModel implements ExcelModel {
   /**
    * 品牌编号
    */
+  @ExcelRequired
   @ExcelProperty("品牌编号")
   private String brandCode;
 

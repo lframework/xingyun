@@ -85,6 +85,10 @@ public class LogisticsSheetImportListener extends ExcelImportListener<LogisticsS
       }
     }
 
+    if (StringUtil.isBlank(data.getLogisticsCompanyCode())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“物流公司编号”不能为空");
+    }
     LogisticsCompanyService logisticsCompanyService = ApplicationUtil.getBean(
         LogisticsCompanyService.class);
     Wrapper<LogisticsCompany> queryLogisticsCompanyWrapper = Wrappers.lambdaQuery(
@@ -97,10 +101,6 @@ public class LogisticsSheetImportListener extends ExcelImportListener<LogisticsS
     }
     data.setLogisticsCompanyId(logisticsCompany.getId());
 
-    if (StringUtil.isBlank(data.getLogisticsCompanyCode())) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“物流公司编号”不能为空");
-    }
     if (StringUtil.isBlank(data.getSenderName())) {
       throw new DefaultClientException(
           "第" + context.readRowHolder().getRowIndex() + "行“寄件人姓名”不能为空");

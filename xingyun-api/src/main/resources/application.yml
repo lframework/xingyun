@@ -79,7 +79,7 @@ default-setting:
   default-user-name: 系统管理员
 
 #不需要认证的Url
-#filter-url:
+filter-url: ${magic-api.push_path}
 
 #PageHelper分页器
 pagehelper:
@@ -159,3 +159,49 @@ remove-fixed-permissions: false
 tenant:
   enabled: true
 
+
+magic-api:
+  # 编辑器配置项
+  editor-config: classpath:magic-editor-config.js
+  # 这里改为项目运行时的域名，菜单中嵌入的页面为base-url + web，这里示例即为http://localhost:8080/dynamic/web
+  base-url: http://localhost:8080
+  # 编辑器页面的访问路径url
+  web: /dynamic/web
+  resource:
+    type: database
+    tableName: magic_api_file
+    prefix: /magic-api
+    readonly: false
+  # 接口前缀
+  prefix: /dynamic-api
+  # 禁止覆盖应用接口
+  allow-override: true
+  # 是否支持跨域
+  support-cross-domain: false
+  # 推送路径
+  push_path: /_magic-api-sync
+  # 推送秘钥，自行修改
+  secret-key: 123456789
+  throw-exception: true
+  response: |- #配置JSON格式，格式为magic-script中的表达式
+    {
+      code: code,
+      msg: message,
+      data,
+      timestamp,
+      requestTime,
+      executeTime,
+    }
+  response-code:
+    success: 200
+    invalid: 400
+    exception: 500
+  page:
+    size: pageSize # 页大小的参数名称
+    page: pageIndex # 页码的参数名称
+    default-page: 1 # 未传页码时的默认首页
+    default-size: 20 # 未传页大小时的默认页大小
+  backup:
+    enable: true
+    max-history: 14 #备份保留天数，-1为永久保留
+    table-name: magic_api_file_backup

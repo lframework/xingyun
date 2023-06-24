@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.excel.purchase;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.lframework.starter.web.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -19,6 +20,7 @@ public class PurchaseOrderImportModel implements ExcelModel {
   /**
    * 仓库编号
    */
+  @ExcelRequired
   @ExcelProperty("仓库编号")
   private String scCode;
 
@@ -31,6 +33,7 @@ public class PurchaseOrderImportModel implements ExcelModel {
   /**
    * 供应商编号
    */
+  @ExcelRequired
   @ExcelProperty("供应商编号")
   private String supplierCode;
 
@@ -61,24 +64,28 @@ public class PurchaseOrderImportModel implements ExcelModel {
   /**
    * 商品编号
    */
+  @ExcelRequired
   @ExcelProperty("商品编号")
   private String productCode;
 
   /**
    * 采购价
    */
+  @ExcelRequired
   @ExcelProperty("采购价")
   private BigDecimal purchasePrice;
 
   /**
    * 采购数量
    */
+  @ExcelRequired
   @ExcelProperty("采购数量")
   private Integer purchaseNum;
 
   /**
    * 是否赠品
    */
+  @ExcelRequired
   @ExcelProperty("是否赠品")
   private String gift;
 

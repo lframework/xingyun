@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;

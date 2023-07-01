@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.service.retail;
 
-import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.RetailReturn;
 import com.lframework.xingyun.sc.vo.retail.returned.ApprovePassRetailReturnVo;

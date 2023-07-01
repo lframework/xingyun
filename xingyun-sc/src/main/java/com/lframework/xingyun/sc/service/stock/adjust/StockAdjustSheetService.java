@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.service.stock.adjust;
 
-import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;

@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.service.product;
 
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.basedata.dto.product.ProductPropertyRelationDto;
 import com.lframework.xingyun.basedata.entity.ProductPropertyRelation;
 import com.lframework.xingyun.basedata.vo.product.property.realtion.CreateProductPropertyRelationVo;

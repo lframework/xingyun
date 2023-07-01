@@ -15,6 +15,10 @@
     <dependencies>
         <dependency>
             <groupId>com.lframework</groupId>
+            <artifactId>xingyun-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lframework</groupId>
             <artifactId>xingyun-basedata</artifactId>
         </dependency>
 
@@ -35,7 +39,7 @@
 
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>gen-starter</artifactId>
+            <artifactId>xingyun-template</artifactId>
         </dependency>
     </dependencies>
 

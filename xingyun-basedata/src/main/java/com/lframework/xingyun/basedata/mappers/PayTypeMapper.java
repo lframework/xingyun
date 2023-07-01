@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.vo.paytype.PayTypeSelectorVo;
 import com.lframework.xingyun.basedata.vo.paytype.QueryPayTypeVo;

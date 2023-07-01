@@ -1,0 +1,153 @@
+spring:
+  servlet:
+    multipart:
+      #是否开启文件上传
+      enabled: true
+      #临时文件路径
+      location: D:\tmp\tmp-datas
+      #单个文件最大值
+      max-file-size: 10MB
+      #请求中所有文件的最大值
+      max-request-size: 100MB
+      #将文件写入磁盘的阈值
+      #file-size-threshold: 0
+      #是否要延迟解析文件
+      #resolve-lazily: false
+  quartz:
+    jdbc:
+      initialize-schema: never
+    job-store-type: jdbc
+    wait-for-jobs-to-complete-on-shutdown: true
+    properties:
+      # ID设置为自动获取 每一个必须不同
+      "org.quartz.scheduler.instanceId": AUTO
+      # 开启集群
+      "org.quartz.jobStore.isClustered": true
+  #时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+  #使用redis存储SESSION
+  session:
+    store-type: redis
+
+knife4j:
+  enable: true
+  setting:
+    language: zh-CN
+    # 是否显示界面中SwaggerModel功能
+    enableSwaggerModels: false
+    # 是否显示界面中"文档管理"功能
+    enableDocumentManage: true
+    # 是否默认显示底部Footer
+    enableFooter: false
+    # 是否自定义Footer
+    enableFooterCustom: true
+    # 自定义Footer内容(支持Markdown语法)
+    footerCustomContent: Apache License 2.0 | Copyright  2019-[星云ERP](https://gitee.com/lframework/xingyun)
+    # 是否开启调试
+    enableDebug: true
+    # 是否显示OpenAPI原始结构的Tab框，默认显示
+    enableOpenApi: false
+  # 是否生产环境
+  production: false
+
+# Sa-Token配置
+sa-token:
+  # token名称 (同时也是cookie名称)，此值不要修改
+  token-name: X-Auth-Token
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 25920000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: 7200
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
+
+jugg:
+  upload:
+    #下载时的baseUrl，与domain的区别：会在url后面拼接/**作为静态资源的url，而domain是后端系统的具体域名，下载时的完整url例如：upload.domain + upload.url/xxx.jpg
+    url: /oss
+    #下载时的域名
+    domain: http://localhost:8080
+    #上传文件的路径
+    location: D:\upload\upload-data
+  #默认配置
+  default-setting:
+    #默认单号生成类型 FLOW：流水号 SNOW_FLAKE：雪花算法，如果不配置，默认是SNOW_FLAKE
+    generator-type: SNOW_FLAKE
+    #默认的用户ID，用于写入数据库时的createById和updateById的自动赋值，如果有登录人则取登录人ID，如果没有则取默认用户ID，如果不配置，默认是1
+    default-user-id: 1
+    #默认的用户姓名，用于写入数据库时的createBy和updateBy的自动赋值，如果有登录人则取登录人姓名，如果没有则取默认用户姓名，如果不配置，默认是系统管理员
+    default-user-name: 系统管理员
+  #缓存TTL配置 单位：秒
+  cache:
+    #公共缓存过期时间
+    ttl: 1800
+    #特殊指定缓存过期时间，以下示例为cacheName的过期时间是3600秒、cacheName2的过期是7200秒。cacheName、cacheName2对应的是@Cacheable的Value属性
+    #regions:
+    #  cacheName: 3600
+    #  cacheName2: 7200
+  #验证码配置
+  kaptcha:
+    #过期时间（单位：分钟）
+    expire-time: 5
+    session-config-key: KAPTCHA_SESSION_KEY
+    session-config-date: KAPTCHA_SESSION_DATE
+    border: true
+    border-color: black
+    border-thickness: 1
+    noise-color: black
+    noise-impl: com.google.code.kaptcha.impl.DefaultNoise
+    obscurificator-impl: com.google.code.kaptcha.impl.WaterRipple
+    producer-impl: com.google.code.kaptcha.impl.DefaultKaptcha
+    text-producer-impl: com.google.code.kaptcha.text.impl.DefaultTextCreator
+    text-producer-char-string: abcde2345678gfynmnpwx
+    text-producer-char-length: 4
+    text-producer-font-names: Arial,Courier
+    text-producer-font-color: black
+    text-producer-font-size: 28
+    text-producer-char-space: 2
+    word-render-impl: com.google.code.kaptcha.text.impl.DefaultWordRenderer
+    back-ground-impl: com.google.code.kaptcha.impl.DefaultBackground
+    back-ground-clr-from: lightGray
+    back-ground-clr-to: white
+    image-width: 120
+    image-height: 40
+
+#PageHelper分页器
+pagehelper:
+  offset-as-page-num: true
+  row-bounds-with-count: true
+  page-size-zero: true
+  reasonable: false
+  params: pageNum=pageIndex;pageSize=pageSize;
+  support-methods-arguments: false
+mybatis-plus:
+  mapper-locations: classpath*:/mappers/**/*.xml
+  typeEnumsPackage: com.lframework.xingyun.**.enums
+
+op-logs:
+  #是否开启
+  enabled: true
+  #操作日志保留天数
+  retain-days: 7
+
+# 是否移除内置权限，针对admin等内置权限，因为内置权限等同于通配符权限，设置为true时会用具体的权限将内置权限替换掉，生产环境建议设置为true
+remove-fixed-permissions: false
+
+feign:
+  # feign使用HttpClient
+  httpclient:
+    enabled: true
+  client:
+    config:
+      default:
+        connect-timeout: 500
+        read-time-out: 60000
+

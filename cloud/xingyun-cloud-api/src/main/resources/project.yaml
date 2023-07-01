@@ -1,0 +1,74 @@
+logging:
+  config: classpath:spring-logback-dev.xml
+  # path默认为当前目录的logs子目录
+  # name默认为log，name为文件名，例如：配置test-log，那么生成的日志文件的全名称为test-log.log
+  #file:
+  #  path: logs
+  #  name: log
+
+jugg:
+  web:
+    #不需要认证的Url
+    filter-url: ${magic-api.push_path}
+    #终端ID
+    worker-id: 1
+    #数据中心ID
+    center-id: 1
+  # 锁类型，如果注释掉的话就使用的JUC的可重入锁
+  locker:
+    type: redis
+  #开启多租户
+  tenant:
+    enabled: true
+  #开启websocket
+  ws:
+    enabled: true
+    #通信topic
+    #topic: xingyun:ws:topic
+    #是否支持跨域
+    #support-cross-domain: false
+magic-api:
+  # 编辑器配置项
+  editor-config: classpath:magic-editor-config.js
+  # 这里改为项目运行时的域名，菜单中嵌入的页面为base-url + web，这里示例即为http://localhost:8080/dynamic/web
+  base-url: http://localhost:15000
+  # 编辑器页面的访问路径url
+  web: /dynamic/web
+  resource:
+    type: database
+    tableName: magic_api_file
+    prefix: /magic-api
+    readonly: false
+  # 接口前缀
+  prefix: /dynamic-api
+  # 禁止覆盖应用接口
+  allow-override: true
+  # 是否支持跨域
+  support-cross-domain: true
+  # 推送路径
+  push_path: /_magic-api-sync
+  # 推送秘钥，自行修改
+  secret-key: 123456789
+  throw-exception: true
+  response: |- #配置JSON格式，格式为magic-script中的表达式
+    {
+      code: code,
+      msg: message,
+      data,
+      timestamp,
+      requestTime,
+      executeTime,
+    }
+  response-code:
+    success: 200
+    invalid: 400
+    exception: 500
+  page:
+    size: pageSize # 页大小的参数名称
+    page: pageIndex # 页码的参数名称
+    default-page: 1 # 未传页码时的默认首页
+    default-size: 20 # 未传页大小时的默认页大小
+  backup:
+    enable: true
+    max-history: 14 #备份保留天数，-1为永久保留
+    table-name: magic_api_file_backup

@@ -6,7 +6,7 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.dto.product.ProductPropertyRelationDto;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;

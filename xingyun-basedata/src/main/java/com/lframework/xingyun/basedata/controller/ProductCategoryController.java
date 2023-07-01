@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.mybatis.service.system.RecursionMappingService;
+import com.lframework.xingyun.template.core.service.RecursionMappingService;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.controller.DefaultBaseController;

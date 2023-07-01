@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.excel.member;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.lframework.starter.mybatis.enums.Gender;
+import com.lframework.xingyun.template.core.enums.Gender;
 import com.lframework.starter.web.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import java.util.Date;

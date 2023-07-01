@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.template.gen.mappers.GenCustomListMapper">
+    <resultMap id="GenCustomList" type="com.lframework.xingyun.template.gen.entity.GenCustomList">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="data_obj_id" property="dataObjId"/>
+        <result column="list_type" property="listType"/>
+        <result column="available" property="available"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="GenCustomList_sql">
+        SELECT o.id,
+               o.name,
+               o.category_id,
+               o.data_obj_id,
+               o.list_type,
+               o.available,
+               o.description,
+               o.create_by,
+               o.create_time,
+               o.update_by,
+               o.update_time
+        FROM gen_custom_list AS o
+    </sql>
+
+    <select id="query" resultMap="GenCustomList">
+        <include refid="GenCustomList_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND o.category_id = #{vo.categoryId}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND o.name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND o.available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+    <select id="getRelaGenDataObjIds" resultType="java.lang.String">
+        SELECT id FROM gen_custom_list WHERE data_obj_id = #{objId}
+        UNION SELECT custom_list_id FROM gen_custom_list_detail WHERE rela_id = #{objId}
+        UNION SELECT custom_list_id FROM gen_custom_list_detail WHERE rela_id IN (SELECT id FROM gen_data_obj_detail WHERE data_obj_id = #{objId})
+        UNION SELECT custom_list_id FROM gen_custom_list_query_params WHERE rela_id = #{objId}
+        UNION SELECT custom_list_id FROM gen_custom_list_query_params WHERE rela_id IN (SELECT id FROM gen_data_obj_detail WHERE data_obj_id = #{objId})
+        UNION SELECT id FROM gen_custom_list WHERE id_column_rela_id = #{objId}
+        UNION SELECT id FROM gen_custom_list WHERE id_column_rela_id IN (SELECT id FROM gen_data_obj_detail WHERE data_obj_id = #{objId})
+        UNION SELECT id FROM gen_custom_list WHERE tree_pid_column_rela_id = #{objId}
+        UNION SELECT id FROM gen_custom_list WHERE tree_pid_column_rela_id IN (SELECT id FROM gen_data_obj_detail WHERE data_obj_id = #{objId})
+        UNION SELECT id FROM gen_custom_list WHERE tree_node_column_rela_id = #{objId}
+        UNION SELECT id FROM gen_custom_list WHERE tree_node_column_rela_id IN (SELECT id FROM gen_data_obj_detail WHERE data_obj_id = #{objId})
+    </select>
+    <select id="getRelaGenDataEntityIds" resultType="java.lang.String">
+        SELECT custom_list_id FROM gen_custom_list_detail WHERE data_entity_id IN (SELECT id FROM gen_data_entity_detail WHERE entity_id = #{entityId})
+        UNION SELECT custom_list_id FROM gen_custom_list_query_params WHERE data_entity_id IN (SELECT id FROM gen_data_entity_detail WHERE entity_id = #{entityId})
+        UNION SELECT id FROM gen_custom_list WHERE id_column = #{entityId}
+        UNION SELECT id FROM gen_custom_list WHERE tree_pid_column = #{entityId}
+        UNION SELECT id FROM gen_custom_list WHERE tree_node_column = #{entityId}
+    </select>
+    <select id="selector" resultMap="GenCustomList">
+      <include refid="GenCustomList_sql"/>
+      <where>
+          <if test="vo != null">
+              <if test="vo.categoryId != null and vo.categoryId != ''">
+                  AND o.category_id = #{vo.categoryId}
+              </if>
+              <if test="vo.name != null and vo.name != ''">
+                  AND o.name LIKE CONCAT('%', #{vo.name}, '%')
+              </if>
+              <if test="vo.available != null">
+                  AND o.available = #{vo.available}
+              </if>
+          </if>
+      </where>
+      ORDER BY o.create_time DESC
+    </select>
+
+</mapper>

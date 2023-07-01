@@ -1,6 +1,6 @@
 package com.lframework.xingyun.core.impl;
 
-import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.entity.DicCity;
 import com.lframework.xingyun.core.mappers.DicCityMapper;

@@ -54,8 +54,8 @@ knife4j:
 
 # Sa-Token配置
 sa-token:
-  # token名称 (同时也是cookie名称)
-  token-name: ${session.token-key}
+  # token名称 (同时也是cookie名称)，此值不要修改
+  token-name: X-Auth-Token
   # token有效期，单位s 默认30天, -1代表永不过期
   timeout: 25920000
   # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
@@ -69,17 +69,74 @@ sa-token:
   # 是否输出操作日志
   is-log: false
 
-#默认配置
-default-setting:
-  #默认单号生成类型 FLOW：流水号 SNOW_FLAKE：雪花算法，如果不配置，默认是SNOW_FLAKE
-  generator-type: SNOW_FLAKE
-  #默认的用户ID，用于写入数据库时的createById和updateById的自动赋值，如果有登录人则取登录人ID，如果没有则取默认用户ID，如果不配置，默认是1
-  default-user-id: 1
-  #默认的用户姓名，用于写入数据库时的createBy和updateBy的自动赋值，如果有登录人则取登录人姓名，如果没有则取默认用户姓名，如果不配置，默认是系统管理员
-  default-user-name: 系统管理员
+jugg:
+  #默认配置
+  default-setting:
+    #默认单号生成类型 FLOW：流水号 SNOW_FLAKE：雪花算法，如果不配置，默认是SNOW_FLAKE
+    generator-type: SNOW_FLAKE
+    #默认的用户ID，用于写入数据库时的createById和updateById的自动赋值，如果有登录人则取登录人ID，如果没有则取默认用户ID，如果不配置，默认是1
+    default-user-id: 1
+    #默认的用户姓名，用于写入数据库时的createBy和updateBy的自动赋值，如果有登录人则取登录人姓名，如果没有则取默认用户姓名，如果不配置，默认是系统管理员
+    default-user-name: 系统管理员
+  web:
+    #不需要认证的Url
+    filter-url: ${magic-api.push_path}
+    #终端ID
+    worker-id: 1
+    #数据中心ID
+    center-id: 1
+    #重复提交拦截暂时不实现
+    #repeat-request:
+      #重复提交拦截间隔（单位：秒）
+      #filter-interval: 1
+  #缓存TTL配置 单位：秒
+  cache:
+    #公共缓存过期时间
+    ttl: 1800
+    #特殊指定缓存过期时间，以下示例为cacheName的过期时间是3600秒、cacheName2的过期是7200秒。cacheName、cacheName2对应的是@Cacheable的Value属性
+    #regions:
+    #  cacheName: 3600
+    #  cacheName2: 7200
+  # 锁类型，如果注释掉的话就使用的JUC的可重入锁
+  locker:
+    type: redis
+  #开启多租户
+  tenant:
+    enabled: true
+  #开启websocket
+  ws:
+    enabled: true
+    #通信topic
+    #topic: xingyun:ws:topic
+    #是否支持跨域
+    #support-cross-domain: false
+  #验证码配置
+  kaptcha:
+    #过期时间（单位：分钟）
+    expire-time: 5
+    session-config-key: KAPTCHA_SESSION_KEY
+    session-config-date: KAPTCHA_SESSION_DATE
+    border: true
+    border-color: black
+    border-thickness: 1
+    noise-color: black
+    noise-impl: com.google.code.kaptcha.impl.DefaultNoise
+    obscurificator-impl: com.google.code.kaptcha.impl.WaterRipple
+    producer-impl: com.google.code.kaptcha.impl.DefaultKaptcha
+    text-producer-impl: com.google.code.kaptcha.text.impl.DefaultTextCreator
+    text-producer-char-string: abcde2345678gfynmnpwx
+    text-producer-char-length: 4
+    text-producer-font-names: Arial,Courier
+    text-producer-font-color: black
+    text-producer-font-size: 28
+    text-producer-char-space: 2
+    word-render-impl: com.google.code.kaptcha.text.impl.DefaultWordRenderer
+    back-ground-impl: com.google.code.kaptcha.impl.DefaultBackground
+    back-ground-clr-from: lightGray
+    back-ground-clr-to: white
+    image-width: 120
+    image-height: 40
 
-#不需要认证的Url
-filter-url: ${magic-api.push_path}
 
 #PageHelper分页器
 pagehelper:
@@ -93,72 +150,14 @@ mybatis-plus:
   mapper-locations: classpath*:/mappers/**/*.xml
   typeEnumsPackage: com.lframework.starter.**.enums,com.lframework.xingyun.**.enums
 
-#验证码配置
-kaptcha:
-  #过期时间（单位：分钟）
-  expire-time: 5
-  session-config-key: KAPTCHA_SESSION_KEY
-  session-config-date: KAPTCHA_SESSION_DATE
-  border: true
-  border-color: black
-  border-thickness: 1
-  noise-color: black
-  noise-impl: com.google.code.kaptcha.impl.DefaultNoise
-  obscurificator-impl: com.google.code.kaptcha.impl.WaterRipple
-  producer-impl: com.google.code.kaptcha.impl.DefaultKaptcha
-  text-producer-impl: com.google.code.kaptcha.text.impl.DefaultTextCreator
-  text-producer-char-string: abcde2345678gfynmnpwx
-  text-producer-char-length: 4
-  text-producer-font-names: Arial,Courier
-  text-producer-font-color: black
-  text-producer-font-size: 28
-  text-producer-char-space: 2
-  word-render-impl: com.google.code.kaptcha.text.impl.DefaultWordRenderer
-  back-ground-impl: com.google.code.kaptcha.impl.DefaultBackground
-  back-ground-clr-from: lightGray
-  back-ground-clr-to: white
-  image-width: 120
-  image-height: 40
-
-#终端ID
-worker-id: 1
-#数据中心ID
-center-id: 1
-
 op-logs:
   #是否开启
   enabled: true
   #操作日志保留天数
   retain-days: 7
 
-#重复提交拦截暂时不实现
-#repeat-request:
-  #重复提交拦截间隔（单位：秒）
-  #filter-interval: 1
-
-#会话配置
-session:
-  token-key: X-Auth-Token
-
-#缓存TTL配置 单位：秒
-cache:
-  #公共缓存过期时间
-  ttl: 1800
-  #特殊指定缓存过期时间，以下示例为cacheName的过期时间是3600秒、cacheName2的过期是7200秒。cacheName、cacheName2对应的是@Cacheable的Value属性
-  #regions:
-  #  cacheName: 3600
-  #  cacheName2: 7200
-
-# 锁类型，如果注释掉的话就使用的JCU的可重入锁
-locker-type: redis
-
 # 是否移除内置权限，针对admin等内置权限，因为内置权限等同于通配符权限，设置为true时会用具体的权限将内置权限替换掉，生产环境建议设置为true
 remove-fixed-permissions: false
-
-#开启多租户
-tenant:
-  enabled: true
-
 
 magic-api:
   # 编辑器配置项

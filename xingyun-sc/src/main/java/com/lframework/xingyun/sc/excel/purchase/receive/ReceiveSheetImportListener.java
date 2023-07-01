@@ -7,9 +7,9 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.components.excel.ExcelImportListener;
-import com.lframework.starter.mybatis.entity.DefaultSysUser;
-import com.lframework.starter.mybatis.service.UserService;
+import com.lframework.starter.web.components.excel.ExcelImportListener;
+import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.xingyun.template.core.service.UserService;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
@@ -64,9 +64,7 @@ public class ReceiveSheetImportListener extends ExcelImportListener<ReceiveSheet
     }
     if (!StringUtil.isBlank(data.getPurchaserCode())) {
       UserService userService = ApplicationUtil.getBean(UserService.class);
-      Wrapper<DefaultSysUser> queryWrapper = Wrappers.lambdaQuery(DefaultSysUser.class)
-          .eq(DefaultSysUser::getCode, data.getPurchaserCode());
-      DefaultSysUser purchaser = userService.getOne(queryWrapper);
+      UserDto purchaser = userService.findByCode(data.getPurchaserCode());
       if (purchaser == null) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“采购员编号”不存在");

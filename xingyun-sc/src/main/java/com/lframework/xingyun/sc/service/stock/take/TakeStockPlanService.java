@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.service.stock.take;
 
-import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;

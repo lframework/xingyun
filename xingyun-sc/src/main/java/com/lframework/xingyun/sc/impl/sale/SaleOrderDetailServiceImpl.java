@@ -3,7 +3,7 @@ package com.lframework.xingyun.sc.impl.sale;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.NumberUtil;
-import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;

@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.service.logistics;
 
-import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
 import com.lframework.xingyun.basedata.vo.logistics.company.CreateLogisticsCompanyVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanySelectorVo;

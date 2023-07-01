@@ -1,6 +1,6 @@
 package com.lframework.xingyun.chart.service;
 
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.chart.dto.OrderChartSameMonthDto;
 import com.lframework.xingyun.chart.dto.OrderChartSumDto;
 import com.lframework.xingyun.chart.dto.OrderChartTodayDto;

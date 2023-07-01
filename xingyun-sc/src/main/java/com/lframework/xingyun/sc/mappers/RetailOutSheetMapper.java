@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;

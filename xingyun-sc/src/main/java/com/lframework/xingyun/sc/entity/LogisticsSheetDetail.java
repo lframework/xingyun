@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.lframework.starter.mybatis.entity.BaseEntity;
+import com.lframework.starter.web.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import lombok.Data;

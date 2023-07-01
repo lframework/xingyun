@@ -2,7 +2,7 @@ package com.lframework.xingyun.core.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
 import com.lframework.xingyun.core.mappers.OrderTimeLineMapper;
 import com.lframework.xingyun.core.service.OrderTimeLineService;

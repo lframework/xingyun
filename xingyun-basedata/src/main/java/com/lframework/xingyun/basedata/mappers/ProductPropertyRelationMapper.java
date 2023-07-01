@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.dto.product.ProductPropertyRelationDto;
 import com.lframework.xingyun.basedata.entity.ProductPropertyRelation;
 import java.util.List;

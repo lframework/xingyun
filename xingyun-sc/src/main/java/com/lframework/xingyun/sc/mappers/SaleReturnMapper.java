@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.enums.SettleStatus;

@@ -15,12 +15,11 @@
     <dependencies>
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>tenant-starter</artifactId>
+            <artifactId>xingyun-template-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>bpm-starter</artifactId>
+            <artifactId>websocket-starter</artifactId>
         </dependency>
     </dependencies>
 </project>

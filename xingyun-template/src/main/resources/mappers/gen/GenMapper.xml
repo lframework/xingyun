@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.template.gen.mappers.GenMapper">
+    <select id="findList" resultType="java.util.Map">
+        SELECT
+            <foreach collection="obj.fields" item="item" separator=",">
+                <if test="item.tableAlias != null and item.tableAlias != ''">${item.tableAlias}.</if>${item.columnName} AS ${item.columnAlias}
+            </foreach>
+        FROM ${obj.mainTable} AS ${obj.mainTableAlias}
+        <if test="obj.subTables != null and obj.subTables.size() > 0">
+            <foreach collection="obj.subTables" item="item">
+                ${item.joinType} JOIN ${item.subTable} AS ${item.subTableAlias} <if test="item.joinCondition != null and item.joinCondition.size() > 0"><foreach
+                    collection="item.joinCondition" item="joinConditionItem" open="ON" separator=" AND ">${obj.mainTableAlias}.${joinConditionItem.key} = ${item.subTableAlias}.${joinConditionItem.value}</foreach> </if>
+            </foreach>
+        </if>
+        <where>
+            <if test="obj.queryPrefixSql != null and obj.queryPrefixSql != ''">
+                ${obj.queryPrefixSql}
+            </if>
+            <if test="obj.queryParamObj != null and obj.queryParamObj.conditions != null and obj.queryParamObj.conditions.size() > 0">
+                <foreach collection="obj.queryParamObj.conditions" item="condition">
+                    AND ${condition.tableAlias}.${condition.columnName} ${condition.queryTypeSql} <if test="condition.valuePrefix != null and condition.valuePrefix != ''">${condition.valuePrefix}</if> <if test="condition.value != null">#{condition.value}</if><if test="condition.values != null and condition.values.size() > 0"><foreach collection="condition.values" separator="," item="value">#{value}</foreach></if> <if test="condition.valueSuffix != null and condition.valueSuffix != ''">${condition.valueSuffix}</if>
+                </foreach>
+            </if>
+            <if test="obj.querySuffixSql != null and obj.querySuffixSql != ''">
+                ${obj.querySuffixSql}
+            </if>
+        </where>
+        <if test="obj.suffixSql != null and obj.suffixSql != ''">
+            ${obj.suffixSql}
+        </if>
+    </select>
+</mapper>

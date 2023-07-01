@@ -1,6 +1,6 @@
 package com.lframework.xingyun.core.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
 
 /**

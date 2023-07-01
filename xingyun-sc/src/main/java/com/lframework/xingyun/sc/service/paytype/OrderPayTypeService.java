@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.service.paytype;
 
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
 import java.util.List;

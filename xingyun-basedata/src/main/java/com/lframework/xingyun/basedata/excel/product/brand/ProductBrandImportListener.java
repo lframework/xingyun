@@ -7,7 +7,7 @@ import com.lframework.starter.common.constants.PatternPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.components.excel.ExcelImportListener;
+import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductBrand;

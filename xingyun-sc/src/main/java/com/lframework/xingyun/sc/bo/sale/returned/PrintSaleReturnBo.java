@@ -5,7 +5,7 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.service.UserService;
+import com.lframework.xingyun.template.core.service.UserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.bo.BasePrintDataBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;

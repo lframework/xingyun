@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.template.core.mappers.UserMapper">
+    <select id="findById" resultType="com.lframework.xingyun.template.core.dto.UserDto">
+        SELECT id, code, name
+        FROM sys_user
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByCode" resultType="com.lframework.xingyun.template.core.dto.UserDto">
+        SELECT id, code, name
+        FROM sys_user
+        WHERE code = #{code}
+    </select>
+</mapper>

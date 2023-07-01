@@ -3,7 +3,7 @@ package com.lframework.xingyun.sc.impl.stock.take;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
 import com.lframework.xingyun.sc.entity.ProductStock;

@@ -6,6 +6,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.common.security.AbstractUserDetails;
 import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.config.properties.DefaultSettingProperties;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.SpelUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
@@ -21,7 +22,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.stereotype.Component;
 
@@ -35,11 +36,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderTimeLineLogAspect {
 
-  @Value("${default-setting.default-user-id:'1'}")
-  private String defaultUserId;
-
-  @Value("${default-setting.default-user-name:'系统管理员'}")
-  private String defaultUserName;
+  @Autowired
+  private DefaultSettingProperties defaultSettingProperties;
 
   private final ThreadLocal<Integer> POOL = new ThreadLocal<>();
 
@@ -53,8 +51,10 @@ public class OrderTimeLineLogAspect {
 
     AbstractUserDetails currentUser = SecurityUtil.getCurrentUser();
 
-    String curUserId = currentUser == null ? defaultUserId : currentUser.getId();
-    String curUserName = currentUser == null ? defaultUserName : currentUser.getName();
+    String curUserId =
+        currentUser == null ? defaultSettingProperties.getDefaultUserId() : currentUser.getId();
+    String curUserName =
+        currentUser == null ? defaultSettingProperties.getDefaultUserName() : currentUser.getName();
 
     Object value = null;
 

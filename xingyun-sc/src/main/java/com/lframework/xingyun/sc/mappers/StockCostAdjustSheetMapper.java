@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.sc.vo.stock.adjust.cost.QueryStockCostAdjustProductVo;
 import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustSheetFullDto;

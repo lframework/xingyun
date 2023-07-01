@@ -7,13 +7,13 @@ import com.lframework.starter.common.constants.PatternPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.components.excel.ExcelImportListener;
-import com.lframework.starter.mybatis.entity.DefaultSysDept;
-import com.lframework.starter.mybatis.service.system.SysDeptService;
+import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
+import com.lframework.xingyun.template.core.dto.DeptDto;
+import com.lframework.xingyun.template.core.service.DeptService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,10 +33,8 @@ public class ShopImportListener extends ExcelImportListener<ShopImportModel> {
       throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
     }
     if (!StringUtil.isBlank(data.getDeptCode())) {
-      SysDeptService sysDeptService = ApplicationUtil.getBean(SysDeptService.class);
-      Wrapper<DefaultSysDept> queryWrapper = Wrappers.lambdaQuery(DefaultSysDept.class)
-          .eq(DefaultSysDept::getCode, data.getDeptCode());
-      DefaultSysDept dept = sysDeptService.getOne(queryWrapper);
+      DeptService deptService = ApplicationUtil.getBean(DeptService.class);
+      DeptDto dept = deptService.findByCode(data.getDeptCode());
       if (dept == null) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“所属部门编号”不存在");

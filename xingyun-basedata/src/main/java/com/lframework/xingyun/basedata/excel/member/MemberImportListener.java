@@ -9,10 +9,7 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.components.excel.ExcelImportListener;
-import com.lframework.starter.mybatis.entity.DefaultSysUser;
-import com.lframework.starter.mybatis.enums.Gender;
-import com.lframework.starter.mybatis.service.UserService;
+import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
@@ -20,6 +17,9 @@ import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
+import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.xingyun.template.core.enums.Gender;
+import com.lframework.xingyun.template.core.service.UserService;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -72,9 +72,7 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
 
     if (!StringUtil.isEmpty(data.getGuiderCode())) {
       UserService userService = ApplicationUtil.getBean(UserService.class);
-      Wrapper<DefaultSysUser> queryWrapper = Wrappers.lambdaQuery(DefaultSysUser.class)
-          .eq(DefaultSysUser::getCode, data.getGuiderCode());
-      DefaultSysUser guider = userService.getOne(queryWrapper);
+      UserDto guider = userService.findByCode(data.getGuiderCode());
       if (guider == null) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“所属导购编号”不存在");

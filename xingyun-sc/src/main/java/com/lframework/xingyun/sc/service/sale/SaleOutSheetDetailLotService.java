@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.service.sale;
 
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetailLot;
 

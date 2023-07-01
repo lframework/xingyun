@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.settle.dto.sheet.customer.CustomerSettleSheetFullDto;
 import com.lframework.xingyun.settle.entity.CustomerSettleSheet;
 import com.lframework.xingyun.settle.vo.sheet.customer.QueryCustomerSettleSheetVo;

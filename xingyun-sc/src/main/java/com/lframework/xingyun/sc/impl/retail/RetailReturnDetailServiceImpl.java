@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.impl.retail;
 
-import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.sc.entity.RetailReturnDetail;
 import com.lframework.xingyun.sc.mappers.RetailReturnDetailMapper;
 import com.lframework.xingyun.sc.service.retail.RetailReturnDetailService;

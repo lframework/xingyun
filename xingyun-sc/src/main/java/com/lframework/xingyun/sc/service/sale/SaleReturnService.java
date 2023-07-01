@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.service.sale;
 
-import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.enums.SettleStatus;

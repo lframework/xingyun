@@ -1,12 +1,9 @@
 package com.lframework.xingyun.basedata.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.Address;
-import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.vo.address.AddressSelectorVo;
 import com.lframework.xingyun.basedata.vo.address.QueryAddressVo;
-import com.lframework.xingyun.basedata.vo.paytype.PayTypeSelectorVo;
-import com.lframework.xingyun.basedata.vo.paytype.QueryPayTypeVo;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

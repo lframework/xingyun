@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.impl.product;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.mappers.ProductCategoryPropertyMapper;

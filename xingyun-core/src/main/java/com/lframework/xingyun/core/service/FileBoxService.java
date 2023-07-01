@@ -1,7 +1,7 @@
 package com.lframework.xingyun.core.service;
 
-import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.core.entity.FileBox;
 import com.lframework.xingyun.core.vo.sw.filebox.BatchSendFileBoxVo;
 import com.lframework.xingyun.core.vo.sw.filebox.CreateFileBoxVo;

@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;

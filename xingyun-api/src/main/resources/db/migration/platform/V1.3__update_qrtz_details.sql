@@ -1,0 +1,1 @@
+UPDATE `qrtz_job_details` SET `JOB_CLASS_NAME` = 'com.lframework.xingyun.template.inner.config.OpLogTimerConfiguration$OpLogClearJob' WHERE `qrtz_job_details`.`SCHED_NAME` = 'quartzScheduler' AND `qrtz_job_details`.`JOB_NAME` = 'OP_LOG_TIMER' AND `qrtz_job_details`.`JOB_GROUP` = 'OP_LOG_TIMER_GROUP';

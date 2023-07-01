@@ -3,7 +3,7 @@ package com.lframework.xingyun.sc.bo.stock.transfer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.service.UserService;
+import com.lframework.xingyun.template.core.service.UserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;

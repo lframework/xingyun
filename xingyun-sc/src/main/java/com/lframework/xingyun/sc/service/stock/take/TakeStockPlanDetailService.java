@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.service.stock.take;
 
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
 import java.util.List;

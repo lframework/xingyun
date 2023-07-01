@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.enums;
 
-import com.lframework.starter.mybatis.enums.system.NodeType;
+import com.lframework.xingyun.template.core.enums.NodeType;
 import java.io.Serializable;
 import org.springframework.stereotype.Component;
 

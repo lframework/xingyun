@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.mappers;
 
-import com.lframework.starter.mybatis.mapper.BaseMapper;
+import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.dto.fee.SettleFeeSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettleFeeSheet;

@@ -1,0 +1,9 @@
+spring:
+  zipkin:
+    # zipkin-server地址
+    base-url: http://127.0.0.1:9411
+    discovery-client-enabled: false
+  sleuth:
+    sampler:
+      # 每秒跟踪请求的最大数量 可设置0-2147483647
+      rate: 2147483647

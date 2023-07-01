@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.service.address;
 
-import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.vo.address.AddressSelectorVo;
 import com.lframework.xingyun.basedata.vo.address.CreateAddressVo;

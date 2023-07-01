@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.template.gen.mappers.GenCustomFormMapper">
+    <resultMap id="GenCustomForm" type="com.lframework.xingyun.template.gen.entity.GenCustomForm">
+      <id column="id" property="id"/>
+      <result column="name" property="name"/>
+      <result column="category_id" property="categoryId"/>
+      <result column="is_dialog" property="isDialog"/>
+      <result column="dialog_tittle" property="dialogTittle"/>
+      <result column="dialog_width" property="dialogWidth"/>
+      <result column="form_config" property="formConfig"/>
+      <result column="prefix_submit" property="prefixSubmit"/>
+      <result column="suffix_submit" property="suffixSubmit"/>
+      <result column="require_query" property="requireQuery"/>
+      <result column="query_bean" property="queryBean"/>
+      <result column="handle_bean" property="handleBean"/>
+      <result column="available" property="available"/>
+      <result column="description" property="description"/>
+      <result column="create_by" property="createBy"/>
+      <result column="create_by_id" property="createById"/>
+      <result column="create_time" property="createTime"/>
+      <result column="update_by" property="updateBy"/>
+      <result column="update_by_id" property="updateById"/>
+      <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="GenCustomForm_sql">
+      SELECT
+        o.id,
+        o.name,
+        o.category_id,
+        o.is_dialog,
+        o.dialog_tittle,
+        o.dialog_width,
+        o.form_config,
+        o.prefix_submit,
+        o.suffix_submit,
+        o.require_query,
+        o.query_bean,
+        o.handle_bean,
+        o.available,
+        o.description,
+        o.create_by,
+        o.create_by_id,
+        o.create_time,
+        o.update_by,
+        o.update_by_id,
+        o.update_time
+      FROM gen_custom_form AS o
+    </sql>
+
+    <select id="query" resultMap="GenCustomForm">
+        <include refid="GenCustomForm_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND o.category_id = #{vo.categoryId}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND o.name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND o.available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+    <select id="selector" resultMap="GenCustomForm">
+      <include refid="GenCustomForm_sql"/>
+      <where>
+          <if test="vo != null">
+              <if test="vo.categoryId != null and vo.categoryId != ''">
+                  AND o.category_id = #{vo.categoryId}
+              </if>
+              <if test="vo.name != null and vo.name != ''">
+                  AND o.name LIKE CONCAT('%', #{vo.name}, '%')
+              </if>
+              <if test="vo.isDialog != null">
+                AND o.is_dialog = #{vo.isDialog}
+              </if>
+              <if test="vo.available != null">
+                  AND o.available = #{vo.available}
+              </if>
+          </if>
+      </where>
+      ORDER BY o.create_time DESC
+    </select>
+
+</mapper>

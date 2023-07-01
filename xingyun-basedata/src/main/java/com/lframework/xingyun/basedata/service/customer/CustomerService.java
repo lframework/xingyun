@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.service.customer;
 
-import com.lframework.starter.mybatis.resp.PageResult;
-import com.lframework.starter.mybatis.service.BaseMpService;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;

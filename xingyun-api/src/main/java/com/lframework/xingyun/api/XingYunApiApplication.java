@@ -14,14 +14,9 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
-/**
- * 底层的Bean的包全部在com.lframework.starter下 此处单独配置两个包名而不是直接配一个总的包名的原因： 1、可以更好分辨哪些包是属于底层，哪些包属于当前业务层
- * 2、有部分需求：将底层预设的Bean排除，这样更配包名更清晰，能快速排除底层包
- * 注意：底层包名规则为com.lframework.starter.xxx，其中：xxx代表web、mybatis等，例如：web-starter的包为com.lframework.starter.web
- */
-@ServletComponentScan(basePackages = {"com.lframework.starter", "com.lframework.xingyun"})
-@SpringBootApplication(scanBasePackages = {"com.lframework.starter", "com.lframework.xingyun"})
-@MapperScan({"com.lframework.starter.**.mappers", "com.lframework.xingyun.**.mappers"})
+@ServletComponentScan(basePackages = {"com.lframework.xingyun"})
+@SpringBootApplication(scanBasePackages = {"com.lframework.xingyun"})
+@MapperScan({"com.lframework.xingyun.**.mappers"})
 public class XingYunApiApplication {
 
   public static void main(String[] args) {
@@ -40,7 +35,12 @@ public class XingYunApiApplication {
 
       Docket docket = new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).groupName("星云ERP")
           .select()
-          .apis(RequestHandlerSelectors.basePackage("com.lframework.xingyun"))
+          .apis(RequestHandlerSelectors.basePackage("com.lframework.xingyun.api")
+              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.basedata"))
+              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.chart"))
+              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.core"))
+              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.sc"))
+              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.settle")))
           .paths(PathSelectors.any())
           .build().extensions(openApiExtensionResolver.buildSettingExtensions());
       return docket;

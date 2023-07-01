@@ -2,9 +2,9 @@ package com.lframework.xingyun.basedata.impl.product;
 
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.annotations.OpLog;
-import com.lframework.starter.mybatis.enums.DefaultOpLogType;
-import com.lframework.starter.mybatis.impl.BaseMpServiceImpl;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductRetail;
 import com.lframework.xingyun.basedata.mappers.ProductRetailMapper;

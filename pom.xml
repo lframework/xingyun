@@ -24,13 +24,18 @@
         <module>xingyun-sc</module>
         <module>xingyun-chart</module>
         <module>xingyun-settle</module>
+        <module>xingyun-template</module>
+        <module>xingyun-template-core</module>
+        <module>cloud/xingyun-cloud-api</module>
+        <module>xingyun-common</module>
+        <module>cloud/xingyun-cloud-gateway</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <xingyun.version>1.0.0-SNAPSHOT</xingyun.version>
-        <jugg.version>3.0.6</jugg.version>
+        <jugg.version>3.1.0</jugg.version>
     </properties>
 
     <dependencyManagement>
@@ -50,6 +55,11 @@
 
             <dependency>
                 <groupId>com.lframework</groupId>
+                <artifactId>xingyun-common</artifactId>
+                <version>${xingyun.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lframework</groupId>
                 <artifactId>xingyun-sc</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
@@ -57,6 +67,18 @@
             <dependency>
                 <groupId>com.lframework</groupId>
                 <artifactId>xingyun-chart</artifactId>
+                <version>${xingyun.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.lframework</groupId>
+                <artifactId>xingyun-template</artifactId>
+                <version>${xingyun.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.lframework</groupId>
+                <artifactId>xingyun-template-core</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
 
@@ -113,18 +135,21 @@
             </activation>
             <properties>
                 <profiles-active>dev</profiles-active>
+                <discovery-server>127.0.0.1:10000</discovery-server>
             </properties>
         </profile>
         <profile>
             <id>test</id>
             <properties>
                 <profiles-active>test</profiles-active>
+                <discovery-server>127.0.0.1:10000</discovery-server>
             </properties>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
                 <profiles-active>prod</profiles-active>
+                <discovery-server>127.0.0.1:10000</discovery-server>
             </properties>
         </profile>
     </profiles>

@@ -1,11 +1,11 @@
 package com.lframework.xingyun.basedata.bo.shop;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.mybatis.entity.DefaultSysDept;
-import com.lframework.starter.mybatis.service.system.SysDeptService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Shop;
+import com.lframework.xingyun.template.core.dto.DeptDto;
+import com.lframework.xingyun.template.core.service.DeptService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -86,9 +86,9 @@ public class GetShopBo extends BaseBo<Shop> {
   @Override
   protected void afterInit(Shop dto) {
     if (!StringUtil.isBlank(dto.getDeptId())) {
-      SysDeptService sysDeptService = ApplicationUtil.getBean(SysDeptService.class);
+      DeptService deptService = ApplicationUtil.getBean(DeptService.class);
 
-      DefaultSysDept dept = sysDeptService.findById(dto.getDeptId());
+      DeptDto dept = deptService.findById(dto.getDeptId());
 
       this.deptName = dept.getName();
     }

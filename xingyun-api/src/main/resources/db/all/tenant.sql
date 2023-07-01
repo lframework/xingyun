@@ -5846,7 +5846,7 @@ DROP TABLE IF EXISTS `sys_parameter`;
 CREATE TABLE `sys_parameter` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `pm_key` varchar(100) NOT NULL COMMENT '键',
-  `pm_value` varchar(200) DEFAULT NULL COMMENT '值',
+  `pm_value` longtext COMMENT '值',
   `description` varchar(200) NOT NULL DEFAULT '' COMMENT '备注',
   `create_by` varchar(32) NOT NULL COMMENT '创建人',
   `create_by_id` varchar(32) NOT NULL COMMENT '创建人ID',
@@ -5856,7 +5856,7 @@ CREATE TABLE `sys_parameter` (
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `pm_key` (`pm_key`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='系统参数';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='系统参数';
 
 -- ----------------------------
 -- Records of sys_parameter
@@ -5865,8 +5865,11 @@ BEGIN;
 INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (1, 'tx-map.key', 'OLJBZ-ZFJK6-QWUSK-MB7XT-6UTN2-AWBSY', '腾讯地图Key', '系统管理员', '1', '2022-05-22 04:18:59', '系统管理员', '1', '2022-05-22 04:18:59');
 INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (2, 'tx-map.secret', 'secret', '腾讯地图Secret', '系统管理员', '1', '2022-05-22 04:18:59', '系统管理员', '1', '2022-05-22 04:18:59');
 INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (3, 'excel-import.max-size', '2000', 'Excel导入最大条数', '系统管理员', '1', '2022-06-10 21:39:32', '系统管理员', '1', '2022-06-10 21:39:32');
-INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (7, 'sms.ali', '{\n  \"accessKeyId\": \"123456789\",\n \"accessKeySecret\": \"123456789abcdefg\",\n  \"endpoint\": \"dysmsapi.aliyuncs.com\"\n}', '阿里云短信配置', '系统管理员', '1', '2023-03-14 21:07:09', '系统管理员', '1', '2023-03-14 21:07:09');
 INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (8, 'mail', '{\n    \"pass\":\"123456\",\n    \"sslEnable\":true,\n    \"timeOut\":30000,\n    \"port\":25,\n    \"host\":\"smtp.xingyun.com\",\n    \"connectTimeOut\":1000,\n    \"from\":\"test@xingyun.com\",\n    \"user\":\"test\"\n}', '邮件配置', '系统管理员', '1', '2023-03-14 21:13:44', '系统管理员', '1', '2023-03-14 21:13:44');
+INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (9, 'upload.type', 'LOCAL', '上传类型，分为LOCAL、OSS、COS、OBS。LOCAL：服务器本地存储。OSS：阿里云对象存储。COS：腾讯云对象存储。OBS：华为云对象存储', '系统管理员', '1', '2023-06-27 10:38:05', '系统管理员', '1', '2023-06-27 10:38:10');
+INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (10, 'upload.oss.config', '{\"customUrl\":\"\",\"endpoint\":\"yourEndpoint\",\"internalEndPoint\":\"\",\"accessKeyId\":\"yourAccessKeyId\",\"accessKeySecret\":\"yourAccessKeySecret\",\"bucketName\":\"yourBucketName\"}', '阿里云对象存储配置信息，upload.type=OSS时生效，注意：当服务器与OSS同一地域时，建议填写internalEndPoint，此值表示内网endpoint，在上传时会优先使用内网endpoint。customUrl为自定义域名（需带协议）为空代表不使用自定义域名，示例值：https://www.lframework.com。其他参数均在阿里云控台获取。', '系统管理员', '1', '2023-06-27 10:38:05', '系统管理员', '1', '2023-06-27 10:38:10');
+INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (11, 'upload.obs.config', '{\"customUrl\":\"\",\"endpoint\":\"yourEndpoint\",\"ak\":\"yourAccessKeyId\",\"sk\":\"yourAccessKeySecret\",\"bucketName\":\"yourBucketName\"}', '华为云对象存储配置信息，upload.type=OBS时生效。customUrl为自定义域名（需带协议）为空代表不使用自定义域名，示例值：https://www.lframework.com。其他参数均在华为云控台获取。', '系统管理员', '1', '2023-06-27 10:38:05', '系统管理员', '1', '2023-06-27 10:38:10');
+INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (12, 'upload.cos.config', '{\"customUrl\":\"yourCustomUrl\",\"region\":\"yourRegion\",\"secretId\":\"yourSecretId\",\"secretKey\":\"yourSecretKey\",\"bucketName\":\"yourBucketName\"}', '腾讯云对象存储配置信息，upload.type=COS时生效。customUrl为下载文件时的域名，如果使用自定义域名，示例值：https://www.lframework.com，如果不使用自定义域名，那么就填写COS的访问域名。其他参数均在腾讯云控台获取。', '系统管理员', '1', '2023-06-27 10:38:05', '系统管理员', '1', '2023-06-27 14:48:02');
 COMMIT;
 
 -- ----------------------------

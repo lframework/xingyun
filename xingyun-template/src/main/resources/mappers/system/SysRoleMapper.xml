@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.template.inner.mappers.system.SysRoleMapper">
+
+    <sql id="SysRole_sql">
+        SELECT
+            *
+        FROM sys_role
+    </sql>
+    <select id="query" resultType="com.lframework.xingyun.template.inner.entity.SysRole">
+        <include refid="SysRole_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY code
+    </select>
+    <select id="findById" resultType="com.lframework.xingyun.template.inner.entity.SysRole">
+        <include refid="SysRole_sql"/>
+        WHERE id = #{id}
+    </select>
+
+    <select id="getByUserId" resultType="com.lframework.xingyun.template.inner.entity.SysRole">
+        <include refid="SysRole_sql"/>
+        WHERE id IN (
+        SELECT
+        role_id
+        FROM sys_user_role
+        WHERE user_id = #{userId}
+        )
+        ORDER BY code
+    </select>
+    <select id="selector" resultType="com.lframework.xingyun.template.inner.entity.SysRole">
+        <include refid="SysRole_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.available != null">
+                    AND available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY code
+    </select>
+</mapper>

@@ -12,19 +12,13 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.UserService;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
-import com.lframework.xingyun.template.core.dto.UserDto;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
@@ -40,7 +34,6 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
-import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
@@ -50,7 +43,6 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.ReceiveSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.ReceiveSheetMapper;
-import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
@@ -68,6 +60,12 @@ import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveProductVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.UpdateReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
+import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -111,9 +109,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
 
   @Autowired
   private ProductStockService productStockService;
-
-  @Autowired
-  private OrderPayTypeService orderPayTypeService;
 
   @Override
   public PageResult<ReceiveSheet> query(Integer pageIndex, Integer pageSize,
@@ -354,13 +349,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
 
-    if (NumberUtil.gt(sheet.getTotalAmount(), BigDecimal.ZERO)) {
-      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(sheet.getId());
-      if (CollectionUtil.isEmpty(orderPayTypes)) {
-        throw new DefaultClientException("单据没有支付方式，请检查！");
-      }
-    }
-
     Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(ReceiveSheetDetail.class)
         .eq(ReceiveSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(ReceiveSheetDetail::getOrderNo);
@@ -530,8 +518,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
 
     // 删除订单
     getBaseMapper().deleteById(id);
-
-    orderPayTypeService.deleteByOrderId(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
   }
@@ -729,8 +715,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     sheet.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     sheet.setSettleStatus(this.getInitSettleStatus(supplier));
-
-    orderPayTypeService.create(sheet.getId(), vo.getPayTypes());
   }
 
   /**

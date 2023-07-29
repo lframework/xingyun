@@ -303,7 +303,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     if (NumberUtil.gt(order.getTotalAmount(), BigDecimal.ZERO)) {
       List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(order.getId());
       if (CollectionUtil.isEmpty(orderPayTypes)) {
-        throw new DefaultClientException("单据没有支付方式，请检查！");
+        throw new DefaultClientException("单据没有约定支付，请检查！");
       }
     }
 

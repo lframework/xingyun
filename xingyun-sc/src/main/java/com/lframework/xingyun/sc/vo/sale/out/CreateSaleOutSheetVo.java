@@ -70,13 +70,6 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
   private List<SaleOutProductVo> products;
 
   /**
-   * 支付方式
-   */
-  @ApiModelProperty("支付方式")
-  @Valid
-  private List<OrderPayTypeVo> payTypes;
-
-  /**
    * 备注
    */
   @ApiModelProperty("备注")
@@ -174,16 +167,6 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
       }
 
       orderNo++;
-    }
-
-    BigDecimal totalAmount = this.products.stream()
-        .map(t -> NumberUtil.mul(t.getOrderNum(), t.getTaxPrice())).reduce(NumberUtil::add)
-        .orElse(BigDecimal.ZERO);
-    BigDecimal payTypeAmount = CollectionUtil.isEmpty(this.payTypes) ? BigDecimal.ZERO
-        : this.payTypes.stream().map(OrderPayTypeVo::getPayAmount).reduce(NumberUtil::add)
-            .orElse(BigDecimal.ZERO);
-    if (!NumberUtil.equal(totalAmount, payTypeAmount)) {
-      throw new InputErrorException("所有支付方式的支付金额不等于含税总金额，请检查！");
     }
   }
 }

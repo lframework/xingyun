@@ -4,12 +4,14 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
+import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
@@ -43,6 +45,14 @@ public class PurchaseOrderPayTypeImportListener extends
     if (order.getStatus() == PurchaseOrderStatus.APPROVE_PASS) {
       throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“单据号”的状态为“"
           + PurchaseOrderStatus.APPROVE_PASS.getDesc() + "”，不允许导入支付方式");
+    }
+
+    OrderPayTypeService orderPayTypeService = ApplicationUtil.getBean(
+        OrderPayTypeService.class);
+    List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(order.getId());
+    if (CollectionUtil.isNotEmpty(orderPayTypes)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“单据号”已关联支付方式，不允许重复导入");
     }
     data.setId(order.getId());
     data.setTotalAmount(order.getTotalAmount());

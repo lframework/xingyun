@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.vo.purchase.receive;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
@@ -13,7 +12,6 @@ import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
-import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -82,13 +80,6 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<ReceiveProductVo> products;
-
-  /**
-   * 支付方式
-   */
-  @ApiModelProperty("支付方式")
-  @Valid
-  private List<OrderPayTypeVo> payTypes;
 
   /**
    * 备注
@@ -172,16 +163,6 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
       }
 
       orderNo++;
-    }
-
-    BigDecimal totalAmount = this.products.stream()
-        .map(t -> NumberUtil.mul(t.getReceiveNum(), t.getPurchasePrice())).reduce(NumberUtil::add)
-        .orElse(BigDecimal.ZERO);
-    BigDecimal payTypeAmount = CollectionUtil.isEmpty(this.payTypes) ? BigDecimal.ZERO
-        : this.payTypes.stream().map(OrderPayTypeVo::getPayAmount).reduce(NumberUtil::add)
-            .orElse(BigDecimal.ZERO);
-    if (!NumberUtil.equal(totalAmount, payTypeAmount)) {
-      throw new InputErrorException("所有支付方式的支付金额不等于含税总金额，请检查！");
     }
   }
 }

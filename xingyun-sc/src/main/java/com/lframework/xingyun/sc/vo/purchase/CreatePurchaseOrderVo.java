@@ -60,7 +60,7 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
   /**
    * 支付方式
    */
-  @ApiModelProperty("支付方式")
+  @ApiModelProperty("约定支付")
   @Valid
   private List<OrderPayTypeVo> payTypes;
 

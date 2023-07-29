@@ -3,8 +3,13 @@ package com.lframework.xingyun.sc.excel.sale;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.xingyun.basedata.entity.PayType;
+import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
+import com.lframework.xingyun.sc.entity.OrderPayType;
+import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.template.core.service.UserService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
@@ -17,6 +22,8 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
@@ -63,6 +70,12 @@ public class SaleOrderExportModel extends BaseBo<SaleOrder> implements ExcelMode
      */
     @ExcelProperty("单据总金额")
     private BigDecimal totalAmount;
+
+    /**
+     * 约定支付
+     */
+    @ExcelProperty("约定支付")
+    private String payTypeStr;
 
     /**
      * 商品数量
@@ -167,5 +180,17 @@ public class SaleOrderExportModel extends BaseBo<SaleOrder> implements ExcelMode
         }
 
         this.setStatus(dto.getStatus().getDesc());
+
+        OrderPayTypeService orderPayTypeService = ApplicationUtil.getBean(OrderPayTypeService.class);
+        List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(dto.getId());
+
+        PayTypeService payTypeService = ApplicationUtil.getBean(PayTypeService.class);
+
+        if (CollectionUtil.isNotEmpty(orderPayTypes)) {
+            this.payTypeStr = orderPayTypes.stream().map(orderPayType -> {
+                PayType payType = payTypeService.findById(orderPayType.getPayTypeId());
+                return StringUtil.format("{}：{}元", payType.getName(), orderPayType.getPayAmount());
+            }).collect(Collectors.joining("；"));
+        }
     }
 }

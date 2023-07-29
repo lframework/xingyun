@@ -12,20 +12,14 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.UserService;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
-import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
@@ -42,7 +36,6 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
-import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
@@ -52,7 +45,6 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.SaleReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.SaleReturnMapper;
-import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailService;
@@ -69,6 +61,12 @@ import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.SaleReturnProductVo;
 import com.lframework.xingyun.sc.vo.sale.returned.UpdateSaleReturnVo;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
+import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -117,9 +115,6 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
 
   @Autowired
   private ProductPurchaseService productPurchaseService;
-
-  @Autowired
-  private OrderPayTypeService orderPayTypeService;
 
   @Override
   public PageResult<SaleReturn> query(Integer pageIndex, Integer pageSize, QuerySaleReturnVo vo) {
@@ -285,13 +280,6 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     }
     if (getBaseMapper().updateAllColumn(saleReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售退货单信息已过期，请刷新重试！");
-    }
-
-    if (NumberUtil.gt(saleReturn.getTotalAmount(), BigDecimal.ZERO)) {
-      List<OrderPayType> orderPayTypes = orderPayTypeService.findByOrderId(saleReturn.getId());
-      if (CollectionUtil.isEmpty(orderPayTypes)) {
-        throw new DefaultClientException("单据没有支付方式，请检查！");
-      }
     }
 
     Wrapper<SaleReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(SaleReturnDetail.class)
@@ -465,8 +453,6 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
 
     // 删除退货单
     getBaseMapper().deleteById(id);
-
-    orderPayTypeService.deleteByOrderId(id);
 
     OpLogUtil.setVariable("code", saleReturn.getCode());
   }
@@ -669,8 +655,6 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     saleReturn.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     saleReturn.setSettleStatus(this.getInitSettleStatus(customer));
-
-    orderPayTypeService.create(saleReturn.getId(), vo.getPayTypes());
   }
 
   /**

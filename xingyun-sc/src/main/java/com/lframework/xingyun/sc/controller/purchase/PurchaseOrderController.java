@@ -375,11 +375,11 @@ public class PurchaseOrderController extends DefaultBaseController {
     ExcelUtil.exportXls("采购订单导入模板", PurchaseOrderImportModel.class);
   }
 
-  @ApiOperation("下载导入支付方式模板")
+  @ApiOperation("下载导入约定支付模板")
   @HasPermission({"purchase:order:import"})
   @GetMapping("/import/template/paytype")
   public void downloadImportPayTypeTemplate() {
-    ExcelUtil.exportXls("采购订单导入支付方式模板", PurchaseOrderPayTypeImportModel.class);
+    ExcelUtil.exportXls("采购订单导入约定支付模板", PurchaseOrderPayTypeImportModel.class);
   }
 
   @ApiOperation("导入")
@@ -395,7 +395,7 @@ public class PurchaseOrderController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("导入支付方式")
+  @ApiOperation("导入约定支付")
   @HasPermission({"purchase:order:import"})
   @PostMapping("/import/paytype")
   public InvokeResult<Void> importPayTypeExcel(@NotBlank(message = "ID不能为空") String id,

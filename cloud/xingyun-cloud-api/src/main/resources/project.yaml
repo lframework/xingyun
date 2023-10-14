@@ -1,10 +1,10 @@
 logging:
-  config: classpath:spring-logback-dev.xml
-  # path默认为当前目录的logs子目录
-  # name默认为log，name为文件名，例如：配置test-log，那么生成的日志文件的全名称为test-log.log
-  #file:
-  #  path: logs
-  #  name: log
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint}|%clr(%5p)|%clr(${PID:- }){magenta}|%clr(%15.15t){faint}|%clr(${spring.application.name}){cyan}|%clr(%X{X-B3-TraceId:-N/A}){blue}|%X{X-B3-SpanId:-N/A}|%clr(%-40.40logger{39}){cyan}|%m%n%wEx"
+    file: ${logging.pattern.console}
+  file:
+    name: logs/${spring.application.name}.log
+    max-history: 14
 
 jugg:
   web:
@@ -14,9 +14,6 @@ jugg:
     worker-id: 1
     #数据中心ID
     center-id: 1
-  # 锁类型，如果注释掉的话就使用的JUC的可重入锁
-  locker:
-    type: redis
   #开启多租户
   tenant:
     enabled: true

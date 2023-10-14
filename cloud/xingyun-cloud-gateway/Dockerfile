@@ -1,5 +1,12 @@
-FROM openjdk:8-jdk-alpine
-ARG JAR_FILE=@project.build.finalName@.jar
-COPY ${JAR_FILE} /opt/app.jar
+FROM openjdk:8-jre-slim
+
 WORKDIR /opt
-ENTRYPOINT exec java -jar -server -Xmx256m -XX:MaxPermSize=32m -XX:MaxNewSize=32m /opt/app.jar
+
+ARG JAR_FILE=@build.finalName@.jar
+COPY ${JAR_FILE} /opt/app.jar
+
+EXPOSE 15000
+
+ENV JAVA_OPTS="-Dspring.profiles.active=prod"
+
+CMD ["sh", "-c", "java $JAVA_OPTS -jar -server app.jar"]

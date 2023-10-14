@@ -1,6 +1,8 @@
 package com.lframework.xingyun.api;
 
 import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
+import com.lframework.starter.web.annotations.locker.EnableLock;
+import com.lframework.starter.web.annotations.locker.LockType;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +16,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+@EnableLock(type = LockType.REDIS)
 @ServletComponentScan(basePackages = {"com.lframework.xingyun"})
 @SpringBootApplication(scanBasePackages = {"com.lframework.xingyun"})
 @MapperScan({"com.lframework.xingyun.**.mappers"})

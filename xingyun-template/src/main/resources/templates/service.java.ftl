@@ -1,7 +1,5 @@
 package ${packageName}.service.${moduleName};
 
-import PageResult;
-import BaseMpService;
 <#if create??>
 import ${packageName}.vo.${moduleName}.${bizName}.Create${className}Vo;
 </#if>

@@ -1,13 +1,12 @@
 package ${packageName}.vo.${moduleName}.${bizName};
 
-import com.lframework.starter.web.vo.BaseVo;
-import lombok.Data;
 <#if importPackages??>
     <#list importPackages as p>
 import ${p};
     </#list>
 </#if>
 import java.io.Serializable;
+import lombok.Data;
 
 @Data
 public class Create${className}Vo implements BaseVo, Serializable {

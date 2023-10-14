@@ -1,6 +1,5 @@
 package ${packageName}.mappers;
 
-import BaseMapper;
 import ${packageName}.entity.${className};
 <#if queryParams??>
 import ${packageName}.vo.${moduleName}.${bizName}.Query${className}Vo;

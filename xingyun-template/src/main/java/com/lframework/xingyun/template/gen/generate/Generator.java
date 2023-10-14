@@ -5,19 +5,46 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultSysException;
+import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.constants.MyBatisStringPool;
+import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.components.validation.IsNumberPrecision;
 import com.lframework.starter.web.components.validation.Pattern;
 import com.lframework.starter.web.components.validation.TypeMismatch;
+import com.lframework.starter.web.constants.MyBatisStringPool;
+import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.entity.BaseEntity;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.resp.InvokeResult;
+import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.vo.PageVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.xingyun.template.gen.builders.DataEntityBuilder;
+import com.lframework.xingyun.template.gen.components.DataEntity;
+import com.lframework.xingyun.template.gen.components.DataEntityColumn;
+import com.lframework.xingyun.template.gen.directives.FormatDirective;
 import com.lframework.xingyun.template.gen.dto.generate.GenerateDto;
+import com.lframework.xingyun.template.gen.enums.GenConvertType;
+import com.lframework.xingyun.template.gen.enums.GenDataType;
+import com.lframework.xingyun.template.gen.enums.GenKeyType;
+import com.lframework.xingyun.template.gen.enums.GenViewType;
 import com.lframework.xingyun.template.gen.generate.templates.ControllerTemplate;
 import com.lframework.xingyun.template.gen.generate.templates.CreateTemplate;
 import com.lframework.xingyun.template.gen.generate.templates.DetailTemplate;
@@ -28,14 +55,6 @@ import com.lframework.xingyun.template.gen.generate.templates.QueryTemplate;
 import com.lframework.xingyun.template.gen.generate.templates.ServiceTemplate;
 import com.lframework.xingyun.template.gen.generate.templates.SqlTemplate;
 import com.lframework.xingyun.template.gen.generate.templates.UpdateTemplate;
-import com.lframework.xingyun.template.gen.builders.DataEntityBuilder;
-import com.lframework.xingyun.template.gen.components.DataEntity;
-import com.lframework.xingyun.template.gen.components.DataEntityColumn;
-import com.lframework.xingyun.template.gen.directives.FormatDirective;
-import com.lframework.xingyun.template.gen.enums.GenConvertType;
-import com.lframework.xingyun.template.gen.enums.GenDataType;
-import com.lframework.xingyun.template.gen.enums.GenKeyType;
-import com.lframework.xingyun.template.gen.enums.GenViewType;
 import com.lframework.xingyun.template.inner.entity.SysDataDic;
 import com.lframework.xingyun.template.inner.service.system.SysDataDicItemService;
 import com.lframework.xingyun.template.inner.service.system.SysDataDicService;
@@ -541,6 +560,8 @@ public class Generator {
     entityTemplate.setAuthor(dataEntity.getGenerateInfo().getAuthor());
 
     Set<String> importPackages = new HashSet<>();
+    importPackages.add(BaseEntity.class.getName());
+    importPackages.add(BaseDto.class.getName());
     List<EntityTemplate.Column> columns = new ArrayList<>();
     for (DataEntityColumn column : dataEntity.getColumns()) {
       EntityTemplate.Column columnObj = new EntityTemplate.Column();
@@ -625,6 +646,7 @@ public class Generator {
     mapperTemplate.setClassDescription(dataEntity.getGenerateInfo().getClassDescription());
     mapperTemplate.setAuthor(dataEntity.getGenerateInfo().getAuthor());
     Set<String> importPackages = new HashSet<>();
+    importPackages.add(BaseMapper.class.getName());
     List<MapperTemplate.Key> keys = new ArrayList<>();
     for (DataEntityColumn column : dataEntity.getColumns()) {
       if (column.getIsKey()) {
@@ -686,7 +708,19 @@ public class Generator {
     serviceTemplate.setIsCache(dataEntity.getGenerateInfo().getIsCache());
     serviceTemplate.setHasDelete(dataEntity.getGenerateInfo().getHasDelete());
     Set<String> importPackages = new HashSet<>();
+    importPackages.add(PageResult.class.getName());
+    importPackages.add(BaseMpService.class.getName());
     importPackages.add(StringUtil.class.getName());
+    importPackages.add(BaseMpServiceImpl.class.getName());
+    importPackages.add(DefaultClientException.class.getName());
+    importPackages.add(Assert.class.getName());
+    importPackages.add(ObjectUtil.class.getName());
+    importPackages.add(OpLog.class.getName());
+    importPackages.add(DefaultOpLogType.class.getName());
+    importPackages.add(OpLogUtil.class.getName());
+    importPackages.add(PageHelperUtil.class.getName());
+    importPackages.add(PageResultUtil.class.getName());
+    importPackages.add(EnumUtil.class.getName());
     if (serviceTemplate.getHasDelete()) {
       importPackages.add(Transactional.class.getName());
     }
@@ -754,6 +788,8 @@ public class Generator {
     queryParamsTemplate.setClassDescription(dataEntity.getGenerateInfo().getClassDescription());
     queryParamsTemplate.setAuthor(dataEntity.getGenerateInfo().getAuthor());
     Set<String> importPackages = new HashSet<>();
+    importPackages.add(BaseVo.class.getName());
+    importPackages.add(PageVo.class.getName());
     importPackages.add(TypeMismatch.class.getName());
     importPackages.add(ApiModelProperty.class.getName());
     List<QueryParamsTemplate.Column> columns = new ArrayList<>();
@@ -842,6 +878,8 @@ public class Generator {
     createTemplate.setClassDescription(dataEntity.getGenerateInfo().getClassDescription());
     createTemplate.setAuthor(dataEntity.getGenerateInfo().getAuthor());
     importPackages.add(TypeMismatch.class.getName());
+    importPackages.add(BaseVo.class.getName());
+
 
     List<CreateTemplate.Column> columns = new ArrayList<>();
     for (DataEntityColumn column : targetColumns) {
@@ -985,6 +1023,7 @@ public class Generator {
     updateTemplate.setAuthor(dataEntity.getGenerateInfo().getAuthor());
     importPackages.add(TypeMismatch.class.getName());
     importPackages.add(ApiModelProperty.class.getName());
+    importPackages.add(BaseVo.class.getName());
 
     List<UpdateTemplate.Column> columns = new ArrayList<>();
     for (DataEntityColumn column : targetColumns) {
@@ -1135,6 +1174,8 @@ public class Generator {
     Set<String> importPackages = new HashSet<>();
     importPackages.add(TypeMismatch.class.getName());
     importPackages.add(ApiModelProperty.class.getName());
+    importPackages.add(StringPool.class.getName());
+    importPackages.add(BaseBo.class.getName());
     List<QueryTemplate.Column> columns = new ArrayList<>();
     for (DataEntityColumn column : targetColumns) {
       QueryTemplate.Column columnObj = new QueryTemplate.Column();
@@ -1235,6 +1276,8 @@ public class Generator {
     Set<String> importPackages = new HashSet<>();
     importPackages.add(TypeMismatch.class.getName());
     importPackages.add(ApiModelProperty.class.getName());
+    importPackages.add(StringPool.class.getName());
+    importPackages.add(BaseBo.class.getName());
     List<DetailTemplate.Column> columns = new ArrayList<>();
     for (DataEntityColumn column : targetColumns) {
       DetailTemplate.Column columnObj = new DetailTemplate.Column();
@@ -1333,6 +1376,12 @@ public class Generator {
     if (controllerTemplate.getHasDelete()) {
       importPackages.add(DeleteMapping.class.getName());
     }
+    importPackages.add(DefaultClientException.class.getName());
+    importPackages.add(CollectionUtil.class.getName());
+    importPackages.add(PageResult.class.getName());
+    importPackages.add(PageResultUtil.class.getName());
+    importPackages.add(InvokeResult.class.getName());
+    importPackages.add(InvokeResultBuilder.class.getName());
     importPackages.add(Api.class.getName());
     importPackages.add(ApiOperation.class.getName());
     importPackages.add(ApiImplicitParam.class.getName());

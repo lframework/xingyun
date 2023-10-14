@@ -1,5 +1,16 @@
-FROM openjdk:8-jdk-alpine
-ARG JAR_FILE=@project.build.finalName@.jar
-COPY ${JAR_FILE} /opt/app.jar
+FROM openjdk:8-jre-slim
+
 WORKDIR /opt
-ENTRYPOINT exec java -jar -server -Xmx256m -XX:MaxPermSize=32m -XX:MaxNewSize=32m /opt/app.jar
+
+ARG JAR_FILE=@build.finalName@.jar
+COPY ${JAR_FILE} /opt/app.jar
+
+EXPOSE 8080
+
+ENV JAVA_OPTS="-Dspring.profiles.active=prod"
+
+# 在默认情况下
+# /opt/data/tmp是tomcat临时文件目录
+# /opt/data/upload是上传文件的存储目录
+# /opt/logs是日志的存储目录
+CMD ["sh", "-c", "java -Dspring.servlet.multipart.location=/opt/data/tmp -Djugg.upload.location=/opt/data/upload $JAVA_OPTS -jar -server app.jar"]

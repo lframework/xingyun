@@ -1,11 +1,5 @@
 package ${packageName}.controller.${moduleName};
 
-import DefaultClientException;
-import CollectionUtil;
-import PageResult;
-import PageResultUtil;
-import com.lframework.starter.web.resp.InvokeResult;
-import com.lframework.starter.web.resp.InvokeResultBuilder;
 <#if detail??>
 import ${packageName}.bo.${moduleName}.${bizName}.Get${className}Bo;
 </#if>

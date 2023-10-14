@@ -3,18 +3,7 @@ package ${packageName}.impl.${moduleName};
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import BaseMpServiceImpl;
 import com.github.pagehelper.PageInfo;
-import DefaultClientException;
-import Assert;
-import ObjectUtil;
-import OpLog;
- import DefaultOpLogType;
-import PageResult;
-import OpLogUtil;
-import PageHelperUtil;
-import PageResultUtil;
-import com.lframework.starter.web.utils.EnumUtil;
 import ${packageName}.entity.${className};
 <#if importPackages??>
     <#list importPackages as p>

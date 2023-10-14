@@ -252,7 +252,8 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     }
     data.setCode(vo.getCode());
     data.setTitle(vo.getTitle());
-    data.setParentId(parentMenu == null ? StringPool.EMPTY_STR : parentMenu.getId());
+    // fix 这里需要用null代替空字符串
+    data.setParentId(parentMenu == null ? null: parentMenu.getId());
     data.setDisplay(sysMenuDisplay);
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());

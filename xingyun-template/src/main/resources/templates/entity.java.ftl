@@ -1,8 +1,6 @@
 package ${packageName}.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import BaseEntity;
-import com.lframework.starter.web.dto.BaseDto;
 <#if importPackages??>
     <#list importPackages as p>
 import ${p};

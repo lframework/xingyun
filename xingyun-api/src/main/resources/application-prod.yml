@@ -1,10 +1,10 @@
 logging:
-  config: classpath:spring-logback-prod.xml
-  # path默认为当前目录的logs子目录
-  # name默认为log，name为文件名，例如：配置test-log，那么生成的日志文件的全名称为test-log.log
-  #file:
-  #  path: logs
-  #  name: log
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint}|%clr(%5p)|%clr(${PID:- }){magenta}|%clr(%15.15t){faint}|%clr(${spring.application.name}){cyan}|%clr(%X{X-B3-TraceId:-N/A}){blue}|%X{X-B3-SpanId:-N/A}|%clr(%-40.40logger{39}){cyan}|%m%n%wEx"
+    file: ${logging.pattern.console}
+  file:
+    name: logs/${spring.application.name}.log
+    max-history: 14
 
 spring:
   servlet:

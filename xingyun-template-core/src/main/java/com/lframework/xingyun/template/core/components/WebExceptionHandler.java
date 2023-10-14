@@ -12,7 +12,7 @@ import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.Response;
-import com.lframework.starter.web.resp.ResponseBuilder;
+import com.lframework.starter.web.resp.ResponseErrorBuilder;
 import com.lframework.starter.web.utils.ResponseUtil;
 import java.util.Map;
 import javax.validation.ConstraintViolation;
@@ -360,18 +360,19 @@ public class WebExceptionHandler {
     ResponseUtil.getResponse().setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
   }
 
-  protected ResponseBuilder getBuilder(Object bean) {
+  protected ResponseErrorBuilder getBuilder(Object bean) {
 
-    Map<String, ResponseBuilder> builders = ApplicationUtil.getBeansOfType(ResponseBuilder.class);
-    ResponseBuilder builder = null;
-    for (ResponseBuilder value : builders.values()) {
+    Map<String, ResponseErrorBuilder> builders = ApplicationUtil.getBeansOfType(
+        ResponseErrorBuilder.class);
+    ResponseErrorBuilder builder = null;
+    for (ResponseErrorBuilder value : builders.values()) {
       if (value.isDefault()) {
         builder = value;
         break;
       }
     }
 
-    for (ResponseBuilder value : builders.values()) {
+    for (ResponseErrorBuilder value : builders.values()) {
       if (value.isMatch(bean)) {
         builder = value;
         break;

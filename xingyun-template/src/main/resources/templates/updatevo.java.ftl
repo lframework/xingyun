@@ -1,6 +1,5 @@
 package ${packageName}.vo.${moduleName}.${bizName};
 
-import com.lframework.starter.web.vo.BaseVo;
 import lombok.Data;
 <#if importPackages??>
     <#list importPackages as p>

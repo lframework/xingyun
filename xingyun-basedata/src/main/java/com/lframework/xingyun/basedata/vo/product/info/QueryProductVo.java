@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.vo.product.info;
 
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class QueryProductVo extends PageVo implements BaseVo, Serializable {
+public class QueryProductVo extends SortPageVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 

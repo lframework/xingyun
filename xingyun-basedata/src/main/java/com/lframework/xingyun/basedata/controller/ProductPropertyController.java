@@ -144,7 +144,7 @@ public class ProductPropertyController extends DefaultBaseController {
   @ApiOperation("新增属性")
   @HasPermission({"base-data:product:property:add"})
   @PostMapping
-  public InvokeResult<Void> create(@Valid CreateProductPropertyVo vo) {
+  public InvokeResult<Void> create(@Valid @RequestBody CreateProductPropertyVo vo) {
 
     productPropertyService.create(vo);
 
@@ -157,7 +157,7 @@ public class ProductPropertyController extends DefaultBaseController {
   @ApiOperation("修改属性")
   @HasPermission({"base-data:product:property:modify"})
   @PutMapping
-  public InvokeResult<Void> update(@Valid UpdateProductPropertyVo vo) {
+  public InvokeResult<Void> update(@Valid @RequestBody UpdateProductPropertyVo vo) {
 
     productPropertyService.update(vo);
 

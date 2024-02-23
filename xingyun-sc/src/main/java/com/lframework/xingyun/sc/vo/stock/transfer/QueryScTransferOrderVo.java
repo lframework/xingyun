@@ -3,7 +3,7 @@ package com.lframework.xingyun.sc.vo.stock.transfer;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class QueryScTransferOrderVo extends PageVo implements BaseVo, Serializable {
+public class QueryScTransferOrderVo extends SortPageVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 

@@ -4,6 +4,11 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.settle.dto.sheet.SettleSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettleSheet;
 import com.lframework.xingyun.settle.vo.sheet.QuerySettleSheetVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -24,8 +29,15 @@ public interface SettleSheetMapper extends BaseMapper<SettleSheet> {
      * @param vo
      * @return
      */
-    List<SettleSheet> query(@Param("vo") QuerySettleSheetVo vo,
-        @Param("dataPermission") String dataPermission);
+    @Sorts({
+        @Sort(value = "code", alias = "s", autoParse = true),
+        @Sort(value = "createTime", alias = "s", autoParse = true),
+        @Sort(value = "approveTime", alias = "s", autoParse = true),
+    })
+    @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+        @DataPermission(template = "order", alias = "s")
+    })
+    List<SettleSheet> query(@Param("vo") QuerySettleSheetVo vo);
 
     /**
      * 根据ID查询

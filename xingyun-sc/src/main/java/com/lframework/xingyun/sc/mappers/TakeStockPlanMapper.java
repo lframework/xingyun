@@ -6,6 +6,11 @@ import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,8 +29,15 @@ public interface TakeStockPlanMapper extends BaseMapper<TakeStockPlan> {
    * @param vo
    * @return
    */
-  List<TakeStockPlan> query(@Param("vo") QueryTakeStockPlanVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "tb", autoParse = true),
+      @Sort(value = "createTime", alias = "tb", autoParse = true),
+      @Sort(value = "updateTime", alias = "tb", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "tb")
+  })
+  List<TakeStockPlan> query(@Param("vo") QueryTakeStockPlanVo vo);
 
   /**
    * 选择器
@@ -33,8 +45,10 @@ public interface TakeStockPlanMapper extends BaseMapper<TakeStockPlan> {
    * @param vo
    * @return
    */
-  List<TakeStockPlan> selector(@Param("vo") TakeStockPlanSelectorVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "tb")
+  })
+  List<TakeStockPlan> selector(@Param("vo") TakeStockPlanSelectorVo vo);
 
   /**
    * 根据盘点任务ID查询商品信息

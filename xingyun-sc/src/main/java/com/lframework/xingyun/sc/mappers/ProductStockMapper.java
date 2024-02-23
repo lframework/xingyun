@@ -3,6 +3,11 @@ package com.lframework.xingyun.sc.mappers;
 import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.math.BigDecimal;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -23,8 +28,17 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @param vo
    * @return
    */
-  List<ProductStock> query(@Param("vo") QueryProductStockVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "scCode", alias = "sc.code"),
+      @Sort(value = "productCode", alias = "g.code"),
+      @Sort(value = "stockNum", alias = "gs.stock_num"),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  List<ProductStock> query(@Param("vo") QueryProductStockVo vo);
 
   /**
    * 根据商品ID、仓库ID查询

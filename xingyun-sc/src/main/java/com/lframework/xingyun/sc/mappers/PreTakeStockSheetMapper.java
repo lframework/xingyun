@@ -8,6 +8,11 @@ import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,8 +31,14 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
    * @param vo
    * @return
    */
-  List<PreTakeStockSheet> query(@Param("vo") QueryPreTakeStockSheetVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "tb", autoParse = true),
+      @Sort(value = "updateTime", alias = "tb", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "tb")
+  })
+  List<PreTakeStockSheet> query(@Param("vo") QueryPreTakeStockSheetVo vo);
 
   /**
    * 根据ID查询
@@ -43,8 +54,10 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
    * @param vo
    * @return
    */
-  List<PreTakeStockSheet> selector(@Param("vo") PreTakeStockSheetSelectorVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "tb")
+  })
+  List<PreTakeStockSheet> selector(@Param("vo") PreTakeStockSheetSelectorVo vo);
 
   /**
    * 根据预先盘点单、盘点任务查询商品信息
@@ -62,8 +75,12 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
    * @param condition
    * @return
    */
-  List<PreTakeStockProductDto> queryPreTakeStockByCondition(@Param("condition") String condition,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  List<PreTakeStockProductDto> queryPreTakeStockByCondition(@Param("condition") String condition);
 
   /**
    * 查询预先盘点单商品信息
@@ -71,6 +88,10 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
    * @param vo
    * @return
    */
-  List<PreTakeStockProductDto> queryPreTakeStockList(@Param("vo") QueryPreTakeStockProductVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  List<PreTakeStockProductDto> queryPreTakeStockList(@Param("vo") QueryPreTakeStockProductVo vo);
 }

@@ -142,7 +142,6 @@
                     AND r.settle_status = #{vo.settleStatus}
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY r.create_time DESC
     </select>

@@ -12,7 +12,7 @@ import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.xingyun.template.core.annotations.OpLog;
 import com.lframework.xingyun.template.core.enums.Gender;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
@@ -64,7 +64,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用会员，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用会员，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -79,7 +79,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用会员，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用会员，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -94,7 +94,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增会员，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增会员，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateMemberVo vo) {
@@ -149,7 +149,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改会员，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改会员，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateMemberVo vo) {

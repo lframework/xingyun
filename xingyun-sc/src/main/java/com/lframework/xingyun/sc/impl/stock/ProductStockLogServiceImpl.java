@@ -3,14 +3,12 @@ package com.lframework.xingyun.sc.impl.stock;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.mappers.ProductStockLogMapper;
@@ -19,7 +17,6 @@ import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,11 +42,7 @@ public class ProductStockLogServiceImpl extends
   @Override
   public List<ProductStockLog> query(QueryProductStockLogVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    return getBaseMapper().query(vo);
   }
 
   @Transactional(rollbackFor = Exception.class)

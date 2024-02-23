@@ -11,7 +11,7 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
@@ -74,7 +74,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "停用商品品牌，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品品牌，ID：{}", params = "#ids", loopFormat = true)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
@@ -88,7 +88,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "启用商品品牌，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品品牌，ID：{}", params = "#ids", loopFormat = true)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
@@ -102,7 +102,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "新增商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateProductBrandVo vo) {
@@ -140,7 +140,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         return data.getId();
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "修改商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateProductBrandVo vo) {

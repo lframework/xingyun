@@ -70,6 +70,9 @@
                 </if>
             </if>
             AND display IN (0, 1)
+            <if test="vo.available != null">
+                AND available = #{vo.available}
+            </if>
         </where>
         ORDER BY code
     </select>

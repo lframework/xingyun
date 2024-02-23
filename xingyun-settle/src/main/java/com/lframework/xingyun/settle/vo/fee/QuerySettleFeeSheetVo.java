@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.vo.fee;
 
 import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.enums.SettleFeeSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class QuerySettleFeeSheetVo extends PageVo {
+public class QuerySettleFeeSheetVo extends SortPageVo {
 
   private static final long serialVersionUID = 1L;
 

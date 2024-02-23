@@ -7,7 +7,6 @@ public enum GenCustomListBtnType implements BaseEnum<Integer> {
 
   EXTERNAL(0, "外部链接"),
   ROUTE(1, "路由跳转"),
-  CUSTOM_FORM(2, "自定义表单"),
   EXCUTE_SCRIPT(3, "自定义表单");
 
   @EnumValue

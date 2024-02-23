@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SysUserDeptServiceImpl extends
     BaseMpServiceImpl<SysUserDeptMapper, SysUserDept> implements SysUserDeptService {
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "用户设置部门，用户ID：{}，部门ID：{}", params = {"#vo.userId",
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "用户设置部门，用户ID：{}，部门ID：{}", params = {"#vo.userId",
       "#vo.positionId"})
   @Transactional(rollbackFor = Exception.class)
   @Override

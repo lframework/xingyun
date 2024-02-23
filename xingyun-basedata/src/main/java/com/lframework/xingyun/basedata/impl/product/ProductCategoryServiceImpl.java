@@ -8,7 +8,7 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.template.core.service.RecursionMappingService;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
@@ -58,7 +58,7 @@ public class ProductCategoryServiceImpl extends
     return getBaseMapper().selector(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用商品类目，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品类目，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -85,7 +85,7 @@ public class ProductCategoryServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用商品类目，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品类目，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -112,7 +112,7 @@ public class ProductCategoryServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductCategoryVo vo) {
@@ -161,7 +161,7 @@ public class ProductCategoryServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductCategoryVo vo) {

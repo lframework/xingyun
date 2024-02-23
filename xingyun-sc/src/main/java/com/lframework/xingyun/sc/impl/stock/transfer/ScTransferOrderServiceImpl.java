@@ -11,21 +11,16 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -35,6 +30,7 @@ import com.lframework.xingyun.sc.entity.ScTransferOrder;
 import com.lframework.xingyun.sc.entity.ScTransferOrderDetail;
 import com.lframework.xingyun.sc.entity.ScTransferOrderDetailReceive;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
 import com.lframework.xingyun.sc.mappers.ScTransferOrderMapper;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
@@ -54,11 +50,12 @@ import com.lframework.xingyun.sc.vo.stock.transfer.ReceiveScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ReceiveScTransferOrderVo.ReceiveScTransferProductVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ScTransferProductVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.UpdateScTransferOrderVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,9 +97,7 @@ public class ScTransferOrderServiceImpl extends
   @Override
   public List<ScTransferOrder> query(QueryScTransferOrderVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("tb")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -111,7 +106,7 @@ public class ScTransferOrderServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增仓库调拨单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "新增仓库调拨单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建调拨单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -131,7 +126,7 @@ public class ScTransferOrderServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改仓库调拨单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "修改仓库调拨单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改调拨单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -181,7 +176,7 @@ public class ScTransferOrderServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除仓库调拨单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "删除仓库调拨单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -238,7 +233,7 @@ public class ScTransferOrderServiceImpl extends
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过仓库调拨单，ID：{}", params = {"#vo.id"})
+  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "审核通过仓库调拨单，ID：{}", params = {"#vo.id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -350,7 +345,7 @@ public class ScTransferOrderServiceImpl extends
     return id;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝仓库调拨单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "审核拒绝仓库调拨单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -485,11 +480,7 @@ public class ScTransferOrderServiceImpl extends
     PageHelperUtil.startPage(pageIndex, pageSize);
 
     List<ScTransferProductDto> datas = getBaseMapper().queryScTransferByCondition(scId,
-        condition,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+        condition);
     PageResult<ScTransferProductDto> pageResult = PageResultUtil.convert(
         new PageInfo<>(datas));
 
@@ -505,11 +496,7 @@ public class ScTransferOrderServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<ScTransferProductDto> datas = getBaseMapper().queryScTransferList(vo,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    List<ScTransferProductDto> datas = getBaseMapper().queryScTransferList(vo);
     PageResult<ScTransferProductDto> pageResult = PageResultUtil.convert(
         new PageInfo<>(datas));
 

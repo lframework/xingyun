@@ -92,6 +92,12 @@ public class GetGenCustomSelectorBo extends BaseBo<GenCustomSelector> {
   @ApiModelProperty("状态")
   private Boolean available;
 
+  /**
+   * 备注
+   */
+  @ApiModelProperty("备注")
+  private String description;
+
   public GetGenCustomSelectorBo() {
   }
 

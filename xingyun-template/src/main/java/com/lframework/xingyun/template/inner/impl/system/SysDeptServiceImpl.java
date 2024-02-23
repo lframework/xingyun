@@ -55,7 +55,7 @@ public class SysDeptServiceImpl extends BaseMpServiceImpl<SysDeptMapper, SysDept
     return this.doGetById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用部门，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用部门，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -80,7 +80,7 @@ public class SysDeptServiceImpl extends BaseMpServiceImpl<SysDeptMapper, SysDept
     this.doBatchUnable(batchIds);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用部门，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用部门，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -105,7 +105,7 @@ public class SysDeptServiceImpl extends BaseMpServiceImpl<SysDeptMapper, SysDept
     this.doBatchEnable(batchIds);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增部门，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增部门，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSysDeptVo vo) {
@@ -121,7 +121,7 @@ public class SysDeptServiceImpl extends BaseMpServiceImpl<SysDeptMapper, SysDept
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改部门，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改部门，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSysDeptVo vo) {

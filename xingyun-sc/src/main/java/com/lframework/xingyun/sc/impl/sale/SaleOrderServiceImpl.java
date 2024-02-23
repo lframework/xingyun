@@ -12,20 +12,14 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.UserService;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
-import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
@@ -36,7 +30,6 @@ import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleOrderEvent;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
@@ -50,6 +43,7 @@ import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.entity.SaleOrderDetailBundle;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.mappers.SaleOrderMapper;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
@@ -67,10 +61,13 @@ import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.SaleOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.sale.SaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,9 +125,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   @Override
   public List<SaleOrder> query(QuerySaleOrderVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("o")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -141,9 +136,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SaleOrder> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("o")));
+    List<SaleOrder> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -182,14 +175,12 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<SaleOrder> datas = getBaseMapper().queryWithOut(vo,
-        saleConfig.getOutStockMultipleRelateSale(),
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("o")));
+        saleConfig.getOutStockMultipleRelateSale());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "创建销售订单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.SALE, name = "创建销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建订单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -211,7 +202,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     return order.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改销售订单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.SALE, name = "修改销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改订单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -262,7 +253,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过销售订单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.SALE, name = "审核通过销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -418,7 +409,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     return orderId;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝销售订单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.SALE, name = "审核拒绝销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -480,7 +471,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除销售订单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.SALE, name = "删除销售订单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -552,11 +543,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     PageHelperUtil.startPage(pageIndex, pageSize);
 
     List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition,
-        isReturn,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+        isReturn);
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -571,11 +558,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<SaleProductDto> datas = getBaseMapper().querySaleList(vo,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    List<SaleProductDto> datas = getBaseMapper().querySaleList(vo);
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;

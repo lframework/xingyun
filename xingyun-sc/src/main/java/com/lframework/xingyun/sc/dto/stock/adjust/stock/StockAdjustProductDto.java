@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.dto.stock.adjust.stock;
 
 import com.lframework.starter.web.dto.BaseDto;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import lombok.Data;
 
 @Data

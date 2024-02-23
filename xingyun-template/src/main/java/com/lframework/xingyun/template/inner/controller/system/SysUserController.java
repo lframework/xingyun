@@ -158,7 +158,7 @@ public class SysUserController extends DefaultBaseController {
   @ApiOperation("解锁用户")
   @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @HasPermission({"system:user:modify"})
-  @PatchMapping("unlock")
+  @PatchMapping("/unlock")
   public InvokeResult<Void> unlock(@NotBlank(message = "ID不能为空！") String id) {
 
     sysUserService.unlockById(id);

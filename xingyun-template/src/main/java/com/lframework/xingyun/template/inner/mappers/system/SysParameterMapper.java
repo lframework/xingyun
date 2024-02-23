@@ -1,5 +1,7 @@
 package com.lframework.xingyun.template.inner.mappers.system;
 
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import com.lframework.xingyun.template.inner.entity.SysParameter;
 import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.template.inner.vo.system.parameter.QuerySysParameterVo;
@@ -21,5 +23,9 @@ public interface SysParameterMapper extends BaseMapper<SysParameter> {
    * @param vo
    * @return
    */
+  @Sorts({
+      @Sort(value = "pmKey", alias = "tb", autoParse = true),
+      @Sort(value = "createTime", alias = "tb", autoParse = true),
+  })
   List<SysParameter> query(@Param("vo") QuerySysParameterVo vo);
 }

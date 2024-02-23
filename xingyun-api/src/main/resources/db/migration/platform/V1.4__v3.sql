@@ -1,0 +1,1 @@
+UPDATE `tenant` SET jdbc_password = '24590d72bfb4d71ccbc533570aa9627b' WHERE jdbc_password = '123456';

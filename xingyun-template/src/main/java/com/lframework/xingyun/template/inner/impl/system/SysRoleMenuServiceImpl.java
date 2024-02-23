@@ -31,7 +31,7 @@ public class SysRoleMenuServiceImpl extends
   @Autowired
   private SysRoleService sysRoleService;
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "角色授权菜单，角色ID：{}，菜单ID：{}", params = {"#vo.roleIds",
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "角色授权菜单，角色ID：{}，菜单ID：{}", params = {"#vo.roleIds",
       "#vo.menuIds"}, loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

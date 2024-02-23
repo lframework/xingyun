@@ -1,12 +1,12 @@
 package com.lframework.xingyun.template.inner.vo.system.dic.item;
 
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class QuerySysDataDicItemVo extends PageVo {
+public class QuerySysDataDicItemVo extends SortPageVo {
 
   private static final long serialVersionUID = 1L;
 

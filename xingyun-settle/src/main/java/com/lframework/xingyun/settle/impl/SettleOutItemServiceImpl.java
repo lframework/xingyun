@@ -10,21 +10,21 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.settle.entity.SettleOutItem;
+import com.lframework.xingyun.settle.enums.SettleOpLogType;
 import com.lframework.xingyun.settle.mappers.SettleOutItemMapper;
 import com.lframework.xingyun.settle.service.SettleOutItemService;
 import com.lframework.xingyun.settle.vo.item.out.CreateSettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.QuerySettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.SettleOutItemSelectorVo;
 import com.lframework.xingyun.settle.vo.item.out.UpdateSettleOutItemVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -74,7 +74,7 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "停用支出项目，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = SettleOpLogType.SETTLE, name = "停用支出项目，ID：{}", params = "#ids", loopFormat = true)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
@@ -88,7 +88,7 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "启用支出项目，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = SettleOpLogType.SETTLE, name = "启用支出项目，ID：{}", params = "#ids", loopFormat = true)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
@@ -102,7 +102,7 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "新增支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @OpLog(type = SettleOpLogType.SETTLE, name = "新增支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateSettleOutItemVo vo) {
@@ -129,7 +129,7 @@ public class SettleOutItemServiceImpl extends BaseMpServiceImpl<SettleOutItemMap
         return data.getId();
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "修改支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @OpLog(type = SettleOpLogType.SETTLE, name = "修改支出项目，ID：{}, 编号：{}", params = {"#id", "#code"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateSettleOutItemVo vo) {

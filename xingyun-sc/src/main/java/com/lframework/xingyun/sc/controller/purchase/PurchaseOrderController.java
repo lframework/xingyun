@@ -3,14 +3,14 @@ package com.lframework.xingyun.sc.controller.purchase;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.bo.purchase.GetPurchaseOrderBo;
@@ -35,7 +35,7 @@ import com.lframework.xingyun.sc.vo.purchase.BatchApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.BatchApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithReceiveVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import io.swagger.annotations.Api;
@@ -193,8 +193,8 @@ public class PurchaseOrderController extends DefaultBaseController {
   @ApiOperation("查询列表（收货业务）")
   @HasPermission({"purchase:receive:add", "purchase:receive:modify"})
   @GetMapping("/query/receive")
-  public InvokeResult<PageResult<QueryPurchaseOrderWithReceiveBo>> getWithReceive(
-      @Valid QueryPurchaseOrderWithRecevieVo vo) {
+  public InvokeResult<PageResult<QueryPurchaseOrderWithReceiveBo>> queryWithReceive(
+      @Valid QueryPurchaseOrderWithReceiveVo vo) {
 
     PageResult<PurchaseOrder> pageResult = purchaseOrderService.queryWithReceive(getPageIndex(vo),
         getPageSize(vo),

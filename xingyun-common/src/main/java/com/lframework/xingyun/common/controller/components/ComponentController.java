@@ -61,6 +61,14 @@ public class ComponentController extends DefaultBaseController {
     return InvokeResultBuilder.success(ExcelImportUtil.getTask(id));
   }
 
+  @ApiOperation("获取地图Key")
+  @GetMapping("/map/key")
+  public InvokeResult<String> getMapKey() {
+    String key = sysParameterService.findRequiredByKey("tx-map.key");
+
+    return InvokeResultBuilder.success(key);
+  }
+
   @ApiOperation("根据地址查询经纬度")
   @GetMapping("/map/location")
   public InvokeResult<MapLocationBo> getMapLocation(@NotEmpty(message = "地址不能为空！") String address) {

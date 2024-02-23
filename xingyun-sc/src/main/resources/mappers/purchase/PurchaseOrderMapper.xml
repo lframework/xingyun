@@ -209,7 +209,6 @@
                     ]]>
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY o.create_time DESC
     </select>
@@ -246,7 +245,6 @@
                     ]]>
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY o.create_time DESC
     </select>
@@ -290,7 +288,6 @@
                 </if>
             </if>
             <if test="!multipleRelate">AND s.id IS NULL</if>
-            AND ${dataPermission}
         </where>
         <if test="!multipleRelate">GROUP BY o.id</if>
         ORDER BY o.create_time DESC
@@ -306,7 +303,6 @@
             )
             AND g.product_type = 1
             AND g.available = TRUE
-            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>
@@ -331,7 +327,6 @@
             </if>
             AND g.product_type = 1
             AND g.available = TRUE
-            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>

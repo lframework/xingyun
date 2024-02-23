@@ -10,21 +10,21 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.sc.entity.StockAdjustReason;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.mappers.StockAdjustReasonMapper;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.CreateStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.QueryStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.StockAdjustReasonSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.UpdateStockAdjustReasonVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -77,7 +77,7 @@ public class StockAdjustReasonServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用库存调整原因，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "停用库存调整原因，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -91,7 +91,7 @@ public class StockAdjustReasonServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用库存调整原因，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "启用库存调整原因，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -105,7 +105,7 @@ public class StockAdjustReasonServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增库存调整原因，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "新增库存调整原因，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -134,7 +134,7 @@ public class StockAdjustReasonServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改库存调整原因，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "修改库存调整原因，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override

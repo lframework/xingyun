@@ -20,7 +20,7 @@ public class SysUserPositionServiceImpl
     extends BaseMpServiceImpl<SysUserPositionMapper, SysUserPosition>
     implements SysUserPositionService {
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "用户设置岗位，用户ID：{}，岗位ID：{}", params = {"#vo.userId",
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "用户设置岗位，用户ID：{}，岗位ID：{}", params = {"#vo.userId",
       "#vo.positionIds"}, loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

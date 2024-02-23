@@ -9,6 +9,11 @@ import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailProductVo;
 import com.lframework.xingyun.sc.vo.retail.out.RetailOutSheetSelectorVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,8 +33,15 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  List<RetailOutSheet> query(@Param("vo") QueryRetailOutSheetVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "s", autoParse = true),
+      @Sort(value = "createTime", alias = "s", autoParse = true),
+      @Sort(value = "approveTime", alias = "s", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "s")
+  })
+  List<RetailOutSheet> query(@Param("vo") QueryRetailOutSheetVo vo);
 
   /**
    * 选择器
@@ -37,8 +49,10 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  List<RetailOutSheet> selector(@Param("vo") RetailOutSheetSelectorVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "s")
+  })
+  List<RetailOutSheet> selector(@Param("vo") RetailOutSheetSelectorVo vo);
 
   /**
    * 根据ID查询
@@ -63,9 +77,11 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "s")
+  })
   List<RetailOutSheet> queryWithReturn(@Param("vo") QueryRetailOutSheetWithReturnVo vo,
-      @Param("multipleRelate") boolean multipleRelate,
-      @Param("dataPermission") String dataPermission);
+      @Param("multipleRelate") boolean multipleRelate);
 
   /**
    * 根据关键字零售采购商品信息
@@ -73,8 +89,13 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param condition
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
   List<RetailProductDto> queryRetailByCondition(
-      @Param("condition") String condition, @Param("isReturn") Boolean isReturn, @Param("dataPermission") String dataPermission);
+      @Param("condition") String condition, @Param("isReturn") Boolean isReturn);
 
   /**
    * 查询可零售商品信息
@@ -82,8 +103,12 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  List<RetailProductDto> queryRetailList(@Param("vo") QueryRetailProductVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  List<RetailProductDto> queryRetailList(@Param("vo") QueryRetailProductVo vo);
 
   /**
    * 根据ID查询

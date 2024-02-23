@@ -206,7 +206,6 @@
                     AND r.settle_status = #{vo.settleStatus}
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY r.create_time DESC
     </select>
@@ -243,7 +242,6 @@
                     ]]>
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY r.create_time DESC
     </select>
@@ -288,7 +286,6 @@
                 </if>
             </if>
             <if test="!multipleRelate">AND p.id IS NULL</if>
-            AND ${dataPermission}
         </where>
         <if test="!multipleRelate">GROUP BY r.id</if>
         ORDER BY r.create_time DESC

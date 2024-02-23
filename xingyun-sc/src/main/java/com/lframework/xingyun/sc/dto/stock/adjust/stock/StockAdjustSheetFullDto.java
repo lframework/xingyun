@@ -4,7 +4,6 @@ import com.lframework.starter.web.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Data;

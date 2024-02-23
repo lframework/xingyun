@@ -76,7 +76,6 @@
                     AND (g.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY sc.code, g.code
     </select>

@@ -51,4 +51,12 @@ public interface RecursionMappingService extends BaseMpService<RecursionMapping>
    * @param nodeType
    */
   void deleteNode(String nodeId, NodeType nodeType);
+
+  /**
+   * 根据节点ID删除以及子节点
+   *
+   * @param nodeId
+   * @param nodeType
+   */
+  void deleteNodeAndChildren(String nodeId, NodeType nodeType);
 }

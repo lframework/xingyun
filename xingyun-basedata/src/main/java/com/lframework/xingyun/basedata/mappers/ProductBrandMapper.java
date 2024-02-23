@@ -4,6 +4,8 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandVo;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,6 +25,10 @@ public interface ProductBrandMapper extends BaseMapper<ProductBrand> {
    * @param vo
    * @return
    */
+  @Sorts({
+      @Sort(value = "code", autoParse = true),
+      @Sort(value = "name", autoParse = true),
+  })
   List<ProductBrand> query(@Param("vo") QueryProductBrandVo vo);
 
   /**

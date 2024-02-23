@@ -18,12 +18,6 @@ public class MemberImportModel implements ExcelModel {
   private String id;
 
   /**
-   * 是否为新增
-   */
-  @ExcelIgnore
-  private Boolean isInsert;
-
-  /**
    * 编号
    */
   @ExcelRequired

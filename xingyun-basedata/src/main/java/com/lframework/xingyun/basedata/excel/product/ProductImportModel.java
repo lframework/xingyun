@@ -78,12 +78,14 @@ public class ProductImportModel implements ExcelModel {
   /**
    * 进项税率（%）
    */
+  @ExcelRequired
   @ExcelProperty("进项税率（%）")
   private BigDecimal taxRate;
 
   /**
    * 销项税率（%）
    */
+  @ExcelRequired
   @ExcelProperty("销项税率（%）")
   private BigDecimal saleTaxRate;
 
@@ -102,18 +104,21 @@ public class ProductImportModel implements ExcelModel {
   /**
    * 采购价
    */
+  @ExcelRequired
   @ExcelProperty("采购价（元）")
   private BigDecimal purchasePrice;
 
   /**
    * 销售价
    */
+  @ExcelRequired
   @ExcelProperty("销售价（元）")
   private BigDecimal salePrice;
 
   /**
    * 零售价
    */
+  @ExcelRequired
   @ExcelProperty("零售价（元）")
   private BigDecimal retailPrice;
 }

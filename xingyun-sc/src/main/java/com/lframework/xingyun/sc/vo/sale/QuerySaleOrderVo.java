@@ -1,14 +1,14 @@
 package com.lframework.xingyun.sc.vo.sale;
 
 import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class QuerySaleOrderVo extends PageVo {
+public class QuerySaleOrderVo extends SortPageVo {
 
   private static final long serialVersionUID = 1L;
 

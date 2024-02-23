@@ -1,14 +1,14 @@
 package com.lframework.xingyun.sc.impl.purchase;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.mappers.PurchaseConfigMapper;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.vo.purchase.config.UpdatePurchaseConfigVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,7 +29,7 @@ public class PurchaseConfigServiceImpl extends
     return config;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改采购参数设置")
+  @OpLog(type = ScOpLogType.PURCHASE, name = "修改采购参数设置")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdatePurchaseConfigVo vo) {

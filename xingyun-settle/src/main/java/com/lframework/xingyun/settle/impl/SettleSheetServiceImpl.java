@@ -11,20 +11,15 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.service.GenerateCodeService;
-import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.common.security.AbstractUserDetails;
 import com.lframework.starter.web.common.security.SecurityUtil;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.GenerateCodeService;
+import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.settle.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.settle.dto.sheet.SettleBizItemDto;
@@ -32,6 +27,7 @@ import com.lframework.xingyun.settle.dto.sheet.SettleSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettleCheckSheet;
 import com.lframework.xingyun.settle.entity.SettleSheet;
 import com.lframework.xingyun.settle.entity.SettleSheetDetail;
+import com.lframework.xingyun.settle.enums.SettleOpLogType;
 import com.lframework.xingyun.settle.enums.SettleSheetStatus;
 import com.lframework.xingyun.settle.mappers.SettleSheetMapper;
 import com.lframework.xingyun.settle.service.SettleCheckSheetService;
@@ -46,10 +42,11 @@ import com.lframework.xingyun.settle.vo.sheet.QuerySettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.QueryUnSettleBizItemVo;
 import com.lframework.xingyun.settle.vo.sheet.SettleSheetItemVo;
 import com.lframework.xingyun.settle.vo.sheet.UpdateSettleSheetVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,9 +80,7 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
   @Override
   public List<SettleSheet> query(QuerySettleSheetVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("s")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -94,7 +89,7 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "创建供应商结算单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.SETTLE, name = "创建供应商结算单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建结算单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -117,7 +112,7 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
     return sheet.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改供应商结算单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.SETTLE, name = "修改供应商结算单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改结算单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -171,7 +166,7 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过供应商结算单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.SETTLE, name = "审核通过供应商结算单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -236,7 +231,7 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
     return id;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝供应商结算单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.SETTLE, name = "审核拒绝供应商结算单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -316,7 +311,7 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除供应商结算单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.SETTLE, name = "删除供应商结算单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

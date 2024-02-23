@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.service.BaseMpService;
-import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
@@ -14,6 +13,7 @@ import com.lframework.xingyun.sc.vo.sale.BatchApproveRefuseSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.CreateSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
+import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.SaleOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
 import java.util.List;

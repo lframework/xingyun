@@ -112,6 +112,7 @@ public class GetCustomerSettleFeeSheetBo extends BaseBo<CustomerSettleFeeSheetFu
   @ApiModelProperty("拒绝原因")
   private String refuseReason;
 
+  @ApiModelProperty("明细")
   private List<SheetDetailBo> details;
 
   public GetCustomerSettleFeeSheetBo() {

@@ -71,6 +71,11 @@ public class SysUser extends BaseEntity implements BaseDto {
   private Boolean available;
 
   /**
+   * 锁定状态
+   */
+  private Boolean lockStatus;
+
+  /**
    * 备注
    */
   private String description;

@@ -4,6 +4,11 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,8 +28,18 @@ public interface ProductMapper extends BaseMapper<Product> {
    * @param vo
    * @return
    */
-  List<Product> query(@Param("vo") QueryProductVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  @Sorts({
+      @Sort(value = "code", alias = "g", autoParse = true),
+      @Sort(value = "name", alias = "g", autoParse = true),
+      @Sort(value = "createTime", alias = "g", autoParse = true),
+      @Sort(value = "updateTime", alias = "g", autoParse = true),
+  })
+  List<Product> query(@Param("vo") QueryProductVo vo);
 
   /**
    * 查询商品品种数
@@ -40,8 +55,12 @@ public interface ProductMapper extends BaseMapper<Product> {
    * @param vo
    * @return
    */
-  List<Product> selector(@Param("vo") QueryProductSelectorVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  List<Product> selector(@Param("vo") QueryProductSelectorVo vo);
 
   /**
    * 根据ID查询

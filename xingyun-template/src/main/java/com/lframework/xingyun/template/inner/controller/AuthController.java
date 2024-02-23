@@ -3,19 +3,21 @@ package com.lframework.xingyun.template.inner.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.codec.Base64;
 import com.google.code.kaptcha.Producer;
+import com.lframework.starter.common.constants.PatternPool;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.UserLoginException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.DateUtil;
+import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.CaptchaValidator;
 import com.lframework.starter.web.annotations.OpenApi;
 import com.lframework.starter.web.common.security.AbstractUserDetails;
 import com.lframework.starter.web.common.security.SecurityConstants;
 import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.common.tenant.TenantContextHolder;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.CaptchaValidator;
 import com.lframework.starter.web.components.redis.RedisHandler;
 import com.lframework.starter.web.components.security.IUserTokenResolver;
 import com.lframework.starter.web.components.security.PasswordEncoderWrapper;
@@ -28,17 +30,22 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.starter.web.utils.TenantUtil;
-import com.lframework.xingyun.template.inner.bo.auth.LoginBo;
 import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import com.lframework.xingyun.template.core.entity.SysDataPermissionData;
 import com.lframework.xingyun.template.core.enums.SysDataPermissionDataBizType;
 import com.lframework.xingyun.template.core.service.SysDataPermissionModelDetailService;
 import com.lframework.xingyun.template.core.vo.permission.SysDataPermissionModelDetailVo;
+import com.lframework.xingyun.template.inner.bo.auth.CollectMenuBo;
+import com.lframework.xingyun.template.inner.bo.auth.LoginBo;
+import com.lframework.xingyun.template.inner.bo.auth.MenuBo;
+import com.lframework.xingyun.template.inner.bo.auth.MenuBo.MetaBo;
 import com.lframework.xingyun.template.inner.dto.LoginDto;
 import com.lframework.xingyun.template.inner.dto.MenuDto;
 import com.lframework.xingyun.template.inner.entity.SysUserDept;
 import com.lframework.xingyun.template.inner.entity.SysUserRole;
 import com.lframework.xingyun.template.inner.entity.Tenant;
+import com.lframework.xingyun.template.inner.enums.system.SysMenuComponentType;
+import com.lframework.xingyun.template.inner.enums.system.SysMenuDisplay;
 import com.lframework.xingyun.template.inner.events.LoginEvent;
 import com.lframework.xingyun.template.inner.events.LogoutEvent;
 import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
@@ -62,6 +69,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
@@ -229,27 +237,110 @@ public class AuthController extends DefaultBaseController {
 
   @ApiOperation(value = "获取用户信息")
   @GetMapping("/auth/info")
-  public InvokeResult<LoginDto> info() {
+  public InvokeResult<LoginBo> info() {
 
     AbstractUserDetails user = getCurrentUser();
     LoginDto info = new LoginDto(null, user.getName(), user.getPermissions());
 
-    return InvokeResultBuilder.success(info);
+    return InvokeResultBuilder.success(new LoginBo(info));
   }
 
   @ApiOperation("获取用户菜单")
   @GetMapping("/auth/menus")
-  public InvokeResult<List<MenuDto>> menus() {
+  public InvokeResult<List<MenuBo>> menus() {
 
     AbstractUserDetails user = getCurrentUser();
     // 先查询当前租户使用的module
     List<Integer> moduleIds = null;
     if (TenantUtil.enableTenant()) {
-      moduleIds = sysModuleTenantService.getAvailableModuleIdsByTenantId(TenantContextHolder.getTenantId());
+      moduleIds = sysModuleTenantService.getAvailableModuleIdsByTenantId(
+          TenantContextHolder.getTenantId());
     }
     List<MenuDto> menus = sysMenuService.getMenuByUserId(user.getId(), user.isAdmin(), moduleIds);
 
-    return InvokeResultBuilder.success(menus);
+    // 组装成树形菜单
+    List<MenuDto> topMenus = menus.stream().filter(t -> StringUtil.isBlank(t.getParentId()))
+        .collect(Collectors.toList());
+
+    List<MenuBo> results = new ArrayList<>();
+    for (MenuDto topMenu : topMenus) {
+      MenuBo menuBo = new MenuBo();
+      menuBo.setName(topMenu.getName());
+      menuBo.setComponent("LAYOUT");
+      menuBo.setChildren(parseChildrenMenu(topMenu, menus));
+      menuBo.setPath(topMenu.getPath());
+
+      MenuBo.MetaBo meta = new MetaBo();
+      meta.setId(topMenu.getId());
+      meta.setTitle(topMenu.getMeta().getTitle());
+      meta.setIcon(topMenu.getMeta().getIcon());
+      meta.setHideMenu(topMenu.getHidden());
+      meta.setIgnoreKeepAlive(topMenu.getMeta().getNoCache());
+      meta.setIsCollect(topMenu.getIsCollect());
+
+      menuBo.setMeta(meta);
+
+      results.add(menuBo);
+    }
+
+    return InvokeResultBuilder.success(results);
+  }
+
+  @ApiOperation("验证当前登录人的登录密码")
+  @PostMapping("/auth/check/password")
+  public InvokeResult<Boolean> checkPassword(
+      @NotBlank(message = "登录密码不能为空！") String password) {
+    return InvokeResultBuilder.success(passwordEncoderWrapper.getEncoder()
+        .matches(password, SecurityUtil.getCurrentUser().getPassword()));
+  }
+
+  private List<MenuBo> parseChildrenMenu(MenuDto topMenu, List<MenuDto> menus) {
+    List<MenuBo> children = menus.stream()
+        .filter(t -> StringUtil.equals(t.getParentId(), topMenu.getId())).map(t -> {
+          MenuBo menuBo = new MenuBo();
+          menuBo.setName(t.getName());
+          menuBo.setChildren(parseChildrenMenu(t, menus));
+
+          menuBo.setComponent(t.getComponent());
+          menuBo.setPath(
+              StringUtil.startWith(t.getPath(), "/") ? t.getPath().substring(1) : t.getPath());
+          MenuBo.MetaBo meta = new MetaBo();
+          meta.setId(t.getId());
+          meta.setTitle(t.getMeta().getTitle());
+          meta.setIcon(t.getMeta().getIcon());
+          meta.setHideMenu(t.getHidden());
+          meta.setIgnoreKeepAlive(t.getMeta().getNoCache());
+          meta.setIsCollect(t.getIsCollect());
+          if (RegUtil.isMatch(PatternPool.PATTERN_HTTP_URL, menuBo.getPath())) {
+            meta.setIsLink(Boolean.TRUE);
+          }
+
+          // 如果是功能
+          if (SysMenuDisplay.FUNCTION.getCode().equals(t.getDisplay())) {
+            // 普通
+            if (SysMenuComponentType.NORMAL.getCode().equals(t.getComponentType())) {
+              if ("/iframes/index".equalsIgnoreCase(t.getComponent())) {
+                menuBo.setComponent(null);
+                meta.setFrameSrc(menuBo.getPath().substring(menuBo.getPath().indexOf("?src=") + 5));
+                menuBo.setPath(menuBo.getPath().substring(0, menuBo.getPath().indexOf("?src=")));
+              }
+            } else if (SysMenuComponentType.CUSTOM_LIST.getCode().equals(t.getComponentType())) {
+              // 自定义列表
+              menuBo.setComponent("CUSTOMLIST");
+              meta.setCustomListId(t.getComponent());
+            } else if (SysMenuComponentType.CUSTOM_PAGE.getCode().equals(t.getComponentType())) {
+              // 自定义页面
+              menuBo.setComponent("CUSTOMPAGE");
+              meta.setCustomPageId(t.getComponent());
+            }
+          }
+
+          menuBo.setMeta(meta);
+
+          return menuBo;
+        }).collect(Collectors.toList());
+
+    return children;
   }
 
   @ApiOperation("收藏菜单")
@@ -261,6 +352,81 @@ public class AuthController extends DefaultBaseController {
     sysMenuService.collect(user.getId(), menuId);
 
     return InvokeResultBuilder.success();
+  }
+
+  @ApiOperation("获取已收藏的菜单")
+  @GetMapping("/menu/collect")
+  public InvokeResult<List<CollectMenuBo>> getCollectMenus() {
+    AbstractUserDetails user = getCurrentUser();
+    // 先查询当前租户使用的module
+    List<Integer> moduleIds = null;
+    if (TenantUtil.enableTenant()) {
+      moduleIds = sysModuleTenantService.getAvailableModuleIdsByTenantId(
+          TenantContextHolder.getTenantId());
+    }
+    List<MenuDto> menus = sysMenuService.getMenuByUserId(user.getId(), user.isAdmin(), moduleIds);
+
+    List<MenuDto> collectMenus = menus.stream().filter(t -> t.getIsCollect()).collect(Collectors.toList());
+    List<CollectMenuBo> results = collectMenus.stream().map(t -> {
+      CollectMenuBo result = new CollectMenuBo();
+      result.setId(t.getId());
+      result.setTitle(t.getMeta().getTitle());
+      result.setIcon(t.getMeta().getIcon());
+      if (StringUtil.isBlank(result.getIcon())) {
+        // 如果没有图标 那么就往上级找
+        String icon = null;
+        String parentId = t.getParentId();
+        while (StringUtil.isNotEmpty(parentId)) {
+          MenuDto parentMenu = null;
+          for (MenuDto m : menus) {
+            if (m.getId().equals(parentId)) {
+              parentMenu = m;
+            }
+          }
+
+          if (parentMenu == null) {
+            break;
+          }
+
+          if (StringUtil.isNotBlank(parentMenu.getMeta().getIcon())) {
+            icon = parentMenu.getMeta().getIcon();
+            break;
+          }
+
+          parentId = parentMenu.getParentId();
+        }
+        result.setIcon(icon);
+      }
+
+      List<String> pathList = new ArrayList<>();
+      pathList.add(t.getPath());
+      String parentId = t.getParentId();
+      while (StringUtil.isNotEmpty(parentId)) {
+        MenuDto parentMenu = null;
+        for (MenuDto m : menus) {
+          if (m.getId().equals(parentId)) {
+            parentMenu = m;
+          }
+        }
+
+        if (parentMenu == null) {
+          break;
+        }
+
+        if (StringUtil.isNotBlank(parentMenu.getPath())) {
+          pathList.add(parentMenu.getPath());
+        }
+
+        parentId = parentMenu.getParentId();
+      }
+
+      pathList = CollectionUtil.reverse(pathList);
+      result.setPath(CollectionUtil.join(pathList, ""));
+
+      return result;
+    }).collect(Collectors.toList());
+
+    return InvokeResultBuilder.success(results);
   }
 
   @ApiOperation("取消收藏菜单")

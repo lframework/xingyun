@@ -102,6 +102,7 @@ public class GetCustomerSettlePreSheetBo extends BaseBo<CustomerSettlePreSheetFu
     @ApiModelProperty("拒绝原因")
     private String refuseReason;
 
+    @ApiModelProperty("明细")
     private List<SheetDetailBo> details;
 
     public GetCustomerSettlePreSheetBo() {

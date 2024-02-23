@@ -77,7 +77,7 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     return this.doGetById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增菜单，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增菜单，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(@NonNull CreateSysMenuVo vo) {
@@ -91,7 +91,7 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改菜单，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改菜单，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(@NonNull UpdateSysMenuVo vo) {
@@ -109,7 +109,7 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除菜单，ID：{}", params = "#id")
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "删除菜单，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(@NonNull String id) {
@@ -131,7 +131,7 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     return this.doSelector(vo, moduleIds);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用菜单，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用菜单，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(@NonNull List<String> ids, @NonNull String userId) {
@@ -143,7 +143,7 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     this.doBatchEnable(ids, userId);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用菜单，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用菜单，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(@NonNull List<String> ids, @NonNull String userId) {
@@ -281,9 +281,6 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
         data.setComponent(vo.getComponent());
         data.setComponentType(
             EnumUtil.getByCode(SysMenuComponentType.class, vo.getComponentType()));
-        if (data.getComponentType() == SysMenuComponentType.CUSTOM_FORM) {
-          data.setRequestParam(vo.getRequestParam());
-        }
         data.setNoCache(vo.getNoCache());
 
         if (SecurityConstants.PERMISSION_ADMIN_NAME.equals(vo.getPermission())) {

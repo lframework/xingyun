@@ -1,13 +1,13 @@
 package com.lframework.xingyun.sc.vo.stock.adjust.stock.reason;
 
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class QueryStockAdjustReasonVo extends PageVo implements BaseVo, Serializable {
+public class QueryStockAdjustReasonVo extends SortPageVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 

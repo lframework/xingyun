@@ -1,9 +1,10 @@
 package com.lframework.xingyun.template.gen.bo.custom.list;
 
-import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.gen.entity.GenCustomForm;
+import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.bo.SuperBo;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.template.gen.entity.GenCustomList;
 import com.lframework.xingyun.template.gen.entity.GenCustomListCategory;
 import com.lframework.xingyun.template.gen.entity.GenCustomListDetail;
@@ -12,8 +13,7 @@ import com.lframework.xingyun.template.gen.entity.GenCustomListQueryParams;
 import com.lframework.xingyun.template.gen.entity.GenCustomListToolbar;
 import com.lframework.xingyun.template.gen.entity.GenDataEntityDetail;
 import com.lframework.xingyun.template.gen.entity.GenDataObj;
-import com.lframework.xingyun.template.gen.enums.GenCustomListBtnType;
-import com.lframework.xingyun.template.gen.service.GenCustomFormService;
+import com.lframework.xingyun.template.gen.enums.GenCustomListDetailType;
 import com.lframework.xingyun.template.gen.service.GenCustomListCategoryService;
 import com.lframework.xingyun.template.gen.service.GenCustomListDetailService;
 import com.lframework.xingyun.template.gen.service.GenCustomListHandleColumnService;
@@ -21,10 +21,6 @@ import com.lframework.xingyun.template.gen.service.GenCustomListQueryParamsServi
 import com.lframework.xingyun.template.gen.service.GenCustomListToolbarService;
 import com.lframework.xingyun.template.gen.service.GenDataEntityDetailService;
 import com.lframework.xingyun.template.gen.service.GenDataObjService;
-import com.lframework.xingyun.template.gen.enums.GenCustomListDetailType;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.bo.SuperBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -247,26 +243,13 @@ public class GetGenCustomListBo extends BaseBo<GenCustomList> {
     List<GenCustomListToolbar> toolbars = genCustomListToolbarService
         .getByCustomListId(dto.getId());
 
-    GenCustomFormService genCustomFormService = ApplicationUtil
-        .getBean(GenCustomFormService.class);
-
     this.toolbars = toolbars.stream().map(t -> {
       ToolbarBo toolbar = new ToolbarBo();
       toolbar.setId(t.getId());
       toolbar.setName(t.getName());
       toolbar.setViewType(t.getViewType().getCode());
       toolbar.setBtnType(t.getBtnType().getCode());
-      if (t.getBtnType() == GenCustomListBtnType.CUSTOM_FORM) {
-        GenCustomForm form = genCustomFormService.findById(t.getBtnConfig());
-        if (form == null) {
-          throw new DefaultClientException("工具栏关联的自定义表单不存在！");
-        }
-        toolbar.setCustomFormId(form.getId());
-        toolbar.setCustomFormName(form.getName());
-        toolbar.setRequestParam(t.getRequestParam());
-      } else {
-        toolbar.setBtnConfig(t.getBtnConfig());
-      }
+      toolbar.setBtnConfig(t.getBtnConfig());
       toolbar.setIcon(t.getIcon());
       return toolbar;
     }).collect(Collectors.toList());
@@ -282,17 +265,7 @@ public class GetGenCustomListBo extends BaseBo<GenCustomList> {
       handleColumn.setName(t.getName());
       handleColumn.setViewType(t.getViewType().getCode());
       handleColumn.setBtnType(t.getBtnType().getCode());
-      if (t.getBtnType() == GenCustomListBtnType.CUSTOM_FORM) {
-        GenCustomForm form = genCustomFormService.findById(t.getBtnConfig());
-        if (form == null) {
-          throw new DefaultClientException("操作列关联的自定义表单不存在！");
-        }
-        handleColumn.setCustomFormId(form.getId());
-        handleColumn.setCustomFormName(form.getName());
-        handleColumn.setRequestParam(t.getRequestParam());
-      } else {
-        handleColumn.setBtnConfig(t.getBtnConfig());
-      }
+      handleColumn.setBtnConfig(t.getBtnConfig());
       handleColumn.setWidth(t.getWidth());
       handleColumn.setIcon(t.getIcon());
       return handleColumn;

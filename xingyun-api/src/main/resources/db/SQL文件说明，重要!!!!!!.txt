@@ -2,3 +2,4 @@ all目录中的是全量SQL，其中platform.sql是平台库SQL；tenant.sql是�
 migration目录中的是增量SQL，其中platform目录中是平台库的增量SQL；tenant目录中是租户库的增量SQL。
 如果不使用多租户，那么平台库和租户库的SQL就在同一个库中执行。
 使用多租户时，租户库是从平台库的tenant表中获取的，不要忘记修改这个表里面的数据
+tenant表中存储的密码不是明文密码，需要将明文密码加密后存储，参见EncryptUtil中的main方法进行转换。

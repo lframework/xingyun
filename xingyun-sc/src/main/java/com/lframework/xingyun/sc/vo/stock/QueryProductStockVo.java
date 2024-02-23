@@ -1,11 +1,11 @@
 package com.lframework.xingyun.sc.vo.stock;
 
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class QueryProductStockVo extends PageVo {
+public class QueryProductStockVo extends SortPageVo {
 
   /**
    * 仓库ID

@@ -1,5 +1,7 @@
 package com.lframework.xingyun.template.inner.mappers.system;
 
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import com.lframework.xingyun.template.inner.entity.SysDataDicItem;
 import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.template.inner.vo.system.dic.item.QuerySysDataDicItemVo;
@@ -20,5 +22,9 @@ public interface SysDataDicItemMapper extends BaseMapper<SysDataDicItem> {
    *
    * @return
    */
+  @Sorts({
+      @Sort(value = "code", alias = "tb", autoParse = true),
+      @Sort(value = "name", alias = "tb", autoParse = true),
+  })
   List<SysDataDicItem> query(@Param("vo") QuerySysDataDicItemVo vo);
 }

@@ -10,16 +10,14 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.mappers.CustomerMapper;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
@@ -29,6 +27,8 @@ import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.UpdateCustomerVo;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.DicCityService;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -83,7 +83,7 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         return PageResultUtil.convert(new PageInfo<>(datas));
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "停用客户，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用客户，ID：{}", params = "#ids", loopFormat = true)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchUnable(Collection<String> ids) {
@@ -97,7 +97,7 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "启用客户，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用客户，ID：{}", params = "#ids", loopFormat = true)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void batchEnable(Collection<String> ids) {
@@ -111,7 +111,7 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "新增客户，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增客户，ID：{}, 编号：{}", params = {"#id", "#code"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateCustomerVo vo) {
@@ -180,7 +180,7 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         return data.getId();
     }
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "修改客户，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改客户，ID：{}, 编号：{}", params = {"#id", "#code"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateCustomerVo vo) {

@@ -4,6 +4,11 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.settle.dto.check.SettleCheckSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettleCheckSheet;
 import com.lframework.xingyun.settle.vo.check.QuerySettleCheckSheetVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
@@ -25,8 +30,15 @@ public interface SettleCheckSheetMapper extends BaseMapper<SettleCheckSheet> {
      * @param vo
      * @return
      */
-    List<SettleCheckSheet> query(@Param("vo") QuerySettleCheckSheetVo vo,
-        @Param("dataPermission") String dataPermission);
+    @Sorts({
+        @Sort(value = "code", alias = "s", autoParse = true),
+        @Sort(value = "createTime", alias = "s", autoParse = true),
+        @Sort(value = "approveTime", alias = "s", autoParse = true),
+    })
+    @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+        @DataPermission(template = "order", alias = "s")
+    })
+    List<SettleCheckSheet> query(@Param("vo") QuerySettleCheckSheetVo vo);
 
     /**
      * 根据ID查询

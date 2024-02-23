@@ -4,13 +4,14 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.constants.PatternPool;
+import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Member;
@@ -20,6 +21,7 @@ import com.lframework.xingyun.basedata.service.shop.ShopService;
 import com.lframework.xingyun.template.core.dto.UserDto;
 import com.lframework.xingyun.template.core.enums.Gender;
 import com.lframework.xingyun.template.core.service.UserService;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -27,20 +29,38 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MemberImportListener extends ExcelImportListener<MemberImportModel> {
 
+  private List<String> checkList = new ArrayList<>();
+
   @Override
   protected void doInvoke(MemberImportModel data, AnalysisContext context) {
     if (StringUtil.isBlank(data.getCode())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“编号”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”不能为空");
     }
     if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, data.getCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+          "第" + context.readRowHolder().getRowIndex()
+              + "行“编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+    }
+    if (checkList.contains(data.getCode())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”与第" + (checkList.indexOf(data.getCode()) + 1) + "行重复");
+    }
+    checkList.add(data.getCode());
+    Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class)
+        .eq(Member::getCode, data.getCode());
+    MemberService memberService = ApplicationUtil.getBean(MemberService.class);
+    if (memberService.count(checkWrapper) > 0) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”已存在");
     }
     if (StringUtil.isBlank(data.getName())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
     }
     if (StringUtil.isBlank(data.getGender())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“性别”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“性别”不能为空");
     }
 
     Gender gender = EnumUtil.getByDesc(Gender.class, data.getGender());
@@ -94,15 +114,8 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
     for (int i = 0; i < datas.size(); i++) {
       MemberImportModel data = datas.get(i);
 
-      boolean isInsert = false;
-      Wrapper<Member> queryWrapper = Wrappers.lambdaQuery(Member.class)
-          .eq(Member::getCode, data.getCode());
-      Member record = memberService.getOne(queryWrapper);
-      if (record == null) {
-        record = new Member();
-        record.setId(IdUtil.getId());
-        isInsert = true;
-      }
+      Member record = new Member();
+      record.setId(IdUtil.getId());
 
       if (!StringUtil.isBlank(data.getTelephone())) {
         Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class)
@@ -123,15 +136,13 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
       record.setJoinDay(DateUtil.toLocalDate(data.getJoinDay()));
       record.setShopId(data.getShopId());
       record.setGuiderId(data.getGuiderId());
-      record.setDescription(data.getDescription());
-      if (isInsert) {
-        record.setAvailable(Boolean.TRUE);
-      }
+      record.setDescription(
+          StringUtil.isBlank(data.getDescription()) ? StringPool.EMPTY_STR : data.getDescription());
+      record.setAvailable(Boolean.TRUE);
 
       data.setId(record.getId());
-      data.setIsInsert(isInsert);
 
-      memberService.saveOrUpdateAllColumn(record);
+      memberService.save(record);
 
       this.setSuccessProcess(i);
     }
@@ -139,10 +150,5 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
 
   @Override
   protected void doComplete() {
-    MemberService memberService = ApplicationUtil.getBean(MemberService.class);
-    List<MemberImportModel> datas = this.getDatas();
-    for (MemberImportModel data : datas) {
-      memberService.cleanCacheByKey(data.getId());
-    }
   }
 }

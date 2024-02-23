@@ -9,19 +9,13 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
-import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
@@ -29,6 +23,7 @@ import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProduc
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheetDetail;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.mappers.PreTakeStockSheetMapper;
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetDetailService;
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetService;
@@ -36,10 +31,12 @@ import com.lframework.xingyun.sc.service.stock.take.TakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
+import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,9 +72,7 @@ public class PreTakeStockSheetServiceImpl extends
   @Override
   public List<PreTakeStockSheet> query(QueryPreTakeStockSheetVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("tb")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -88,9 +83,7 @@ public class PreTakeStockSheetServiceImpl extends
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<PreTakeStockSheet> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("tb")));
+    List<PreTakeStockSheet> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -112,7 +105,7 @@ public class PreTakeStockSheetServiceImpl extends
     return getBaseMapper().getProducts(id, planId);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增预先盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "新增预先盘点单，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreatePreTakeStockSheetVo vo) {
@@ -147,7 +140,7 @@ public class PreTakeStockSheetServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改预先盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "修改预先盘点单，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdatePreTakeStockSheetVo vo) {
@@ -190,7 +183,7 @@ public class PreTakeStockSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除预先盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "删除预先盘点单，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
@@ -225,11 +218,7 @@ public class PreTakeStockSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockByCondition(condition,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockByCondition(condition);
     PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -244,11 +233,7 @@ public class PreTakeStockSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockList(vo,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    List<PreTakeStockProductDto> datas = getBaseMapper().queryPreTakeStockList(vo);
     PageResult<PreTakeStockProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;

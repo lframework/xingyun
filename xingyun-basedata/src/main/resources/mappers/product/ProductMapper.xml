@@ -48,7 +48,6 @@
                 ]]>
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>
@@ -161,7 +160,6 @@
                   ]]>
               </if>
           </if>
-          AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>

@@ -82,7 +82,7 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用角色，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用角色，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -103,7 +103,7 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     this.doBatchUnable(ids);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用角色，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用角色，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -124,7 +124,7 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     this.doBatchEnable(ids);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增角色，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增角色，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSysRoleVo vo) {
@@ -152,7 +152,7 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改角色，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改角色，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSysRoleVo vo) {

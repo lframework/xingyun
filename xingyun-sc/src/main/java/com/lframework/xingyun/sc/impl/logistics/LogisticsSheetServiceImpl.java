@@ -10,20 +10,15 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.logistics.LogisticsSheetBizOrderDto;
 import com.lframework.xingyun.sc.dto.logistics.LogisticsSheetFullDto;
@@ -31,6 +26,7 @@ import com.lframework.xingyun.sc.entity.LogisticsSheet;
 import com.lframework.xingyun.sc.entity.LogisticsSheetDetail;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import com.lframework.xingyun.sc.enums.LogisticsSheetStatus;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.mappers.LogisticsSheetMapper;
 import com.lframework.xingyun.sc.service.logistics.LogisticsSheetDetailService;
 import com.lframework.xingyun.sc.service.logistics.LogisticsSheetService;
@@ -40,9 +36,10 @@ import com.lframework.xingyun.sc.vo.logistics.LogisticsSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetBizOrderVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetVo;
 import com.lframework.xingyun.sc.vo.logistics.UpdateLogisticsSheetVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,9 +70,7 @@ public class LogisticsSheetServiceImpl extends
 
   @Override
   public List<LogisticsSheet> query(QueryLogisticsSheetVo vo) {
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER, Arrays.asList("order"),
-            Arrays.asList("o")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -85,9 +80,7 @@ public class LogisticsSheetServiceImpl extends
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<LogisticsSheet> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER, Arrays.asList("order"),
-            Arrays.asList("o")));
+    List<LogisticsSheet> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -109,14 +102,12 @@ public class LogisticsSheetServiceImpl extends
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<LogisticsSheetBizOrderDto> datas = getBaseMapper().queryBizOrder(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER, Arrays.asList("order"),
-            Arrays.asList("o")));
+    List<LogisticsSheetBizOrderDto> datas = getBaseMapper().queryBizOrder(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "创建物流单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.LOGISTICS, name = "创建物流单，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateLogisticsSheetVo vo) {
@@ -136,7 +127,7 @@ public class LogisticsSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改物流单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.LOGISTICS, name = "修改物流单，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateLogisticsSheetVo vo) {
@@ -171,7 +162,7 @@ public class LogisticsSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "物流单发货，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.LOGISTICS, name = "物流单发货，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void delivery(DeliveryLogisticsSheetVo vo) {
@@ -204,7 +195,7 @@ public class LogisticsSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除物流单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.LOGISTICS, name = "删除物流单，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {

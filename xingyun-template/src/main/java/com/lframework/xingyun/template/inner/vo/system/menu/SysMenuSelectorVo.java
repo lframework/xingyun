@@ -15,4 +15,7 @@ public class SysMenuSelectorVo implements BaseVo, Serializable {
   @ApiModelProperty("类型")
   @IsEnum(message = "类型格式不正确！", enumClass = SysMenuDisplay.class)
   private Integer display;
+
+  @ApiModelProperty("状态")
+  private Boolean available;
 }

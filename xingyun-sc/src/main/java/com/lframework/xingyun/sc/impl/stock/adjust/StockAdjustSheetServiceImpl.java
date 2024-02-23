@@ -10,24 +10,19 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
@@ -35,6 +30,7 @@ import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;
 import com.lframework.xingyun.sc.entity.StockAdjustSheetDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import com.lframework.xingyun.sc.mappers.StockAdjustSheetMapper;
@@ -52,11 +48,12 @@ import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustProductVo
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.StockAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.UpdateStockAdjustSheetVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,9 +95,7 @@ public class StockAdjustSheetServiceImpl extends
   @Override
   public List<StockAdjustSheet> query(QueryStockAdjustSheetVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("tb")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -109,7 +104,7 @@ public class StockAdjustSheetServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增库存调整单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "新增库存调整单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建调整单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -129,7 +124,7 @@ public class StockAdjustSheetServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改库存调整单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "修改库存调整单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改调整单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -179,7 +174,7 @@ public class StockAdjustSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除库存调整单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "删除库存调整单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -230,7 +225,7 @@ public class StockAdjustSheetServiceImpl extends
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过库存调整单，ID：{}", params = {"#vo.id"})
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "审核通过库存调整单，ID：{}", params = {"#vo.id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -345,7 +340,7 @@ public class StockAdjustSheetServiceImpl extends
     return id;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝库存调整单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "审核拒绝库存调整单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -416,11 +411,7 @@ public class StockAdjustSheetServiceImpl extends
     PageHelperUtil.startPage(pageIndex, pageSize);
 
     List<StockAdjustProductDto> datas = getBaseMapper().queryStockAdjustByCondition(scId,
-        condition,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+        condition);
     PageResult<StockAdjustProductDto> pageResult = PageResultUtil.convert(
         new PageInfo<>(datas));
 
@@ -436,11 +427,7 @@ public class StockAdjustSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<StockAdjustProductDto> datas = getBaseMapper().queryStockAdjustList(vo,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    List<StockAdjustProductDto> datas = getBaseMapper().queryStockAdjustList(vo);
     PageResult<StockAdjustProductDto> pageResult = PageResultUtil.convert(
         new PageInfo<>(datas));
 

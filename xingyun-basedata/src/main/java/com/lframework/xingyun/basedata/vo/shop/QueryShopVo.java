@@ -2,14 +2,14 @@ package com.lframework.xingyun.basedata.vo.shop;
 
 import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class QueryShopVo extends PageVo implements BaseVo, Serializable {
+public class QueryShopVo extends SortPageVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 

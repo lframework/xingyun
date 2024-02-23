@@ -2,7 +2,6 @@ package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.service.BaseMpService;
-import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
@@ -14,7 +13,8 @@ import com.lframework.xingyun.sc.vo.purchase.BatchApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithReceiveVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import java.util.List;
 
@@ -74,7 +74,7 @@ public interface PurchaseOrderService extends BaseMpService<PurchaseOrder> {
    * @return
    */
   PageResult<PurchaseOrder> queryWithReceive(Integer pageIndex, Integer pageSize,
-      QueryPurchaseOrderWithRecevieVo vo);
+      QueryPurchaseOrderWithReceiveVo vo);
 
   /**
    * 创建订单

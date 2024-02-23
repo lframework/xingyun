@@ -1,14 +1,19 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.web.mapper.BaseMapper;
-import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
+import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.SaleOrderSelectorVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,8 +33,14 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleOrder> query(@Param("vo") QuerySaleOrderVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "o", autoParse = true),
+      @Sort(value = "createTime", alias = "o", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "o")
+  })
+  List<SaleOrder> query(@Param("vo") QuerySaleOrderVo vo);
 
   /**
    * 根据ID查询
@@ -45,8 +56,10 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleOrder> selector(@Param("vo") SaleOrderSelectorVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "o")
+  })
+  List<SaleOrder> selector(@Param("vo") SaleOrderSelectorVo vo);
 
   /**
    * 根据ID查询（出库业务）
@@ -62,9 +75,11 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "o")
+  })
   List<SaleOrder> queryWithOut(@Param("vo") QuerySaleOrderWithOutVo vo,
-      @Param("multipleRelate") boolean multipleRelate,
-      @Param("dataPermission") String dataPermission);
+      @Param("multipleRelate") boolean multipleRelate);
 
   /**
    * 根据关键字销售采购商品信息
@@ -72,8 +87,13 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param condition
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
   List<SaleProductDto> querySaleByCondition(
-      @Param("condition") String condition, @Param("isReturn") Boolean isReturn, @Param("dataPermission") String dataPermission);
+      @Param("condition") String condition, @Param("isReturn") Boolean isReturn);
 
   /**
    * 查询可销售商品信息
@@ -81,8 +101,12 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  List<SaleProductDto> querySaleList(@Param("vo") QuerySaleProductVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  List<SaleProductDto> querySaleList(@Param("vo") QuerySaleProductVo vo);
 
   /**
    * 根据ID查询

@@ -11,6 +11,7 @@ import com.lframework.xingyun.template.core.entity.RecursionMapping;
 import com.lframework.xingyun.template.core.enums.NodeType;
 import com.lframework.xingyun.template.core.service.RecursionMappingService;
 import com.lframework.xingyun.template.core.mappers.RecursionMappingMapper;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,19 @@ public class RecursionMappingServiceImpl extends
 
     Wrapper<RecursionMapping> deleteWrapper = Wrappers.lambdaQuery(RecursionMapping.class)
         .eq(RecursionMapping::getNodeId, nodeId)
+        .eq(RecursionMapping::getNodeType, nodeType.getCode());
+    getBaseMapper().delete(deleteWrapper);
+  }
+
+  @Transactional(rollbackFor = Exception.class)
+  @Override
+  public void deleteNodeAndChildren(String nodeId, NodeType nodeType) {
+    List<String> childNodeIds = this.getNodeChildIds(nodeId, nodeType);
+    List<String> allNodeIds = new ArrayList<>();
+    allNodeIds.add(nodeId);
+    allNodeIds.addAll(childNodeIds);
+    Wrapper<RecursionMapping> deleteWrapper = Wrappers.lambdaQuery(RecursionMapping.class)
+        .in(RecursionMapping::getNodeId, allNodeIds)
         .eq(RecursionMapping::getNodeType, nodeType.getCode());
     getBaseMapper().delete(deleteWrapper);
   }

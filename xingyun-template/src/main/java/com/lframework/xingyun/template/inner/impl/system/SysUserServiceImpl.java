@@ -104,7 +104,7 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
     return this.doGetById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用用户，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用用户，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(List<String> ids) {
@@ -116,7 +116,7 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
     this.doBatchEnable(ids);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用用户，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用用户，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(List<String> ids) {
@@ -128,7 +128,7 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
     this.doBatchUnable(ids);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增用户，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增用户，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSysUserVo vo) {
@@ -157,7 +157,7 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
     return record.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改用户，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改用户，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSysUserVo vo) {

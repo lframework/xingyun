@@ -3,14 +3,14 @@ package com.lframework.xingyun.sc.controller.sale;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.bo.sale.GetSaleOrderBo;
 import com.lframework.xingyun.sc.bo.sale.PrintSaleOrderBo;
@@ -181,7 +181,7 @@ public class SaleOrderController extends DefaultBaseController {
   @ApiOperation("查询列表（出库业务）")
   @HasPermission({"sale:out:add", "sale:out:modify"})
   @GetMapping("/query/out")
-  public InvokeResult<PageResult<QuerySaleOrderWithOutBo>> getWithOut(
+  public InvokeResult<PageResult<QuerySaleOrderWithOutBo>> queryWithOut(
       @Valid QuerySaleOrderWithOutVo vo) {
 
     PageResult<SaleOrder> pageResult = saleOrderService.queryWithOut(getPageIndex(vo),

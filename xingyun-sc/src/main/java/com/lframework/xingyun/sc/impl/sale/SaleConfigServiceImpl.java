@@ -1,14 +1,14 @@
 package com.lframework.xingyun.sc.impl.sale;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.entity.SaleConfig;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.mappers.SaleConfigMapper;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
 import com.lframework.xingyun.sc.vo.sale.config.UpdateSaleConfigVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,7 +28,7 @@ public class SaleConfigServiceImpl extends BaseMpServiceImpl<SaleConfigMapper, S
     return config;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改销售参数设置")
+  @OpLog(type = ScOpLogType.SALE, name = "修改销售参数设置")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSaleConfigVo vo) {

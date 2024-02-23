@@ -108,7 +108,7 @@ public class SysNoticeServiceImpl extends BaseMpServiceImpl<SysNoticeMapper, Sys
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增系统通知，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增系统通知，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSysNoticeVo vo) {
@@ -134,7 +134,7 @@ public class SysNoticeServiceImpl extends BaseMpServiceImpl<SysNoticeMapper, Sys
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改系统通知，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改系统通知，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSysNoticeVo vo) {
@@ -169,7 +169,7 @@ public class SysNoticeServiceImpl extends BaseMpServiceImpl<SysNoticeMapper, Sys
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "发布系统通知，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "发布系统通知，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void publish(String id) {

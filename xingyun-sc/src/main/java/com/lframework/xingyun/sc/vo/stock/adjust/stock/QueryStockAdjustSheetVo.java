@@ -3,7 +3,7 @@ package com.lframework.xingyun.sc.vo.stock.adjust.stock;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import com.lframework.xingyun.sc.enums.StockCostAdjustSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class QueryStockAdjustSheetVo extends PageVo implements BaseVo, Serializable {
+public class QueryStockAdjustSheetVo extends SortPageVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 

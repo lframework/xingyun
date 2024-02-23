@@ -13,6 +13,11 @@ public interface DefaultOpLogType {
   int AUTH = 1;
 
   /**
+   * 系统管理
+   */
+  int SYSTEM = 2;
+
+  /**
    * 其他
    */
   int OTHER = 99;

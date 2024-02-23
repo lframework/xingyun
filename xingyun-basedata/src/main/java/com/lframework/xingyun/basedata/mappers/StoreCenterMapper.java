@@ -4,6 +4,8 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,6 +25,12 @@ public interface StoreCenterMapper extends BaseMapper<StoreCenter> {
      * @param vo
      * @return
      */
+    @Sorts({
+        @Sort(value = "code", autoParse = true),
+        @Sort(value = "name", autoParse = true),
+        @Sort(value = "createTime", autoParse = true),
+        @Sort(value = "updateTime", autoParse = true),
+    })
     List<StoreCenter> query(@Param("vo") QueryStoreCenterVo vo);
 
     /**

@@ -1,13 +1,13 @@
 package com.lframework.xingyun.template.inner.vo.system.role;
 
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class QuerySysRoleVo extends PageVo implements BaseVo, Serializable {
+public class QuerySysRoleVo extends SortPageVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 

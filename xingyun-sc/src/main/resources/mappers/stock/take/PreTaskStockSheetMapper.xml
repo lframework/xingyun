@@ -144,7 +144,6 @@
                 AND tb.update_time <= #{vo.updateTimeEnd}
                 ]]>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY tb.update_time DESC
     </select>
@@ -174,7 +173,6 @@
                 AND tb.update_time <= #{vo.updateTimeEnd}
                 ]]>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY tb.update_time DESC
     </select>
@@ -206,7 +204,6 @@
                 </if>
             </if>
             AND g.product_type = 1
-            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>
@@ -220,7 +217,6 @@
             OR g.external_code LIKE CONCAT('%', #{condition}, '%')
             )
             AND g.product_type = 1
-            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>

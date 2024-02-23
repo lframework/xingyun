@@ -132,7 +132,6 @@
                     ]]>
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY s.create_time DESC
     </select>

@@ -93,7 +93,7 @@ public class SysParameterServiceImpl extends
     return data;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增系统参数，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增系统参数，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public Long create(CreateSysParameterVo vo) {
@@ -120,7 +120,7 @@ public class SysParameterServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改系统参数，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改系统参数，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSysParameterVo vo) {
@@ -142,7 +142,7 @@ public class SysParameterServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除系统参数，ID：{}", params = {"#id"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "删除系统参数，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(Long id) {

@@ -2,31 +2,22 @@ package com.lframework.xingyun.template.gen.controller;
 
 import cn.hutool.core.convert.Convert;
 import com.github.pagehelper.PageInfo;
-import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.gen.builders.CustomFormBuilder;
-import com.lframework.xingyun.template.gen.builders.CustomListBuilder;
-import com.lframework.xingyun.template.gen.builders.CustomPageBuilder;
-import com.lframework.xingyun.template.gen.builders.CustomSelectorBuilder;
-import com.lframework.xingyun.template.gen.components.custom.page.CustomPageConfig;
-import com.lframework.xingyun.template.gen.entity.GenCustomForm;
-import com.lframework.xingyun.template.gen.mappers.GenMapper;
-import com.lframework.xingyun.template.gen.service.GenCustomFormService;
-import com.lframework.xingyun.template.gen.components.custom.form.CustomFormConfig;
-import com.lframework.xingyun.template.gen.components.custom.form.CustomFormHandler;
-import com.lframework.xingyun.template.gen.components.custom.list.CustomListConfig;
-import com.lframework.xingyun.template.gen.components.custom.selector.CustomSelectorConfig;
-import com.lframework.xingyun.template.gen.components.data.obj.DataObjectQueryObj;
-import com.lframework.xingyun.template.gen.components.data.obj.DataObjectQueryParamObj;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
-import com.lframework.starter.web.utils.RequestUtil;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.template.gen.builders.CustomListBuilder;
+import com.lframework.xingyun.template.gen.builders.CustomPageBuilder;
+import com.lframework.xingyun.template.gen.builders.CustomSelectorBuilder;
+import com.lframework.xingyun.template.gen.components.custom.list.CustomListConfig;
+import com.lframework.xingyun.template.gen.components.custom.page.CustomPageConfig;
+import com.lframework.xingyun.template.gen.components.custom.selector.CustomSelectorConfig;
+import com.lframework.xingyun.template.gen.components.data.obj.DataObjectQueryObj;
+import com.lframework.xingyun.template.gen.components.data.obj.DataObjectQueryParamObj;
+import com.lframework.xingyun.template.gen.mappers.GenMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -61,13 +52,7 @@ public class GenController extends DefaultBaseController {
   private CustomSelectorBuilder customSelectorBuilder;
 
   @Autowired
-  private CustomFormBuilder customFormBuilder;
-
-  @Autowired
   private GenMapper genMapper;
-
-  @Autowired
-  private GenCustomFormService genCustomFormService;
 
   @Autowired
   private CustomPageBuilder customPageBuilder;
@@ -175,92 +160,6 @@ public class GenController extends DefaultBaseController {
     CustomSelectorConfig config = customSelectorBuilder.buildConfig(id);
 
     return InvokeResultBuilder.success(config);
-  }
-
-  @ApiOperation("自定义表单配置")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  @GetMapping("/custom/form/config")
-  public InvokeResult<CustomFormConfig> getCustomFormConfig(
-      @NotBlank(message = "ID不能为空！") String id) {
-
-    CustomFormConfig config = customFormBuilder.buildConfig(id);
-
-    return InvokeResultBuilder.success(config);
-  }
-
-  @ApiOperation("查询自定义表单的数据")
-  @PostMapping("/custom/form/get")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  public InvokeResult<Object> customFormGetData(@NotBlank(message = "ID不能为空！") String id) {
-
-    GenCustomForm form = genCustomFormService.findById(id);
-    if (form == null) {
-      throw new DefaultClientException("自定义表单不存在！");
-    }
-
-    if (!form.getRequireQuery()) {
-      throw new DefaultClientException("自定义表单无需查询数据！");
-    }
-
-    boolean flag = false;
-    Object bean = ApplicationUtil.safeGetBean(form.getQueryBean());
-    if (bean instanceof CustomFormHandler) {
-      flag = true;
-    }
-
-    if (!flag) {
-      log.error("自定义表单ID={}, 没有找到Bean", id);
-      throw new DefaultClientException("自定义表单配置错误！");
-    }
-
-    CustomFormHandler handler = (CustomFormHandler) bean;
-    Object param = handler.convertGetParam(RequestUtil.getRequestBodyStr());
-    if (log.isDebugEnabled()) {
-      log.debug("自定义表单getOne ID={}, param={}", id, param);
-    }
-
-    Object result = handler.getOne(param);
-    if (log.isDebugEnabled()) {
-      log.debug("自定义表单getOne ID={}, result={}", id, result);
-    }
-
-    return InvokeResultBuilder.success(result);
-  }
-
-  @ApiOperation("操作自定义表单的数据")
-  @PostMapping("/custom/form/handle")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-  public InvokeResult<Void> customFormHandleData(@NotBlank(message = "ID不能为空！") String id) {
-
-    GenCustomForm form = genCustomFormService.findById(id);
-    if (form == null) {
-      throw new DefaultClientException("自定义表单不存在！");
-    }
-
-    if (StringUtil.isBlank(form.getHandleBean())) {
-      return InvokeResultBuilder.success();
-    }
-
-    boolean flag = false;
-    Object bean = ApplicationUtil.safeGetBean(form.getHandleBean());
-    if (bean instanceof CustomFormHandler) {
-      flag = true;
-    }
-
-    if (!flag) {
-      log.error("自定义表单ID={}, 没有找到Bean", id);
-      throw new DefaultClientException("自定义表单配置错误！");
-    }
-
-    CustomFormHandler handler = (CustomFormHandler) bean;
-    Object param = handler.convertHandleParam(RequestUtil.getRequestBodyStr());
-    if (log.isDebugEnabled()) {
-      log.debug("自定义表单handleData ID={}, param={}", id, param);
-    }
-
-    handler.handle(param);
-
-    return InvokeResultBuilder.success();
   }
 
   @ApiOperation("获取自定义页面配置")

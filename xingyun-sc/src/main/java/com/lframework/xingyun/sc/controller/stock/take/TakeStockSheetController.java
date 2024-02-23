@@ -3,21 +3,19 @@ package com.lframework.xingyun.sc.controller.stock.take;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
-import com.lframework.xingyun.sc.bo.stock.take.sheet.TakeStockSheetProductBo;
-import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
-import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.sc.bo.stock.take.sheet.QueryTakeStockSheetBo;
 import com.lframework.xingyun.sc.bo.stock.take.sheet.TakeStockSheetFullBo;
+import com.lframework.xingyun.sc.bo.stock.take.sheet.TakeStockSheetProductBo;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
+import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
@@ -29,6 +27,7 @@ import com.lframework.xingyun.sc.vo.stock.take.sheet.ApproveRefuseTakeStockSheet
 import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApprovePassTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApproveRefuseTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.CreateTakeStockSheetVo;
+import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.UpdateTakeStockSheetVo;
 import io.swagger.annotations.Api;
@@ -65,9 +64,6 @@ public class TakeStockSheetController extends DefaultBaseController {
 
   @Autowired
   private TakeStockSheetService takeStockSheetService;
-
-  @Autowired
-  private ProductService productService;
 
   @Autowired
   private TakeStockPlanService takeStockPlanService;
@@ -293,7 +289,7 @@ public class TakeStockSheetController extends DefaultBaseController {
   @ApiOperation("批量审核拒绝")
   @HasPermission({"stock:take:sheet:approve"})
   @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApprovePass(
+  public InvokeResult<Void> batchApproveRefuse(
       @Valid @RequestBody BatchApproveRefuseTakeStockSheetVo vo) {
 
     takeStockSheetService.batchApproveRefuse(vo);
@@ -330,9 +326,9 @@ public class TakeStockSheetController extends DefaultBaseController {
   }
 
   /**
-   * 删除
+   * 批量删除
    */
-  @ApiOperation("删除")
+  @ApiOperation("批量删除")
   @HasPermission({"stock:take:sheet:delete"})
   @DeleteMapping("/batch")
   public InvokeResult<Void> batchDelete(

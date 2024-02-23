@@ -8,19 +8,17 @@ import com.lframework.starter.common.exceptions.impl.DefaultSysException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.events.stock.AddStockEvent;
 import com.lframework.xingyun.core.events.stock.SubStockEvent;
@@ -37,7 +35,6 @@ import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,11 +70,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   @Override
   public List<ProductStock> query(QueryProductStockVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    return getBaseMapper().query(vo);
   }
 
   @Override

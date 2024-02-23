@@ -8,6 +8,11 @@ import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.sale.out.SaleOutSheetSelectorVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -28,8 +33,15 @@ public interface SaleOutSheetMapper extends BaseMapper<SaleOutSheet> {
    * @param vo
    * @return
    */
-  List<SaleOutSheet> query(@Param("vo") QuerySaleOutSheetVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "s", autoParse = true),
+      @Sort(value = "createTime", alias = "s", autoParse = true),
+      @Sort(value = "approveTime", alias = "s", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "s")
+  })
+  List<SaleOutSheet> query(@Param("vo") QuerySaleOutSheetVo vo);
 
   /**
    * 选择器
@@ -37,8 +49,10 @@ public interface SaleOutSheetMapper extends BaseMapper<SaleOutSheet> {
    * @param vo
    * @return
    */
-  List<SaleOutSheet> selector(@Param("vo") SaleOutSheetSelectorVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "s")
+  })
+  List<SaleOutSheet> selector(@Param("vo") SaleOutSheetSelectorVo vo);
 
   /**
    * 根据ID查询
@@ -63,9 +77,11 @@ public interface SaleOutSheetMapper extends BaseMapper<SaleOutSheet> {
    * @param vo
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "s")
+  })
   List<SaleOutSheet> queryWithReturn(@Param("vo") QuerySaleOutSheetWithReturnVo vo,
-      @Param("multipleRelate") boolean multipleRelate,
-      @Param("dataPermission") String dataPermission);
+      @Param("multipleRelate") boolean multipleRelate);
 
   /**
    * 查询已审核列表

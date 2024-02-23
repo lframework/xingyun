@@ -30,7 +30,7 @@ public class SysUserRoleServiceImpl extends
   @Autowired
   private SysRoleService sysRoleService;
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "用户授权角色，用户ID：{}，角色ID：{}", params = {"#vo.userIds",
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "用户授权角色，用户ID：{}，角色ID：{}", params = {"#vo.userIds",
       "#vo.roleIds"}, loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

@@ -2,6 +2,7 @@ package com.lframework.xingyun.common.bo.sw.filebox;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.web.annotations.convert.EnumConvert;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.xingyun.core.entity.FileBox;
 import io.swagger.annotations.ApiModelProperty;
@@ -35,10 +36,20 @@ public class GetFileBoxBo extends BaseBo<FileBox> {
   private String url;
 
   /**
-   * 状态
+   * 上传类型
    */
-  @ApiModelProperty("状态")
-  private Boolean available;
+  @ApiModelProperty("上传类型")
+  private String contentType;
+
+  @ApiModelProperty("文件类型")
+  @EnumConvert
+  private Integer fileType;
+
+  /**
+   * 文件大小
+   */
+  @ApiModelProperty("文件大小")
+  private String fileSize;
 
   /**
    * 备注
@@ -54,11 +65,10 @@ public class GetFileBoxBo extends BaseBo<FileBox> {
   private LocalDateTime createTime;
 
   /**
-   * 修改时间
+   * 创建人
    */
-  @ApiModelProperty("修改时间")
-  @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
-  private LocalDateTime updateTime;
+  @ApiModelProperty("创建人")
+  private String createBy;
 
   public GetFileBoxBo() {
 

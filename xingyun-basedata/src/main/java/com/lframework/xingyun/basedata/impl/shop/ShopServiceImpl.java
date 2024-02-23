@@ -9,7 +9,7 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
@@ -57,7 +57,7 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增门店，ID：{}", params = {"#id"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增门店，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateShopVo vo) {
@@ -92,7 +92,7 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改门店，ID：{}", params = {"#id"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改门店，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateShopVo vo) {

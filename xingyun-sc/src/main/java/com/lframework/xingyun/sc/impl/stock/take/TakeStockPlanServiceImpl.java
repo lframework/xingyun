@@ -11,21 +11,20 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.events.stock.AddStockEvent;
 import com.lframework.xingyun.core.events.stock.SubStockEvent;
@@ -38,6 +37,7 @@ import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.TakeStockPlanStatus;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
@@ -56,12 +56,9 @@ import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
 import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
 import com.lframework.xingyun.template.core.components.qrtz.QrtzJob;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -113,9 +110,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
   @Override
   public List<TakeStockPlan> query(QueryTakeStockPlanVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("tb")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -126,9 +121,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<TakeStockPlan> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("tb")));
+    List<TakeStockPlan> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -139,7 +132,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增盘点任务，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "新增盘点任务，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateTakeStockPlanVo vo) {
@@ -220,7 +213,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改盘点任务，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "修改盘点任务，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateTakeStockPlanVo vo) {
@@ -247,7 +240,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return getBaseMapper().getProducts(planId);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "差异生成，盘点任务ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "差异生成，盘点任务ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void createDiff(String id) {
@@ -290,7 +283,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "差异处理，盘点任务ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "差异处理，盘点任务ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void handleDiff(HandleTakeStockPlanVo vo) {
@@ -389,7 +382,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "作废盘点任务，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "作废盘点任务，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void cancel(CancelTakeStockPlanVo vo) {
@@ -412,7 +405,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除盘点任务，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "删除盘点任务，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {

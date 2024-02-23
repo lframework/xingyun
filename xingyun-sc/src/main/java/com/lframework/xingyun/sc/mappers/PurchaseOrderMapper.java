@@ -1,14 +1,19 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.web.mapper.BaseMapper;
-import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithRecevieVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithReceiveVo;
+import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,8 +33,15 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseOrder> query(@Param("vo") QueryPurchaseOrderVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "o", autoParse = true),
+      @Sort(value = "createTime", alias = "o", autoParse = true),
+      @Sort(value = "approveTime", alias = "o", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "o")
+  })
+  List<PurchaseOrder> query(@Param("vo") QueryPurchaseOrderVo vo);
 
   /**
    * 根据ID查询
@@ -45,8 +57,10 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseOrder> selector(@Param("vo") PurchaseOrderSelectorVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "o")
+  })
+  List<PurchaseOrder> selector(@Param("vo") PurchaseOrderSelectorVo vo);
 
   /**
    * 根据ID查询（收货业务）
@@ -63,9 +77,11 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseOrder> queryWithReceive(@Param("vo") QueryPurchaseOrderWithRecevieVo vo,
-      @Param("multipleRelate") boolean multipleRelate,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "o")
+  })
+  List<PurchaseOrder> queryWithReceive(@Param("vo") QueryPurchaseOrderWithReceiveVo vo,
+      @Param("multipleRelate") boolean multipleRelate);
 
   /**
    * 根据关键字查询采购商品信息
@@ -73,8 +89,13 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param condition
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
   List<PurchaseProductDto> queryPurchaseByCondition(
-      @Param("condition") String condition, @Param("dataPermission") String dataPermission);
+      @Param("condition") String condition);
 
   /**
    * 查询可采购商品信息
@@ -82,8 +103,12 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
    * @param vo
    * @return
    */
-  List<PurchaseProductDto> queryPurchaseList(@Param("vo") QueryPurchaseProductVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  List<PurchaseProductDto> queryPurchaseList(@Param("vo") QueryPurchaseProductVo vo);
 
   /**
    * 根据ID查询

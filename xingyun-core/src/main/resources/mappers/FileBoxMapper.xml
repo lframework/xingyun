@@ -3,50 +3,22 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lframework.xingyun.core.mappers.FileBoxMapper">
 
-  <resultMap id="FileBox" type="com.lframework.xingyun.core.entity.FileBox">
-    <id column="id" property="id"/>
-    <result column="name" property="name"/>
-    <result column="url" property="url"/>
-    <result column="available" property="available"/>
-    <result column="description" property="description"/>
-    <result column="create_by" property="createBy"/>
-    <result column="create_time" property="createTime"/>
-    <result column="update_by" property="updateBy"/>
-    <result column="update_time" property="updateTime"/>
-  </resultMap>
-
-  <select id="query" resultMap="FileBox">
+  <select id="query" resultType="com.lframework.xingyun.core.entity.FileBox">
     <include refid="FileBox_sql"/>
     <where>
       <if test="vo.name != null and vo.name != ''">
         AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
       </if>
-      <if test="vo.available != null">
-        AND tb.available = #{vo.available}
-      </if>
-      <if test="vo.createTimeStart != null">
-        AND tb.create_time >= #{vo.createTimeStart}
-      </if>
-      <if test="vo.createTimeEnd != null">
-        <![CDATA[
-        AND tb.create_time <= #{vo.createTimeEnd}
-        ]]>
+      <if test="vo.path != null and vo.path != ''">
+        AND tb.file_path = #{vo.path}
       </if>
       AND tb.create_by_id = #{createById}
     </where>
-    ORDER BY tb.create_time DESC
+    ORDER BY tb.name ASC
   </select>
 
   <sql id="FileBox_sql">
-    SELECT tb.id,
-           tb.name,
-           tb.url,
-           tb.available,
-           tb.description,
-           tb.create_by,
-           tb.create_time,
-           tb.update_by,
-           tb.update_time
+    SELECT tb.*
     FROM sw_file_box AS tb
   </sql>
 </mapper>

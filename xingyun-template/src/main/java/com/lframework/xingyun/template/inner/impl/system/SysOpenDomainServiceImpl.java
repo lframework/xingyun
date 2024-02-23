@@ -7,17 +7,15 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.inner.vo.system.open.QuerySysOpenDomainVo;
-import com.lframework.xingyun.template.inner.mappers.system.SysOpenDomainMapper;
-import com.lframework.xingyun.template.inner.entity.SysOpenDomain;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.inner.service.system.SysOpenDomainService;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.template.inner.entity.SysOpenDomain;
+import com.lframework.xingyun.template.inner.mappers.system.SysOpenDomainMapper;
+import com.lframework.xingyun.template.inner.service.system.SysOpenDomainService;
 import com.lframework.xingyun.template.inner.vo.system.open.CreateSysOpenDomainVo;
+import com.lframework.xingyun.template.inner.vo.system.open.QuerySysOpenDomainVo;
 import com.lframework.xingyun.template.inner.vo.system.open.SysOpenDomainSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.open.UpdateSysOpenDomainSecretVo;
 import com.lframework.xingyun.template.inner.vo.system.open.UpdateSysOpenDomainVo;
@@ -54,8 +52,6 @@ public class SysOpenDomainServiceImpl extends
     return this.getById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增开放域，ID：{}", params = {
-      "#_result"}, autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSysOpenDomainVo vo) {
@@ -74,8 +70,6 @@ public class SysOpenDomainServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改开放域，ID：{}", params = {
-      "#vo.id"}, autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSysOpenDomainVo vo) {
@@ -96,8 +90,6 @@ public class SysOpenDomainServiceImpl extends
     this.update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改开放域Api密钥，ID：{}", params = {
-      "#vo.id"}, autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void updateApiSecret(UpdateSysOpenDomainSecretVo vo) {

@@ -5,6 +5,11 @@ import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.dto.pre.SettlePreSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettlePreSheet;
 import com.lframework.xingyun.settle.vo.pre.QuerySettlePreSheetVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
@@ -26,8 +31,15 @@ public interface SettlePreSheetMapper extends BaseMapper<SettlePreSheet> {
      * @param vo
      * @return
      */
-    List<SettlePreSheet> query(@Param("vo") QuerySettlePreSheetVo vo,
-        @Param("dataPermission") String dataPermission);
+    @Sorts({
+        @Sort(value = "code", alias = "s", autoParse = true),
+        @Sort(value = "createTime", alias = "s", autoParse = true),
+        @Sort(value = "approveTime", alias = "s", autoParse = true),
+    })
+    @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+        @DataPermission(template = "order", alias = "s")
+    })
+    List<SettlePreSheet> query(@Param("vo") QuerySettlePreSheetVo vo);
 
     /**
      * 根据ID查询

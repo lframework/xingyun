@@ -8,6 +8,11 @@ import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveSheetSelectorVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -28,8 +33,15 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param vo
    * @return
    */
-  List<ReceiveSheet> query(@Param("vo") QueryReceiveSheetVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "r", autoParse = true),
+      @Sort(value = "createTime", alias = "r", autoParse = true),
+      @Sort(value = "approveTime", alias = "r", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "r")
+  })
+  List<ReceiveSheet> query(@Param("vo") QueryReceiveSheetVo vo);
 
   /**
    * 选择器
@@ -37,8 +49,10 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param vo
    * @return
    */
-  List<ReceiveSheet> selector(@Param("vo") ReceiveSheetSelectorVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "r")
+  })
+  List<ReceiveSheet> selector(@Param("vo") ReceiveSheetSelectorVo vo);
 
   /**
    * 根据ID查询
@@ -63,9 +77,11 @@ public interface ReceiveSheetMapper extends BaseMapper<ReceiveSheet> {
    * @param vo
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "r")
+  })
   List<ReceiveSheet> queryWithReturn(@Param("vo") QueryReceiveSheetWithReturnVo vo,
-      @Param("multipleRelate") boolean multipleRelate,
-      @Param("dataPermission") String dataPermission);
+      @Param("multipleRelate") boolean multipleRelate);
 
   /**
    * 查询已审核列表

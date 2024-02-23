@@ -4,6 +4,11 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.settle.dto.sheet.customer.CustomerSettleSheetFullDto;
 import com.lframework.xingyun.settle.entity.CustomerSettleSheet;
 import com.lframework.xingyun.settle.vo.sheet.customer.QueryCustomerSettleSheetVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,8 +28,15 @@ public interface CustomerSettleSheetMapper extends BaseMapper<CustomerSettleShee
      * @param vo
      * @return
      */
-    List<CustomerSettleSheet> query(@Param("vo") QueryCustomerSettleSheetVo vo,
-        @Param("dataPermission") String dataPermission);
+    @Sorts({
+        @Sort(value = "code", alias = "s", autoParse = true),
+        @Sort(value = "createTime", alias = "s", autoParse = true),
+        @Sort(value = "approveTime", alias = "s", autoParse = true),
+    })
+    @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+        @DataPermission(template = "order", alias = "s")
+    })
+    List<CustomerSettleSheet> query(@Param("vo") QueryCustomerSettleSheetVo vo);
 
     /**
      * 根据ID查询

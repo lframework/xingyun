@@ -10,7 +10,7 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
@@ -72,7 +72,7 @@ public class PayTypeServiceImpl extends BaseMpServiceImpl<PayTypeMapper, PayType
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增支付方式，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增支付方式，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -108,7 +108,7 @@ public class PayTypeServiceImpl extends BaseMpServiceImpl<PayTypeMapper, PayType
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改支付方式，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改支付方式，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override

@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-slim
+FROM frolvlad/alpine-java:jdk8-slim
 
 WORKDIR /opt
 

@@ -76,7 +76,6 @@
                     ]]>
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY gsl.create_time DESC, sc.code, g.code
     </select>

@@ -1,5 +1,6 @@
 package com.lframework.xingyun.template.inner.bo.system.tenant;
 
+import com.lframework.starter.web.annotations.constants.EncryType;
 import com.lframework.xingyun.template.inner.entity.Tenant;
 import com.lframework.starter.web.annotations.convert.EncryptConvert;
 import com.lframework.starter.web.bo.BaseBo;
@@ -39,7 +40,7 @@ public class QueryTenantBo extends BaseBo<Tenant> {
    * Jdbc密码
    */
   @ApiModelProperty("Jdbc密码")
-  @EncryptConvert
+  @EncryptConvert(type = EncryType.PASSWORD)
   private String jdbcPassword;
 
   /**

@@ -72,7 +72,7 @@ public class SysPositionServiceImpl extends
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用岗位，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用岗位，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -84,7 +84,7 @@ public class SysPositionServiceImpl extends
     this.doBatchUnable(ids);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用岗位，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用岗位，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -96,7 +96,7 @@ public class SysPositionServiceImpl extends
     this.doBatchEnable(ids);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增岗位，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增岗位，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSysPositionVo vo) {
@@ -110,7 +110,7 @@ public class SysPositionServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改岗位，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改岗位，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSysPositionVo vo) {

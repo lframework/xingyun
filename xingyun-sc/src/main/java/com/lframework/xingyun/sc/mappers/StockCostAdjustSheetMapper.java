@@ -1,11 +1,16 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.web.mapper.BaseMapper;
-import com.lframework.xingyun.sc.vo.stock.adjust.cost.QueryStockCostAdjustProductVo;
 import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockCostAdjustSheet;
+import com.lframework.xingyun.sc.vo.stock.adjust.cost.QueryStockCostAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.cost.QueryStockCostAdjustSheetVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,8 +29,15 @@ public interface StockCostAdjustSheetMapper extends BaseMapper<StockCostAdjustSh
    * @param vo
    * @return
    */
-  List<StockCostAdjustSheet> query(@Param("vo") QueryStockCostAdjustSheetVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "tb", autoParse = true),
+      @Sort(value = "updateTime", alias = "tb", autoParse = true),
+      @Sort(value = "approveTime", alias = "tb", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "tb")
+  })
+  List<StockCostAdjustSheet> query(@Param("vo") QueryStockCostAdjustSheetVo vo);
 
   /**
    * 根据ID查询
@@ -42,9 +54,13 @@ public interface StockCostAdjustSheetMapper extends BaseMapper<StockCostAdjustSh
    * @param condition
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
   List<StockCostAdjustProductDto> queryStockCostAdjustByCondition(
-      @Param("scId") String scId, @Param("condition") String condition,
-      @Param("dataPermission") String dataPermission);
+      @Param("scId") String scId, @Param("condition") String condition);
 
   /**
    * 查询库存成本调整单商品信息
@@ -52,7 +68,11 @@ public interface StockCostAdjustSheetMapper extends BaseMapper<StockCostAdjustSh
    * @param vo
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
   List<StockCostAdjustProductDto> queryStockCostAdjustList(
-      @Param("vo") QueryStockCostAdjustProductVo vo,
-      @Param("dataPermission") String dataPermission);
+      @Param("vo") QueryStockCostAdjustProductVo vo);
 }

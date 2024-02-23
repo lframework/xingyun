@@ -11,28 +11,23 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
-import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
-import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
+import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.entity.TakeStockSheetDetail;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.TakeStockPlanStatus;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.enums.TakeStockSheetStatus;
@@ -46,12 +41,14 @@ import com.lframework.xingyun.sc.vo.stock.take.sheet.ApproveRefuseTakeStockSheet
 import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApprovePassTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApproveRefuseTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.CreateTakeStockSheetVo;
+import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.TakeStockSheetProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.UpdateTakeStockSheetVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,9 +89,7 @@ public class TakeStockSheetServiceImpl extends
   @Override
   public List<TakeStockSheet> query(QueryTakeStockSheetVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("tb")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -108,7 +103,7 @@ public class TakeStockSheetServiceImpl extends
     return data;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "新增盘点单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建盘点单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -164,7 +159,7 @@ public class TakeStockSheetServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "修改盘点单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#_result", name = "修改盘点单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -230,7 +225,7 @@ public class TakeStockSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "审核通过盘点单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -311,7 +306,7 @@ public class TakeStockSheetServiceImpl extends
     return id;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "审核拒绝盘点单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -368,7 +363,7 @@ public class TakeStockSheetServiceImpl extends
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.CANCEL_APPROVE, orderId = "#id", name = "取消审核")
-  @OpLog(type = DefaultOpLogType.OTHER, name = "取消审核通过盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "取消审核通过盘点单，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void cancelApprovePass(String id) {
@@ -411,7 +406,7 @@ public class TakeStockSheetServiceImpl extends
     OpLogUtil.setVariable("id", data.getId());
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "删除盘点单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -475,11 +470,7 @@ public class TakeStockSheetServiceImpl extends
     PageHelperUtil.startPage(pageIndex, pageSize);
 
     List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockByCondition(planId,
-        condition,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+        condition);
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -494,11 +485,7 @@ public class TakeStockSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockList(vo,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockList(vo);
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -519,7 +506,7 @@ public class TakeStockSheetServiceImpl extends
     @Autowired
     private TakeStockSheetDetailService takeStockSheetDetailService;
 
-    @OpLog(type = DefaultOpLogType.OTHER, name = "删除库存盘点表，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = ScOpLogType.TAKE_STOCK, name = "删除库存盘点表，ID：{}", params = "#ids", loopFormat = true)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void onApplicationEvent(DeleteTakeStockPlanEvent deleteTakeStockPlanEvent) {

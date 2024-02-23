@@ -1,13 +1,13 @@
 package com.lframework.xingyun.basedata.vo.paytype;
 
 import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class QueryPayTypeVo extends PageVo implements BaseVo, Serializable {
+public class QueryPayTypeVo extends SortPageVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 

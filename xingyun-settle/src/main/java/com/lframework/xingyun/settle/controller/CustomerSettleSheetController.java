@@ -264,7 +264,7 @@ public class CustomerSettleSheetController extends DefaultBaseController {
     @ApiOperation("查询未结算的业务单据")
     @HasPermission({"customer-settle:sheet:add", "customer-settle:sheet:modify"})
     @GetMapping("/unsettle-items")
-    public InvokeResult<List<CustomerSettleBizItemBo>> getUnCheckItems(
+    public InvokeResult<List<CustomerSettleBizItemBo>> getUnSettleItems(
             @Valid QueryCustomerUnSettleBizItemVo vo) {
 
         List<CustomerSettleBizItemDto> results = customerSettleSheetService.getUnSettleBizItems(vo);

@@ -4,12 +4,13 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.constants.PatternPool;
+import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
@@ -17,34 +18,55 @@ import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.DicCityService;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CustomerImportListener extends ExcelImportListener<CustomerImportModel> {
 
+  private List<String> checkList = new ArrayList<>();
+
   @Override
   protected void doInvoke(CustomerImportModel data, AnalysisContext context) {
     if (StringUtil.isBlank(data.getCode())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“编号”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”不能为空");
     }
     if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, data.getCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+          "第" + context.readRowHolder().getRowIndex()
+              + "行“编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+    }
+    if (checkList.contains(data.getCode())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”与第" + (checkList.indexOf(data.getCode()) + 1) + "行重复");
+    }
+    checkList.add(data.getCode());
+    Wrapper<Customer> checkWrapper = Wrappers.lambdaQuery(Customer.class)
+        .eq(Customer::getCode, data.getCode());
+    CustomerService customerService = ApplicationUtil.getBean(CustomerService.class);
+    if (customerService.count(checkWrapper) > 0) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”已存在");
     }
     if (StringUtil.isBlank(data.getName())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
     }
     if (StringUtil.isBlank(data.getMnemonicCode())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“助记码”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“助记码”不能为空");
     }
     if (StringUtil.isBlank(data.getSettleType())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“结账方式”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“结账方式”不能为空");
     }
     SettleType settleType = EnumUtil.getByDesc(SettleType.class, data.getSettleType());
     if (settleType == null) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“结账方式”只能填写“" + CollectionUtil.join(
+          "第" + context.readRowHolder().getRowIndex() + "行“结账方式”只能填写“"
+              + CollectionUtil.join(
               EnumUtil.getDescs(SettleType.class), "、") + "”");
     }
     data.setSettleTypeEnum(settleType);
@@ -53,7 +75,8 @@ public class CustomerImportListener extends ExcelImportListener<CustomerImportMo
       String[] arr = data.getCity().split("/");
       if (arr.length != 3) {
         throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“地区”格式错误，应为省/市/区（县），例如：北京市/市辖区/东城区");
+            "第" + context.readRowHolder().getRowIndex()
+                + "行“地区”格式错误，应为省/市/区（县），例如：北京市/市辖区/东城区");
       }
 
       DicCityService dicCityService = ApplicationUtil.getBean(DicCityService.class);
@@ -100,15 +123,8 @@ public class CustomerImportListener extends ExcelImportListener<CustomerImportMo
     for (int i = 0; i < datas.size(); i++) {
       CustomerImportModel data = datas.get(i);
 
-      boolean isInsert = false;
-      Wrapper<Customer> queryWrapper = Wrappers.lambdaQuery(Customer.class)
-          .eq(Customer::getCode, data.getCode());
-      Customer record = customerService.getOne(queryWrapper);
-      if (record == null) {
-        record = new Customer();
-        record.setId(IdUtil.getId());
-        isInsert = true;
-      }
+      Customer record = new Customer();
+      record.setId(IdUtil.getId());
 
       record.setCode(data.getCode());
       record.setName(data.getName());
@@ -120,21 +136,18 @@ public class CustomerImportListener extends ExcelImportListener<CustomerImportMo
       record.setFax(data.getFax());
       record.setCityId(data.getAreaId());
       record.setAddress(data.getAddress());
-      if (isInsert) {
-        record.setSettleType(data.getSettleTypeEnum());
-      }
+      record.setSettleType(data.getSettleTypeEnum());
       record.setCreditCode(data.getCreditCode());
       record.setTaxIdentifyNo(data.getTaxIdentifyNo());
       record.setBankName(data.getBankName());
       record.setAccountName(data.getAccountName());
       record.setAccountNo(data.getAccountNo());
-      record.setDescription(data.getDescription());
+      record.setDescription(
+          StringUtil.isBlank(data.getDescription()) ? StringPool.EMPTY_STR : data.getDescription());
 
-      if (isInsert) {
-        record.setAvailable(Boolean.TRUE);
-      }
+      record.setAvailable(Boolean.TRUE);
 
-      customerService.saveOrUpdateAllColumn(record);
+      customerService.save(record);
       data.setId(record.getId());
 
       this.setSuccessProcess(i);
@@ -143,9 +156,5 @@ public class CustomerImportListener extends ExcelImportListener<CustomerImportMo
 
   @Override
   protected void doComplete() {
-    CustomerService customerService = ApplicationUtil.getBean(CustomerService.class);
-    for (CustomerImportModel data : this.getDatas()) {
-      customerService.cleanCacheByKey(data.getId());
-    }
   }
 }

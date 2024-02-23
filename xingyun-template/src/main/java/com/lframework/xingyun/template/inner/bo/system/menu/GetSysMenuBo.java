@@ -1,15 +1,13 @@
 package com.lframework.xingyun.template.inner.bo.system.menu;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.gen.entity.GenCustomForm;
+import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.xingyun.template.gen.entity.GenCustomList;
-import com.lframework.xingyun.template.gen.service.GenCustomFormService;
 import com.lframework.xingyun.template.gen.service.GenCustomListService;
 import com.lframework.xingyun.template.inner.entity.SysMenu;
 import com.lframework.xingyun.template.inner.enums.system.SysMenuComponentType;
 import com.lframework.xingyun.template.inner.service.system.SysMenuService;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -187,13 +185,6 @@ public class GetSysMenuBo extends BaseBo<SysMenu> {
           .getBean(GenCustomListService.class);
       GenCustomList customList = genCustomListService.findById(dto.getComponent());
       this.customListName = customList.getName();
-    } else if (dto.getComponentType() == SysMenuComponentType.CUSTOM_FORM) {
-      this.customFormId = dto.getComponent();
-      GenCustomFormService genCustomFormService = ApplicationUtil
-          .getBean(GenCustomFormService.class);
-      GenCustomForm customForm = genCustomFormService.findById(dto.getComponent());
-      this.customFormName = customForm.getName();
-      this.requestParam = dto.getRequestParam();
     } else if (dto.getComponentType() == SysMenuComponentType.CUSTOM_PAGE) {
       this.customPageId = dto.getComponent();
     }

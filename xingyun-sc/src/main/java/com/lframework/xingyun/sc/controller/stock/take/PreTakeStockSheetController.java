@@ -3,21 +3,19 @@ package com.lframework.xingyun.sc.controller.stock.take;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
-import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto;
-import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.sc.bo.stock.take.pre.GetPreTakeStockSheetBo;
 import com.lframework.xingyun.sc.bo.stock.take.pre.PreTakeStockProductBo;
 import com.lframework.xingyun.sc.bo.stock.take.pre.QueryPreTakeStockSheetBo;
 import com.lframework.xingyun.sc.bo.stock.take.pre.QueryPreTakeStockSheetProductBo;
+import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
@@ -27,6 +25,7 @@ import com.lframework.xingyun.sc.excel.stock.take.pre.PreTakeStockSheetExportMod
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
+import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
 import io.swagger.annotations.Api;
@@ -62,9 +61,6 @@ public class PreTakeStockSheetController extends DefaultBaseController {
 
   @Autowired
   private PreTakeStockSheetService preTakeStockSheetService;
-
-  @Autowired
-  private ProductService productService;
 
   @Autowired
   private TakeStockPlanService takeStockPlanService;

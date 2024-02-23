@@ -4,6 +4,8 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.vo.address.AddressSelectorVo;
 import com.lframework.xingyun.basedata.vo.address.QueryAddressVo;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,6 +25,9 @@ public interface AddressMapper extends BaseMapper<Address> {
    * @param vo
    * @return
    */
+  @Sorts({
+      @Sort(value = "createTime", alias = "tb", autoParse = true)
+  })
   List<Address> query(@Param("vo") QueryAddressVo vo);
 
   /**

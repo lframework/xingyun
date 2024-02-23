@@ -6,6 +6,11 @@ import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto;
 import com.lframework.xingyun.sc.entity.ScTransferOrder;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferProductVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,8 +29,15 @@ public interface ScTransferOrderMapper extends BaseMapper<ScTransferOrder> {
    * @param vo
    * @return
    */
-  List<ScTransferOrder> query(@Param("vo") QueryScTransferOrderVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "tb", autoParse = true),
+      @Sort(value = "createTime", alias = "tb", autoParse = true),
+      @Sort(value = "approveTime", alias = "tb", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "tb")
+  })
+  List<ScTransferOrder> query(@Param("vo") QueryScTransferOrderVo vo);
 
   /**
    * 根据ID查询
@@ -42,9 +54,13 @@ public interface ScTransferOrderMapper extends BaseMapper<ScTransferOrder> {
    * @param condition
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
   List<ScTransferProductDto> queryScTransferByCondition(
-      @Param("scId") String scId, @Param("condition") String condition,
-      @Param("dataPermission") String dataPermission);
+      @Param("scId") String scId, @Param("condition") String condition);
 
   /**
    * 查询库存成本调整单商品信息
@@ -52,7 +68,11 @@ public interface ScTransferOrderMapper extends BaseMapper<ScTransferOrder> {
    * @param vo
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
   List<ScTransferProductDto> queryScTransferList(
-      @Param("vo") QueryScTransferProductVo vo,
-      @Param("dataPermission") String dataPermission);
+      @Param("vo") QueryScTransferProductVo vo);
 }

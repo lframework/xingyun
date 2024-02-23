@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.purchase.receive;
 
 import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import com.lframework.xingyun.sc.enums.ReceiveSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class QueryReceiveSheetVo extends PageVo {
+public class QueryReceiveSheetVo extends SortPageVo {
 
   private static final long serialVersionUID = 1L;
 

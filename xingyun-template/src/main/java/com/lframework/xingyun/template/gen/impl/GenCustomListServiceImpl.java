@@ -236,11 +236,6 @@ public class GenCustomListServiceImpl extends
         if (!StringUtil.isBlank(tb.getIcon())) {
           toolbar.setIcon(tb.getIcon());
         }
-        if (toolbar.getBtnType() == GenCustomListBtnType.CUSTOM_FORM) {
-          if (!StringUtil.isBlank(tb.getRequestParam())) {
-            toolbar.setRequestParam(tb.getRequestParam());
-          }
-        }
         toolbar.setOrderNo(orderNo);
         orderNo++;
 
@@ -261,11 +256,6 @@ public class GenCustomListServiceImpl extends
         handleColumn.setBtnConfig(hd.getBtnConfig());
         if (!StringUtil.isBlank(hd.getIcon())) {
           handleColumn.setIcon(hd.getIcon());
-        }
-        if (handleColumn.getBtnType() == GenCustomListBtnType.CUSTOM_FORM) {
-          if (!StringUtil.isBlank(hd.getRequestParam())) {
-            handleColumn.setRequestParam(hd.getRequestParam());
-          }
         }
         handleColumn.setOrderNo(orderNo);
         handleColumn.setWidth(hd.getWidth());
@@ -426,11 +416,6 @@ public class GenCustomListServiceImpl extends
         if (!StringUtil.isBlank(tb.getIcon())) {
           toolbar.setIcon(tb.getIcon());
         }
-        if (toolbar.getBtnType() == GenCustomListBtnType.CUSTOM_FORM) {
-          if (!StringUtil.isBlank(tb.getRequestParam())) {
-            toolbar.setRequestParam(tb.getRequestParam());
-          }
-        }
         toolbar.setOrderNo(orderNo);
         orderNo++;
 
@@ -453,11 +438,6 @@ public class GenCustomListServiceImpl extends
         handleColumn.setBtnConfig(hd.getBtnConfig());
         if (!StringUtil.isBlank(hd.getIcon())) {
           handleColumn.setIcon(hd.getIcon());
-        }
-        if (handleColumn.getBtnType() == GenCustomListBtnType.CUSTOM_FORM) {
-          if (!StringUtil.isBlank(hd.getRequestParam())) {
-            handleColumn.setRequestParam(hd.getRequestParam());
-          }
         }
         handleColumn.setWidth(hd.getWidth());
         handleColumn.setOrderNo(orderNo);

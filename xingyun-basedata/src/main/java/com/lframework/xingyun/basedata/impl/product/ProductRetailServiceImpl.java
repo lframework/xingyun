@@ -3,7 +3,7 @@ package com.lframework.xingyun.basedata.impl.product;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductRetail;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductRetailServiceImpl extends BaseMpServiceImpl<ProductRetailMapper, ProductRetail>
     implements ProductRetailService {
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "设置商品零售价，ID：{}, 零售价：{}", params = {"#vo.id", "#vo.price"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "设置商品零售价，ID：{}, 零售价：{}", params = {"#vo.id", "#vo.price"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductRetailVo vo) {
@@ -36,7 +36,7 @@ public class ProductRetailServiceImpl extends BaseMpServiceImpl<ProductRetailMap
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "设置商品零售价，ID：{}, 零售价：{}", params = {"#vo.id", "#vo.price"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "设置商品零售价，ID：{}, 零售价：{}", params = {"#vo.id", "#vo.price"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductRetailVo vo) {

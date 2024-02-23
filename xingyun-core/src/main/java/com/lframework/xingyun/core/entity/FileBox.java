@@ -5,12 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.web.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.xingyun.core.enums.FileBoxFileType;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 /**
  * <p>
- * 在线Excel
+ * 文件收纳箱
  * </p>
  */
 @Data
@@ -35,9 +36,29 @@ public class FileBox extends BaseEntity implements BaseDto {
   private String url;
 
   /**
-   * 状态
+   * ContentType
    */
-  private Boolean available;
+  private String contentType;
+
+  /**
+   * 文件类型
+   */
+  private FileBoxFileType fileType;
+
+  /**
+   * 文件大小
+   */
+  private String fileSize;
+
+  /**
+   * 文件路径
+   */
+  private String filePath;
+
+  /**
+   * 文件后缀
+   */
+  private String fileSuffix;
 
   /**
    * 备注

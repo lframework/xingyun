@@ -9,8 +9,8 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
@@ -18,37 +18,50 @@ import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductRetailService;
 import com.lframework.xingyun.basedata.service.product.ProductSaleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.purchase.CreateProductPurchaseVo;
-import com.lframework.xingyun.basedata.vo.product.purchase.UpdateProductPurchaseVo;
 import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
-import com.lframework.xingyun.basedata.vo.product.retail.UpdateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
-import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ProductImportListener extends ExcelImportListener<ProductImportModel> {
 
+  private List<String> checkList = new ArrayList<>();
+
   @Override
   protected void doInvoke(ProductImportModel data, AnalysisContext context) {
     if (StringUtil.isBlank(data.getCode())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“编号”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”不能为空");
     }
     if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, data.getCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+          "第" + context.readRowHolder().getRowIndex()
+              + "行“编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+    }
+    if (checkList.contains(data.getCode())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”与第" + (checkList.indexOf(data.getCode()) + 1) + "行重复");
+    }
+    checkList.add(data.getCode());
+    Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class)
+        .eq(Product::getCode, data.getCode());
+    ProductService productService = ApplicationUtil.getBean(ProductService.class);
+    if (productService.count(checkWrapper) > 0) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”已存在");
     }
     if (StringUtil.isBlank(data.getName())) {
-      throw new DefaultClientException("第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
     }
 
-    ProductService productService = ApplicationUtil.getBean(ProductService.class);
     Wrapper<Product> queryWrapper = Wrappers.lambdaQuery(Product.class)
         .eq(Product::getCode, data.getCode());
     Product product = productService.getOne(queryWrapper);
@@ -64,7 +77,8 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       checkSkuCodeWrapper.ne(Product::getId, product.getId());
       if (product.getProductType() != ProductType.NORMAL) {
         throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行商品类型必须为" + ProductType.NORMAL.getDesc() + "，请检查");
+            "第" + context.readRowHolder().getRowIndex() + "行商品类型必须为"
+                + ProductType.NORMAL.getDesc() + "，请检查");
       }
     }
 
@@ -105,61 +119,76 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
     }
     data.setBrandId(productBrand.getId());
 
-    if (data.getTaxRate() != null) {
-      if (NumberUtil.lt(data.getTaxRate(), 0)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”不允许小于0");
-      }
-
-      if (!NumberUtil.isNumberPrecision(data.getTaxRate(), 0)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”必须为整数");
-      }
+    if (data.getTaxRate() == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”不能为空");
     }
 
-    if (data.getSaleTaxRate() != null) {
-      if (NumberUtil.lt(data.getSaleTaxRate(), 0)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”不允许小于0");
-      }
-
-      if (!NumberUtil.isNumberPrecision(data.getSaleTaxRate(), 0)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”必须为整数");
-      }
+    if (NumberUtil.lt(data.getTaxRate(), 0)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”不允许小于0");
     }
 
-    if (data.getPurchasePrice() != null) {
-      if (!NumberUtil.isNumberPrecision(data.getPurchasePrice(), 2)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“采购价（元）”最多允许2位小数");
-      }
-      if (NumberUtil.lt(data.getPurchasePrice(), 0)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“采购价（元）”不允许小于0");
-      }
+    if (!NumberUtil.isNumberPrecision(data.getTaxRate(), 0)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”必须为整数");
     }
 
-    if (data.getSalePrice() != null) {
-      if (!NumberUtil.isNumberPrecision(data.getSalePrice(), 2)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“销售价（元）”最多允许2位小数");
-      }
-      if (NumberUtil.lt(data.getSalePrice(), 0)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“销售价（元）”不允许小于0");
-      }
+    if (data.getSaleTaxRate() == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”不能为空");
     }
 
-    if (data.getRetailPrice() != null) {
-      if (!NumberUtil.isNumberPrecision(data.getRetailPrice(), 2)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“零售价（元）”最多允许2位小数");
-      }
-      if (NumberUtil.lt(data.getRetailPrice(), 0)) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“零售价（元）”不允许小于0");
-      }
+    if (NumberUtil.lt(data.getSaleTaxRate(), 0)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”不允许小于0");
+    }
+
+    if (!NumberUtil.isNumberPrecision(data.getSaleTaxRate(), 0)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”必须为整数");
+    }
+
+    if (data.getPurchasePrice() == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“采购价（元）”不能为空");
+    }
+
+    if (!NumberUtil.isNumberPrecision(data.getPurchasePrice(), 2)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“采购价（元）”最多允许2位小数");
+    }
+    if (NumberUtil.lt(data.getPurchasePrice(), 0)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“采购价（元）”不允许小于0");
+    }
+
+    if (data.getSalePrice() == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“销售价（元）”不能为空");
+    }
+
+    if (!NumberUtil.isNumberPrecision(data.getSalePrice(), 2)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“销售价（元）”最多允许2位小数");
+    }
+    if (NumberUtil.lt(data.getSalePrice(), 0)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“销售价（元）”不允许小于0");
+    }
+
+    if (data.getRetailPrice() == null) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“零售价（元）”不能为空");
+    }
+
+    if (!NumberUtil.isNumberPrecision(data.getRetailPrice(), 2)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“零售价（元）”最多允许2位小数");
+    }
+    if (NumberUtil.lt(data.getRetailPrice(), 0)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“零售价（元）”不允许小于0");
     }
   }
 
@@ -167,8 +196,6 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
   protected void afterAllAnalysed(AnalysisContext context) {
 
     ProductService productService = ApplicationUtil.getBean(ProductService.class);
-
-    ProductPropertyRelationService productRelationService = ApplicationUtil.getBean(ProductPropertyRelationService.class);
 
     List<ProductImportModel> datas = this.getDatas();
     for (int i = 0; i < datas.size(); i++) {
@@ -180,16 +207,9 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
         throw new DefaultClientException("第" + (i + 1) + "行“商品SKU编号”重复，请重新输入");
       }
 
-      boolean isInsert = false;
-      Wrapper<Product> queryWrapper = Wrappers.lambdaQuery(Product.class)
-          .eq(Product::getCode, data.getCode());
-      Product record = productService.getOne(queryWrapper);
-      if (record == null) {
-        record = new Product();
+      Product record = new Product();
 
-        record.setId(IdUtil.getId());
-        isInsert = true;
-      }
+      record.setId(IdUtil.getId());
 
       record.setCode(data.getCode());
       record.setName(data.getName());
@@ -198,12 +218,6 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       }
       record.setSkuCode(data.getSkuCode());
       record.setExternalCode(data.getExternalCode());
-      if (!isInsert) {
-        // 如果是修改商品，类目变了，属性需要清空
-        if (!StringUtil.equals(record.getCategoryId(), data.getCategoryId())) {
-          productRelationService.deleteByProductId(record.getId());
-        }
-      }
       record.setCategoryId(data.getCategoryId());
       record.setBrandId(data.getBrandId());
       if (data.getTaxRate() != null) {
@@ -216,64 +230,38 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       record.setUnit(data.getUnit());
       record.setProductType(ProductType.NORMAL);
 
-      if (isInsert) {
-        record.setAvailable(Boolean.TRUE);
-      }
+      record.setAvailable(Boolean.TRUE);
 
-      productService.saveOrUpdateAllColumn(record);
+      productService.save(record);
       data.setId(record.getId());
 
       if (data.getPurchasePrice() != null) {
         ProductPurchaseService productPurchaseService = ApplicationUtil.getBean(
             ProductPurchaseService.class);
-        if (isInsert) {
-          CreateProductPurchaseVo createProductPurchaseVo = new CreateProductPurchaseVo();
-          createProductPurchaseVo.setId(data.getId());
-          createProductPurchaseVo.setPrice(data.getPurchasePrice());
+        CreateProductPurchaseVo createProductPurchaseVo = new CreateProductPurchaseVo();
+        createProductPurchaseVo.setId(data.getId());
+        createProductPurchaseVo.setPrice(data.getPurchasePrice());
 
-          productPurchaseService.create(createProductPurchaseVo);
-        } else {
-          UpdateProductPurchaseVo updateProductPurchaseVo = new UpdateProductPurchaseVo();
-          updateProductPurchaseVo.setId(data.getId());
-          updateProductPurchaseVo.setPrice(data.getPurchasePrice());
-
-          productPurchaseService.update(updateProductPurchaseVo);
-        }
+        productPurchaseService.create(createProductPurchaseVo);
       }
 
       if (data.getSalePrice() != null) {
         ProductSaleService productSaleService = ApplicationUtil.getBean(ProductSaleService.class);
-        if (isInsert) {
-          CreateProductSaleVo createProductSaleVo = new CreateProductSaleVo();
-          createProductSaleVo.setId(data.getId());
-          createProductSaleVo.setPrice(data.getSalePrice());
+        CreateProductSaleVo createProductSaleVo = new CreateProductSaleVo();
+        createProductSaleVo.setId(data.getId());
+        createProductSaleVo.setPrice(data.getSalePrice());
 
-          productSaleService.create(createProductSaleVo);
-        } else {
-          UpdateProductSaleVo updateProductSaleVo = new UpdateProductSaleVo();
-          updateProductSaleVo.setId(data.getId());
-          updateProductSaleVo.setPrice(data.getSalePrice());
-
-          productSaleService.update(updateProductSaleVo);
-        }
+        productSaleService.create(createProductSaleVo);
       }
 
       if (data.getRetailPrice() != null) {
         ProductRetailService productRetailService = ApplicationUtil.getBean(
             ProductRetailService.class);
-        if (isInsert) {
-          CreateProductRetailVo createProductRetailVo = new CreateProductRetailVo();
-          createProductRetailVo.setId(data.getId());
-          createProductRetailVo.setPrice(data.getRetailPrice());
+        CreateProductRetailVo createProductRetailVo = new CreateProductRetailVo();
+        createProductRetailVo.setId(data.getId());
+        createProductRetailVo.setPrice(data.getRetailPrice());
 
-          productRetailService.create(createProductRetailVo);
-        } else {
-          UpdateProductRetailVo updateProductRetailVo = new UpdateProductRetailVo();
-          updateProductRetailVo.setId(data.getId());
-          updateProductRetailVo.setPrice(data.getRetailPrice());
-
-          productRetailService.update(updateProductRetailVo);
-        }
+        productRetailService.create(createProductRetailVo);
       }
 
       this.setSuccessProcess(i);
@@ -282,12 +270,5 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
 
   @Override
   protected void doComplete() {
-    ProductPropertyRelationService productPropertyRelationService = ApplicationUtil.getBean(
-        ProductPropertyRelationService.class);
-    ProductService productService = ApplicationUtil.getBean(ProductService.class);
-    for (ProductImportModel data : this.getDatas()) {
-      productService.cleanCacheByKey(data.getId());
-      productPropertyRelationService.cleanCacheByKey(data.getId());
-    }
   }
 }

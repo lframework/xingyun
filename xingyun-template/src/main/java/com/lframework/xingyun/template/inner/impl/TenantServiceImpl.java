@@ -8,6 +8,7 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.utils.EncryptUtil;
 import com.lframework.xingyun.template.inner.entity.Tenant;
 import com.lframework.xingyun.template.inner.service.TenantService;
 import com.lframework.xingyun.template.inner.vo.system.tenant.CreateTenantVo;
@@ -66,7 +67,7 @@ public class TenantServiceImpl extends BaseMpServiceImpl<TenantMapper, Tenant> i
     record.setName(data.getName());
     record.setJdbcUrl(data.getJdbcUrl());
     record.setJdbcUsername(data.getJdbcUsername());
-    record.setJdbcPassword(data.getJdbcPassword());
+    record.setJdbcPassword(EncryptUtil.encrypt(data.getJdbcPassword()));
     record.setAvailable(Boolean.TRUE);
 
     this.save(record);
@@ -93,7 +94,7 @@ public class TenantServiceImpl extends BaseMpServiceImpl<TenantMapper, Tenant> i
       updateWrapper.set(Tenant::getJdbcUsername, data.getJdbcUsername());
     }
     if (StringUtil.isNotBlank(data.getJdbcPassword())) {
-      updateWrapper.set(Tenant::getJdbcPassword, data.getJdbcPassword());
+      updateWrapper.set(Tenant::getJdbcPassword, EncryptUtil.encrypt(data.getJdbcPassword()));
     }
 
     this.update(updateWrapper);

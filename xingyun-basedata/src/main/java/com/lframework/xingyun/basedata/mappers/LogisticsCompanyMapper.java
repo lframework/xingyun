@@ -4,6 +4,8 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
 import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanySelectorVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanyVo;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,6 +25,12 @@ public interface LogisticsCompanyMapper extends BaseMapper<LogisticsCompany> {
    * @param vo
    * @return
    */
+  @Sorts({
+      @Sort(value = "code", autoParse = true),
+      @Sort(value = "name", autoParse = true),
+      @Sort(value = "createTime", autoParse = true),
+      @Sort(value = "updateTime", autoParse = true),
+  })
   List<LogisticsCompany> query(@Param("vo") QueryLogisticsCompanyVo vo);
 
   /**

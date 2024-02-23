@@ -2,6 +2,7 @@ package com.lframework.xingyun.template.inner.controller.system;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.utils.EncryptUtil;
 import com.lframework.xingyun.template.inner.bo.system.tenant.GetTenantBo;
 import com.lframework.xingyun.template.inner.bo.system.tenant.QueryTenantBo;
 import com.lframework.xingyun.template.inner.entity.Tenant;
@@ -128,7 +129,7 @@ public class TenantController extends DefaultBaseController {
       Tenant tenant = tenantService.getById(vo.getId());
       try {
         ReloadTenantEvent event = new ReloadTenantEvent(this, tenant.getId(), tenant.getJdbcUrl(),
-            tenant.getJdbcUsername(), tenant.getJdbcPassword());
+            tenant.getJdbcUsername(), EncryptUtil.decrypt(tenant.getJdbcPassword()));
         ApplicationUtil.publishEvent(event);
       } catch (Exception e) {
         log.error(e.getMessage(), e);

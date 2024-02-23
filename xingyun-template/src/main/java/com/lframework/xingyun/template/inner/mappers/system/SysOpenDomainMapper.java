@@ -1,5 +1,7 @@
 package com.lframework.xingyun.template.inner.mappers.system;
 
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import com.lframework.xingyun.template.inner.entity.SysOpenDomain;
 import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.template.inner.vo.system.open.QuerySysOpenDomainVo;
@@ -22,6 +24,11 @@ public interface SysOpenDomainMapper extends BaseMapper<SysOpenDomain> {
    *
    * @return
    */
+  @Sorts({
+      @Sort(value = "id", autoParse = true),
+      @Sort(value = "name", autoParse = true),
+      @Sort(value = "tenantId", autoParse = true),
+  })
   List<SysOpenDomain> query(@Param("vo") QuerySysOpenDomainVo vo);
 
   /**

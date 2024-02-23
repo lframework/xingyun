@@ -70,6 +70,10 @@ sa-token:
   is-log: false
 
 jugg:
+  secret:
+    # 秘钥，用于敏感信息加密，生产环境一定要更改此项，并且产生数据后不要更改秘钥
+    # 提供了EncryptUtil工具类，包含：生成秘钥、加密、解密方法。
+    key: eRE2drUFINojkG9ivqtfOA==
   #默认配置
   default-setting:
     #默认单号生成类型 FLOW：流水号 SNOW_FLAKE：雪花算法，如果不配置，默认是SNOW_FLAKE

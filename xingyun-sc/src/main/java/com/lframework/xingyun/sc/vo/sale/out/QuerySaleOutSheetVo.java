@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.sale.out;
 
 import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.vo.SortPageVo;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class QuerySaleOutSheetVo extends PageVo {
+public class QuerySaleOutSheetVo extends SortPageVo {
 
   private static final long serialVersionUID = 1L;
 

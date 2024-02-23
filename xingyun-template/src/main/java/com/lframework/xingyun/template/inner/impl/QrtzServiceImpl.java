@@ -9,22 +9,19 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ReflectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.inner.components.qrtz.DynamicQrtzJob;
-import com.lframework.xingyun.template.core.components.qrtz.QrtzHandler;
-import com.lframework.xingyun.template.inner.dto.qrtz.QrtzDto;
-import com.lframework.xingyun.template.inner.enums.QrtzJobType;
 import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.template.core.components.qrtz.QrtzHandler;
+import com.lframework.xingyun.template.inner.components.qrtz.DynamicQrtzJob;
+import com.lframework.xingyun.template.inner.dto.qrtz.QrtzDto;
+import com.lframework.xingyun.template.inner.enums.QrtzJobType;
+import com.lframework.xingyun.template.inner.mappers.QrtzMapper;
 import com.lframework.xingyun.template.inner.service.QrtzService;
 import com.lframework.xingyun.template.inner.vo.qrtz.CreateQrtzVo;
 import com.lframework.xingyun.template.inner.vo.qrtz.QueryQrtzVo;
 import com.lframework.xingyun.template.inner.vo.qrtz.UpdateQrtzVo;
-import com.lframework.xingyun.template.inner.mappers.QrtzMapper;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.EnumUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,8 +71,6 @@ public class QrtzServiceImpl implements QrtzService {
     return renderDto(data);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增定时任务，名称：{}, 组：{}", params = {"#vo.name",
-      "#vo.group"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void create(CreateQrtzVo vo) {
@@ -149,12 +144,8 @@ public class QrtzServiceImpl implements QrtzService {
           "custom_trigger_" + vo.getName(), vo.getGroup(), vo.getCron(), jobDataMap,
           vo.getDescription());
     }
-
-    OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改定时任务，名称：{}, 组：{}", params = {"#vo.oriName",
-      "#vo.oriGroup"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateQrtzVo vo) {
@@ -166,32 +157,26 @@ public class QrtzServiceImpl implements QrtzService {
     this.delete(vo.getOriName(), vo.getOriGroup());
 
     this.create(vo);
-
-    OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "恢复定时任务，名称：{}, 组：{}", params = {"#name", "#group"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void resume(String name, String group) {
     QrtzHandler.resume(name, group);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "暂停定时任务，名称：{}, 组：{}", params = {"#name", "#group"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void pause(String name, String group) {
     QrtzHandler.pause(name, group);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "触发定时任务，名称：{}, 组：{}", params = {"#name", "#group"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void trigger(String name, String group) {
     QrtzHandler.trigger(name, group);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除定时任务，名称：{}, 组：{}", params = {"#name", "#group"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void delete(String name, String group) {

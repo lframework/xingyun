@@ -11,7 +11,7 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
@@ -70,7 +70,7 @@ public class LogisticsCompanyServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "停用物流公司，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用物流公司，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -84,7 +84,7 @@ public class LogisticsCompanyServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "启用物流公司，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用物流公司，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -98,7 +98,7 @@ public class LogisticsCompanyServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "新增物流公司，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增物流公司，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -142,7 +142,7 @@ public class LogisticsCompanyServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改物流公司，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改物流公司，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override

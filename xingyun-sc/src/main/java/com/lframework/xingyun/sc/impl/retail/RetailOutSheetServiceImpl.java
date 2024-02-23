@@ -12,20 +12,14 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.UserService;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
-import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
@@ -36,7 +30,6 @@ import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailOutSheetEvent;
@@ -56,6 +49,7 @@ import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.RetailOutSheetMapper;
 import com.lframework.xingyun.sc.service.logistics.LogisticsSheetDetailService;
@@ -78,11 +72,14 @@ import com.lframework.xingyun.sc.vo.retail.out.RetailOutProductVo;
 import com.lframework.xingyun.sc.vo.retail.out.RetailOutSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.retail.out.UpdateRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
+import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.template.core.dto.UserDto;
+import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,9 +148,7 @@ public class RetailOutSheetServiceImpl extends
   @Override
   public List<RetailOutSheet> query(QueryRetailOutSheetVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("s")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -164,9 +159,7 @@ public class RetailOutSheetServiceImpl extends
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<RetailOutSheet> datas = getBaseMapper().selector(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("s")));
+    List<RetailOutSheet> datas = getBaseMapper().selector(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -212,14 +205,12 @@ public class RetailOutSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
     List<RetailOutSheet> datas = getBaseMapper().queryWithReturn(vo,
-        retailConfig.getRetailReturnMultipleRelateOutStock(),
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("s")));
+        retailConfig.getRetailReturnMultipleRelateOutStock());
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "创建零售出库单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.RETAIL, name = "创建零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建出库单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -241,7 +232,7 @@ public class RetailOutSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改零售出库单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.RETAIL, name = "修改零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改出库单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -295,7 +286,7 @@ public class RetailOutSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过零售出库单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.RETAIL, name = "审核通过零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -508,7 +499,7 @@ public class RetailOutSheetServiceImpl extends
     return sheetId;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝零售出库单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.RETAIL, name = "审核拒绝零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -572,7 +563,7 @@ public class RetailOutSheetServiceImpl extends
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除零售出库单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.RETAIL, name = "删除零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -656,11 +647,7 @@ public class RetailOutSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition, isReturn,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition, isReturn);
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -675,11 +662,7 @@ public class RetailOutSheetServiceImpl extends
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<RetailProductDto> datas = getBaseMapper().queryRetailList(vo,
-        DataPermissionHandler.getDataPermission(
-            DataPermissionPool.PRODUCT,
-            Arrays.asList("product", "brand", "category"),
-            Arrays.asList("g", "b", "c")));
+    List<RetailProductDto> datas = getBaseMapper().queryRetailList(vo);
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;

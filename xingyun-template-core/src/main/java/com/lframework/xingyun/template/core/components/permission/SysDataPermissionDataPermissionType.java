@@ -1,21 +1,23 @@
 package com.lframework.xingyun.template.core.components.permission;
 
-import com.lframework.starter.common.utils.ArrayUtil;
-import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
-import java.util.Map;
+public enum SysDataPermissionDataPermissionType {
 
-public interface SysDataPermissionDataPermissionType {
+  PRODUCT(1, "商品"), ORDER(2, "单据");
 
-  Integer getCode();
+  private Integer code;
 
-  static SysDataPermissionDataPermissionType[] values() {
-    Map<String, SysDataPermissionDataPermissionType> permissionTypeMap = ApplicationUtil.getBeansOfType(
-        SysDataPermissionDataPermissionType.class);
-    if (CollectionUtil.isEmpty(permissionTypeMap)) {
-      return new SysDataPermissionDataPermissionType[0];
-    }
+  private String desc;
 
-    return ArrayUtil.toArray(permissionTypeMap.values(), SysDataPermissionDataPermissionType.class);
+  SysDataPermissionDataPermissionType(Integer code, String desc) {
+    this.code = code;
+    this.desc = desc;
+  }
+
+  public Integer getCode() {
+    return this.code;
+  }
+
+  public String getDesc() {
+    return desc;
   }
 }

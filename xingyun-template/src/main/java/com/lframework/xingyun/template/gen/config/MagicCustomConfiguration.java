@@ -6,7 +6,9 @@ import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourcePrope
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.lframework.starter.web.config.properties.SecretProperties;
 import com.lframework.starter.web.utils.DataSourceUtil;
+import com.lframework.starter.web.utils.EncryptUtil;
 import com.lframework.xingyun.template.inner.entity.Tenant;
 import com.lframework.xingyun.template.inner.service.TenantService;
 import java.util.List;
@@ -36,7 +38,7 @@ public class MagicCustomConfiguration {
 
   @Bean
   public MagicDynamicDataSource magicDynamicDataSource(DynamicRoutingDataSource dataSource,
-      TenantService tenantService, BasicDataSourceCreator basicDataSourceCreator) {
+      TenantService tenantService, BasicDataSourceCreator basicDataSourceCreator, SecretProperties secretProperties) {
     Map<String, DataSource> dataSourceMap = dataSource.getDataSources();
     MagicDynamicDataSource dynamicDataSource = new MagicDynamicDataSource();
     dynamicDataSource.setDefault(dataSourceMap.get("master"));
@@ -52,7 +54,7 @@ public class MagicCustomConfiguration {
       dynamicDataSource.add(String.valueOf(tenant.getId()),
           basicDataSourceCreator.createDataSource(
               DataSourceUtil.createDataSourceProperty(dataSourceProperty, tenant.getJdbcUrl(),
-                  tenant.getJdbcUsername(), tenant.getJdbcPassword())));
+                  tenant.getJdbcUsername(), EncryptUtil.decrypt(tenant.getJdbcPassword(), secretProperties))));
     }
 
     return dynamicDataSource;

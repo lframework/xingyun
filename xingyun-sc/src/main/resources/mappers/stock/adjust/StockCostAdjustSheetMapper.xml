@@ -166,7 +166,6 @@
             AND tb.approve_time <= #{vo.approveTimeEnd}
             ]]>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY tb.update_time DESC
     </select>
@@ -187,7 +186,6 @@
             OR g.sku_code LIKE CONCAT('%', #{condition}, '%')
             OR g.external_code LIKE CONCAT('%', #{condition}, '%')
             )
-            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>
@@ -211,7 +209,6 @@
                     AND (c.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
                 </if>
             </if>
-            AND ${dataPermission}
         </where>
         ORDER BY g.code
     </select>

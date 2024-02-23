@@ -5,6 +5,11 @@ import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -25,8 +30,15 @@ public interface SaleReturnMapper extends BaseMapper<SaleReturn> {
    * @param vo
    * @return
    */
-  List<SaleReturn> query(@Param("vo") QuerySaleReturnVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "r", autoParse = true),
+      @Sort(value = "createTime", alias = "r", autoParse = true),
+      @Sort(value = "approveTime", alias = "r", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "r")
+  })
+  List<SaleReturn> query(@Param("vo") QuerySaleReturnVo vo);
 
   /**
    * 根据ID查询

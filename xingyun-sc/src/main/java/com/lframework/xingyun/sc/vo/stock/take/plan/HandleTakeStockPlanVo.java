@@ -55,17 +55,20 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
     /**
      * 商品ID
      */
+    @ApiModelProperty(value = "商品ID", required = true)
     @NotBlank(message = "商品ID不能为空！")
     private String productId;
 
     /**
      * 修改后盘点数量
      */
+    @ApiModelProperty(value = "修改后盘点数量")
     private Integer takeNum;
 
     /**
      * 备注
      */
+    @ApiModelProperty(value = "备注")
     private String description;
   }
 }

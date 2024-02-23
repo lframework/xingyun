@@ -118,7 +118,7 @@ public class SysOpenDomainController extends DefaultBaseController {
   @ApiOperation("修改Api密钥")
   @HasPermission({"system:open-domain:config"})
   @PutMapping("/secret")
-  public InvokeResult<Void> update(@Valid UpdateSysOpenDomainSecretVo vo) {
+  public InvokeResult<Void> updateSecret(@Valid UpdateSysOpenDomainSecretVo vo) {
 
     sysOpenDomainService.updateApiSecret(vo);
 

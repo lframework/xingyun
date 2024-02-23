@@ -2,22 +2,35 @@ package com.lframework.xingyun.template.gen.controller;
 
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.controller.DefaultBaseController;
+import com.lframework.starter.web.resp.InvokeResult;
+import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.template.gen.bo.custom.list.GenCustomListSelectorBo;
+import com.lframework.xingyun.template.gen.bo.custom.list.category.GenCustomListCategorySelectorBo;
 import com.lframework.xingyun.template.gen.bo.custom.page.GenCustomPageSelectorBo;
 import com.lframework.xingyun.template.gen.bo.custom.page.category.GenCustomPageCategorySelectorBo;
+import com.lframework.xingyun.template.gen.bo.custom.selector.GenCustomSelectorSelectorBo;
+import com.lframework.xingyun.template.gen.bo.custom.selector.category.GenCustomSelectorCategorySelectorBo;
+import com.lframework.xingyun.template.gen.bo.data.entity.GenDataEntityDetailSelectorBo;
+import com.lframework.xingyun.template.gen.bo.data.entity.GenDataEntitySelectorBo;
+import com.lframework.xingyun.template.gen.bo.data.entity.category.GenDataEntityCategorySelectorBo;
 import com.lframework.xingyun.template.gen.bo.data.obj.GenDataObjSelectorBo;
 import com.lframework.xingyun.template.gen.bo.data.obj.category.GenDataObjCategorySelectorBo;
-import com.lframework.xingyun.template.gen.entity.GenCustomForm;
-import com.lframework.xingyun.template.gen.entity.GenCustomFormCategory;
+import com.lframework.xingyun.template.gen.bo.simpledb.SimpleDBSelectorBo;
+import com.lframework.xingyun.template.gen.dto.simpledb.SimpleDBDto;
 import com.lframework.xingyun.template.gen.entity.GenCustomList;
 import com.lframework.xingyun.template.gen.entity.GenCustomListCategory;
 import com.lframework.xingyun.template.gen.entity.GenCustomPage;
 import com.lframework.xingyun.template.gen.entity.GenCustomPageCategory;
+import com.lframework.xingyun.template.gen.entity.GenCustomSelector;
+import com.lframework.xingyun.template.gen.entity.GenCustomSelectorCategory;
 import com.lframework.xingyun.template.gen.entity.GenDataEntity;
 import com.lframework.xingyun.template.gen.entity.GenDataEntityCategory;
 import com.lframework.xingyun.template.gen.entity.GenDataEntityDetail;
+import com.lframework.xingyun.template.gen.entity.GenDataObj;
 import com.lframework.xingyun.template.gen.entity.GenDataObjCategory;
-import com.lframework.xingyun.template.gen.service.GenCustomFormCategoryService;
-import com.lframework.xingyun.template.gen.service.GenCustomFormService;
 import com.lframework.xingyun.template.gen.service.GenCustomListCategoryService;
 import com.lframework.xingyun.template.gen.service.GenCustomListService;
 import com.lframework.xingyun.template.gen.service.GenCustomPageCategoryService;
@@ -30,8 +43,6 @@ import com.lframework.xingyun.template.gen.service.GenDataEntityService;
 import com.lframework.xingyun.template.gen.service.GenDataObjCategoryService;
 import com.lframework.xingyun.template.gen.service.GenDataObjService;
 import com.lframework.xingyun.template.gen.service.SimpleDBService;
-import com.lframework.xingyun.template.gen.vo.custom.form.GenCustomFormSelectorVo;
-import com.lframework.xingyun.template.gen.vo.custom.form.category.GenCustomFormCategorySelectorVo;
 import com.lframework.xingyun.template.gen.vo.custom.list.GenCustomListSelectorVo;
 import com.lframework.xingyun.template.gen.vo.custom.list.category.GenCustomListCategorySelectorVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.GenCustomPageSelectorVo;
@@ -43,25 +54,6 @@ import com.lframework.xingyun.template.gen.vo.data.entity.category.GenDataEntity
 import com.lframework.xingyun.template.gen.vo.data.obj.GenDataObjSelectorVo;
 import com.lframework.xingyun.template.gen.vo.data.obj.category.GenDataObjCategorySelectorVo;
 import com.lframework.xingyun.template.gen.vo.simpledb.SimpleTableSelectorVo;
-import com.lframework.xingyun.template.gen.bo.custom.form.GenCustomFormSelectorBo;
-import com.lframework.xingyun.template.gen.bo.custom.form.category.GenCustomFormCategorySelectorBo;
-import com.lframework.xingyun.template.gen.bo.custom.list.GenCustomListSelectorBo;
-import com.lframework.xingyun.template.gen.bo.custom.list.category.GenCustomListCategorySelectorBo;
-import com.lframework.xingyun.template.gen.bo.custom.selector.GenCustomSelectorSelectorBo;
-import com.lframework.xingyun.template.gen.bo.custom.selector.category.GenCustomSelectorCategorySelectorBo;
-import com.lframework.xingyun.template.gen.bo.data.entity.GenDataEntityDetailSelectorBo;
-import com.lframework.xingyun.template.gen.bo.data.entity.GenDataEntitySelectorBo;
-import com.lframework.xingyun.template.gen.bo.data.entity.category.GenDataEntityCategorySelectorBo;
-import com.lframework.xingyun.template.gen.bo.simpledb.SimpleDBSelectorBo;
-import com.lframework.xingyun.template.gen.dto.simpledb.SimpleDBDto;
-import com.lframework.xingyun.template.gen.entity.GenCustomSelector;
-import com.lframework.xingyun.template.gen.entity.GenCustomSelectorCategory;
-import com.lframework.xingyun.template.gen.entity.GenDataObj;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.controller.DefaultBaseController;
-import com.lframework.starter.web.resp.InvokeResult;
-import com.lframework.starter.web.resp.InvokeResultBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -113,12 +105,6 @@ public class GenSelectorController extends DefaultBaseController {
 
   @Autowired
   private GenCustomSelectorService genCustomSelectorService;
-
-  @Autowired
-  private GenCustomFormCategoryService genCustomFormCategoryService;
-
-  @Autowired
-  private GenCustomFormService genCustomFormService;
 
   @Autowired
   private GenCustomPageCategoryService genCustomPageCategoryService;
@@ -461,80 +447,6 @@ public class GenSelectorController extends DefaultBaseController {
         .filter(Objects::nonNull).collect(Collectors.toList());
     List<GenCustomSelectorSelectorBo> results = datas.stream()
         .map(GenCustomSelectorSelectorBo::new).collect(
-            Collectors.toList());
-    return InvokeResultBuilder.success(results);
-  }
-
-  @ApiOperation("自定义表单分类")
-  @GetMapping("/custom/form/category")
-  public InvokeResult<PageResult<GenCustomFormCategorySelectorBo>> customListCategory(
-      @Valid GenCustomFormCategorySelectorVo vo) {
-    PageResult<GenCustomFormCategory> pageResult = genCustomFormCategoryService.selector(
-        getPageIndex(vo),
-        getPageSize(vo), vo);
-    List<GenCustomFormCategory> datas = pageResult.getDatas();
-    List<GenCustomFormCategorySelectorBo> results = null;
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(GenCustomFormCategorySelectorBo::new)
-          .collect(Collectors.toList());
-    }
-
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
-
-  /**
-   * 加载自定义表单分类
-   */
-  @ApiOperation("加载自定义表单分类")
-  @PostMapping("/custom/form/category/load")
-  public InvokeResult<List<GenCustomFormCategorySelectorBo>> loadCustomFormCategory(
-      @RequestBody(required = false) List<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return InvokeResultBuilder.success(CollectionUtil.emptyList());
-    }
-
-    List<GenCustomFormCategory> datas = ids.stream().filter(StringUtil::isNotBlank)
-        .map(t -> genCustomFormCategoryService.findById(t))
-        .filter(Objects::nonNull).collect(Collectors.toList());
-    List<GenCustomFormCategorySelectorBo> results = datas.stream()
-        .map(GenCustomFormCategorySelectorBo::new).collect(
-            Collectors.toList());
-    return InvokeResultBuilder.success(results);
-  }
-
-  @ApiOperation("自定义表单")
-  @GetMapping("/custom/form")
-  public InvokeResult<PageResult<GenCustomFormSelectorBo>> customForm(
-      @Valid GenCustomFormSelectorVo vo) {
-    PageResult<GenCustomForm> pageResult = genCustomFormService.selector(getPageIndex(vo),
-        getPageSize(vo), vo);
-    List<GenCustomForm> datas = pageResult.getDatas();
-    List<GenCustomFormSelectorBo> results = null;
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(GenCustomFormSelectorBo::new).collect(Collectors.toList());
-    }
-
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
-
-  /**
-   * 加载自定义表单
-   */
-  @ApiOperation("加载自定义表单")
-  @PostMapping("/custom/form/load")
-  public InvokeResult<List<GenCustomFormSelectorBo>> loadCustomForm(
-      @RequestBody(required = false) List<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return InvokeResultBuilder.success(CollectionUtil.emptyList());
-    }
-
-    List<GenCustomForm> datas = ids.stream().filter(StringUtil::isNotBlank)
-        .map(t -> genCustomFormService.findById(t))
-        .filter(Objects::nonNull).collect(Collectors.toList());
-    List<GenCustomFormSelectorBo> results = datas.stream()
-        .map(GenCustomFormSelectorBo::new).collect(
             Collectors.toList());
     return InvokeResultBuilder.success(results);
   }

@@ -1,11 +1,16 @@
 package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.web.mapper.BaseMapper;
-import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
-import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
+import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
+import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
+import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,8 +29,15 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
    * @param vo
    * @return
    */
-  List<TakeStockSheet> query(@Param("vo") QueryTakeStockSheetVo vo,
-      @Param("dataPermission") String dataPermission);
+  @Sorts({
+      @Sort(value = "code", alias = "tb", autoParse = true),
+      @Sort(value = "updateTime", alias = "tb", autoParse = true),
+      @Sort(value = "approveTime", alias = "tb", autoParse = true),
+  })
+  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+      @DataPermission(template = "order", alias = "tb")
+  })
+  List<TakeStockSheet> query(@Param("vo") QueryTakeStockSheetVo vo);
 
   /**
    * 根据ID查询详情
@@ -57,8 +69,13 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
    * @param condition
    * @return
    */
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
   List<TakeStockSheetProductDto> queryTakeStockByCondition(@Param("planId") String planId,
-      @Param("condition") String condition, @Param("dataPermission") String dataPermission);
+      @Param("condition") String condition);
 
   /**
    * 查询盘点单商品信息
@@ -66,6 +83,10 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
    * @param vo
    * @return
    */
-  List<TakeStockSheetProductDto> queryTakeStockList(@Param("vo") QueryTakeStockSheetProductVo vo,
-      @Param("dataPermission") String dataPermission);
+  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+      @DataPermission(template = "product", alias = "g"),
+      @DataPermission(template = "brand", alias = "b"),
+      @DataPermission(template = "category", alias = "c")
+  })
+  List<TakeStockSheetProductDto> queryTakeStockList(@Param("vo") QueryTakeStockSheetProductVo vo);
 }

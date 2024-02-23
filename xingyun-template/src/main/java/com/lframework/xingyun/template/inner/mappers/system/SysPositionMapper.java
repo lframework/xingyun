@@ -1,5 +1,7 @@
 package com.lframework.xingyun.template.inner.mappers.system;
 
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import com.lframework.xingyun.template.inner.entity.SysPosition;
 import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.template.inner.vo.system.position.QuerySysPositionVo;
@@ -23,6 +25,12 @@ public interface SysPositionMapper extends BaseMapper<SysPosition> {
    * @param vo
    * @return
    */
+  @Sorts({
+      @Sort(value = "code", autoParse = true),
+      @Sort(value = "name", autoParse = true),
+      @Sort(value = "createTime", autoParse = true),
+      @Sort(value = "updateTime", autoParse = true),
+  })
   List<SysPosition> query(@Param("vo") QuerySysPositionVo vo);
 
   /**

@@ -1,5 +1,7 @@
 package com.lframework.xingyun.template.inner.mappers.system;
 
+import com.lframework.xingyun.template.core.annotations.sort.Sort;
+import com.lframework.xingyun.template.core.annotations.sort.Sorts;
 import com.lframework.xingyun.template.inner.dto.UserInfoDto;
 import com.lframework.xingyun.template.core.entity.SysUser;
 import com.lframework.starter.web.mapper.BaseMapper;
@@ -24,6 +26,13 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
    * @param vo
    * @return
    */
+  @Sorts({
+      @Sort(value = "code", alias = "u", autoParse = true),
+      @Sort(value = "username", alias = "u", autoParse = true),
+      @Sort(value = "name", alias = "u", autoParse = true),
+      @Sort(value = "createTime", alias = "u", autoParse = true),
+      @Sort(value = "updateTime", alias = "u", autoParse = true),
+  })
   List<SysUser> query(@Param("vo") QuerySysUserVo vo);
 
   /**

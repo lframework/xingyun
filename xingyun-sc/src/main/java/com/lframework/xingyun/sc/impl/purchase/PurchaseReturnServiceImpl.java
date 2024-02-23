@@ -28,7 +28,6 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annations.OrderTimeLineLog;
-import com.lframework.xingyun.core.components.permission.DataPermissionPool;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseReturnEvent;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -41,6 +40,7 @@ import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
+import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.PurchaseReturnMapper;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
@@ -59,15 +59,12 @@ import com.lframework.xingyun.sc.vo.purchase.returned.ReturnProductVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.UpdatePurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.permission.DataPermissionHandler;
 import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
 import com.lframework.xingyun.template.core.service.UserService;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,9 +121,7 @@ public class PurchaseReturnServiceImpl extends
   @Override
   public List<PurchaseReturn> query(QueryPurchaseReturnVo vo) {
 
-    return getBaseMapper().query(vo,
-        DataPermissionHandler.getDataPermission(DataPermissionPool.ORDER,
-            Arrays.asList("order"), Arrays.asList("r")));
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -135,7 +130,7 @@ public class PurchaseReturnServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "创建采购退货单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.PURCHASE, name = "创建采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建退单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -159,7 +154,7 @@ public class PurchaseReturnServiceImpl extends
     return purchaseReturn.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "修改采购退货单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.PURCHASE, name = "修改采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改退单")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -224,7 +219,7 @@ public class PurchaseReturnServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核通过采购退货单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.PURCHASE, name = "审核通过采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -342,7 +337,7 @@ public class PurchaseReturnServiceImpl extends
     return returnId;
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "审核拒绝采购退货单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.PURCHASE, name = "审核拒绝采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -405,7 +400,7 @@ public class PurchaseReturnServiceImpl extends
     }
   }
 
-  @OpLog(type = DefaultOpLogType.OTHER, name = "删除采购退货单，单号：{}", params = "#code")
+  @OpLog(type = ScOpLogType.PURCHASE, name = "删除采购退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

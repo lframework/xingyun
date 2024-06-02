@@ -88,21 +88,32 @@
 </template>
 
 <script>
+import { h, defineComponent } from 'vue';
 <#if create??>
-import Add from './add.vue'
+import Add from './add.vue';
 </#if>
 <#if update??>
-import Modify from './modify.vue'
+import Modify from './modify.vue';
 </#if>
 <#if detail??>
-import Detail from './detail.vue'
+import Detail from './detail.vue';
 </#if>
 <#if hasAvailableTag>
 </#if>
-export default {
+import * as api from '@/api/${moduleName}/${bizName}';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons-vue';
+
+export default defineComponent({
   name: '${className}',
   components: {
     <#if create??>Add, </#if><#if update??>Modify, </#if><#if detail??>Detail, </#if>
+  },
+  setup() {
+    return {
+      h,
+      PlusOutlined,
+      SearchOutlined,
+    };
   },
   data() {
     return {
@@ -188,7 +199,7 @@ export default {
       return Object.assign({}, this.searchFormData);
     },
   },
-}
+});
 </script>
 <style scoped>
 </style>

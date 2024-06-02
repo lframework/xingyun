@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.mappers.BaseDataProductCategoryMapper">
+
+    <resultMap id="BaseDataProductCategory" type="com.lframework.entity.BaseDataProductCategory">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="available" property="available"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_by_id" property="createById"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_by_id" property="updateById"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="BaseDataProductCategory_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.name,
+            tb.parent_id,
+            tb.available,
+            tb.description,
+            tb.create_by,
+            tb.create_by_id,
+            tb.create_time,
+            tb.update_by,
+            tb.update_by_id,
+            tb.update_time
+        FROM base_data_product_category AS tb
+    </sql>
+
+    <select id="query" resultMap="BaseDataProductCategory">
+        <include refid="BaseDataProductCategory_sql"/>
+        <where>
+            <if test="vo.code != null and vo.code != ''">
+             AND tb.code = #{vo.code}
+            </if>
+            <if test="vo.name != null and vo.name != ''">
+             AND tb.name = #{vo.name}
+            </if>
+            <if test="vo.parentId != null and vo.parentId != ''">
+             AND tb.parent_id = #{vo.parentId}
+            </if>
+            <if test="vo.available != null">
+             AND tb.available = #{vo.available}
+            </if>
+        </where>
+    </select>
+</mapper>

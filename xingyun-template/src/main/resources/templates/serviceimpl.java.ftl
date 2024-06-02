@@ -65,7 +65,7 @@ public class ${className}ServiceImpl extends BaseMpServiceImpl${r"<"}${className
     }
 <#if create??>
 
-    @OpLog(type = OpLogType.OTHER, name = "新增${classDescription}，ID：{}", params = ${r'{"#'}${create.keys[0].name}${r'"}'})
+    @OpLog(type = 99, name = "新增${classDescription}，ID：{}", params = ${r'{"#'}${create.keys[0].name}${r'"}'})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ${create.keys[0].dataType} create(Create${className}Vo vo) {
@@ -108,7 +108,7 @@ public class ${className}ServiceImpl extends BaseMpServiceImpl${r"<"}${className
 </#if>
 <#if update??>
 
-    @OpLog(type = OpLogType.OTHER, name = "修改${classDescription}，ID：{}", params = ${r'{"#'}${update.keys[0].name}${r'"}'})
+    @OpLog(type = 99, name = "修改${classDescription}，ID：{}", params = ${r'{"#'}${update.keys[0].name}${r'"}'})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(Update${className}Vo vo) {
@@ -148,7 +148,7 @@ public class ${className}ServiceImpl extends BaseMpServiceImpl${r"<"}${className
 </#if>
     <#if hasDelete>
 
-    @OpLog(type = OpLogType.OTHER, name = "删除${classDescription}，ID：{}", params = ${r'{"#'}${keys[0].name}${r'"}'})
+    @OpLog(type = 99, name = "删除${classDescription}，ID：{}", params = ${r'{"#'}${keys[0].name}${r'"}'})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteById(<#list keys as key>${key.dataType} ${key.name}<#if key_index != keys?size - 1>, </#if></#list>) {

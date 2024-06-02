@@ -293,7 +293,7 @@ public class Generator {
             + File.separator
             + template.getPackageName().replaceAll("\\.", "\\" + File.separator) + File.separator
             + "service" + File.separator + template.getModuleName(),
-        "I" + template.getClassName() + "Service.java", content);
+        template.getClassName() + "Service.java", content);
   }
 
   /**

@@ -20,7 +20,7 @@
 </template>
 <script>
 import { defineComponent } from 'vue';
-import * as api from '@/${moduleName}/${bizName}';
+import * as api from '@/api/${moduleName}/${bizName}';
 
 export default defineComponent({
   // 使用组件

@@ -1,6 +1,11 @@
 package ${packageName}.mappers;
 
 import ${packageName}.entity.${className};
+<#if importPackages??>
+    <#list importPackages as p>
+import ${p};
+    </#list>
+</#if>
 <#if queryParams??>
 import ${packageName}.vo.${moduleName}.${bizName}.Query${className}Vo;
 </#if>

@@ -9,9 +9,12 @@ import java.time.LocalTime;
 
 public enum GenDataType implements BaseEnum<Integer> {
 
-  STRING(0, String.class, "String"), INTEGER(1, Integer.class, "Integer"), SHORT(2, Short.class, "Short"), LONG(3, Long.class, "Long"), DOUBLE(4,
-      Double.class, "Double"), LOCAL_DATE(5, LocalDate.class, "LocalDate"), LOCAL_DATE_TIME(6, LocalDateTime.class, "LocalDateTime"), LOCAL_TIME(7,
-          LocalTime.class, "LocalTime"), BOOLEAN(8, Boolean.class, "Boolean"), BIG_DECIMAL(9, BigDecimal.class, "BigDecimal"),
+  STRING(0, String.class, "String", "string"), INTEGER(1, Integer.class, "Integer",
+      "number"), SHORT(2, Short.class, "Short", "number"), LONG(3, Long.class, "Long", "number"), DOUBLE(4,
+      Double.class, "Double", "number"), LOCAL_DATE(5, LocalDate.class, "LocalDate", "string"), LOCAL_DATE_TIME(6,
+      LocalDateTime.class, "LocalDateTime", "string"), LOCAL_TIME(7,
+      LocalTime.class, "LocalTime", "string"), BOOLEAN(8, Boolean.class, "Boolean", "boolean"), BIG_DECIMAL(9,
+      BigDecimal.class, "BigDecimal", "number"),
   ;
 
   @EnumValue
@@ -21,11 +24,14 @@ public enum GenDataType implements BaseEnum<Integer> {
 
   private final String desc;
 
-  GenDataType(Integer code, Class<?> clazz, String desc) {
+  private final String frontDesc;
+
+  GenDataType(Integer code, Class<?> clazz, String desc, String frontDesc) {
 
     this.code = code;
     this.clazz = clazz;
     this.desc = desc;
+    this.frontDesc = frontDesc;
   }
 
   /**
@@ -72,5 +78,9 @@ public enum GenDataType implements BaseEnum<Integer> {
 
   public Class<?> getClazz() {
     return clazz;
+  }
+
+  public String getFrontDesc() {
+    return frontDesc;
   }
 }

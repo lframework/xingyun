@@ -1,12 +1,12 @@
 <template>
-  <a-modal v-model="visible" :mask-closable="false" width="40%" title="修改" :dialog-style="{ top: '20px' }" :footer="null">
+  <a-modal v-model:open="visible" :mask-closable="false" width="40%" title="修改" :dialog-style="{ top: '20px' }" :footer="null">
     <div v-if="visible" v-permission="['${moduleName}:${bizName}:modify']" v-loading="loading">
-      <a-form-model ref="form" :label-col="{span: 4}" :wrapper-col="{span: 16}" :model="formData" :rules="rules">
+      <a-form ref="form" :label-col="{span: 4}" :wrapper-col="{span: 16}" :model="formData" :rules="rules">
         <#list columns as column>
-          <a-form-model-item label="${column.description}" prop="${column.name}">
+          <a-form-item label="${column.description}" name="${column.name}">
             <#assign formData="formData"/>
             <@format><#include "input-components.ftl" /></@format>
-          </a-form-model-item>
+          </a-form-item>
         </#list>
         <div class="form-modal-footer">
           <a-space>
@@ -14,18 +14,21 @@
             <a-button :loading="loading" @click="closeDialog">取消</a-button>
           </a-space>
         </div>
-      </a-form-model>
+      </a-form>
     </div>
   </a-modal>
 </template>
 <script>
-export default {
+import { defineComponent } from 'vue';
+import * as api from '@/${moduleName}/${bizName}';
+
+export default defineComponent({
   // 使用组件
   components: {
   },
   props: {
     ${keys[0].name}: {
-      type: String,
+      type: ${keys[0].dataType},
       required: true
     }
   },
@@ -48,78 +51,78 @@ export default {
             validator: (rule, value, callback) => {
               <#if !column.required>
               if (this.$utils.isEmpty(value)) {
-                return callback()
+                return Promise.resolve();
               }
               </#if>
               if (${r"/"}${column.regularExpression}${r"/.test(value))"} {
-                return callback()
+                return Promise.resolve();
               }
-              return callback(new Error('${column.description}格式不正确'))
+              return Promise.reject('${column.description}格式不正确');
             }
-          }
+          },
           </#if>
-        ]<#if column_index != columns?size - 1>,</#if>
+        ],
         </#if>
         </#list>
-      }
+      },
     }
   },
   created() {
-    this.initFormData()
+    this.initFormData();
   },
   methods: {
     // 打开对话框 由父页面触发
     openDialog() {
-      this.visible = true
+      this.visible = true;
 
-      this.$nextTick(() => this.open())
+      this.$nextTick(() => this.open());
     },
     // 关闭对话框
     closeDialog() {
-      this.visible = false
-      this.$emit('close')
+      this.visible = false;
+      this.$emit('close');
     },
     // 初始化表单数据
     initFormData() {
       this.formData = {
         ${keys[0].name}: '',
         <#list columns as column>
-        ${column.name}: ''<#if column_index != columns?size - 1>,</#if>
+        ${column.name}: '',
         </#list>
-      }
+      };
     },
     // 提交表单事件
     submit() {
-      this.$refs.form.validate((valid) => {
+      this.$refs.form.validate().then((valid) => {
         if (valid) {
-          this.loading = true
-          this.$api.${moduleName}.${bizName}.modify(this.formData).then(() => {
-            this.$msg.success('修改成功！')
-            this.$emit('confirm')
-            this.visible = false
+          this.loading = true;
+          api.update(this.formData).then(() => {
+            this.$msg.success('修改成功！');
+            this.$emit('confirm');
+            this.visible = false;
           }).finally(() => {
-            this.loading = false
-          })
+            this.loading = false;
+          });
         }
-      })
+      });
     },
     // 页面显示时触发
     open() {
       // 初始化数据
-      this.initFormData()
+      this.initFormData();
 
       // 查询数据
-      this.loadFormData()
+      this.loadFormData();
     },
     // 查询数据
-    async loadFormData() {
-      this.loading = true
-      await this.$api.${moduleName}.${bizName}.get(this.id).then(data => {
-        this.formData = data
+    loadFormData() {
+      this.loading = true;
+      api.get(this.id).then(data => {
+        this.formData = data;
       }).finally(() => {
-        this.loading = false
-      })
-    }
+        this.loading = false;
+      });
+    },
   }
-}
+});
 </script>

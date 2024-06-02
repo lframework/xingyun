@@ -74,6 +74,11 @@ public class QueryParamsTemplate {
     private String dataType;
 
     /**
+     * 前端字段类型
+     */
+    private String frontDataType;
+
+    /**
      * 前端字段类型 只有字段是枚举时生效，此值为前端枚举类型
      */
     private String frontType;

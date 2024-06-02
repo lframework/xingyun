@@ -1,12 +1,12 @@
 <template>
-  <a-modal v-model="visible" :mask-closable="false" width="40%" title="新增" :dialog-style="{ top: '20px' }" :footer="null">
+  <a-modal v-model:open="visible" :mask-closable="false" width="40%" title="新增" :dialog-style="{ top: '20px' }" :footer="null">
     <div v-if="visible" v-permission="['${moduleName}:${bizName}:add']" v-loading="loading">
-      <a-form-model ref="form" :label-col="{span: 4}" :wrapper-col="{span: 16}" :model="formData" :rules="rules">
+      <a-form ref="form" :label-col="{span: 4}" :wrapper-col="{span: 16}" :model="formData" :rules="rules">
         <#list columns as column>
-        <a-form-model-item label="${column.description}" prop="${column.name}">
+        <a-form-item label="${column.description}" name="${column.name}">
           <#assign formData="formData"/>
           <@format><#include "input-components.ftl" /></@format>
-        </a-form-model-item>
+        </a-form-item>
         </#list>
         <div class="form-modal-footer">
           <a-space>
@@ -14,12 +14,15 @@
             <a-button :loading="loading" @click="closeDialog">取消</a-button>
           </a-space>
         </div>
-      </a-form-model>
+      </a-form>
     </div>
   </a-modal>
 </template>
 <script>
-export default {
+import { defineComponent } from 'vue';
+import * as api from '@/${moduleName}/${bizName}';
+
+export default defineComponent({
   components: {
   },
   data() {
@@ -41,68 +44,68 @@ export default {
             validator: (rule, value, callback) => {
               <#if !column.required>
               if (this.$utils.isEmpty(value)) {
-                return callback()
+                return Promise.resolve();
               }
               </#if>
               if (${r"/"}${column.regularExpression}${r"/.test(value))"} {
-                return callback()
+                return Promise.resolve();
               }
-              return callback(new Error('${column.description}格式不正确'))
+              return Promise.reject('${column.description}格式不正确');
             }
-          }
+          },
           </#if>
-        ]<#if column_index != columns?size - 1>,</#if>
+        ],
         </#if>
         </#list>
-      }
+      },
     }
   },
   computed: {
   },
   created() {
     // 初始化表单数据
-    this.initFormData()
+    this.initFormData();
   },
   methods: {
     // 打开对话框 由父页面触发
     openDialog() {
-      this.visible = true
+      this.visible = true;
       
-      this.$nextTick(() => this.open())
+      this.$nextTick(() => this.open());
     },
     // 关闭对话框
     closeDialog() {
-      this.visible = false
-      this.$emit('close')
+      this.visible = false;
+      this.$emit('close');
     },
     // 初始化表单数据
     initFormData() {
       this.formData = {
         <#list columns as column>
-        ${column.name}: ''<#if column_index != columns?size - 1>,</#if>
+        ${column.name}: '',
         </#list>
-      }
+      };
     },
     // 提交表单事件
     submit() {
-      this.$refs.form.validate((valid) => {
+      this.$refs.form.validate().then((valid) => {
         if (valid) {
-          this.loading = true
-          this.$api.${moduleName}.${bizName}.create(this.formData).then(() => {
-            this.$msg.success('新增成功！')
-            this.$emit('confirm')
-            this.visible = false
+          this.loading = true;
+          api.create(this.formData).then(() => {
+            this.$msg.success('新增成功！');
+            this.$emit('confirm');
+            this.visible = false;
           }).finally(() => {
-            this.loading = false
-          })
+            this.loading = false;
+          });
         }
-      })
+      });
     },
     // 页面显示时触发
     open() {
       // 初始化表单数据
-      this.initFormData()
-    }
-  }
-}
+      this.initFormData();
+    },
+  },
+});
 </script>

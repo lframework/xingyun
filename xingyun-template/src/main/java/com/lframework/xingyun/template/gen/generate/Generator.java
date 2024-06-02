@@ -161,6 +161,11 @@ public class Generator {
     GenerateDto addVue = this.generateAddVue();
     GenerateDto modifyVue = this.generateModifyVue();
     GenerateDto detailVue = this.generateDetailVue();
+    GenerateDto createVoVue = this.generateCreateVoVue();
+    GenerateDto queryVoVue = this.generateQueryVoVue();
+    GenerateDto updateVoVue = this.generateUpdateVoVue();
+    GenerateDto queryBoVue = this.generateQueryBoVue();
+    GenerateDto getBoVue = this.generateGetBoVue();
 
     results.add(apiJs);
     results.add(indexVue);
@@ -172,6 +177,21 @@ public class Generator {
     }
     if (detailVue != null) {
       results.add(detailVue);
+    }
+    if (createVoVue != null) {
+      results.add(createVoVue);
+    }
+    if (queryVoVue != null) {
+      results.add(queryVoVue);
+    }
+    if (updateVoVue != null) {
+      results.add(updateVoVue);
+    }
+    if (queryBoVue != null) {
+      results.add(queryBoVue);
+    }
+    if (getBoVue != null) {
+      results.add(getBoVue);
     }
 
     // sql
@@ -421,12 +441,12 @@ public class Generator {
 
     ControllerTemplate template = this.getControllerTemplate();
 
-    String content = this.generate("api.js.ftl", template);
+    String content = this.generate("api.ts.ftl", template);
 
     return this.buildGenerateResult(
-        "vue" + File.separator + "src" + File.separator + "api" + File.separator + "modules"
-            + File.separator
-            + template.getModuleName(), template.getBizName() + ".js", content);
+        "vue" + File.separator + "src" + File.separator + "api" + File.separator
+            + template.getModuleName() + File.separator + template.getBizName(), "index.ts",
+        content);
   }
 
   /**
@@ -632,6 +652,115 @@ public class Generator {
   }
 
   /**
+   * 生成CreateVo.ts代码
+   *
+   * @return
+   */
+  public GenerateDto generateCreateVoVue() {
+
+    CreateTemplate template = this.getCreateTemplate();
+
+    if (template == null) {
+      return null;
+    }
+
+    String content = this.generate("createvo.ts.ftl", template);
+
+    return this.buildGenerateResult(
+        "vue" + File.separator + "src" + File.separator + "api" + File.separator
+            + template.getModuleName() + File.separator + template.getBizName() + File.separator
+            + "model", "create" + template.getClassName() + "Vo.ts",
+        content);
+  }
+
+  /**
+   * 生成QueryVo.ts代码
+   *
+   * @return
+   */
+  public GenerateDto generateQueryVoVue() {
+
+    QueryParamsTemplate template = this.getQueryParamsTemplate();
+    if (template == null) {
+      return null;
+    }
+
+    String content = this.generate("queryvo.ts.ftl", template);
+
+    return this.buildGenerateResult(
+        "vue" + File.separator + "src" + File.separator + "api" + File.separator
+            + template.getModuleName() + File.separator + template.getBizName() + File.separator
+            + "model", "query" + template.getClassName() + "Vo.ts",
+        content);
+  }
+
+  /**
+   * 生成UpdateVo.ts代码
+   *
+   * @return
+   */
+  public GenerateDto generateUpdateVoVue() {
+
+    UpdateTemplate template = this.getUpdateTemplate();
+
+    if (template == null) {
+      return null;
+    }
+
+    String content = this.generate("updatevo.ts.ftl", template);
+
+    return this.buildGenerateResult(
+        "vue" + File.separator + "src" + File.separator + "api" + File.separator
+            + template.getModuleName() + File.separator + template.getBizName() + File.separator
+            + "model", "update" + template.getClassName() + "Vo.ts",
+        content);
+  }
+
+  /**
+   * 生成QueryBo.ts代码
+   *
+   * @return
+   */
+  public GenerateDto generateQueryBoVue() {
+
+    QueryTemplate template = this.getQueryTemplate();
+
+    if (template == null) {
+      return null;
+    }
+
+    String content = this.generate("querybo.ts.ftl", template);
+
+    return this.buildGenerateResult(
+        "vue" + File.separator + "src" + File.separator + "api" + File.separator
+            + template.getModuleName() + File.separator + template.getBizName() + File.separator
+            + "model", "query" + template.getClassName() + "Bo.ts",
+        content);
+  }
+
+  /**
+   * 生成GetBo.ts代码
+   *
+   * @return
+   */
+  public GenerateDto generateGetBoVue() {
+
+    DetailTemplate template = this.getDetailTemplate();
+
+    if (template == null) {
+      return null;
+    }
+
+    String content = this.generate("getbo.ts.ftl", template);
+
+    return this.buildGenerateResult(
+        "vue" + File.separator + "src" + File.separator + "api" + File.separator
+            + template.getModuleName() + File.separator + template.getBizName() + File.separator
+            + "model", "get" + template.getClassName() + "Bo.ts",
+        content);
+  }
+
+  /**
    * Mapper.java模板数据
    *
    * @return
@@ -800,12 +929,14 @@ public class Generator {
         columnObj.setDataType(
             column.getEnumBack().substring(column.getEnumBack().lastIndexOf(".") + 1));
         columnObj.setFrontType(column.getEnumFront());
+        columnObj.setFrontDataType("number");
         columnObj.setViewType(column.getViewType().getCode());
         columnObj.setEnumCodeType(column.getDataType().getDesc());
         importPackages.add(column.getEnumBack());
         importPackages.add(IsEnum.class.getName());
       } else {
         columnObj.setDataType(column.getDataType().getDesc());
+        columnObj.setFrontDataType(column.getDataType().getFrontDesc());
         columnObj.setViewType(column.getViewType().getCode());
       }
       // 以下类型需要单独引包
@@ -880,7 +1011,6 @@ public class Generator {
     importPackages.add(TypeMismatch.class.getName());
     importPackages.add(BaseVo.class.getName());
 
-
     List<CreateTemplate.Column> columns = new ArrayList<>();
     for (DataEntityColumn column : targetColumns) {
       CreateTemplate.Column columnObj = new CreateTemplate.Column();
@@ -891,12 +1021,14 @@ public class Generator {
         columnObj.setDataType(
             column.getEnumBack().substring(column.getEnumBack().lastIndexOf(".") + 1));
         columnObj.setFrontType(column.getEnumFront());
+        columnObj.setFrontDataType("number");
         columnObj.setViewType(column.getViewType().getCode());
         importPackages.add(column.getEnumBack());
         importPackages.add(EnumUtil.class.getName());
       } else {
         columnObj.setDataType(column.getDataType().getDesc());
         columnObj.setViewType(column.getViewType().getCode());
+        columnObj.setFrontDataType(column.getDataType().getFrontDesc());
       }
       if (column.getViewType() == GenViewType.DATE_RANGE) {
         if (column.getDataType() == GenDataType.LOCAL_DATE_TIME) {
@@ -1036,10 +1168,12 @@ public class Generator {
             column.getEnumBack().substring(column.getEnumBack().lastIndexOf(".") + 1));
         columnObj.setFrontType(column.getEnumFront());
         columnObj.setViewType(column.getViewType().getCode());
+        columnObj.setFrontDataType("number");
         importPackages.add(column.getEnumBack());
         importPackages.add(EnumUtil.class.getName());
       } else {
         columnObj.setDataType(column.getDataType().getDesc());
+        columnObj.setFrontDataType(column.getDataType().getFrontDesc());
         columnObj.setViewType(column.getViewType().getCode());
       }
       if (column.getViewType() == GenViewType.DATE_RANGE) {
@@ -1135,6 +1269,7 @@ public class Generator {
       UpdateTemplate.Key key = new UpdateTemplate.Key();
       // 主键不会是枚举
       key.setDataType(t.getDataType().getDesc());
+      key.setFrontDataType(t.getDataType().getFrontDesc());
       key.setName(t.getColumnName());
       key.setNameProperty(
           t.getColumnName().substring(0, 1).toUpperCase() + t.getColumnName().substring(1));
@@ -1184,11 +1319,13 @@ public class Generator {
         columnObj.setDataType(
             column.getEnumBack().substring(column.getEnumBack().lastIndexOf(".") + 1));
         columnObj.setFrontType(column.getEnumFront());
+        columnObj.setFrontDataType("number");
         columnObj.setViewType(column.getViewType().getCode());
         importPackages.add(column.getEnumBack());
         importPackages.add(EnumUtil.class.getName());
       } else {
         columnObj.setDataType(column.getDataType().getDesc());
+        columnObj.setFrontDataType(column.getDataType().getFrontDesc());
         columnObj.setIsNumberType(GenDataType.isNumberType(column.getDataType()));
         columnObj.setViewType(column.getViewType().getCode());
         columnObj.setHasAvailableTag(
@@ -1241,6 +1378,7 @@ public class Generator {
       QueryTemplate.Key key = new QueryTemplate.Key();
       // 主键不会是枚举
       key.setDataType(t.getDataType().getDesc());
+      key.setFrontDataType(t.getDataType().getFrontDesc());
       key.setName(t.getColumnName());
       key.setNameProperty(
           t.getColumnName().substring(0, 1).toUpperCase() + t.getColumnName().substring(1));
@@ -1286,10 +1424,12 @@ public class Generator {
         columnObj.setDataType(
             column.getEnumBack().substring(column.getEnumBack().lastIndexOf(".") + 1));
         columnObj.setFrontType(column.getEnumFront());
+        columnObj.setFrontDataType("number");
         importPackages.add(column.getEnumBack());
         importPackages.add(EnumUtil.class.getName());
       } else {
         columnObj.setDataType(column.getDataType().getDesc());
+        columnObj.setFrontDataType(column.getDataType().getFrontDesc());
         columnObj.setHasAvailableTag(
             column.getViewType() == GenViewType.SELECT
                 && column.getDataType() == GenDataType.BOOLEAN
@@ -1342,6 +1482,7 @@ public class Generator {
       DetailTemplate.Key key = new DetailTemplate.Key();
       // 主键不会是枚举
       key.setDataType(t.getDataType().getDesc());
+      key.setFrontDataType(t.getDataType().getFrontDesc());
       key.setName(t.getColumnName());
       key.setNameProperty(
           t.getColumnName().substring(0, 1).toUpperCase() + t.getColumnName().substring(1));

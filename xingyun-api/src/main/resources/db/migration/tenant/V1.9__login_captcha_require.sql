@@ -1,0 +1,1 @@
+INSERT INTO `sys_parameter` (`id`, `pm_key`, `pm_value`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (13, 'login-captcha.enabled', 'true', '登录时是否需要验证码，true：需要；false：不需要。', '系统管理员', '1', '2024-10-16 21:39:32', '系统管理员', '1', '2024-10-16 21:39:32');

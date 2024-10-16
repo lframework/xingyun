@@ -27,6 +27,7 @@ import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.dto.GenerateCaptchaDto;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.service.SysParameterService;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.starter.web.utils.TenantUtil;
@@ -50,15 +51,23 @@ import com.lframework.xingyun.template.inner.events.LoginEvent;
 import com.lframework.xingyun.template.inner.events.LogoutEvent;
 import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
 import com.lframework.xingyun.template.inner.service.TenantService;
-import com.lframework.xingyun.template.inner.service.system.SysDataPermissionDataService;
-import com.lframework.xingyun.template.inner.service.system.SysMenuService;
-import com.lframework.xingyun.template.inner.service.system.SysUserDeptService;
-import com.lframework.xingyun.template.inner.service.system.SysUserRoleService;
-import com.lframework.xingyun.template.inner.service.system.SysUserService;
+import com.lframework.xingyun.template.inner.service.system.*;
+import com.lframework.xingyun.template.inner.vo.system.user.GetLoginCaptchaRequieVo;
 import com.lframework.xingyun.template.inner.vo.system.user.LoginVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.FastByteArrayOutputStream;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.imageio.ImageIO;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -67,16 +76,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.FastByteArrayOutputStream;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 默认用户认证Controller
@@ -133,6 +132,43 @@ public class AuthController extends DefaultBaseController {
 
   @Autowired
   private SysModuleTenantService sysModuleTenantService;
+
+  @Autowired
+  private SysParameterService sysParameterService;
+
+  /**
+   * 是否需要登录验证码
+   */
+  @ApiOperation(value = "是否需要登录验证码")
+  @OpenApi
+  @PostMapping("/auth/captcha/require")
+  public InvokeResult<Boolean> getLoginCaptchaRequire(@Valid GetLoginCaptchaRequieVo vo) {
+    String username = vo.getUsername();
+    String tenantId = null;
+    if (TenantUtil.enableTenant()) {
+      String[] tmpArr = username.split("@");
+      if (tmpArr.length <= 1) {
+        throw new DefaultClientException("用户名或密码错误！");
+      }
+
+      tenantId = tmpArr[0];
+
+      // 检查租户是否存在
+      Tenant tenant = tenantService.getById(tenantId);
+      if (tenant == null) {
+        throw new DefaultClientException("用户名或密码错误！");
+      }
+
+      if (!tenant.getAvailable()) {
+        throw new DefaultClientException("用户已停用，无法登录！");
+      }
+
+      TenantContextHolder.setTenantId(tenant.getId());
+    }
+
+    String loginCaptchaEnabled = sysParameterService.findByKey("login-captcha.enabled", "true");
+    return InvokeResultBuilder.success(Boolean.valueOf(loginCaptchaEnabled));
+  }
 
   /**
    * 获取登录验证码
@@ -199,9 +235,13 @@ public class AuthController extends DefaultBaseController {
 
     log.info("用户 {} {} 开始登录", tenantId, username);
 
-    String sn = vo.getSn();
-    String captcha = vo.getCaptcha();
-    captchaValidator.validate(sn, captcha);
+    String loginCaptchaEnabled = sysParameterService.findByKey("login-captcha.enabled", "true");
+    log.info("当前用户登录需要验证码 = {}", loginCaptchaEnabled);
+    if (Boolean.valueOf(loginCaptchaEnabled)) {
+      String sn = vo.getSn();
+      String captcha = vo.getCaptcha();
+      captchaValidator.validate(sn, captcha);
+    }
 
     this.checkUserLogin(tenantId == null ? null : Integer.valueOf(tenantId), username, password);
 

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
+import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
@@ -116,7 +117,7 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
         .set(Shop::getLat, vo.getLat() == null ? null : vo.getLat())
         .set(Shop::getAvailable, vo.getAvailable())
         .set(Shop::getDescription,
-            StringUtil.isBlank(vo.getDescription()) ? null : vo.getDescription())
+            StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .eq(Shop::getId, vo.getId());
 
     getBaseMapper().update(updateWrapper);

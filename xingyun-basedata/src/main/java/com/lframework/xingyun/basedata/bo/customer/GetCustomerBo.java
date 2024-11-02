@@ -34,9 +34,9 @@ public class GetCustomerBo extends BaseBo<Customer> {
     private String name;
 
     /**
-     * 助记码
+     * 简码
      */
-    @ApiModelProperty("助记码")
+    @ApiModelProperty("简码")
     private String mnemonicCode;
 
     /**

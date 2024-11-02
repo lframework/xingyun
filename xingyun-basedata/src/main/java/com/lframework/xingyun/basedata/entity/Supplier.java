@@ -40,7 +40,7 @@ public class Supplier extends BaseEntity implements BaseDto {
   private String name;
 
   /**
-   * 助记码
+   * 简码
    */
   private String mnemonicCode;
 

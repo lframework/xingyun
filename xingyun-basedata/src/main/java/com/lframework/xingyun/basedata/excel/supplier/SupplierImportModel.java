@@ -32,10 +32,10 @@ public class SupplierImportModel implements ExcelModel {
   private String name;
 
   /**
-   * 助记码
+   * 简码
    */
   @ExcelRequired
-  @ExcelProperty("助记码")
+  @ExcelProperty("简码")
   private String mnemonicCode;
 
   /**

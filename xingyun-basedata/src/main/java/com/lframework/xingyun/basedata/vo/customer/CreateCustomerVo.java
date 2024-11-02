@@ -32,10 +32,10 @@ public class CreateCustomerVo implements BaseVo, Serializable {
   private String name;
 
   /**
-   * 助记码
+   * 简码
    */
-  @ApiModelProperty(value = "助记码", required = true)
-  @NotBlank(message = "请输入助记码！")
+  @ApiModelProperty(value = "简码", required = true)
+  @NotBlank(message = "请输入简码！")
   private String mnemonicCode;
 
   /**

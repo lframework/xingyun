@@ -56,7 +56,7 @@ public class CustomerImportListener extends ExcelImportListener<CustomerImportMo
     }
     if (StringUtil.isBlank(data.getMnemonicCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“助记码”不能为空");
+          "第" + context.readRowHolder().getRowIndex() + "行“简码”不能为空");
     }
     if (StringUtil.isBlank(data.getSettleType())) {
       throw new DefaultClientException(

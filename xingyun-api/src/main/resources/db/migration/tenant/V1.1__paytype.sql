@@ -410,7 +410,7 @@ INSERT INTO `sys_data_permission_model_detail` VALUES (1, '编号', 1, '0,1,2,3,
 INSERT INTO `sys_data_permission_model_detail` VALUES (2, '名称', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'name', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` VALUES (3, '简称', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'short_name', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` VALUES (4, 'SKU', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'sku_code', NULL, NULL);
-INSERT INTO `sys_data_permission_model_detail` VALUES (5, '外部编号', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'external_code', NULL, NULL);
+INSERT INTO `sys_data_permission_model_detail` VALUES (5, '简码', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'external_code', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` VALUES (6, '品类编号', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'category', 'code', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` VALUES (7, '品类名称', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'category', 'name', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` VALUES (8, '品牌编号', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'brand', 'code', NULL, NULL);

@@ -44,9 +44,9 @@ public class ProductImportModel implements ExcelModel {
   private String skuCode;
 
   /**
-   * 外部编号
+   * 简码
    */
-  @ExcelProperty("外部编号")
+  @ExcelProperty("简码")
   private String externalCode;
 
   /**

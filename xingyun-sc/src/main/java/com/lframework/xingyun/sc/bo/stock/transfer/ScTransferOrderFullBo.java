@@ -213,9 +213,9 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
     private String skuCode;
 
     /**
-     * 外部编号
+     * 简码
      */
-    @ApiModelProperty("外部编号")
+    @ApiModelProperty("简码")
     private String externalCode;
 
     /**

@@ -86,7 +86,7 @@
             商品SKU编号
         </td>
         <td colspan="2" class="et2" x:str="" style="border-width: 1px; border-style: solid;">
-            商品外部编号
+            商品简码
         </td>
         <td class="et2" x:str="" style="border-width: 1px; border-style: solid;">
             采购价

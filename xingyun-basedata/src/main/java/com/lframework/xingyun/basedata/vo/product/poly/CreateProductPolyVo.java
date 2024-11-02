@@ -188,7 +188,7 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
     private String skuCode;
 
     /**
-     * 外部编号
+     * 简码
      */
     private String externalCode;
 

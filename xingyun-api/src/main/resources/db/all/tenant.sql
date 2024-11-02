@@ -181,7 +181,7 @@ CREATE TABLE `base_data_product` (
   `name` varchar(100) NOT NULL COMMENT '名称',
   `short_name` varchar(100) DEFAULT NULL COMMENT '简称',
   `sku_code` varchar(100) NOT NULL COMMENT 'SKU',
-  `external_code` varchar(100) DEFAULT NULL COMMENT '外部编号',
+  `external_code` varchar(100) DEFAULT NULL COMMENT '简码',
   `category_id` varchar(32) NOT NULL COMMENT '类目ID',
   `brand_id` varchar(32) NOT NULL COMMENT '品牌ID',
   `product_type` tinyint(3) NOT NULL DEFAULT '1' COMMENT '商品类型',
@@ -5396,7 +5396,7 @@ INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condi
 INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condition_type`, `input_type`, `table_name`, `column_name`, `enum_name`, `sql_value`) VALUES (2, '名称', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'name', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condition_type`, `input_type`, `table_name`, `column_name`, `enum_name`, `sql_value`) VALUES (3, '简称', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'short_name', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condition_type`, `input_type`, `table_name`, `column_name`, `enum_name`, `sql_value`) VALUES (4, 'SKU', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'sku_code', NULL, NULL);
-INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condition_type`, `input_type`, `table_name`, `column_name`, `enum_name`, `sql_value`) VALUES (5, '外部编号', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'external_code', NULL, NULL);
+INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condition_type`, `input_type`, `table_name`, `column_name`, `enum_name`, `sql_value`) VALUES (5, '简码', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'product', 'external_code', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condition_type`, `input_type`, `table_name`, `column_name`, `enum_name`, `sql_value`) VALUES (6, '品类编号', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'category', 'code', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condition_type`, `input_type`, `table_name`, `column_name`, `enum_name`, `sql_value`) VALUES (7, '品类名称', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'category', 'name', NULL, NULL);
 INSERT INTO `sys_data_permission_model_detail` (`id`, `name`, `model_id`, `condition_type`, `input_type`, `table_name`, `column_name`, `enum_name`, `sql_value`) VALUES (8, '品牌编号', 1, '0,1,2,3,4,5,6,7,8,9,10', 0, 'brand', 'code', NULL, NULL);

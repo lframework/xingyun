@@ -88,7 +88,7 @@ CREATE TABLE `base_data_product` (
   `name` varchar(100) NOT NULL COMMENT '名称',
   `short_name` varchar(100) DEFAULT NULL COMMENT '简称',
   `sku_code` varchar(100) NOT NULL COMMENT 'SKU',
-  `external_code` varchar(100) DEFAULT NULL COMMENT '外部编号',
+  `external_code` varchar(100) DEFAULT NULL COMMENT '简码',
   `category_id` varchar(32) NOT NULL COMMENT '类目ID',
   `brand_id` varchar(32) NOT NULL COMMENT '品牌ID',
   `tax_rate` decimal(16,2) NOT NULL COMMENT '进项税率（%）',

@@ -51,7 +51,7 @@ public class RetailProductDto implements BaseDto, Serializable {
   private String skuCode;
 
   /**
-   * 外部编号
+   * 简码
    */
   private String externalCode;
 

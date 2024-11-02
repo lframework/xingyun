@@ -19,6 +19,7 @@ import com.lframework.xingyun.common.bo.components.MapLocationBo;
 import com.lframework.xingyun.common.bo.components.OrderTimeLineBo;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
 import com.lframework.xingyun.core.service.OrderTimeLineService;
+import com.lframework.xingyun.template.core.service.GenerateCodeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -53,6 +55,9 @@ public class ComponentController extends DefaultBaseController {
 
   @Autowired
   private OrderTimeLineService orderTimeLineService;
+
+  @Autowired
+  private GenerateCodeService generateCodeService;
 
   @ApiOperation("查询导入Excel任务")
   @GetMapping("/import/task")
@@ -149,5 +154,11 @@ public class ComponentController extends DefaultBaseController {
     String url = UploadUtil.upload(file);
 
     return InvokeResultBuilder.success(url);
+  }
+
+  @ApiOperation("获取编号")
+  @GetMapping("/generate/code")
+  public InvokeResult<String> generateCode(@NotNull(message = "编号类型不能为空！") Integer type) {
+    return InvokeResultBuilder.success(generateCodeService.generate(type));
   }
 }

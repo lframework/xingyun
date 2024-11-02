@@ -49,7 +49,7 @@ UPDATE `sys_menu` SET `title` = '库存调整' WHERE `id` = '3000005003';
 UPDATE `sys_menu` SET `code` = '3000005002001', `name` = '', `title` = '新增库存调整原因', `icon` = NULL, `component_type` = 0, `component` = '', `request_param` = NULL, `parent_id` = '3000005002', `sys_module_id` = '10', `path` = '', `no_cache` = 0, `display` = 2, `hidden` = 0, `permission` = 'stock:adjust:reason:add', `is_special` = 1, `available` = 1, `description` = '', `create_by` = '系统管理员', `create_by_id` = '1', `create_time` = '2021-05-12 22:50:27', `update_by` = '系统管理员', `update_by_id` = '1', `update_time` = '2021-07-04 00:34:23' WHERE `id` = '3000005002001';
 UPDATE `sys_menu` SET `code` = '3000005002002', `name` = '', `title` = '修改库存调整原因', `icon` = NULL, `component_type` = 0, `component` = '', `request_param` = NULL, `parent_id` = '3000005002', `sys_module_id` = '10', `path` = '', `no_cache` = 0, `display` = 2, `hidden` = 0, `permission` = 'stock:adjust:reason:modify', `is_special` = 1, `available` = 1, `description` = '', `create_by` = '系统管理员', `create_by_id` = '1', `create_time` = '2021-05-12 22:50:27', `update_by` = '系统管理员', `update_by_id` = '1', `update_time` = '2021-07-04 00:34:23' WHERE `id` = '3000005002002';
 
-DELETE FROM `sys_menu` WHERE id IN ('3000005001', '3000005001001', '3000005001002', '3000005001003', '3000005001004', '3000005001005'，'1000003', '1000003001', '1000003002');
+DELETE FROM `sys_menu` WHERE id IN ('3000005001', '3000005001001', '3000005001002', '3000005001003', '3000005001004', '3000005001005', '1000003', '1000003001', '1000003002');
 DROP TABLE `tbl_stock_cost_adjust_sheet`;
 DROP TABLE `tbl_stock_cost_adjust_sheet_detail`;
 DROP TABLE sys_position;

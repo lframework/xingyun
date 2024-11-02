@@ -69,15 +69,15 @@ public class GetProductBo extends BaseBo<Product> {
   private String externalCode;
 
   /**
-   * 类目ID
+   * 分类ID
    */
-  @ApiModelProperty("类目ID")
+  @ApiModelProperty("分类ID")
   private String categoryId;
 
   /**
-   * 类目名称
+   * 分类名称
    */
-  @ApiModelProperty("类目名称")
+  @ApiModelProperty("分类名称")
   private String categoryName;
 
   /**

@@ -57,9 +57,9 @@ public class GetProductPropertyBo extends BaseBo<ProductProperty> {
   private Integer propertyType;
 
   /**
-   * 类目
+   * 分类
    */
-  @ApiModelProperty("类目")
+  @ApiModelProperty("分类")
   private List<String> categories;
 
   /**

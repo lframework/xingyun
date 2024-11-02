@@ -112,7 +112,7 @@ public interface StockAdjustSheetService extends BaseMpService<StockAdjustSheet>
   void batchApproveRefuse(BatchApproveRefuseStockAdjustSheetVo vo);
 
   /**
-   * 根据关键字查询库存成本调整单商品信息
+   * 根据关键字查询库存调整单商品信息
    *
    * @param pageIndex
    * @param pageSize
@@ -124,7 +124,7 @@ public interface StockAdjustSheetService extends BaseMpService<StockAdjustSheet>
       String scId, String condition);
 
   /**
-   * 查询库存成本调整单商品信息
+   * 查询库存调整单商品信息
    *
    * @param pageIndex
    * @param pageSize

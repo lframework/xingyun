@@ -283,9 +283,9 @@ public class GetRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
     private String spec;
 
     /**
-     * 类目名称
+     * 分类名称
      */
-    @ApiModelProperty("类目名称")
+    @ApiModelProperty("分类名称")
     private String categoryName;
 
     /**

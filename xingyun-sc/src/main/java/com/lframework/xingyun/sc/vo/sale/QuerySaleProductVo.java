@@ -24,9 +24,9 @@ public class QuerySaleProductVo extends PageVo {
   private String condition;
 
   /**
-   * 类目ID
+   * 分类ID
    */
-  @ApiModelProperty("类目ID")
+  @ApiModelProperty("分类ID")
   private String categoryId;
 
   /**

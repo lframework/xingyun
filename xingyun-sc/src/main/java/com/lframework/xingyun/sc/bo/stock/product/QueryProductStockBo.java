@@ -62,9 +62,9 @@ public class QueryProductStockBo extends BaseBo<ProductStock> {
   private String productName;
 
   /**
-   * 商品类目
+   * 商品分类
    */
-  @ApiModelProperty("商品类目")
+  @ApiModelProperty("商品分类")
   private String categoryName;
 
   /**

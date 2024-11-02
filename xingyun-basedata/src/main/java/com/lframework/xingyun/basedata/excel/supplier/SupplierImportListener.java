@@ -61,12 +61,12 @@ public class SupplierImportListener extends ExcelImportListener<SupplierImportMo
     }
     if (StringUtil.isBlank(data.getSettleType())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“结账方式”不能为空");
+          "第" + context.readRowHolder().getRowIndex() + "行“结算方式”不能为空");
     }
     SettleType settleType = EnumUtil.getByDesc(SettleType.class, data.getSettleType());
     if (settleType == null) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“结账方式”只能填写“"
+          "第" + context.readRowHolder().getRowIndex() + "行“结算方式”只能填写“"
               + CollectionUtil.join(
               EnumUtil.getDescs(SettleType.class), "、") + "”");
     }

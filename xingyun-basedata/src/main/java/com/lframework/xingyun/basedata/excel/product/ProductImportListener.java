@@ -89,7 +89,7 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
 
     if (StringUtil.isBlank(data.getCategoryCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“类目编号”不能为空");
+          "第" + context.readRowHolder().getRowIndex() + "行“分类编号”不能为空");
     }
 
     ProductCategoryService productCategoryService = ApplicationUtil.getBean(
@@ -99,7 +99,7 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
     ProductCategory productCategory = productCategoryService.getOne(queryProductCategoryWrapper);
     if (productCategory == null) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“类目编号”不存在，请检查");
+          "第" + context.readRowHolder().getRowIndex() + "行“分类编号”不存在，请检查");
     }
 
     if (StringUtil.isBlank(data.getBrandCode())) {

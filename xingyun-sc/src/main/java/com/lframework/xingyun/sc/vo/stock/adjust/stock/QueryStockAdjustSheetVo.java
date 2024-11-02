@@ -4,7 +4,7 @@ import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.components.validation.TypeMismatch;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.starter.web.vo.SortPageVo;
-import com.lframework.xingyun.sc.enums.StockCostAdjustSheetStatus;
+import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ public class QueryStockAdjustSheetVo extends SortPageVo implements BaseVo, Seria
    */
   @ApiModelProperty("状态")
   @TypeMismatch(message = "状态格式有误！")
-  @IsEnum(message = "状态格式有误！", enumClass = StockCostAdjustSheetStatus.class)
+  @IsEnum(message = "状态格式有误！", enumClass = StockAdjustSheetStatus.class)
   private Integer status;
 
   /**

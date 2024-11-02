@@ -86,14 +86,14 @@ public class CustomerImportModel implements ExcelModel {
   private String address;
 
   /**
-   * 结账方式
+   * 结算方式
    */
   @ExcelRequired
-  @ExcelProperty("结账方式")
+  @ExcelProperty("结算方式")
   private String settleType;
 
   /**
-   * 结账方式枚举
+   * 结算方式枚举
    */
   @ExcelIgnore
   private SettleType settleTypeEnum;

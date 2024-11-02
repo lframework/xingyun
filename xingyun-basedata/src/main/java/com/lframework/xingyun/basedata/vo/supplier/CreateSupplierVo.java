@@ -99,11 +99,11 @@ public class CreateSupplierVo implements BaseVo, Serializable {
   private Integer manageType;
 
   /**
-   * 结账方式
+   * 结算方式
    */
-  @ApiModelProperty(value = "结账方式", required = true)
-  @NotNull(message = "请选择结账方式！")
-  @IsEnum(message = "请选择结账方式！", enumClass = SettleType.class)
+  @ApiModelProperty(value = "结算方式", required = true)
+  @NotNull(message = "请选择结算方式！")
+  @IsEnum(message = "请选择结算方式！", enumClass = SettleType.class)
   private Integer settleType;
 
   /**

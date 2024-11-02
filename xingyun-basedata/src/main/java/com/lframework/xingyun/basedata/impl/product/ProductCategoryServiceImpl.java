@@ -58,7 +58,7 @@ public class ProductCategoryServiceImpl extends
     return getBaseMapper().selector(vo);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品类目，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品分类，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -85,7 +85,7 @@ public class ProductCategoryServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品类目，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品分类，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -112,7 +112,7 @@ public class ProductCategoryServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品分类，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductCategoryVo vo) {
@@ -131,12 +131,12 @@ public class ProductCategoryServiceImpl extends
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
-    //如果parentId不为空，查询上级类目是否存在
+    //如果parentId不为空，查询上级分类是否存在
     if (!StringUtil.isBlank(vo.getParentId())) {
       Wrapper<ProductCategory> checkParentWrapper = Wrappers.lambdaQuery(ProductCategory.class)
           .eq(ProductCategory::getId, vo.getParentId());
       if (getBaseMapper().selectCount(checkParentWrapper) == 0) {
-        throw new DefaultClientException("上级类目不存在，请检查！");
+        throw new DefaultClientException("上级分类不存在，请检查！");
       }
     }
 
@@ -161,14 +161,14 @@ public class ProductCategoryServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品类目，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品分类，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductCategoryVo vo) {
 
     ProductCategory data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
-      throw new DefaultClientException("类目不存在！");
+      throw new DefaultClientException("分类不存在！");
     }
 
     //查询Code是否重复

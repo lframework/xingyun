@@ -24,21 +24,21 @@ public interface ProductPropertyRelationService extends BaseMpService<ProductPro
   void setMultipleToSimple(String propertyId);
 
   /**
-   * 从通用改为指定类目
+   * 从通用改为指定分类
    *
    * @param propertyId
    */
   void setCommonToAppoint(String propertyId);
 
   /**
-   * 从指定类目改为通用
+   * 从指定分类改为通用
    *
    * @param propertyId
    */
   void setAppointToCommon(String propertyId);
 
   /**
-   * 修改指定类目的类目ID
+   * 修改指定分类的分类ID
    *
    * @param propertyId
    */

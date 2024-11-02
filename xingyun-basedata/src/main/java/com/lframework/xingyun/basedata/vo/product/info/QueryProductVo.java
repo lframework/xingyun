@@ -45,9 +45,9 @@ public class QueryProductVo extends SortPageVo implements BaseVo, Serializable {
   private String brandId;
 
   /**
-   * 类目ID
+   * 分类ID
    */
-  @ApiModelProperty("类目ID")
+  @ApiModelProperty("分类ID")
   private String categoryId;
 
   /**

@@ -13,7 +13,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.common.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.GenerateCodeService;
+import com.lframework.xingyun.template.core.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
@@ -65,7 +65,7 @@ public class StockAdjustSheetServiceImpl extends
     implements StockAdjustSheetService {
 
   @Autowired
-  private StockAdjustSheetDetailService stockCostAdjustSheetDetailService;
+  private StockAdjustSheetDetailService stockAdjustSheetDetailService;
 
   @Autowired
   private GenerateCodeService generateCodeService;
@@ -149,7 +149,7 @@ public class StockAdjustSheetServiceImpl extends
     Wrapper<StockAdjustSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
             StockAdjustSheetDetail.class)
         .eq(StockAdjustSheetDetail::getSheetId, data.getId());
-    stockCostAdjustSheetDetailService.remove(deleteDetailWrapper);
+    stockAdjustSheetDetailService.remove(deleteDetailWrapper);
 
     this.create(data, vo);
 
@@ -200,7 +200,7 @@ public class StockAdjustSheetServiceImpl extends
     Wrapper<StockAdjustSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
             StockAdjustSheetDetail.class)
         .eq(StockAdjustSheetDetail::getSheetId, id);
-    stockCostAdjustSheetDetailService.remove(deleteDetailWrapper);
+    stockAdjustSheetDetailService.remove(deleteDetailWrapper);
   }
 
   @OrderTimeLineLog(orderId = "#ids", delete = true)
@@ -264,7 +264,7 @@ public class StockAdjustSheetServiceImpl extends
             StockAdjustSheetDetail.class)
         .eq(StockAdjustSheetDetail::getSheetId, data.getId())
         .orderByAsc(StockAdjustSheetDetail::getOrderNo);
-    List<StockAdjustSheetDetail> details = stockCostAdjustSheetDetailService.list(
+    List<StockAdjustSheetDetail> details = stockAdjustSheetDetailService.list(
         queryDetailWrapper);
 
     for (StockAdjustSheetDetail detail : details) {
@@ -463,7 +463,7 @@ public class StockAdjustSheetServiceImpl extends
       detail.setOrderNo(orderNo++);
       productNum++;
 
-      stockCostAdjustSheetDetailService.save(detail);
+      stockAdjustSheetDetailService.save(detail);
     }
   }
 }

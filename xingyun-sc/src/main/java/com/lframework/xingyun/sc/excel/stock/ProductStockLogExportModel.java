@@ -49,9 +49,9 @@ public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implemen
   private String productName;
 
   /**
-   * 商品类目
+   * 商品分类
    */
-  @ExcelProperty("商品类目")
+  @ExcelProperty("商品分类")
   private String categoryName;
 
   /**

@@ -17,7 +17,7 @@ import org.apache.ibatis.annotations.Param;
 public interface ProductCategoryMapper extends BaseMapper<ProductCategory> {
 
   /**
-   * 查询全部类目信息
+   * 查询全部分类信息
    *
    * @return
    */

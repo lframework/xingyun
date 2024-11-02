@@ -199,9 +199,9 @@ public class BaseDataSelectorController extends DefaultBaseController {
   }
 
   /**
-   * 类目
+   * 分类
    */
-  @ApiOperation("类目")
+  @ApiOperation("分类")
   @GetMapping("/category")
   public InvokeResult<List<ProductCategorySelectorBo>> category(
       @Valid QueryProductCategorySelectorVo vo) {
@@ -216,9 +216,9 @@ public class BaseDataSelectorController extends DefaultBaseController {
   }
 
   /**
-   * 加载类目
+   * 加载分类
    */
-  @ApiOperation("加载类目")
+  @ApiOperation("加载分类")
   @PostMapping("/category/load")
   public InvokeResult<List<ProductCategorySelectorBo>> loadCustomList(
       @RequestBody(required = false) List<String> ids) {

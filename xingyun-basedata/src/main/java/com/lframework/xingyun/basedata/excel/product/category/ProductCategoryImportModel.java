@@ -30,13 +30,13 @@ public class ProductCategoryImportModel implements ExcelModel {
   private String name;
 
   /**
-   * 上级类目编号
+   * 上级分类编号
    */
-  @ExcelProperty("上级类目编号")
+  @ExcelProperty("上级分类编号")
   private String parentCode;
 
   /**
-   * 上级类目ID
+   * 上级分类ID
    */
   @ExcelIgnore
   private String parentId;

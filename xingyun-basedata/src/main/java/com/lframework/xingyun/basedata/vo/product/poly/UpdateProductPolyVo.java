@@ -47,10 +47,10 @@ public class UpdateProductPolyVo implements BaseVo, Serializable {
   private String shortName;
 
   /**
-   * 类目ID
+   * 分类ID
    */
-  @ApiModelProperty(value = "类目ID", required = true)
-  @NotBlank(message = "请选择商品类目！")
+  @ApiModelProperty(value = "分类ID", required = true)
+  @NotBlank(message = "请选择商品分类！")
   private String categoryId;
 
   /**

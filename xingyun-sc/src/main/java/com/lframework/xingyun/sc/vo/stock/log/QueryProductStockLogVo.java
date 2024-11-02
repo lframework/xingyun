@@ -31,9 +31,9 @@ public class QueryProductStockLogVo extends SortPageVo {
   private String productName;
 
   /**
-   * 商品类目ID
+   * 商品分类ID
    */
-  @ApiModelProperty("商品类目ID")
+  @ApiModelProperty("商品分类ID")
   private String categoryId;
 
   /**

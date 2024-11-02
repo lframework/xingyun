@@ -106,14 +106,14 @@ public class SupplierImportModel implements ExcelModel {
   private ManageType manageTypeEnum;
 
   /**
-   * 结账方式
+   * 结算方式
    */
   @ExcelRequired
-  @ExcelProperty(value = "结账方式")
+  @ExcelProperty(value = "结算方式")
   private String settleType;
 
   /**
-   * 结账方式枚举
+   * 结算方式枚举
    */
   @ExcelIgnore
   private SettleType settleTypeEnum;

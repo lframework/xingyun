@@ -183,10 +183,10 @@ public class ProductPropertyController extends DefaultBaseController {
    * 属性模型
    */
   @ApiOperation("属性模型")
-  @ApiImplicitParam(value = "类目ID", name = "categoryId", paramType = "query", required = true)
+  @ApiImplicitParam(value = "分类ID", name = "categoryId", paramType = "query", required = true)
   @GetMapping("/modelor/category")
   public InvokeResult<List<ProductPropertyModelorBo>> getModelorByCategory(
-      @NotBlank(message = "类目ID不能为空！") String categoryId) {
+      @NotBlank(message = "分类ID不能为空！") String categoryId) {
 
     List<ProductPropertyModelorDto> datas = productPropertyService.getModelorByCategoryId(
         categoryId);

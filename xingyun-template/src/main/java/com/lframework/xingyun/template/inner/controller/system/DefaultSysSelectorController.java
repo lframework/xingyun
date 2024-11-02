@@ -2,49 +2,45 @@ package com.lframework.xingyun.template.inner.controller.system;
 
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.inner.bo.system.dept.SysDeptSelectorBo;
-import com.lframework.xingyun.template.inner.bo.system.dic.SysDataDicSelectorBo;
-import com.lframework.xingyun.template.inner.bo.system.menu.SysMenuSelectorBo;
-import com.lframework.xingyun.template.inner.bo.system.open.SysOpenDomainSelectorBo;
-import com.lframework.xingyun.template.inner.bo.system.position.SysPositionSelectorBo;
-import com.lframework.xingyun.template.inner.bo.system.role.SysRoleSelectorBo;
-import com.lframework.xingyun.template.inner.bo.system.tenant.TenantSelectorBo;
-import com.lframework.xingyun.template.inner.bo.system.user.SysUserSelectorBo;
-import com.lframework.xingyun.template.inner.entity.SysDept;
-import com.lframework.xingyun.template.inner.entity.SysMenu;
-import com.lframework.xingyun.template.inner.entity.SysPosition;
-import com.lframework.xingyun.template.inner.entity.SysRole;
-import com.lframework.xingyun.template.core.entity.SysUser;
-import com.lframework.xingyun.template.inner.entity.SysDataDic;
-import com.lframework.xingyun.template.inner.entity.SysDataDicCategory;
-import com.lframework.xingyun.template.inner.entity.SysOpenDomain;
-import com.lframework.xingyun.template.inner.entity.Tenant;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
-import com.lframework.xingyun.template.inner.service.system.SysDataDicService;
-import com.lframework.xingyun.template.inner.service.system.SysMenuService;
-import com.lframework.xingyun.template.inner.service.system.SysPositionService;
-import com.lframework.xingyun.template.inner.service.system.SysRoleService;
-import com.lframework.xingyun.template.inner.vo.system.dic.SysDataDicSelectorVo;
-import com.lframework.xingyun.template.inner.vo.system.dic.category.SysDataDicCategorySelectorVo;
-import com.lframework.xingyun.template.inner.vo.system.menu.SysMenuSelectorVo;
-import com.lframework.xingyun.template.inner.vo.system.position.SysPositionSelectorVo;
-import com.lframework.xingyun.template.inner.vo.system.tenant.TenantSelectorVo;
-import com.lframework.xingyun.template.inner.service.TenantService;
-import com.lframework.xingyun.template.inner.service.system.SysDataDicCategoryService;
-import com.lframework.xingyun.template.inner.service.system.SysDeptService;
-import com.lframework.xingyun.template.inner.service.system.SysOpenDomainService;
-import com.lframework.xingyun.template.inner.service.system.SysUserService;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.template.inner.vo.system.open.SysOpenDomainSelectorVo;
-import com.lframework.xingyun.template.inner.vo.system.role.SysRoleSelectorVo;
-import com.lframework.xingyun.template.inner.vo.system.user.SysUserSelectorVo;
-import com.lframework.xingyun.template.inner.bo.system.dic.category.SysDataDicCategorySelectorBo;
 import com.lframework.starter.web.common.tenant.TenantContextHolder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.utils.TenantUtil;
+import com.lframework.xingyun.template.core.entity.SysUser;
+import com.lframework.xingyun.template.inner.bo.system.dept.SysDeptSelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.dic.SysDataDicSelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.dic.category.SysDataDicCategorySelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.menu.SysMenuSelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.open.SysOpenDomainSelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.role.SysRoleSelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.tenant.TenantSelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.user.SysUserSelectorBo;
+import com.lframework.xingyun.template.inner.entity.SysDataDic;
+import com.lframework.xingyun.template.inner.entity.SysDataDicCategory;
+import com.lframework.xingyun.template.inner.entity.SysDept;
+import com.lframework.xingyun.template.inner.entity.SysMenu;
+import com.lframework.xingyun.template.inner.entity.SysOpenDomain;
+import com.lframework.xingyun.template.inner.entity.SysRole;
+import com.lframework.xingyun.template.inner.entity.Tenant;
+import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
+import com.lframework.xingyun.template.inner.service.TenantService;
+import com.lframework.xingyun.template.inner.service.system.SysDataDicCategoryService;
+import com.lframework.xingyun.template.inner.service.system.SysDataDicService;
+import com.lframework.xingyun.template.inner.service.system.SysDeptService;
+import com.lframework.xingyun.template.inner.service.system.SysMenuService;
+import com.lframework.xingyun.template.inner.service.system.SysOpenDomainService;
+import com.lframework.xingyun.template.inner.service.system.SysRoleService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
+import com.lframework.xingyun.template.inner.vo.system.dic.SysDataDicSelectorVo;
+import com.lframework.xingyun.template.inner.vo.system.dic.category.SysDataDicCategorySelectorVo;
+import com.lframework.xingyun.template.inner.vo.system.menu.SysMenuSelectorVo;
+import com.lframework.xingyun.template.inner.vo.system.open.SysOpenDomainSelectorVo;
+import com.lframework.xingyun.template.inner.vo.system.role.SysRoleSelectorVo;
+import com.lframework.xingyun.template.inner.vo.system.tenant.TenantSelectorVo;
+import com.lframework.xingyun.template.inner.vo.system.user.SysUserSelectorVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -78,9 +74,6 @@ public class DefaultSysSelectorController extends DefaultBaseController {
 
   @Autowired
   private SysDeptService sysDeptService;
-
-  @Autowired
-  private SysPositionService sysPositionService;
 
   @Autowired
   private SysRoleService sysRoleService;
@@ -244,46 +237,6 @@ public class DefaultSysSelectorController extends DefaultBaseController {
         .filter(Objects::nonNull).collect(Collectors.toList());
     List<SysUserSelectorBo> results = datas.stream()
         .map(SysUserSelectorBo::new)
-        .collect(
-            Collectors.toList());
-
-    return InvokeResultBuilder.success(results);
-  }
-
-  @ApiOperation("岗位")
-  @GetMapping("/position")
-  public InvokeResult<PageResult<SysPositionSelectorBo>> position(@Valid SysPositionSelectorVo vo) {
-
-    PageResult<SysPosition> pageResult = sysPositionService.selector(getPageIndex(vo),
-        getPageSize(vo),
-        vo);
-    List<SysPosition> datas = pageResult.getDatas();
-    List<SysPositionSelectorBo> results = null;
-
-    if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(SysPositionSelectorBo::new).collect(Collectors.toList());
-    }
-
-    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
-  }
-
-  /**
-   * 加载岗位
-   */
-  @ApiOperation("加载岗位")
-  @PostMapping("/position/load")
-  public InvokeResult<List<SysPositionSelectorBo>> loadPosition(
-      @RequestBody(required = false) List<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return InvokeResultBuilder.success(CollectionUtil.emptyList());
-    }
-
-    List<SysPosition> datas = ids.stream().filter(StringUtil::isNotBlank)
-        .map(t -> sysPositionService.findById(t))
-        .filter(Objects::nonNull).collect(Collectors.toList());
-    List<SysPositionSelectorBo> results = datas.stream()
-        .map(SysPositionSelectorBo::new)
         .collect(
             Collectors.toList());
 

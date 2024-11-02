@@ -4,21 +4,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.inner.entity.SysDept;
-import com.lframework.xingyun.template.inner.entity.SysPosition;
-import com.lframework.xingyun.template.inner.entity.SysRole;
-import com.lframework.xingyun.template.core.entity.SysUser;
-import com.lframework.xingyun.template.inner.entity.SysUserDept;
-import com.lframework.xingyun.template.inner.entity.SysUserPosition;
-import com.lframework.xingyun.template.inner.entity.SysUserRole;
-import com.lframework.xingyun.template.inner.service.system.SysDeptService;
-import com.lframework.xingyun.template.inner.service.system.SysPositionService;
-import com.lframework.xingyun.template.inner.service.system.SysRoleService;
-import com.lframework.xingyun.template.inner.service.system.SysUserDeptService;
-import com.lframework.xingyun.template.inner.service.system.SysUserPositionService;
-import com.lframework.xingyun.template.inner.service.system.SysUserRoleService;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.xingyun.template.core.entity.SysUser;
+import com.lframework.xingyun.template.inner.entity.SysDept;
+import com.lframework.xingyun.template.inner.entity.SysRole;
+import com.lframework.xingyun.template.inner.entity.SysUserDept;
+import com.lframework.xingyun.template.inner.entity.SysUserRole;
+import com.lframework.xingyun.template.inner.service.system.SysDeptService;
+import com.lframework.xingyun.template.inner.service.system.SysRoleService;
+import com.lframework.xingyun.template.inner.service.system.SysUserDeptService;
+import com.lframework.xingyun.template.inner.service.system.SysUserRoleService;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,12 +41,6 @@ public class QuerySysUserBo extends BaseBo<SysUser> {
    */
   @ApiModelProperty("姓名")
   private String name;
-
-  /**
-   * 岗位名称
-   */
-  @ApiModelProperty("岗位名称")
-  private String positionName;
 
   /**
    * 部门名称
@@ -143,21 +133,6 @@ public class QuerySysUserBo extends BaseBo<SysUser> {
 
   @Override
   protected void afterInit(SysUser dto) {
-
-    SysUserPositionService sysUserPositionService = ApplicationUtil.getBean(
-        SysUserPositionService.class);
-    List<SysUserPosition> userPositions = sysUserPositionService.getByUserId(dto.getId());
-    if (!CollectionUtil.isEmpty(userPositions)) {
-      SysPositionService sysPositionService = ApplicationUtil.getBean(SysPositionService.class);
-      List<String> positionNames = new ArrayList<>(userPositions.size());
-      for (SysUserPosition userPosition : userPositions) {
-        SysPosition position = sysPositionService.findById(userPosition.getPositionId());
-        positionNames.add(position.getName());
-      }
-
-      this.positionName = StringUtil.join(StringPool.STR_SPLIT_CN, positionNames);
-    }
-
     SysUserDeptService sysUserDeptService = ApplicationUtil.getBean(SysUserDeptService.class);
     List<SysUserDept> userDepts = sysUserDeptService.getByUserId(dto.getId());
     if (!CollectionUtil.isEmpty(userDepts)) {

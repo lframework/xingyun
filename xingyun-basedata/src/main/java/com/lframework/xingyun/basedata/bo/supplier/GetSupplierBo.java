@@ -100,9 +100,9 @@ public class GetSupplierBo extends BaseBo<Supplier> {
     private Integer manageType;
 
     /**
-     * 结账方式
+     * 结算方式
      */
-    @ApiModelProperty("结账方式")
+    @ApiModelProperty("结算方式")
     private Integer settleType;
 
     /**

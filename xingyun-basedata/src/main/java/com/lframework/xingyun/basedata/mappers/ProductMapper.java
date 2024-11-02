@@ -79,7 +79,7 @@ public interface ProductMapper extends BaseMapper<Product> {
   List<String> getIdNotInProductProperty(String propertyId);
 
   /**
-   * 根据类目ID查询
+   * 根据分类ID查询
    *
    * @param categoryId
    * @return
@@ -87,7 +87,7 @@ public interface ProductMapper extends BaseMapper<Product> {
   List<String> getIdByCategoryId(String categoryId);
 
   /**
-   * 根据类目ID查询
+   * 根据分类ID查询
    *
    * @param categoryIds
    * @return

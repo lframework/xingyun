@@ -3,11 +3,9 @@ package com.lframework.xingyun.sc.service.stock;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustDiffDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
-import com.lframework.xingyun.sc.vo.stock.StockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import java.util.List;
 
@@ -63,11 +61,4 @@ public interface ProductStockService extends BaseMpService<ProductStock> {
    * @param vo
    */
   ProductStockChangeDto subStock(SubProductStockVo vo);
-
-  /**
-   * 库存成本调整
-   *
-   * @param vo
-   */
-  StockCostAdjustDiffDto stockCostAdjust(StockCostAdjustVo vo);
 }

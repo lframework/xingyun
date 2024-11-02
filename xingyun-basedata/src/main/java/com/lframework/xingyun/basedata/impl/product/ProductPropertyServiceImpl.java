@@ -128,7 +128,7 @@ public class ProductPropertyServiceImpl extends
       return CollectionUtil.emptyList();
     }
 
-    //先整理categoryId，因为可能父级类目和子级类目全传过来了
+    //先整理categoryId，因为可能父级分类和子级分类全传过来了
     Set<String> childCategoryIds = new HashSet<>();
 
     for (String categoryId : categoryIds) {
@@ -165,15 +165,15 @@ public class ProductPropertyServiceImpl extends
     }
 
     if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
-      //如果是指定类目
+      //如果是指定分类
       if (CollectionUtil.isEmpty(vo.getCategoryIds())) {
-        throw new InputErrorException("请选择商品类目！");
+        throw new InputErrorException("请选择商品分类！");
       }
 
       for (String categoryId : vo.getCategoryIds()) {
         ProductCategory productCategory = productCategoryService.findById(categoryId);
         if (productCategory == null) {
-          throw new InputErrorException("商品类目数据有误，请检查！");
+          throw new InputErrorException("商品分类数据有误，请检查！");
         }
       }
 
@@ -271,15 +271,15 @@ public class ProductPropertyServiceImpl extends
     List<ProductCategoryProperty> oldProductCategoryPropertyList = new ArrayList<>();
 
     if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
-      //如果是指定类目
+      //如果是指定分类
       if (CollectionUtil.isEmpty(vo.getCategoryIds())) {
-        throw new InputErrorException("请选择商品类目！");
+        throw new InputErrorException("请选择商品分类！");
       }
 
       for (String categoryId : vo.getCategoryIds()) {
         ProductCategory productCategory = productCategoryService.findById(categoryId);
         if (productCategory == null) {
-          throw new InputErrorException("商品类目数据有误，请检查！");
+          throw new InputErrorException("商品分类数据有误，请检查！");
         }
       }
 
@@ -326,12 +326,12 @@ public class ProductPropertyServiceImpl extends
       if (data.getPropertyType() == PropertyType.COMMON
           && vo.getPropertyType() == PropertyType.APPOINT.getCode()
           .intValue()) {
-        //从通用改成指定类目
+        //从通用改成指定分类
         productPropertyRelationService.setCommonToAppoint(data.getId());
 
       } else if (data.getPropertyType() == PropertyType.APPOINT
           && vo.getPropertyType() == PropertyType.COMMON.getCode().intValue()) {
-        //从指定类目改成通用
+        //从指定分类改成通用
         productPropertyRelationService.setAppointToCommon(data.getId());
       } else if (data.getPropertyType() == PropertyType.APPOINT
           && vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
@@ -340,7 +340,7 @@ public class ProductPropertyServiceImpl extends
 
         boolean isUpdateCategory = CollectionUtil.isEqualList(oldCategoryIds, vo.getCategoryIds());
         if (isUpdateCategory) {
-          //更改了类目ID
+          //更改了分类ID
           productPropertyRelationService.updateAppointCategoryId(data.getId());
         }
       }

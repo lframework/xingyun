@@ -4,7 +4,6 @@ import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
-import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
 import java.util.List;
@@ -38,11 +37,4 @@ public interface ProductStockLogService extends BaseMpService<ProductStockLog> {
    * 添加出库记录
    */
   void addLogWithSubStock(AddLogWithSubStockVo vo);
-
-  /**
-   * 添加库存成本调整记录
-   *
-   * @param vo
-   */
-  void addLogWithStockCostAdjust(AddLogWithStockCostAdjustVo vo);
 }

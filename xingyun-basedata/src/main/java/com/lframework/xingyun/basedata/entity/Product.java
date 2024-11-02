@@ -57,7 +57,7 @@ public class Product extends BaseEntity implements BaseDto {
   private String externalCode;
 
   /**
-   * 类目ID
+   * 分类ID
    */
   private String categoryId;
 

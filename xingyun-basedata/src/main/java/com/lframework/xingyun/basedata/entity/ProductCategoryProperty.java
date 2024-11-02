@@ -30,7 +30,7 @@ public class ProductCategoryProperty extends BaseEntity implements BaseDto {
   private String propertyId;
 
   /**
-   * 商品类目ID
+   * 商品分类ID
    */
   private String categoryId;
 }

@@ -18,7 +18,7 @@ import lombok.Data;
 
 /**
  * <p>
- * 库存成本调整单 QueryBo
+ * 库存调整单 QueryBo
  * </p>
  *
  * @author zmj

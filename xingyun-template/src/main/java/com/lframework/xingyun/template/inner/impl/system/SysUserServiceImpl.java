@@ -12,31 +12,27 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.components.security.PasswordEncoderWrapper;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.components.code.GenerateCodeType;
-import com.lframework.starter.web.components.generator.impl.AbstractFlowGenerator;
-import com.lframework.starter.web.components.security.PasswordEncoderWrapper;
-import com.lframework.xingyun.template.core.enums.Gender;
-import com.lframework.xingyun.template.inner.dto.UserInfoDto;
-import com.lframework.starter.web.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.template.core.annotations.OpLog;
 import com.lframework.xingyun.template.core.entity.SysUser;
 import com.lframework.xingyun.template.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.template.core.enums.Gender;
+import com.lframework.xingyun.template.core.service.GenerateCodeService;
 import com.lframework.xingyun.template.core.service.UserService;
 import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.xingyun.template.inner.dto.UserInfoDto;
 import com.lframework.xingyun.template.inner.events.UpdateUserEvent;
-import com.lframework.xingyun.template.inner.vo.system.dept.SysUserDeptSettingVo;
-import com.lframework.xingyun.template.inner.vo.system.position.SysUserPositionSettingVo;
 import com.lframework.xingyun.template.inner.mappers.system.SysUserMapper;
 import com.lframework.xingyun.template.inner.service.system.SysUserDeptService;
-import com.lframework.xingyun.template.inner.service.system.SysUserPositionService;
 import com.lframework.xingyun.template.inner.service.system.SysUserRoleService;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
+import com.lframework.xingyun.template.inner.vo.system.dept.SysUserDeptSettingVo;
 import com.lframework.xingyun.template.inner.vo.system.user.CreateSysUserVo;
 import com.lframework.xingyun.template.inner.vo.system.user.QuerySysUserVo;
 import com.lframework.xingyun.template.inner.vo.system.user.RegistUserVo;
@@ -51,7 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,9 +56,6 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
 
   @Autowired
   private PasswordEncoderWrapper encoderWrapper;
-
-  @Autowired
-  private SysUserPositionService sysUserPositionService;
 
   @Autowired
   private SysUserDeptService sysUserDeptService;
@@ -76,6 +68,8 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
 
   @Autowired
   private UserService userService;
+
+  private static final Integer CODE_KEY = 1;
 
   @Override
   public PageResult<SysUser> query(Integer pageIndex, Integer pageSize,
@@ -135,11 +129,6 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
 
     SysUser record = this.doCreate(vo);
 
-    SysUserPositionSettingVo positionSettingVo = new SysUserPositionSettingVo();
-    positionSettingVo.setUserId(record.getId());
-    positionSettingVo.setPositionIds(vo.getPositionIds());
-    sysUserPositionService.setting(positionSettingVo);
-
     SysUserDeptSettingVo deptSettingVo = new SysUserDeptSettingVo();
     deptSettingVo.setUserId(record.getId());
     deptSettingVo.setDeptIds(vo.getDeptIds());
@@ -180,12 +169,6 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
     }
 
     this.doUpdate(vo);
-
-    SysUserPositionSettingVo positionSettingVo = new SysUserPositionSettingVo();
-    positionSettingVo.setUserId(vo.getId());
-    positionSettingVo.setPositionIds(vo.getPositionIds());
-
-    sysUserPositionService.setting(positionSettingVo);
 
     SysUserDeptSettingVo deptSettingVo = new SysUserDeptSettingVo();
     deptSettingVo.setUserId(vo.getId());
@@ -339,7 +322,7 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
 
     SysUser record = new SysUser();
     record.setId(IdUtil.getId());
-    record.setCode(generateCodeService.generate(new UserCodeType()));
+    record.setCode(generateCodeService.generate(CODE_KEY));
     record.setName(vo.getName());
     record.setUsername(vo.getUsername());
     record.setPassword(encoderWrapper.getEncoder().encode(vo.getPassword()));
@@ -438,31 +421,5 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
 
     SysUserService thisService = getThis(this.getClass());
     thisService.cleanCacheByKey(event.getId());
-  }
-
-  public static class UserCodeType implements GenerateCodeType {
-
-  }
-
-  @Component
-  public static class UserCodeGenerator extends AbstractFlowGenerator {
-
-    @Override
-    public GenerateCodeType getType() {
-
-      return new UserCodeType();
-    }
-
-    @Override
-    protected int getCodeLength() {
-
-      return 5;
-    }
-
-    @Override
-    protected String getPreffix() {
-
-      return "R";
-    }
   }
 }

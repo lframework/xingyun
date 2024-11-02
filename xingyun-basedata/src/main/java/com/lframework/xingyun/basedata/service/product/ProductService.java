@@ -59,7 +59,7 @@ public interface ProductService extends BaseMpService<Product> {
   List<String> getIdNotInProductProperty(String propertyId);
 
   /**
-   * 根据类目ID查询
+   * 根据分类ID查询
    *
    * @param categoryId
    * @return
@@ -96,7 +96,7 @@ public interface ProductService extends BaseMpService<Product> {
   void update(UpdateProductVo vo);
 
   /**
-   * 根据类目ID查询
+   * 根据分类ID查询
    *
    * @param categoryIds
    * @return

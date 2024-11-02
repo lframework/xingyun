@@ -64,9 +64,9 @@ public class CreateProductPropertyVo implements BaseVo, Serializable {
   private Integer propertyType;
 
   /**
-   * 类目ID
+   * 分类ID
    */
-  @ApiModelProperty("类目ID")
+  @ApiModelProperty("分类ID")
   private List<String> categoryIds;
 
   /**

@@ -31,12 +31,6 @@ public class QuerySysUserVo extends SortPageVo implements BaseVo, Serializable {
   private String name;
 
   /**
-   * 岗位ID
-   */
-  @ApiModelProperty("岗位ID")
-  private String positionId;
-
-  /**
    * 部门ID
    */
   @ApiModelProperty("部门ID")

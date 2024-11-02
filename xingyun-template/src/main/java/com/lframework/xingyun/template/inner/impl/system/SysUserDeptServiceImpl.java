@@ -23,7 +23,7 @@ public class SysUserDeptServiceImpl extends
     BaseMpServiceImpl<SysUserDeptMapper, SysUserDept> implements SysUserDeptService {
 
   @OpLog(type = DefaultOpLogType.SYSTEM, name = "用户设置部门，用户ID：{}，部门ID：{}", params = {"#vo.userId",
-      "#vo.positionId"})
+      "#vo.deptIds"}, loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void setting(SysUserDeptSettingVo vo) {

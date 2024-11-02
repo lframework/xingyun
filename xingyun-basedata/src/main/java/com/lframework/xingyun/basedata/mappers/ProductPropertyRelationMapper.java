@@ -33,7 +33,7 @@ public interface ProductPropertyRelationMapper extends BaseMapper<ProductPropert
     List<ProductPropertyRelationDto> getByPropertyId(String propertyId);
 
     /**
-     * 将通用更改为指定类目
+     * 将通用更改为指定分类
      *
      * @param propertyId
      * @param categoryId

@@ -90,7 +90,7 @@ public class Supplier extends BaseEntity implements BaseDto {
   private ManageType manageType;
 
   /**
-   * 结账方式
+   * 结算方式
    */
   private SettleType settleType;
 

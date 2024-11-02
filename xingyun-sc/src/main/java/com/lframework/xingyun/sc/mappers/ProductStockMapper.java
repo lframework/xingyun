@@ -93,14 +93,4 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
       @Param("taxAmount") BigDecimal taxAmount,
       @Param("oriStockNum") Integer oriStockNum, @Param("oriTaxAmount") BigDecimal oriTaxAmount,
       @Param("reCalcCostPrice") boolean reCalcCostPrice);
-
-  /**
-   * 库存成本调整
-   *
-   * @param productId
-   * @param scId
-   * @param taxPrice
-   */
-  void stockCostAdjust(@Param("productId") String productId, @Param("scId") String scId,
-      @Param("taxPrice") BigDecimal taxPrice);
 }

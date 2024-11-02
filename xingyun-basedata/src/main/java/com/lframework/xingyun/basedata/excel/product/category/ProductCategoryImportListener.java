@@ -58,11 +58,11 @@ public class ProductCategoryImportListener extends ExcelImportListener<ProductCa
         // 检查是不是新导入的
         if (this.datas.stream().noneMatch(t -> t.getCode().equals(data.getParentCode()))) {
           throw new DefaultClientException(
-              "第" + context.readRowHolder().getRowIndex() + "行“上级类目编号”不存在");
+              "第" + context.readRowHolder().getRowIndex() + "行“上级分类编号”不存在");
         }
       }
 
-      // 不允许改变上级类目
+      // 不允许改变上级分类
       Wrapper<ProductCategory> queryWrapper = Wrappers.lambdaQuery(ProductCategory.class)
           .eq(ProductCategory::getCode, data.getCode());
       ProductCategory productCategory = productCategoryService.getOne(queryWrapper);
@@ -72,7 +72,7 @@ public class ProductCategoryImportListener extends ExcelImportListener<ProductCa
         if (parentCategory == null || !parentCategory.getCode().equals(data.getParentCode())) {
           throw new DefaultClientException(
               "第" + context.readRowHolder().getRowIndex()
-                  + "行“上级类目编号”有误，不允许修改类目的归属关系");
+                  + "行“上级分类编号”有误，不允许修改分类的归属关系");
         }
       }
     }
@@ -106,18 +106,18 @@ public class ProductCategoryImportListener extends ExcelImportListener<ProductCa
             .eq(ProductCategory::getCode, data.getParentCode());
         ProductCategory parent = productCategoryService.getOne(queryParentWrapper);
         if (parent == null) {
-          throw new DefaultClientException("第" + (i + 1) + "行“上级类目编号”不存在");
+          throw new DefaultClientException("第" + (i + 1) + "行“上级分类编号”不存在");
         }
         if (record.getId().equals(parent.getId())) {
           throw new DefaultClientException(
-              "第" + (i + 1) + "行“上级类目编号”与“编号”相同，请重新输入");
+              "第" + (i + 1) + "行“上级分类编号”与“编号”相同，请重新输入");
         }
         record.setParentId(parent.getId());
       }
       record.setDescription(
           StringUtil.isBlank(data.getDescription()) ? StringPool.EMPTY_STR : data.getDescription());
 
-      //这里要与上级类目的状态保持一致
+      //这里要与上级分类的状态保持一致
       Boolean available = Boolean.TRUE;
       if (StringUtil.isNotBlank(record.getParentId())) {
         ProductCategory parentCategory = productCategoryService.findById(record.getParentId());

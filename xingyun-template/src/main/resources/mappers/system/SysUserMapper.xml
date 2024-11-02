@@ -15,9 +15,6 @@
                 <if test="vo.code != null and vo.code != ''">
                     AND u.code = #{vo.code}
                 </if>
-                <if test="vo.positionId != null and vo.positionId != ''">
-                    AND u.id IN (SELECT user_id FROM sys_user_position WHERE position_id = #{vo.positionId})
-                </if>
                 <if test="vo.deptId != null and vo.deptId != ''">
                     AND u.id IN (SELECT user_id FROM sys_user_dept WHERE dept_id = #{vo.deptId})
                 </if>

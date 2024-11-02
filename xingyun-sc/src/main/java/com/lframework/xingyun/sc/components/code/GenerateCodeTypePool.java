@@ -1,81 +1,74 @@
 package com.lframework.xingyun.sc.components.code;
 
-import com.lframework.starter.web.components.code.GenerateCodeType;
-
 public interface GenerateCodeTypePool {
 
   /**
    * 采购订单
    */
-  GenerateCodeType PURCHASE_ORDER = GenerateCodeType.FLOW;
+  Integer PURCHASE_ORDER = 200;
 
   /**
    * 采购收货单
    */
-  GenerateCodeType RECEIVE_SHEET = GenerateCodeType.FLOW;
+  Integer RECEIVE_SHEET = 201;
 
   /**
    * 采购退单
    */
-  GenerateCodeType PURCHASE_RETURN = GenerateCodeType.FLOW;
+  Integer PURCHASE_RETURN = 202;
 
   /**
    * 销售订单
    */
-  GenerateCodeType SALE_ORDER = GenerateCodeType.FLOW;
+  Integer SALE_ORDER = 203;
 
   /**
    * 销售出库单
    */
-  GenerateCodeType SALE_OUT_SHEET = GenerateCodeType.FLOW;
+  Integer SALE_OUT_SHEET = 204;
 
   /**
    * 销售退货单
    */
-  GenerateCodeType SALE_RETURN = GenerateCodeType.FLOW;
+  Integer SALE_RETURN = 205;
 
   /**
    * 零售出库单
    */
-  GenerateCodeType RETAIL_OUT_SHEET = GenerateCodeType.FLOW;
+  Integer RETAIL_OUT_SHEET = 206;
 
   /**
    * 零售退货单
    */
-  GenerateCodeType RETAIL_RETURN = GenerateCodeType.FLOW;
+  Integer RETAIL_RETURN = 207;
 
   /**
    * 预先盘点单
    */
-  GenerateCodeType PRE_TAKE_STOCK_SHEET = GenerateCodeType.FLOW;
+  Integer PRE_TAKE_STOCK_SHEET = 208;
 
   /**
    * 盘点任务
    */
-  GenerateCodeType TAKE_STOCK_PLAN = GenerateCodeType.FLOW;
+  Integer TAKE_STOCK_PLAN = 209;
 
   /**
    * 盘点单
    */
-  GenerateCodeType TAKE_STOCK_SHEET = GenerateCodeType.FLOW;
-
-  /**
-   * 库存成本调整单
-   */
-  GenerateCodeType STOCK_COST_ADJUST_SHEET = GenerateCodeType.FLOW;
+  Integer TAKE_STOCK_SHEET = 210;
 
   /**
    * 库存调整单
    */
-  GenerateCodeType STOCK_ADJUST_SHEET = GenerateCodeType.FLOW;
+  Integer STOCK_ADJUST_SHEET = 212;
 
   /**
    * 仓库调拨单
    */
-  GenerateCodeType SC_TRANSFER_ORDER = GenerateCodeType.FLOW;
+  Integer SC_TRANSFER_ORDER = 213;
 
   /**
    * 物流单
    */
-  GenerateCodeType LOGISTICS_SHEET = GenerateCodeType.FLOW;
+  Integer LOGISTICS_SHEET = 214;
 }

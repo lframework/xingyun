@@ -83,12 +83,6 @@ public class CreateSysUserVo implements BaseVo, Serializable {
   private List<String> roleIds;
 
   /**
-   * 岗位ID
-   */
-  @ApiModelProperty("岗位ID")
-  private List<String> positionIds;
-
-  /**
    * 备注
    */
   @ApiModelProperty("备注")

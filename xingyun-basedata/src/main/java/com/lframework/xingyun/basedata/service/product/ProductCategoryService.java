@@ -11,7 +11,7 @@ import java.util.List;
 public interface ProductCategoryService extends BaseMpService<ProductCategory> {
 
   /**
-   * 查询全部类目信息
+   * 查询全部分类信息
    *
    * @return
    */

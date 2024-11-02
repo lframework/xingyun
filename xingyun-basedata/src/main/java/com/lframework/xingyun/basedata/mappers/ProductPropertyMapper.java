@@ -33,7 +33,7 @@ public interface ProductPropertyMapper extends BaseMapper<ProductProperty> {
     List<ProductProperty> query(@Param("vo") QueryProductPropertyVo vo);
 
     /**
-     * 根据商品类目查询
+     * 根据商品分类查询
      *
      * @param categoryIds
      * @return

@@ -72,12 +72,6 @@ public class UpdateSysUserVo implements BaseVo, Serializable {
   private Integer gender;
 
   /**
-   * 岗位ID
-   */
-  @ApiModelProperty("岗位ID")
-  private List<String> positionIds;
-
-  /**
    * 角色ID
    */
   @ApiModelProperty("角色ID")

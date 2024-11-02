@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.template.inner.mappers.system.SysGenerateCodeMapper">
+
+  <resultMap id="SysGenerateCode" type="com.lframework.xingyun.template.inner.entity.SysGenerateCode">
+    <id column="id" property="id"/>
+    <result column="name" property="name"/>
+    <result column="config_str" property="configStr"/>
+  </resultMap>
+
+  <select id="query" resultMap="SysGenerateCode">
+    <include refid="SysGenerateCode_sql"/>
+    <where>
+      <if test="vo.id != null">
+        AND tb.id = #{vo.id}
+      </if>
+      <if test="vo.name != null and vo.name != ''">
+        AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+      </if>
+    </where>
+    ORDER BY tb.id ASC
+  </select>
+
+  <sql id="SysGenerateCode_sql">
+    SELECT
+      tb.id,
+      tb.name,
+      tb.config_str
+    FROM sys_generate_code AS tb
+  </sql>
+</mapper>

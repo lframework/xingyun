@@ -22,17 +22,14 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.events.stock.AddStockEvent;
 import com.lframework.xingyun.core.events.stock.SubStockEvent;
-import com.lframework.xingyun.sc.dto.stock.adjust.cost.StockCostAdjustDiffDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.mappers.ProductStockMapper;
 import com.lframework.xingyun.sc.service.stock.ProductStockLogService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
-import com.lframework.xingyun.sc.vo.stock.StockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
-import com.lframework.xingyun.sc.vo.stock.log.AddLogWithStockCostAdjustVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;
 import java.math.BigDecimal;
 import java.util.List;
@@ -306,53 +303,5 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     ApplicationUtil.publishEvent(subStockEvent);
 
     return stockChange;
-  }
-
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public StockCostAdjustDiffDto stockCostAdjust(StockCostAdjustVo vo) {
-
-    Product product = productService.findById(vo.getProductId());
-    if (product.getProductType() != ProductType.NORMAL) {
-      throw new DefaultClientException(
-          "只有商品类型为【" + ProductType.NORMAL.getDesc() + "】的商品支持库存成本调整！");
-    }
-
-    Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
-        .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
-
-    ProductStock productStock = getBaseMapper().selectOne(queryWrapper);
-
-    if (productStock == null) {
-      // 没有库存，跳过
-      return new StockCostAdjustDiffDto();
-    }
-
-    BigDecimal taxPrice = NumberUtil.getNumber(vo.getTaxPrice(), 6);
-
-    StockCostAdjustDiffDto result = new StockCostAdjustDiffDto();
-    result.setStockNum(productStock.getStockNum());
-    result.setOriPrice(NumberUtil.getNumber(productStock.getTaxPrice(), 2));
-    result.setDiffAmount(NumberUtil.getNumber(
-        NumberUtil.mul(NumberUtil.sub(taxPrice, productStock.getTaxPrice()),
-            productStock.getStockNum()), 2));
-
-    getBaseMapper().stockCostAdjust(vo.getProductId(), vo.getScId(), taxPrice);
-
-    AddLogWithStockCostAdjustVo logVo = new AddLogWithStockCostAdjustVo();
-    logVo.setProductId(vo.getProductId());
-    logVo.setScId(vo.getScId());
-    logVo.setTaxAmount(result.getDiffAmount());
-    logVo.setOriStockNum(productStock.getStockNum());
-    logVo.setOriTaxPrice(productStock.getTaxPrice());
-    logVo.setCurTaxPrice(taxPrice);
-    logVo.setCreateTime(vo.getCreateTime());
-    logVo.setBizId(vo.getBizId());
-    logVo.setBizDetailId(vo.getBizDetailId());
-    logVo.setBizCode(vo.getBizCode());
-
-    productStockLogService.addLogWithStockCostAdjust(logVo);
-
-    return result;
   }
 }

@@ -43,12 +43,6 @@
         AND tax_amount = #{oriTaxAmount}
         AND stock_num >= #{stockNum}
     </update>
-    <update id="stockCostAdjust">
-        UPDATE tbl_product_stock
-        SET tax_price = #{taxPrice}, tax_amount = tax_price * stock_num
-        WHERE product_id = #{productId}
-        AND sc_id = #{scId}
-    </update>
     <select id="getByProductIdAndScId" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
         WHERE gs.product_id = #{productId}

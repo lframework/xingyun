@@ -62,10 +62,10 @@ public class UpdateProductVo implements BaseVo, Serializable {
   private String externalCode;
 
   /**
-   * 类目ID
+   * 分类ID
    */
-  @ApiModelProperty("类目ID")
-  @NotBlank(message = "类目ID不能为空！")
+  @ApiModelProperty("分类ID")
+  @NotBlank(message = "分类ID不能为空！")
   private String categoryId;
 
   /**

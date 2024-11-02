@@ -50,16 +50,16 @@ public class ProductImportModel implements ExcelModel {
   private String externalCode;
 
   /**
-   * 类目ID
+   * 分类ID
    */
   @ExcelIgnore
   private String categoryId;
 
   /**
-   * 类目编号
+   * 分类编号
    */
   @ExcelRequired
-  @ExcelProperty("类目编号")
+  @ExcelProperty("分类编号")
   private String categoryCode;
 
   /**

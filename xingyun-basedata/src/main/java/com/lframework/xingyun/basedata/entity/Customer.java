@@ -79,7 +79,7 @@ public class Customer extends BaseEntity implements BaseDto {
   private String address;
 
   /**
-   * 结账方式
+   * 结算方式
    */
   private SettleType settleType;
 

@@ -10,7 +10,7 @@ import lombok.Data;
 
 /**
  * <p>
- * 库存成本调整单详情 Dto
+ * 库存调整单详情 Dto
  * </p>
  *
  * @author zmj

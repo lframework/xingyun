@@ -14,7 +14,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.GenerateCodeService;
+import com.lframework.xingyun.template.core.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
@@ -170,7 +170,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
         }
         products = productService.query(queryProductVo);
       } else if (data.getTakeType() == TakeStockPlanType.CATEGORY) {
-        // 类目盘点
+        // 分类盘点
         products = productService.getByCategoryIds(vo.getBizIds(), ProductType.NORMAL.getCode());
       } else if (data.getTakeType() == TakeStockPlanType.BRAND) {
         // 品牌盘点

@@ -195,9 +195,9 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
     private String productName;
 
     /**
-     * 类目名称
+     * 分类名称
      */
-    @ApiModelProperty("类目名称")
+    @ApiModelProperty("分类名称")
     private String categoryName;
 
     /**

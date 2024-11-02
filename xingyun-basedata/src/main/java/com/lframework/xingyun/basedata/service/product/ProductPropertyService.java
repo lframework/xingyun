@@ -65,7 +65,7 @@ public interface ProductPropertyService extends BaseMpService<ProductProperty> {
     void update(UpdateProductPropertyVo vo);
 
     /**
-     * 根据类目ID查询
+     * 根据分类ID查询
      *
      * @param categoryId
      * @return

@@ -25,12 +25,12 @@ public class StockAdjustProductDto implements BaseDto, Serializable {
   private String name;
 
   /**
-   * 类目ID
+   * 分类ID
    */
   private String categoryId;
 
   /**
-   * 类目名称
+   * 分类名称
    */
   private String categoryName;
 

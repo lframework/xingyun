@@ -27,11 +27,4 @@ public interface GenerateCodeService extends BaseService {
    * @return
    */
   List<GenerateCodeRule> getRules(GenerateCodeDto entity);
-
-  /**
-   * 根据配置规则获取编号规则
-   * @param configStr
-   * @return
-   */
-  List<GenerateCodeRule> getRules(String configStr);
 }

@@ -1,17 +1,14 @@
 package com.lframework.xingyun.template.inner.controller.system;
 
-import cn.hutool.json.JSONArray;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.components.generator.GenerateCodeFactory;
-import com.lframework.starter.web.components.generator.handler.GenerateCodeRuleHandler;
 import com.lframework.starter.web.components.generator.rule.GenerateCodeRule;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.template.core.service.GenerateCodeService;
 import com.lframework.xingyun.template.inner.bo.system.generate.GetSysGenerateCodeBo;
@@ -166,16 +163,6 @@ public class SysGenerateCodeController extends DefaultBaseController {
   @PostMapping("/preview")
   public InvokeResult<String> preview(@Valid PreviewSysGenerateCodeVo vo) {
 
-    JSONArray configArr = JsonUtil.parseArray(vo.getConfigStr());
-    List<GenerateCodeRuleHandler> ruleHandlerList = GenerateCodeFactory.getInstance(vo.getConfigStr());
-
-    StringBuilder builder = new StringBuilder();
-    List<GenerateCodeRule> ruleList = generateCodeService.getRules(vo.getConfigStr());
-    for (int i = 0; i < ruleHandlerList.size(); i++) {
-      GenerateCodeRuleHandler ruleHandler = ruleHandlerList.get(i);
-      builder.append(ruleHandler.generateSimple(ruleList.get(i)));
-    }
-
-    return InvokeResultBuilder.success(builder.toString());
+    return InvokeResultBuilder.success(GenerateCodeFactory.generateExample(vo.getConfigStr()));
   }
 }

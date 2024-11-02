@@ -16,7 +16,7 @@ CREATE TABLE `sys_generate_code` (
 -- Records of sys_generate_code
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_generate_code` (`id`, `name`, `config_str`) VALUES (1, '用户编号', '[{\"type\":6,\"val\":\"R\"},{\"type\":3,\"key\":\"58aabb1d160430444158d82e4c86cb9c7f2a\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
+INSERT INTO `sys_generate_code` (`id`, `name`, `config_str`) VALUES (1, '用户编号', '[{\"type\":6,\"val\":\"R\"},{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"58aabb1d160430444158d82e4c86cb9c7f2a\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` (`id`, `name`, `config_str`) VALUES (200, '采购订单号', '[{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"37366f903834c842d5e8144bd707bdb77e35\",\"len\":10,\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` (`id`, `name`, `config_str`) VALUES (201, '采购收货单号', '[{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"12099be638c90d466b2a4af5465ed632459f\",\"len\":10,\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` (`id`, `name`, `config_str`) VALUES (202, '采购退单号', '[{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"60fdc467f35db94c8569f6ed68d103ce5452\",\"len\":10,\"step\":1,\"expireSeconds\":86400}]');

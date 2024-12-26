@@ -186,8 +186,8 @@ public class ScTransferOrderController extends DefaultBaseController {
       @Valid QueryScTransferProductVo vo) {
 
     PageResult<ScTransferProductDto> pageResult = scTransferOrderService.queryScTransferList(
-        getPageIndex(),
-        getPageSize(), vo);
+        getPageIndex(vo),
+        getPageSize(vo), vo);
     List<ScTransferProductBo> results = null;
     List<ScTransferProductDto> datas = pageResult.getDatas();
 

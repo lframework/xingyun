@@ -190,8 +190,8 @@ public class TakeStockSheetController extends DefaultBaseController {
     }
 
     PageResult<TakeStockSheetProductDto> pageResult = takeStockSheetService.queryTakeStockList(
-        getPageIndex(),
-        getPageSize(), vo);
+        getPageIndex(vo),
+        getPageSize(vo), vo);
     List<TakeStockSheetProductBo> results = null;
     List<TakeStockSheetProductDto> datas = pageResult.getDatas();
 

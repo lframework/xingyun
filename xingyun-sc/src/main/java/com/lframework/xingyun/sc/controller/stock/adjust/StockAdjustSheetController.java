@@ -175,8 +175,8 @@ public class StockAdjustSheetController extends DefaultBaseController {
       @Valid QueryStockAdjustProductVo vo) {
 
     PageResult<StockAdjustProductDto> pageResult = stockAdjustSheetService.queryStockAdjustList(
-        getPageIndex(),
-        getPageSize(), vo);
+        getPageIndex(vo),
+        getPageSize(vo), vo);
     List<StockAdjustProductBo> results = null;
     List<StockAdjustProductDto> datas = pageResult.getDatas();
 

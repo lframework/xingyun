@@ -84,15 +84,16 @@ public class OpLogUtil {
     if (LOG_ID_POOL.get() == null || LOG_ID_POOL.get().size() != 1) {
       return;
     }
+    List<CreateOpLogsVo> logs = OP_LOG_POOL.get();
     OpLogsService opLogsService = ApplicationUtil.getBean(OpLogsService.class);
     OP_LOG_EXECUTOR.submit(new DefaultRunnable(() -> {
       if (SecurityUtil.getCurrentUser() != null) {
-        opLogsService.create(OP_LOG_POOL.get());
+        opLogsService.create(logs);
       } else {
         if (currentUser != null) {
           try {
             SecurityUtil.setCurrentUser(currentUser);
-            opLogsService.create(OP_LOG_POOL.get());
+            opLogsService.create(logs);
           } finally {
             SecurityUtil.removeCurrentUser();
           }

@@ -5,6 +5,8 @@ logging:
   file:
     name: logs/${spring.application.name}.log
     max-history: 14
+  level:
+    io.lettuce.core.protocol: OFF
 
 jugg:
   web:

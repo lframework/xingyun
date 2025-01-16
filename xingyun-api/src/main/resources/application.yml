@@ -32,7 +32,7 @@ spring:
     store-type: redis
   redis:
     lettuce:
-      reader-idle-time-seconds: 20
+      reader-idle-time-seconds: 30
 
 knife4j:
   enable: true

@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.bo.address;
 
 import com.lframework.starter.web.annotations.convert.EnumConvert;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Member;

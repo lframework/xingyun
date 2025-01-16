@@ -8,11 +8,11 @@ import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.template.core.annotations.sort.Sort;
-import com.lframework.xingyun.template.core.annotations.sort.Sorts;
-import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
+import com.lframework.xingyun.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.core.annotations.sort.Sort;
+import com.lframework.xingyun.core.annotations.sort.Sorts;
+import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

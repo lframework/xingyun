@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.web.entity.BaseEntity;
-import com.lframework.xingyun.template.core.enums.Gender;
+import com.lframework.xingyun.core.enums.Gender;
 import com.lframework.starter.web.dto.BaseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -4,11 +4,11 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.settle.dto.check.SettleCheckSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettleCheckSheet;
 import com.lframework.xingyun.settle.vo.check.QuerySettleCheckSheetVo;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.template.core.annotations.sort.Sort;
-import com.lframework.xingyun.template.core.annotations.sort.Sorts;
-import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
+import com.lframework.xingyun.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.core.annotations.sort.Sort;
+import com.lframework.xingyun.core.annotations.sort.Sorts;
+import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;

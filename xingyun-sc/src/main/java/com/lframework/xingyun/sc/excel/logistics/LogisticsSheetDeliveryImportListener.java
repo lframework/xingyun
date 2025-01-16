@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelImportListener;
 import com.lframework.xingyun.sc.entity.LogisticsSheet;
 import com.lframework.xingyun.sc.service.logistics.LogisticsSheetService;

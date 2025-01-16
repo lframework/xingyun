@@ -3,7 +3,7 @@ package com.lframework.xingyun.basedata.bo.product.category;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import io.swagger.annotations.ApiModelProperty;

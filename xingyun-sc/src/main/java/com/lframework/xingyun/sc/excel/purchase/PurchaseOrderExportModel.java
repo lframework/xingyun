@@ -7,19 +7,19 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelModel;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -152,9 +152,9 @@ public class PurchaseOrderExportModel extends BaseBo<PurchaseOrder> implements E
     SupplierService supplierService = ApplicationUtil.getBean(SupplierService.class);
     Supplier supplier = supplierService.findById(dto.getSupplierId());
 
-    UserService userService = ApplicationUtil.getBean(UserService.class);
+    SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
 
-    UserDto approveBy = null;
+    SysUser approveBy = null;
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       approveBy = userService.findById(dto.getApproveBy());
     }
@@ -163,7 +163,7 @@ public class PurchaseOrderExportModel extends BaseBo<PurchaseOrder> implements E
     this.setScName(sc.getName());
     this.setSupplierName(supplier.getName());
     if (!StringUtil.isBlank(dto.getPurchaserId())) {
-      UserDto purchaser = userService.findById(dto.getPurchaserId());
+      SysUser purchaser = userService.findById(dto.getPurchaserId());
       this.setPurchaserName(purchaser.getName());
     }
     this.setExpectArriveDate(DateUtil.toDate(dto.getExpectArriveDate()));

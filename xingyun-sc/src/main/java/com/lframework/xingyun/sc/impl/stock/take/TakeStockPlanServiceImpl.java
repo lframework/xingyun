@@ -11,10 +11,9 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.GenerateCodeService;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
@@ -25,10 +24,13 @@ import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.components.qrtz.QrtzJob;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.core.events.stock.AddStockEvent;
-import com.lframework.xingyun.core.events.stock.SubStockEvent;
-import com.lframework.xingyun.core.events.stock.take.DeleteTakeStockPlanEvent;
+import com.lframework.xingyun.sc.events.stock.take.DeleteTakeStockPlanEvent;
+import com.lframework.xingyun.core.queue.MqStringPool;
+import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
@@ -52,22 +54,27 @@ import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.CancelTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.CreateTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.HandleTakeStockPlanVo;
+import com.lframework.xingyun.sc.vo.stock.take.plan.HandleTakeStockPlanVo.ProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.components.qrtz.QrtzJob;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
+import org.springframework.messaging.Message;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMapper, TakeStockPlan>
     implements TakeStockPlanService {
@@ -320,7 +327,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     }
 
     for (TakeStockPlanDetail detail : details) {
-      HandleTakeStockPlanVo.ProductVo productVo = vo.getProducts().stream()
+      ProductVo productVo = vo.getProducts().stream()
           .filter(t -> t.getProductId().equals(detail.getProductId())).findFirst().get();
       if (config.getAllowChangeNum()) {
         // 如果允许修改盘点数量
@@ -434,38 +441,6 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
   @Override
   public void cleanCacheByKey(Serializable key) {
 
-  }
-
-  @Service
-  public static class AddStockListener implements ApplicationListener<AddStockEvent> {
-
-    @Autowired
-    private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
-
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void onApplicationEvent(AddStockEvent addStockEvent) {
-
-      ProductStockChangeDto change = addStockEvent.getChange();
-      takeStockPlanDetailMapper.addTotalInNum(change.getScId(), change.getProductId(),
-          change.getNum());
-    }
-  }
-
-  @Service
-  public static class SubStockListener implements ApplicationListener<SubStockEvent> {
-
-    @Autowired
-    private TakeStockPlanDetailMapper takeStockPlanDetailMapper;
-
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void onApplicationEvent(SubStockEvent addStockEvent) {
-
-      ProductStockChangeDto change = addStockEvent.getChange();
-      takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getProductId(),
-          change.getNum());
-    }
   }
 
   /**

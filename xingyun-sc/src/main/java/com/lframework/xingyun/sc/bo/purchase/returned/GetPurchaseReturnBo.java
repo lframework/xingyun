@@ -7,7 +7,7 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
@@ -22,7 +22,7 @@ import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetDetailService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -202,7 +202,7 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
     SupplierService supplierService = ApplicationUtil.getBean(SupplierService.class);
     this.supplierName = supplierService.findById(dto.getSupplierId()).getName();
 
-    UserService userService = ApplicationUtil.getBean(UserService.class);
+    SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
     if (!StringUtil.isBlank(dto.getPurchaserId())) {
       this.purchaserName = userService.findById(dto.getPurchaserId()).getName();
     }

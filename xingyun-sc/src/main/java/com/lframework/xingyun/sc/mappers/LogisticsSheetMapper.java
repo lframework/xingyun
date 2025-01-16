@@ -7,11 +7,11 @@ import com.lframework.xingyun.sc.entity.LogisticsSheet;
 import com.lframework.xingyun.sc.vo.logistics.LogisticsSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetBizOrderVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetVo;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.template.core.annotations.sort.Sort;
-import com.lframework.xingyun.template.core.annotations.sort.Sorts;
-import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
+import com.lframework.xingyun.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.core.annotations.sort.Sort;
+import com.lframework.xingyun.core.annotations.sort.Sorts;
+import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

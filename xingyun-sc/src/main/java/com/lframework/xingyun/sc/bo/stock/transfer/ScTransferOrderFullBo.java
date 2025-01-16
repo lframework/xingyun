@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
@@ -19,7 +19,7 @@ import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -158,7 +158,7 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
     StoreCenter targetSc = storeCenterService.findById(dto.getTargetScId());
     this.targetScName = targetSc.getName();
 
-    UserService userService = ApplicationUtil.getBean(UserService.class);
+    SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }

@@ -12,11 +12,10 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.GenerateCodeService;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
@@ -29,9 +28,13 @@ import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
+import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
-import com.lframework.xingyun.core.events.order.impl.ApprovePassSaleOrderEvent;
+import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
@@ -44,6 +47,7 @@ import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.entity.SaleOrderDetailBundle;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
 import com.lframework.xingyun.sc.enums.ScOpLogType;
+import com.lframework.xingyun.sc.events.order.impl.ApprovePassSaleOrderEvent;
 import com.lframework.xingyun.sc.mappers.SaleOrderMapper;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
@@ -61,10 +65,7 @@ import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.SaleOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.sale.SaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -99,7 +100,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   private CustomerService customerService;
 
   @Autowired
-  private UserService userService;
+  private SysUserService userService;
 
   @Autowired
   private ProductService productService;
@@ -588,7 +589,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     order.setCustomerId(vo.getCustomerId());
 
     if (!StringUtil.isBlank(vo.getSalerId())) {
-      UserDto saler = userService.findById(vo.getSalerId());
+      SysUser saler = userService.findById(vo.getSalerId());
       if (saler == null) {
         throw new InputErrorException("销售员不存在！");
       }
@@ -669,7 +670,8 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
               // 这里会有尾差
               saleOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
                   BigDecimal.valueOf(
-                      splitPriceMap.get(productBundle.getProductId()).doubleValue()), productBundle.getBundleNum()), 2));
+                      splitPriceMap.get(productBundle.getProductId()).doubleValue()),
+                  productBundle.getBundleNum()), 2));
               saleOrderDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 
               return saleOrderDetailBundle;
@@ -690,10 +692,12 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
   private void sendApprovePassEvent(SaleOrder order) {
 
-    ApprovePassSaleOrderEvent event = new ApprovePassSaleOrderEvent(this);
-    event.setId(order.getId());
-    event.setTotalAmount(order.getTotalAmount());
-    event.setApproveTime(order.getApproveTime());
+    ApprovePassOrderDto dto = new ApprovePassOrderDto();
+    dto.setId(order.getId());
+    dto.setTotalAmount(order.getTotalAmount());
+    dto.setApproveTime(order.getApproveTime());
+
+    ApprovePassSaleOrderEvent event = new ApprovePassSaleOrderEvent(this, dto);
 
     ApplicationUtil.publishEvent(event);
   }

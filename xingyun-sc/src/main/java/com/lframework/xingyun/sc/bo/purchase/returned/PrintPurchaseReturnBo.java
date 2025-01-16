@@ -7,7 +7,7 @@ import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
 import com.lframework.starter.web.bo.BasePrintDataBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
@@ -18,7 +18,7 @@ import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.List;
@@ -142,7 +142,7 @@ public class PrintPurchaseReturnBo extends BasePrintDataBo<PurchaseReturnFullDto
     this.supplierCode = supplier.getCode();
     this.supplierName = supplier.getName();
 
-    UserService userService = ApplicationUtil.getBean(UserService.class);
+    SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
     if (!StringUtil.isBlank(dto.getPurchaserId())) {
       this.purchaserName = userService.findById(dto.getPurchaserId()).getName();
     }

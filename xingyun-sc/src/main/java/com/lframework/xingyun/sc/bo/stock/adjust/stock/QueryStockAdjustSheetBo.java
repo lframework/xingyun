@@ -5,13 +5,13 @@ import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.convert.EnumConvert;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.StockAdjustReason;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -126,7 +126,7 @@ public class QueryStockAdjustSheetBo extends BaseBo<StockAdjustSheet> {
     this.scCode = sc.getCode();
     this.scName = sc.getName();
 
-    UserService userService = ApplicationUtil.getBean(UserService.class);
+    SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }

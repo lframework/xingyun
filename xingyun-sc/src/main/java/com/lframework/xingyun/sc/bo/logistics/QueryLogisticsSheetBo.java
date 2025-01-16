@@ -3,12 +3,12 @@ package com.lframework.xingyun.sc.bo.logistics;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.convert.EnumConvert;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
 import com.lframework.xingyun.basedata.service.logistics.LogisticsCompanyService;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.sc.entity.LogisticsSheet;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -116,8 +116,8 @@ public class QueryLogisticsSheetBo extends BaseBo<LogisticsSheet> {
     this.logisticsCompanyName = logisticsCompany.getName();
 
     if (StringUtil.isNotBlank(dto.getDeliveryBy())) {
-      UserService userService = ApplicationUtil.getBean(UserService.class);
-      UserDto deliveryBy = userService.findById(dto.getDeliveryBy());
+      SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
+      SysUser deliveryBy = userService.findById(dto.getDeliveryBy());
       this.deliveryBy = deliveryBy.getName();
     }
   }

@@ -4,11 +4,11 @@ import com.lframework.starter.web.mapper.BaseMapper;
 import com.lframework.xingyun.settle.dto.sheet.customer.CustomerSettleSheetFullDto;
 import com.lframework.xingyun.settle.entity.CustomerSettleSheet;
 import com.lframework.xingyun.settle.vo.sheet.customer.QueryCustomerSettleSheetVo;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.template.core.annotations.sort.Sort;
-import com.lframework.xingyun.template.core.annotations.sort.Sorts;
-import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
+import com.lframework.xingyun.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.core.annotations.sort.Sort;
+import com.lframework.xingyun.core.annotations.sort.Sorts;
+import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

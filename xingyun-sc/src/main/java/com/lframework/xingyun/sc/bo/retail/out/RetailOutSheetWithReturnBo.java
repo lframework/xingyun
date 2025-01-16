@@ -6,18 +6,18 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.List;
@@ -105,8 +105,8 @@ public class RetailOutSheetWithReturnBo extends BaseBo<RetailOutSheetWithReturnD
     }
 
     if (!StringUtil.isBlank(dto.getSalerId())) {
-      UserService userService = ApplicationUtil.getBean(UserService.class);
-      UserDto saler = userService.findById(dto.getSalerId());
+      SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
+      SysUser saler = userService.findById(dto.getSalerId());
 
       this.salerId = saler.getId();
       this.salerName = saler.getName();

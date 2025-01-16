@@ -8,9 +8,10 @@ import com.lframework.starter.common.exceptions.impl.DefaultSysException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.mq.core.producer.MqProducer;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
@@ -20,8 +21,9 @@ import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.core.events.stock.AddStockEvent;
-import com.lframework.xingyun.core.events.stock.SubStockEvent;
+import com.lframework.xingyun.sc.events.stock.AddStockEvent;
+import com.lframework.xingyun.sc.events.stock.SubStockEvent;
+import com.lframework.xingyun.core.queue.MqConstants;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.mappers.ProductStockMapper;
 import com.lframework.xingyun.sc.service.stock.ProductStockLogService;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Service
 public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMapper, ProductStock>
@@ -210,13 +213,14 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     addLogWithAddStockVo.setBizType(vo.getBizType());
 
     productStockLogService.addLogWithAddStock(addLogWithAddStockVo);
-
     ProductStockChangeDto stockChange = new ProductStockChangeDto();
     stockChange.setScId(vo.getScId());
     stockChange.setProductId(vo.getProductId());
     stockChange.setNum(vo.getStockNum());
     stockChange.setTaxAmount(addLogWithAddStockVo.getTaxAmount());
     stockChange.setCurTaxPrice(addLogWithAddStockVo.getCurTaxPrice());
+    stockChange.setCreateTime(vo.getCreateTime());
+    stockChange.setCurStockNum(addLogWithAddStockVo.getCurStockNum());
 
     AddStockEvent addStockEvent = new AddStockEvent(this, stockChange);
     ApplicationUtil.publishEvent(addStockEvent);
@@ -298,6 +302,8 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     stockChange.setNum(vo.getStockNum());
     stockChange.setTaxAmount(subTaxAmount);
     stockChange.setCurTaxPrice(addLogWithAddStockVo.getCurTaxPrice());
+    stockChange.setCreateTime(vo.getCreateTime());
+    stockChange.setCurStockNum(addLogWithAddStockVo.getCurStockNum());
 
     SubStockEvent subStockEvent = new SubStockEvent(this, stockChange);
     ApplicationUtil.publishEvent(subStockEvent);

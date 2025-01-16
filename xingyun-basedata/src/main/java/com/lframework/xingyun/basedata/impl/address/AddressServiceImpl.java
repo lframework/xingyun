@@ -23,7 +23,7 @@ import com.lframework.xingyun.basedata.vo.address.QueryAddressVo;
 import com.lframework.xingyun.basedata.vo.address.UpdateAddressVo;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.DicCityService;
-import com.lframework.xingyun.template.core.annotations.OpLog;
+import com.lframework.xingyun.core.annotations.OpLog;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.sale.out;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.vo.BaseVo;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;

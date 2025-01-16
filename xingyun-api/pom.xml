@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>xingyun-common</artifactId>
+            <artifactId>xingyun-comp</artifactId>
         </dependency>
         <dependency>
             <groupId>com.lframework</groupId>
@@ -39,7 +39,12 @@
 
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>xingyun-template</artifactId>
+            <artifactId>xingyun-sys</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lframework</groupId>
+            <artifactId>rabbitmq-starter</artifactId>
         </dependency>
     </dependencies>
 

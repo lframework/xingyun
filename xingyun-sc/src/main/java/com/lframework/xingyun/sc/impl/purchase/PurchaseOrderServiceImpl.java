@@ -12,11 +12,10 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.GenerateCodeService;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
@@ -26,9 +25,13 @@ import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
-import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
+import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
-import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseOrderEvent;
+import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
@@ -39,6 +42,7 @@ import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import com.lframework.xingyun.sc.enums.ScOpLogType;
+import com.lframework.xingyun.sc.events.order.impl.ApprovePassPurchaseOrderEvent;
 import com.lframework.xingyun.sc.mappers.PurchaseOrderMapper;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
@@ -55,10 +59,7 @@ import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithReceiveVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   private SupplierService supplierService;
 
   @Autowired
-  private UserService userService;
+  private SysUserService userService;
 
   @Autowired
   private ProductService productService;
@@ -500,7 +501,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     order.setSupplierId(vo.getSupplierId());
 
     if (!StringUtil.isBlank(vo.getPurchaserId())) {
-      UserDto purchaser = userService.findById(vo.getPurchaserId());
+      SysUser purchaser = userService.findById(vo.getPurchaserId());
       if (purchaser == null) {
         throw new InputErrorException("采购员不存在！");
       }
@@ -602,10 +603,12 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
   private void sendApprovePassEvent(PurchaseOrder order) {
 
-    ApprovePassPurchaseOrderEvent event = new ApprovePassPurchaseOrderEvent(this);
-    event.setId(order.getId());
-    event.setTotalAmount(order.getTotalAmount());
-    event.setApproveTime(order.getApproveTime());
+    ApprovePassOrderDto dto = new ApprovePassOrderDto();
+    dto.setId(order.getId());
+    dto.setTotalAmount(order.getTotalAmount());
+    dto.setApproveTime(order.getApproveTime());
+
+    ApprovePassPurchaseOrderEvent event = new ApprovePassPurchaseOrderEvent(this, dto);
 
     ApplicationUtil.publishEvent(event);
   }

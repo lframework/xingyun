@@ -6,7 +6,7 @@ import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
@@ -19,7 +19,7 @@ import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -176,7 +176,7 @@ public class GetSaleOrderBo extends BaseBo<SaleOrderFullDto> {
     CustomerService customerService = ApplicationUtil.getBean(CustomerService.class);
     this.customerName = customerService.findById(dto.getCustomerId()).getName();
 
-    UserService userService = ApplicationUtil.getBean(UserService.class);
+    SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
     if (!StringUtil.isBlank(dto.getSalerId())) {
       this.salerName = userService.findById(dto.getSalerId()).getName();
     }

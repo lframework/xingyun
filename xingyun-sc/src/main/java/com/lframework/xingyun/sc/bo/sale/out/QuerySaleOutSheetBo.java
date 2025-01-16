@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
@@ -12,7 +12,7 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -167,7 +167,7 @@ public class QuerySaleOutSheetBo extends BaseBo<SaleOutSheet> {
         this.customerCode = customer.getCode();
         this.customerName = customer.getName();
 
-        UserService userService = ApplicationUtil.getBean(UserService.class);
+        SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
         if (!StringUtil.isBlank(dto.getSalerId())) {
             this.salerName = userService.findById(dto.getSalerId()).getName();
         }

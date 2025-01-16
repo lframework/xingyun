@@ -3,15 +3,15 @@ package com.lframework.xingyun.sc.excel.logistics;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelModel;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
 import com.lframework.xingyun.basedata.service.logistics.LogisticsCompanyService;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.service.DicCityService;
 import com.lframework.xingyun.sc.entity.LogisticsSheet;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
@@ -203,8 +203,8 @@ public class LogisticsSheetExportModel extends BaseBo<LogisticsSheet> implements
     this.status = dto.getStatus().getDesc();
 
     if (StringUtil.isNotBlank(dto.getDeliveryBy())) {
-      UserService userService = ApplicationUtil.getBean(UserService.class);
-      UserDto deliveryBy = userService.findById(dto.getDeliveryBy());
+      SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
+      SysUser deliveryBy = userService.findById(dto.getDeliveryBy());
       this.deliveryBy = deliveryBy.getName();
     }
   }

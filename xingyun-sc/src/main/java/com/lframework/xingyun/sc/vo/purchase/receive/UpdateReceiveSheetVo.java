@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.purchase.receive;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import io.swagger.annotations.ApiModelProperty;

@@ -30,6 +30,9 @@ spring:
   #使用redis存储SESSION
   session:
     store-type: redis
+  redis:
+    lettuce:
+      reader-idle-time-seconds: 20
 
 knife4j:
   enable: true
@@ -99,6 +102,8 @@ jugg:
     #regions:
     #  cacheName: 3600
     #  cacheName2: 7200
+    regions:
+      product_stock_warning_notify: 86400
   #开启多租户
   tenant:
     enabled: true

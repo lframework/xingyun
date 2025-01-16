@@ -3,7 +3,7 @@ package com.lframework.xingyun.sc.excel.stock;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelModel;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;

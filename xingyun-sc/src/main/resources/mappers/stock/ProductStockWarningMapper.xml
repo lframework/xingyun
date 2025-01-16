@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.ProductStockWarningMapper">
+
+    <sql id="ProductStockWarningDto_sql">
+        SELECT
+            tb.*
+        FROM tbl_product_stock_warning AS tb
+        LEFT JOIN base_data_product AS p ON p.id = tb.product_id
+        LEFT JOIN base_data_store_center AS sc ON sc.id = tb.sc_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+    </sql>
+
+    <select id="query" resultType="com.lframework.xingyun.sc.entity.ProductStockWarning">
+        <include refid="ProductStockWarningDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND tb.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.productId != null and vo.productId != ''">
+                    AND tb.product_id = #{vo.productId}
+                </if>
+                <if test="vo.updateTimeStart != null">
+                    AND tb.update_time >= #{vo.updateTimeStart}
+                </if>
+                <if test="vo.updateTimeEnd != null">
+                    <![CDATA[
+                AND tb.update_time <= #{vo.updateTimeEnd}
+                ]]>
+                </if>
+                <if test="vo.available != null">
+                    AND tb.available = #{vo.available}
+                </if>
+            </if>
+        </where>
+        ORDER BY tb.update_time DESC
+    </select>
+</mapper>

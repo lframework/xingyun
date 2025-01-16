@@ -12,11 +12,10 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.GenerateCodeService;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
@@ -27,9 +26,13 @@ import com.lframework.xingyun.basedata.enums.ManageType;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
-import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
+import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
-import com.lframework.xingyun.core.events.order.impl.ApprovePassPurchaseReturnEvent;
+import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
@@ -42,6 +45,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
 import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
+import com.lframework.xingyun.sc.events.order.impl.ApprovePassPurchaseReturnEvent;
 import com.lframework.xingyun.sc.mappers.PurchaseReturnMapper;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseReturnDetailService;
@@ -58,10 +62,7 @@ import com.lframework.xingyun.sc.vo.purchase.returned.QueryPurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.ReturnProductVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.UpdatePurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class PurchaseReturnServiceImpl extends
   private SupplierService supplierService;
 
   @Autowired
-  private UserService userService;
+  private SysUserService userService;
 
   @Autowired
   private ProductService productService;
@@ -249,7 +250,8 @@ public class PurchaseReturnServiceImpl extends
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         ReceiveSheet receiveSheet = receiveSheetService.getById(purchaseReturn.getReceiveSheetId());
         throw new DefaultClientException(
-            "采购收货单号：" + receiveSheet.getCode() + "，已关联其他采购退货单，不允许关联多个采购退货单！");
+            "采购收货单号：" + receiveSheet.getCode()
+                + "，已关联其他采购退货单，不允许关联多个采购退货单！");
       }
     }
 
@@ -312,7 +314,8 @@ public class PurchaseReturnServiceImpl extends
         PurchaseReturnService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个采购退货单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个采购退货单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -393,7 +396,8 @@ public class PurchaseReturnServiceImpl extends
         PurchaseReturnService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个采购退货单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个采购退货单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -462,7 +466,8 @@ public class PurchaseReturnServiceImpl extends
           PurchaseReturnService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个采购退货单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个采购退货单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -532,7 +537,7 @@ public class PurchaseReturnServiceImpl extends
     purchaseReturn.setSupplierId(vo.getSupplierId());
 
     if (!StringUtil.isBlank(vo.getPurchaserId())) {
-      UserDto purchaser = userService.findById(vo.getPurchaserId());
+      SysUser purchaser = userService.findById(vo.getPurchaserId());
       if (purchaser == null) {
         throw new InputErrorException("采购员不存在！");
       }
@@ -564,7 +569,8 @@ public class PurchaseReturnServiceImpl extends
             .ne(PurchaseReturn::getId, purchaseReturn.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
           throw new DefaultClientException(
-              "采购收货单号：" + receiveSheet.getCode() + "，已关联其他采购退货单，不允许关联多个采购退货单！");
+              "采购收货单号：" + receiveSheet.getCode()
+                  + "，已关联其他采购退货单，不允许关联多个采购退货单！");
         }
       }
     }
@@ -659,10 +665,12 @@ public class PurchaseReturnServiceImpl extends
 
   private void sendApprovePassEvent(PurchaseReturn r) {
 
-    ApprovePassPurchaseReturnEvent event = new ApprovePassPurchaseReturnEvent(this);
-    event.setId(r.getId());
-    event.setTotalAmount(r.getTotalAmount());
-    event.setApproveTime(r.getApproveTime());
+    ApprovePassOrderDto dto = new ApprovePassOrderDto();
+    dto.setId(r.getId());
+    dto.setTotalAmount(r.getTotalAmount());
+    dto.setApproveTime(r.getApproveTime());
+
+    ApprovePassPurchaseReturnEvent event = new ApprovePassPurchaseReturnEvent(this, dto);
 
     ApplicationUtil.publishEvent(event);
   }

@@ -8,7 +8,7 @@ import com.lframework.starter.common.utils.ThreadUtil;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.common.threads.DefaultRunnable;
+import com.lframework.starter.web.threads.DefaultRunnable;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;

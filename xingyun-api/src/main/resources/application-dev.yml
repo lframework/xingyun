@@ -4,6 +4,7 @@ logging:
     file: ${logging.pattern.console}
   level:
     com.lframework: DEBUG
+    io.lettuce.core.protocol: OFF
 
 spring:
   servlet:
@@ -58,6 +59,28 @@ spring:
         max-active: 8
         #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+  #RabbitMQ配置
+  rabbitmq:
+    addresses: 127.0.0.1:5672             # RabbitMQ集群地址列表，多个地址用逗号分隔
+    virtual-host: /
+    username: username
+    password: password
+    connection-timeout: 60000 # 连接超时时间（毫秒），默认为60000毫秒（60秒）
+    ssl:
+      enabled: false       # 是否启用SSL，默认为false
+      algorithm: TLSv1.2   # SSL算法，默认为TLSv1.2
+    publisher-confirm-type: SIMPLE # 发布确认机制
+    publisher-returns: true  # 是否开启发布返回机制，默认为false
+    listener:
+      type: direct
+      simple:
+        acknowledge-mode: AUTO # 消费者确认模式，默认为auto
+        retry:
+          enabled: false       # 是否启用重试机制，默认为false
+      direct:
+        acknowledge-mode: AUTO # 消费者确认模式，默认为auto
+        retry:
+          enabled: false       # 是否启用重试机制，默认为false
 
 sa-token:
   # 配置 Sa-Token 单独使用的 Redis 连接，将业务和鉴权独立

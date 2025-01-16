@@ -22,4 +22,8 @@ public interface ScOpLogType {
 
     // 库存盘点
     int TAKE_STOCK = 2006;
+
+    // 库存预警
+    int STOCK_WARNING = 2007;
+
 }

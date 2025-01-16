@@ -77,6 +77,7 @@ application.yml中的tenant.enabled改为true则代表开启多租户模式；fa
 * JDK 1.8
 * Mysql 5.7.18
 * Redis 4.0.8（版本可以根据自己的redis进行调整，项目本身依赖Redis的功能很简单，就是两部分：缓存、Session，不会出现大的兼容问题）
+* RabbitMQ 3.12.4
 
 ### 技术交流
 

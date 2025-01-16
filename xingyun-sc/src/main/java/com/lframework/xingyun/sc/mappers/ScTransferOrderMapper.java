@@ -6,11 +6,11 @@ import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto;
 import com.lframework.xingyun.sc.entity.ScTransferOrder;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferProductVo;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.template.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.template.core.annotations.sort.Sort;
-import com.lframework.xingyun.template.core.annotations.sort.Sorts;
-import com.lframework.xingyun.template.core.components.permission.SysDataPermissionDataPermissionType;
+import com.lframework.xingyun.core.annotations.permission.DataPermission;
+import com.lframework.xingyun.core.annotations.permission.DataPermissions;
+import com.lframework.xingyun.core.annotations.sort.Sort;
+import com.lframework.xingyun.core.annotations.sort.Sorts;
+import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

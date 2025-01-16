@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.vo.member;
 
-import com.lframework.xingyun.template.core.enums.Gender;
+import com.lframework.xingyun.core.enums.Gender;
 import com.lframework.starter.web.components.validation.IsCode;
 import com.lframework.starter.web.components.validation.IsEnum;
 import com.lframework.starter.web.vo.BaseVo;

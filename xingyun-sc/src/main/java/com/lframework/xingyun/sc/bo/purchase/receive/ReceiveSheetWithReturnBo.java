@@ -6,18 +6,18 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.List;
@@ -103,8 +103,8 @@ public class ReceiveSheetWithReturnBo extends BaseBo<ReceiveSheetWithReturnDto> 
     this.supplierName = supplier.getName();
 
     if (!StringUtil.isBlank(dto.getPurchaserId())) {
-      UserService userService = ApplicationUtil.getBean(UserService.class);
-      UserDto purchaser = userService.findById(dto.getPurchaserId());
+      SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
+      SysUser purchaser = userService.findById(dto.getPurchaserId());
 
       this.purchaserId = purchaser.getId();
       this.purchaserName = purchaser.getName();

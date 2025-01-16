@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Shop;
-import com.lframework.xingyun.template.core.dto.DeptDto;
-import com.lframework.xingyun.template.core.service.DeptService;
+import com.lframework.xingyun.template.inner.entity.SysDept;
+import com.lframework.xingyun.template.inner.service.system.SysDeptService;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -83,9 +83,9 @@ public class QueryShopBo extends BaseBo<Shop> {
   @Override
   protected void afterInit(Shop dto) {
     if (!StringUtil.isBlank(dto.getDeptId())) {
-      DeptService deptService = ApplicationUtil.getBean(DeptService.class);
+      SysDeptService sysDeptService = ApplicationUtil.getBean(SysDeptService.class);
 
-      DeptDto dept = deptService.findById(dto.getDeptId());
+      SysDept dept = sysDeptService.findById(dto.getDeptId());
 
       this.deptName = dept.getName();
     }

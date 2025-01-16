@@ -10,17 +10,17 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelImportListener;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.enums.Gender;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.entity.SysUser;
+import com.lframework.xingyun.core.enums.Gender;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +44,8 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
     }
     if (checkList.contains(data.getCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“编号”与第" + (checkList.indexOf(data.getCode()) + 1) + "行重复");
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”与第" + (
+              checkList.indexOf(data.getCode()) + 1) + "行重复");
     }
     checkList.add(data.getCode());
     Wrapper<Member> checkWrapper = Wrappers.lambdaQuery(Member.class)
@@ -91,8 +92,8 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
     }
 
     if (!StringUtil.isEmpty(data.getGuiderCode())) {
-      UserService userService = ApplicationUtil.getBean(UserService.class);
-      UserDto guider = userService.findByCode(data.getGuiderCode());
+      SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
+      SysUser guider = userService.findByCode(data.getGuiderCode());
       if (guider == null) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“所属导购编号”不存在");

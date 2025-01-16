@@ -3,6 +3,7 @@ package com.lframework.xingyun.core.dto.stock;
 import com.lframework.starter.web.dto.BaseDto;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Data;
 
@@ -27,7 +28,7 @@ public class ProductStockChangeDto implements BaseDto, Serializable {
   private Integer num;
 
   /**
-   * 含税金额
+   * 含税变动金额
    */
   private BigDecimal taxAmount;
 
@@ -35,4 +36,14 @@ public class ProductStockChangeDto implements BaseDto, Serializable {
    * 当前含税均价
    */
   private BigDecimal curTaxPrice;
+
+  /**
+   * 当前库存数量
+   */
+  private Integer curStockNum;
+
+  /**
+   * 生成时间
+   */
+  private LocalDateTime createTime;
 }

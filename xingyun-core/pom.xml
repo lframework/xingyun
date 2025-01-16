@@ -15,11 +15,12 @@
     <dependencies>
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>xingyun-template-core</artifactId>
+            <artifactId>websocket-starter</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.lframework</groupId>
-            <artifactId>websocket-starter</artifactId>
+            <artifactId>rabbitmq-starter</artifactId>
         </dependency>
     </dependencies>
 </project>

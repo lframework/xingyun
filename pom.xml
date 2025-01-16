@@ -24,10 +24,9 @@
         <module>xingyun-sc</module>
         <module>xingyun-chart</module>
         <module>xingyun-settle</module>
-        <module>xingyun-template</module>
-        <module>xingyun-template-core</module>
+        <module>xingyun-sys</module>
         <module>cloud/xingyun-cloud-api</module>
-        <module>xingyun-common</module>
+        <module>xingyun-comp</module>
         <module>cloud/xingyun-cloud-gateway</module>
     </modules>
 
@@ -35,7 +34,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <xingyun.version>1.0.0-SNAPSHOT</xingyun.version>
-        <jugg.version>3.1.4</jugg.version>
+        <jugg.version>3.1.5</jugg.version>
     </properties>
 
     <dependencyManagement>
@@ -49,13 +48,20 @@
             </dependency>
             <dependency>
                 <groupId>com.lframework</groupId>
+                <artifactId>mq-starter</artifactId>
+                <version>${jugg.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.lframework</groupId>
                 <artifactId>xingyun-basedata</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.lframework</groupId>
-                <artifactId>xingyun-common</artifactId>
+                <artifactId>xingyun-comp</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
             <dependency>
@@ -72,13 +78,7 @@
 
             <dependency>
                 <groupId>com.lframework</groupId>
-                <artifactId>xingyun-template</artifactId>
-                <version>${xingyun.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.lframework</groupId>
-                <artifactId>xingyun-template-core</artifactId>
+                <artifactId>xingyun-sys</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
 

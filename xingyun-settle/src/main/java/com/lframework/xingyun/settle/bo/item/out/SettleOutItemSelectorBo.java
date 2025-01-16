@@ -15,13 +15,13 @@ public class SettleOutItemSelectorBo extends BaseBo<SettleOutItem> {
     private String id;
 
     /**
-     * 岗位编号
+     * 编号
      */
     @ApiModelProperty("编号")
     private String code;
 
     /**
-     * 岗位名称
+     * 名称
      */
     @ApiModelProperty("名称")
     private String name;

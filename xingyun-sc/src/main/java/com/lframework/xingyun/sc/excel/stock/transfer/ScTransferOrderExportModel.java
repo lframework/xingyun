@@ -5,13 +5,13 @@ import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelModel;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.ScTransferOrder;
 import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
@@ -124,7 +124,7 @@ public class ScTransferOrderExportModel extends BaseBo<ScTransferOrder> implemen
     this.targetScCode = targetSc.getCode();
     this.targetScName = targetSc.getName();
 
-    UserService userService = ApplicationUtil.getBean(UserService.class);
+    SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
     if (!StringUtil.isBlank(dto.getApproveBy())) {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }

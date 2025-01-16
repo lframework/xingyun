@@ -7,19 +7,19 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelImportListener;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import com.lframework.xingyun.sc.vo.purchase.receive.CreateReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveProductVo;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +63,8 @@ public class ReceiveSheetImportListener extends ExcelImportListener<ReceiveSheet
       data.setSupplierId(supplier.getId());
     }
     if (!StringUtil.isBlank(data.getPurchaserCode())) {
-      UserService userService = ApplicationUtil.getBean(UserService.class);
-      UserDto purchaser = userService.findByCode(data.getPurchaserCode());
+      SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
+      SysUser purchaser = userService.findByCode(data.getPurchaserCode());
       if (purchaser == null) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“采购员编号”不存在");

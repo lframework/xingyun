@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.core.mappers.OpLogsMapper">
+
+    <sql id="OpLogsDto_sql">
+        SELECT
+            *
+        FROM op_logs
+    </sql>
+    <delete id="clearLogs">
+        DELETE FROM op_logs
+        WHERE
+        <![CDATA[
+        create_time <= #{endTime}
+
+        ]]>
+    </delete>
+
+    <select id="query" resultType="com.lframework.xingyun.core.entity.OpLogs">
+        <include refid="OpLogsDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.createBy != null and vo.createBy != ''">
+                    AND create_by_id = #{vo.createBy}
+                </if>
+                <if test="vo.startTime != null">
+                    AND create_time >= #{vo.startTime}
+                </if>
+                <if test="vo.endTime != null">
+                    <![CDATA[
+                    AND create_time <= #{vo.endTime}
+                    ]]>
+                </if>
+                <if test="vo.logType != null">
+                    AND log_type = #{vo.logType}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="findById" resultType="com.lframework.xingyun.core.entity.OpLogs">
+        <include refid="OpLogsDto_sql"/>
+        WHERE id = #{id}
+    </select>
+</mapper>

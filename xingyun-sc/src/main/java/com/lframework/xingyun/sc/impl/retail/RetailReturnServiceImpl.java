@@ -12,11 +12,10 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.security.SecurityUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.template.core.service.GenerateCodeService;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
@@ -28,9 +27,13 @@ import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
+import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
-import com.lframework.xingyun.core.events.order.impl.ApprovePassRetailReturnEvent;
+import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
@@ -45,6 +48,7 @@ import com.lframework.xingyun.sc.enums.ProductStockBizType;
 import com.lframework.xingyun.sc.enums.RetailReturnStatus;
 import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
+import com.lframework.xingyun.sc.events.order.impl.ApprovePassRetailReturnEvent;
 import com.lframework.xingyun.sc.mappers.RetailReturnMapper;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.retail.RetailConfigService;
@@ -63,10 +67,7 @@ import com.lframework.xingyun.sc.vo.retail.returned.QueryRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.RetailReturnProductVo;
 import com.lframework.xingyun.sc.vo.retail.returned.UpdateRetailReturnVo;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
   private MemberService memberService;
 
   @Autowired
-  private UserService userService;
+  private SysUserService userService;
 
   @Autowired
   private ProductService productService;
@@ -262,7 +263,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         RetailOutSheet retailOutSheet = retailOutSheetService.getById(retailReturn.getOutSheetId());
         throw new DefaultClientException(
-            "零售出库单号：" + retailOutSheet.getCode() + "，已关联其他零售退货单，不允许关联多个零售退货单！");
+            "零售出库单号：" + retailOutSheet.getCode()
+                + "，已关联其他零售退货单，不允许关联多个零售退货单！");
       }
     }
 
@@ -330,7 +332,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
         RetailReturnService thisService = getThis(this.getClass());
         thisService.approvePass(approvePassVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个零售退货单审核通过失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个零售退货单审核通过失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -410,7 +413,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
         RetailReturnService thisService = getThis(this.getClass());
         thisService.approveRefuse(approveRefuseVo);
       } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个零售退货单审核拒绝失败，失败原因：" + e.getMsg());
+        throw new DefaultClientException(
+            "第" + orderNo + "个零售退货单审核拒绝失败，失败原因：" + e.getMsg());
       }
 
       orderNo++;
@@ -480,7 +484,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
           RetailReturnService thisService = getThis(this.getClass());
           thisService.deleteById(id);
         } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个零售退货单删除失败，失败原因：" + e.getMsg());
+          throw new DefaultClientException(
+              "第" + orderNo + "个零售退货单删除失败，失败原因：" + e.getMsg());
         }
 
         orderNo++;
@@ -509,7 +514,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     }
 
     if (!StringUtil.isBlank(vo.getSalerId())) {
-      UserDto saler = userService.findById(vo.getSalerId());
+      SysUser saler = userService.findById(vo.getSalerId());
       if (saler == null) {
         throw new InputErrorException("零售员不存在！");
       }
@@ -543,7 +548,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
             .ne(RetailReturn::getId, retailReturn.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
           throw new DefaultClientException(
-              "零售出库单号：" + retailOutSheet.getCode() + "，已关联其他零售退货单，不允许关联多个零售退货单！");
+              "零售出库单号：" + retailOutSheet.getCode()
+                  + "，已关联其他零售退货单，不允许关联多个零售退货单！");
         }
       }
     }
@@ -644,10 +650,12 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
 
   private void sendApprovePassEvent(RetailReturn r) {
 
-    ApprovePassRetailReturnEvent event = new ApprovePassRetailReturnEvent(this);
-    event.setId(r.getId());
-    event.setTotalAmount(r.getTotalAmount());
-    event.setApproveTime(r.getApproveTime());
+    ApprovePassOrderDto dto = new ApprovePassOrderDto();
+    dto.setId(r.getId());
+    dto.setTotalAmount(r.getTotalAmount());
+    dto.setApproveTime(r.getApproveTime());
+
+    ApprovePassRetailReturnEvent event = new ApprovePassRetailReturnEvent(this, dto);
 
     ApplicationUtil.publishEvent(event);
   }

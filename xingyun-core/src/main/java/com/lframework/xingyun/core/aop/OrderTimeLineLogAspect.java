@@ -3,13 +3,13 @@ package com.lframework.xingyun.core.aop;
 import com.lframework.starter.common.utils.ArrayUtil;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.security.AbstractUserDetails;
-import com.lframework.starter.web.common.security.SecurityUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.components.security.AbstractUserDetails;
+import com.lframework.starter.web.components.security.SecurityUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.config.properties.DefaultSettingProperties;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.SpelUtil;
-import com.lframework.xingyun.core.annations.OrderTimeLineLog;
+import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
 import com.lframework.xingyun.core.service.OrderTimeLineService;
 import java.util.ArrayList;
@@ -39,9 +39,9 @@ public class OrderTimeLineLogAspect {
   @Autowired
   private DefaultSettingProperties defaultSettingProperties;
 
-  private final ThreadLocal<Integer> POOL = new ThreadLocal<>();
+  private final ThreadLocal<Integer> POOL = new InheritableThreadLocal<>();
 
-  @Pointcut("@annotation(com.lframework.xingyun.core.annations.OrderTimeLineLog)")
+  @Pointcut("@annotation(com.lframework.xingyun.core.annotations.OrderTimeLineLog)")
   public void orderTimeLineLogCutPoint() {
 
   }

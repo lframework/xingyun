@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.retail.returned;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.RetailReturn;
 import com.lframework.xingyun.sc.service.retail.RetailReturnService;
 import io.swagger.annotations.ApiModelProperty;

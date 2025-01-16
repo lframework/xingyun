@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
-import com.lframework.xingyun.template.core.dto.UserDto;
-import com.lframework.xingyun.template.core.service.UserService;
+import com.lframework.xingyun.template.inner.entity.SysUser;
+import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import lombok.Data;
@@ -130,8 +130,8 @@ public class GetMemberBo extends BaseBo<Member> {
     }
 
     if (!StringUtil.isBlank(dto.getGuiderId())) {
-      UserService userService = ApplicationUtil.getBean(UserService.class);
-      UserDto guider = userService.findById(dto.getGuiderId());
+      SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
+      SysUser guider = userService.findById(dto.getGuiderId());
       this.guiderName = guider.getName();
     }
   }

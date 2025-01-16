@@ -23,8 +23,8 @@ import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.CreateStockAdjustR
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.QueryStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.StockAdjustReasonSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.UpdateStockAdjustReasonVo;
-import com.lframework.xingyun.template.core.annotations.OpLog;
-import com.lframework.xingyun.template.core.utils.OpLogUtil;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;

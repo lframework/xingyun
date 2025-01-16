@@ -8,13 +8,13 @@ import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.common.utils.ApplicationUtil;
 import com.lframework.starter.web.components.excel.ExcelImportListener;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
-import com.lframework.xingyun.template.core.dto.DeptDto;
-import com.lframework.xingyun.template.core.service.DeptService;
+import com.lframework.xingyun.template.inner.entity.SysDept;
+import com.lframework.xingyun.template.inner.service.system.SysDeptService;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +52,8 @@ public class ShopImportListener extends ExcelImportListener<ShopImportModel> {
           "第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
     }
     if (!StringUtil.isBlank(data.getDeptCode())) {
-      DeptService deptService = ApplicationUtil.getBean(DeptService.class);
-      DeptDto dept = deptService.findByCode(data.getDeptCode());
+      SysDeptService deptService = ApplicationUtil.getBean(SysDeptService.class);
+      SysDept dept = deptService.findByCode(data.getDeptCode());
       if (dept == null) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“所属部门编号”不存在");

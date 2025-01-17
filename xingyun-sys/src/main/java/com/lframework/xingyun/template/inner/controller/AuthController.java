@@ -2,6 +2,8 @@ package com.lframework.xingyun.template.inner.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.codec.Base64;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.code.kaptcha.Producer;
 import com.lframework.starter.common.constants.PatternPool;
 import com.lframework.starter.common.constants.StringPool;
@@ -32,29 +34,29 @@ import com.lframework.starter.web.utils.JsonUtil;
 import com.lframework.starter.web.utils.TenantUtil;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
-import com.lframework.xingyun.template.inner.entity.SysDataPermissionData;
 import com.lframework.xingyun.core.enums.DefaultOpLogType;
-import com.lframework.xingyun.template.inner.enums.system.SysDataPermissionDataBizType;
-import com.lframework.xingyun.template.inner.service.system.SysDataPermissionModelDetailService;
-import com.lframework.xingyun.template.inner.vo.system.permission.SysDataPermissionModelDetailVo;
 import com.lframework.xingyun.template.inner.bo.auth.CollectMenuBo;
 import com.lframework.xingyun.template.inner.bo.auth.LoginBo;
 import com.lframework.xingyun.template.inner.bo.auth.MenuBo;
 import com.lframework.xingyun.template.inner.bo.auth.MenuBo.MetaBo;
 import com.lframework.xingyun.template.inner.dto.LoginDto;
 import com.lframework.xingyun.template.inner.dto.MenuDto;
+import com.lframework.xingyun.template.inner.entity.SysDataPermissionData;
 import com.lframework.xingyun.template.inner.entity.SysUserDept;
 import com.lframework.xingyun.template.inner.entity.SysUserRole;
 import com.lframework.xingyun.template.inner.entity.Tenant;
+import com.lframework.xingyun.template.inner.enums.system.SysDataPermissionDataBizType;
 import com.lframework.xingyun.template.inner.enums.system.SysMenuComponentType;
 import com.lframework.xingyun.template.inner.enums.system.SysMenuDisplay;
 import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
 import com.lframework.xingyun.template.inner.service.TenantService;
 import com.lframework.xingyun.template.inner.service.system.SysDataPermissionDataService;
+import com.lframework.xingyun.template.inner.service.system.SysDataPermissionModelDetailService;
 import com.lframework.xingyun.template.inner.service.system.SysMenuService;
 import com.lframework.xingyun.template.inner.service.system.SysUserDeptService;
 import com.lframework.xingyun.template.inner.service.system.SysUserRoleService;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
+import com.lframework.xingyun.template.inner.vo.system.permission.SysDataPermissionModelDetailVo;
 import com.lframework.xingyun.template.inner.vo.system.user.GetLoginCaptchaRequieVo;
 import com.lframework.xingyun.template.inner.vo.system.user.LoginVo;
 import io.swagger.annotations.Api;
@@ -139,6 +141,16 @@ public class AuthController extends DefaultBaseController {
   private SysConfService sysConfService;
 
   /**
+   * 是否为多租户
+   */
+  @ApiOperation(value = "是否为多租户")
+  @OpenApi
+  @GetMapping("/auth/tenant/require")
+  public InvokeResult<Boolean> getTenantRequire() {
+    return InvokeResultBuilder.success(TenantUtil.enableTenant());
+  }
+
+  /**
    * 是否需要登录验证码
    */
   @ApiOperation(value = "是否需要登录验证码")
@@ -148,15 +160,10 @@ public class AuthController extends DefaultBaseController {
     String username = vo.getUsername();
     String tenantId = null;
     if (TenantUtil.enableTenant()) {
-      String[] tmpArr = username.split("@");
-      if (tmpArr.length <= 1) {
-        throw new DefaultClientException("用户名或密码错误！");
-      }
-
-      tenantId = tmpArr[0];
-
       // 检查租户是否存在
-      Tenant tenant = tenantService.getById(tenantId);
+      Wrapper<Tenant> queryTenantWrapper = Wrappers.lambdaQuery(Tenant.class)
+          .eq(Tenant::getName, vo.getTenantName());
+      Tenant tenant = tenantService.getOne(queryTenantWrapper);
       if (tenant == null) {
         throw new DefaultClientException("用户名或密码错误！");
       }
@@ -164,6 +171,8 @@ public class AuthController extends DefaultBaseController {
       if (!tenant.getAvailable()) {
         throw new DefaultClientException("用户已停用，无法登录！");
       }
+
+      tenantId = tenant.getId().toString();
 
       TenantContextHolder.setTenantId(tenant.getId());
     }
@@ -215,16 +224,16 @@ public class AuthController extends DefaultBaseController {
     String password = vo.getPassword();
     String tenantId = null;
     if (TenantUtil.enableTenant()) {
-      String[] tmpArr = username.split("@");
-      if (tmpArr.length <= 1) {
+      if (StringUtil.isBlank(vo.getTenantName())) {
         throw new DefaultClientException("用户名或密码错误！");
       }
 
-      tenantId = tmpArr[0];
-      username = tmpArr[1];
+      username = vo.getUsername();
 
       // 检查租户是否存在
-      Tenant tenant = tenantService.getById(tenantId);
+      Wrapper<Tenant> queryTenantWrapper = Wrappers.lambdaQuery(Tenant.class)
+          .eq(Tenant::getName, vo.getTenantName());
+      Tenant tenant = tenantService.getOne(queryTenantWrapper);
       if (tenant == null) {
         throw new DefaultClientException("用户名或密码错误！");
       }
@@ -232,6 +241,8 @@ public class AuthController extends DefaultBaseController {
       if (!tenant.getAvailable()) {
         throw new DefaultClientException("用户已停用，无法登录！");
       }
+
+      tenantId = tenant.getId().toString();
 
       TenantContextHolder.setTenantId(tenant.getId());
     }
@@ -399,7 +410,8 @@ public class AuthController extends DefaultBaseController {
     }
     List<MenuDto> menus = sysMenuService.getMenuByUserId(user.getId(), user.isAdmin(), moduleIds);
 
-    List<MenuDto> collectMenus = menus.stream().filter(t -> t.getIsCollect()).collect(Collectors.toList());
+    List<MenuDto> collectMenus = menus.stream().filter(t -> t.getIsCollect())
+        .collect(Collectors.toList());
     List<CollectMenuBo> results = collectMenus.stream().map(t -> {
       CollectMenuBo result = new CollectMenuBo();
       result.setId(t.getId());

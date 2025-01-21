@@ -7,8 +7,6 @@ import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto;
 import com.lframework.xingyun.sc.entity.ScTransferOrder;
 import com.lframework.xingyun.sc.vo.stock.transfer.ApprovePassScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ApproveRefuseScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.BatchApprovePassScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.BatchApproveRefuseScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.CreateScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferProductVo;
@@ -66,25 +64,11 @@ public interface ScTransferOrderService extends BaseMpService<ScTransferOrder> {
   void deleteById(String id);
 
   /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
-
-  /**
    * 审核通过
    *
    * @param vo
    */
   void approvePass(ApprovePassScTransferOrderVo vo);
-
-  /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassScTransferOrderVo vo);
 
   /**
    * 直接审核通过
@@ -99,13 +83,6 @@ public interface ScTransferOrderService extends BaseMpService<ScTransferOrder> {
    * @param vo
    */
   void approveRefuse(ApproveRefuseScTransferOrderVo vo);
-
-  /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseScTransferOrderVo vo);
 
   /**
    * 收货

@@ -1,26 +1,24 @@
 package com.lframework.xingyun.template.gen.controller;
 
 import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.web.controller.DefaultBaseController;
+import com.lframework.starter.web.resp.InvokeResult;
+import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.template.gen.bo.custom.page.GetGenCustomPageBo;
 import com.lframework.xingyun.template.gen.bo.custom.page.QueryGenCustomPageBo;
+import com.lframework.xingyun.template.gen.entity.GenCustomPage;
 import com.lframework.xingyun.template.gen.service.GenCustomPageService;
 import com.lframework.xingyun.template.gen.vo.custom.page.CreateGenCustomPageVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.QueryGenCustomPageVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.UpdateGenCustomPageVo;
-import com.lframework.xingyun.template.gen.entity.GenCustomPage;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.controller.DefaultBaseController;
-import com.lframework.starter.web.resp.InvokeResult;
-import com.lframework.starter.web.resp.InvokeResultBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,18 +94,6 @@ public class GenCustomPageController extends DefaultBaseController {
     genCustomPageService.delete(id);
 
     genCustomPageService.cleanCacheByKey(id);
-
-    return InvokeResultBuilder.success();
-  }
-
-  @ApiOperation("批量删除")
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> batchDelete(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "ID不能为空！") List<Integer> ids) {
-
-    genCustomPageService.batchDelete(ids);
-
-    genCustomPageService.cleanCacheByKeys(ids);
 
     return InvokeResultBuilder.success();
   }

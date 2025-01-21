@@ -5,11 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.security.SecurityUtil;
@@ -28,7 +26,6 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
-import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.xingyun.core.utils.OpLogUtil;
@@ -54,8 +51,6 @@ import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApprovePassReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApproveRefuseReceiveSheetVo;
-import com.lframework.xingyun.sc.vo.purchase.receive.BatchApprovePassReceiveSheetVo;
-import com.lframework.xingyun.sc.vo.purchase.receive.BatchApproveRefuseReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.CreateReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetWithReturnVo;
@@ -63,6 +58,7 @@ import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveProductVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.UpdateReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -363,28 +359,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
   }
 
   @Transactional(rollbackFor = Exception.class)
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Override
-  public void batchApprovePass(BatchApprovePassReceiveSheetVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassReceiveSheetVo approvePassVo = new ApprovePassReceiveSheetVo();
-      approvePassVo.setId(id);
-
-      try {
-        ReceiveSheetService thisService = getThis(this.getClass());
-        thisService.approvePass(approvePassVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个采购收货单审核通过失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
-  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Override
   public String directApprovePass(CreateReceiveSheetVo vo) {
@@ -442,29 +416,6 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @Transactional(rollbackFor = Exception.class)
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseReceiveSheetVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseReceiveSheetVo approveRefuseVo = new ApproveRefuseReceiveSheetVo();
-      approveRefuseVo.setId(id);
-      approveRefuseVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        ReceiveSheetService thisService = getThis(this.getClass());
-        thisService.approveRefuse(approveRefuseVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个采购收货单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OpLog(type = ScOpLogType.PURCHASE, name = "删除采购收货单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -508,31 +459,14 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     receiveSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除订单
-    getBaseMapper().deleteById(id);
+    Wrapper<ReceiveSheet> deleteWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
+        .eq(ReceiveSheet::getId, id)
+        .in(ReceiveSheet::getStatus, ReceiveSheetStatus.CREATED, ReceiveSheetStatus.APPROVE_REFUSE);
+    if (!remove(deleteWrapper)) {
+      throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
+    }
 
     OpLogUtil.setVariable("code", sheet.getCode());
-  }
-
-  @Transactional(rollbackFor = Exception.class)
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          ReceiveSheetService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException(
-              "第" + orderNo + "个采购收货单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   @Transactional(rollbackFor = Exception.class)

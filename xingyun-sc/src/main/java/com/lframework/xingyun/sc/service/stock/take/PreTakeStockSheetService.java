@@ -85,13 +85,6 @@ public interface PreTakeStockSheetService extends BaseMpService<PreTakeStockShee
   void deleteById(String id);
 
   /**
-   * 根据ID批量删除
-   *
-   * @param ids
-   */
-  void batchDelete(List<String> ids);
-
-  /**
    * 根据关键字查询预先盘点单商品信息
    *
    * @param pageIndex

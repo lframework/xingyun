@@ -32,12 +32,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -128,7 +126,8 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @HasPermission({"stock:take:pre:query"})
   @GetMapping
-  public InvokeResult<GetPreTakeStockSheetBo> getDetail(@NotBlank(message = "id不能为空！") String id) {
+  public InvokeResult<GetPreTakeStockSheetBo> getDetail(
+      @NotBlank(message = "id不能为空！") String id) {
 
     PreTakeStockSheetFullDto data = preTakeStockSheetService.getDetail(id);
     if (data == null) {
@@ -209,19 +208,6 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   public InvokeResult<Void> deleteById(@NotBlank(message = "ID不能为空！") String id) {
 
     preTakeStockSheetService.deleteById(id);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量删除
-   */
-  @HasPermission({"stock:take:pre:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> batchDelete(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择要执行操作的预先盘点单！") @RequestBody List<String> ids) {
-
-    preTakeStockSheetService.batchDelete(ids);
 
     return InvokeResultBuilder.success();
   }

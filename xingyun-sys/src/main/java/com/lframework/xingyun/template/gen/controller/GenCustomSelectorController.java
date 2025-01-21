@@ -103,38 +103,26 @@ public class GenCustomSelectorController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("批量删除")
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> batchDelete(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "ID不能为空！") List<String> ids) {
+  @ApiOperation("启用")
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "ID不能为空！") String id) {
 
-    genCustomSelectorService.batchDelete(ids);
+    genCustomSelectorService.enable(id);
 
-    genCustomSelectorService.cleanCacheByKeys(ids);
-
-    return InvokeResultBuilder.success();
-  }
-
-  @ApiOperation("批量启用")
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "ID不能为空！") List<String> ids) {
-
-    genCustomSelectorService.batchEnable(ids);
-
-    genCustomSelectorService.cleanCacheByKeys(ids);
+    genCustomSelectorService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("批量停用")
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "ID不能为空！") List<String> ids) {
+  @ApiOperation("停用")
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "ID不能为空！") String id) {
 
-    genCustomSelectorService.batchUnable(ids);
+    genCustomSelectorService.unable(id);
 
-    genCustomSelectorService.cleanCacheByKeys(ids);
+    genCustomSelectorService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

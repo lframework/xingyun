@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
@@ -32,7 +31,6 @@ import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
 import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.xingyun.core.utils.OpLogUtil;
@@ -66,8 +64,6 @@ import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.retail.out.ApprovePassRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.ApproveRefuseRetailOutSheetVo;
-import com.lframework.xingyun.sc.vo.retail.out.BatchApprovePassRetailOutSheetVo;
-import com.lframework.xingyun.sc.vo.retail.out.BatchApproveRefuseRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.CreateRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetWithReturnVo;
@@ -76,6 +72,7 @@ import com.lframework.xingyun.sc.vo.retail.out.RetailOutProductVo;
 import com.lframework.xingyun.sc.vo.retail.out.RetailOutSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.retail.out.UpdateRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -460,28 +457,6 @@ public class RetailOutSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassRetailOutSheetVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassRetailOutSheetVo approvePassVo = new ApprovePassRetailOutSheetVo();
-      approvePassVo.setId(id);
-
-      try {
-        RetailOutSheetService thisService = getThis(this.getClass());
-        thisService.approvePass(approvePassVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个零售出库单审核通过失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -541,29 +516,6 @@ public class RetailOutSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseRetailOutSheetVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseRetailOutSheetVo approveRefuseVo = new ApproveRefuseRetailOutSheetVo();
-      approveRefuseVo.setId(id);
-      approveRefuseVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        RetailOutSheetService thisService = getThis(this.getClass());
-        thisService.approveRefuse(approveRefuseVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个零售出库单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OpLog(type = ScOpLogType.RETAIL, name = "删除零售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -610,33 +562,16 @@ public class RetailOutSheetServiceImpl extends
     retailOutSheetDetailLotService.remove(deleteDetailLotWrapper);
 
     // 删除订单
-    getBaseMapper().deleteById(id);
+    Wrapper<RetailOutSheet> deleteWrapper = Wrappers.lambdaQuery(RetailOutSheet.class)
+        .eq(RetailOutSheet::getId, id).in(RetailOutSheet::getStatus, RetailOutSheetStatus.CREATED,
+            RetailOutSheetStatus.APPROVE_REFUSE);
+    if (!remove(deleteWrapper)) {
+      throw new DefaultClientException("零售出库单信息已过期，请刷新重试！");
+    }
 
     orderPayTypeService.deleteByOrderId(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
-  }
-
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          RetailOutSheetService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException(
-              "第" + orderNo + "个零售出库单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   @Override

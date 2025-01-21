@@ -7,8 +7,6 @@ import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApprovePassStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApproveRefuseStockAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.stock.BatchApprovePassStockAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.stock.BatchApproveRefuseStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.CreateStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustSheetVo;
@@ -70,25 +68,11 @@ public interface StockAdjustSheetService extends BaseMpService<StockAdjustSheet>
   void deleteById(String id);
 
   /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
-
-  /**
    * 审核通过
    *
    * @param vo
    */
   void approvePass(ApprovePassStockAdjustSheetVo vo);
-
-  /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassStockAdjustSheetVo vo);
 
   /**
    * 直接审核通过
@@ -103,13 +87,6 @@ public interface StockAdjustSheetService extends BaseMpService<StockAdjustSheet>
    * @param vo
    */
   void approveRefuse(ApproveRefuseStockAdjustSheetVo vo);
-
-  /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseStockAdjustSheetVo vo);
 
   /**
    * 根据关键字查询库存调整单商品信息

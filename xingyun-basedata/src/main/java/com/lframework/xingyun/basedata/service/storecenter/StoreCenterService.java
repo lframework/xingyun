@@ -7,7 +7,6 @@ import com.lframework.xingyun.basedata.vo.storecenter.CreateStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.UpdateStoreCenterVo;
-import java.util.Collection;
 
 public interface StoreCenterService extends BaseMpService<StoreCenter> {
 
@@ -29,16 +28,16 @@ public interface StoreCenterService extends BaseMpService<StoreCenter> {
     /**
      * 根据ID停用
      *
-     * @param ids
+     * @param id
      */
-    void batchUnable(Collection<String> ids);
+    void unable(String id);
 
     /**
      * 根据ID启用
      *
-     * @param ids
+     * @param id
      */
-    void batchEnable(Collection<String> ids);
+    void enable(String id);
 
     /**
      * 创建

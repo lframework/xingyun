@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -121,37 +120,33 @@ public class SettleInItemController extends DefaultBaseController {
     }
 
     /**
-     * 批量停用收入项目
+     * 停用收入项目
      */
-    @ApiOperation("批量停用收入项目")
+    @ApiOperation("停用收入项目")
     @HasPermission({"settle:in-item:modify"})
-    @PatchMapping("/unable/batch")
-    public InvokeResult<Void> batchUnable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的收入项目！") @RequestBody List<String> ids) {
+    @PatchMapping("/unable")
+    public InvokeResult<Void> unable(
+            @ApiParam(value = "ID", required = true) @NotEmpty(message = "收入项目ID不能为空！") String id) {
 
-        settleInItemService.batchUnable(ids);
+        settleInItemService.unable(id);
 
-        for (String id : ids) {
-            settleInItemService.cleanCacheByKey(id);
-        }
+        settleInItemService.cleanCacheByKey(id);
 
         return InvokeResultBuilder.success();
     }
 
     /**
-     * 批量启用收入项目
+     * 启用收入项目
      */
-    @ApiOperation("批量启用收入项目")
+    @ApiOperation("启用收入项目")
     @HasPermission({"settle:in-item:modify"})
-    @PatchMapping("/enable/batch")
-    public InvokeResult<Void> batchEnable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的收入项目！") @RequestBody List<String> ids) {
+    @PatchMapping("/enable")
+    public InvokeResult<Void> enable(
+        @ApiParam(value = "ID", required = true) @NotEmpty(message = "收入项目ID不能为空！") String id) {
 
-        settleInItemService.batchEnable(ids);
+        settleInItemService.enable(id);
 
-        for (String id : ids) {
-            settleInItemService.cleanCacheByKey(id);
-        }
+        settleInItemService.cleanCacheByKey(id);
 
         return InvokeResultBuilder.success();
     }

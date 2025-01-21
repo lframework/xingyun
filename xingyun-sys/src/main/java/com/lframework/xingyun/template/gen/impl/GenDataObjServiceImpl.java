@@ -272,38 +272,19 @@ public class GenDataObjServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchDelete(@NonNull List<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
-
-    for (String id : ids) {
-      this.delete(id);
-    }
-  }
-
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchEnable(List<String> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void enable(String id) {
 
     Wrapper<GenDataObj> wrapper = Wrappers.lambdaUpdate(GenDataObj.class)
-        .set(GenDataObj::getAvailable, Boolean.TRUE).in(GenDataObj::getId, ids);
+        .set(GenDataObj::getAvailable, Boolean.TRUE).eq(GenDataObj::getId, id);
     getBaseMapper().update(wrapper);
   }
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(List<String> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void unable(String id) {
 
     Wrapper<GenDataObj> wrapper = Wrappers.lambdaUpdate(GenDataObj.class)
-        .set(GenDataObj::getAvailable, Boolean.FALSE).in(GenDataObj::getId, ids);
+        .set(GenDataObj::getAvailable, Boolean.FALSE).eq(GenDataObj::getId, id);
     getBaseMapper().update(wrapper);
   }
 

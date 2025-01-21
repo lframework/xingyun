@@ -7,28 +7,26 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.mappers.LogisticsCompanyMapper;
 import com.lframework.xingyun.basedata.service.logistics.LogisticsCompanyService;
 import com.lframework.xingyun.basedata.vo.logistics.company.CreateLogisticsCompanyVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanySelectorVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanyVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.UpdateLogisticsCompanyVo;
+import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
 import com.lframework.xingyun.core.service.DicCityService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -70,31 +68,23 @@ public class LogisticsCompanyServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用物流公司，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用物流公司，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void unable(String id) {
 
     Wrapper<LogisticsCompany> updateWrapper = Wrappers.lambdaUpdate(LogisticsCompany.class)
-        .set(LogisticsCompany::getAvailable, Boolean.FALSE).in(LogisticsCompany::getId, ids);
+        .set(LogisticsCompany::getAvailable, Boolean.FALSE).eq(LogisticsCompany::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用物流公司，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用物流公司，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchEnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void enable(String id) {
 
     Wrapper<LogisticsCompany> updateWrapper = Wrappers.lambdaUpdate(LogisticsCompany.class)
-        .set(LogisticsCompany::getAvailable, Boolean.TRUE).in(LogisticsCompany::getId, ids);
+        .set(LogisticsCompany::getAvailable, Boolean.TRUE).eq(LogisticsCompany::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 

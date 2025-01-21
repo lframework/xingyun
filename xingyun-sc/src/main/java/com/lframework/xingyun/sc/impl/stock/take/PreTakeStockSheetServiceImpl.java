@@ -11,11 +11,13 @@ import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
@@ -34,8 +36,6 @@ import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,15 +198,6 @@ public class PreTakeStockSheetServiceImpl extends
             PreTakeStockSheetDetail.class)
         .eq(PreTakeStockSheetDetail::getSheetId, id);
     preTakeStockSheetDetailService.remove(deleteDetailWrapper);
-  }
-
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchDelete(List<String> ids) {
-
-    for (String id : ids) {
-      getThis(this.getClass()).deleteById(id);
-    }
   }
 
   @Override

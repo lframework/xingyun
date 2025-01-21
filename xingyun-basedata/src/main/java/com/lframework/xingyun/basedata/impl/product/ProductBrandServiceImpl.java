@@ -74,31 +74,23 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品品牌，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品品牌，ID：{}", params = "#id")
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void batchUnable(Collection<String> ids) {
-
-        if (CollectionUtil.isEmpty(ids)) {
-            return;
-        }
+    public void unable(String id) {
 
         Wrapper<ProductBrand> updateWrapper = Wrappers.lambdaUpdate(ProductBrand.class)
-                .set(ProductBrand::getAvailable, Boolean.FALSE).in(ProductBrand::getId, ids);
+                .set(ProductBrand::getAvailable, Boolean.FALSE).eq(ProductBrand::getId, id);
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品品牌，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品品牌，ID：{}", params = "#id")
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void batchEnable(Collection<String> ids) {
-
-        if (CollectionUtil.isEmpty(ids)) {
-            return;
-        }
+    public void enable(String id) {
 
         Wrapper<ProductBrand> updateWrapper = Wrappers.lambdaUpdate(ProductBrand.class)
-                .set(ProductBrand::getAvailable, Boolean.TRUE).in(ProductBrand::getId, ids);
+                .set(ProductBrand::getAvailable, Boolean.TRUE).eq(ProductBrand::getId, id);
         getBaseMapper().update(updateWrapper);
     }
 

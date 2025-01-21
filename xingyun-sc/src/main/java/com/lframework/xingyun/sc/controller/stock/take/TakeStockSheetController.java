@@ -24,8 +24,6 @@ import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApprovePassTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApproveRefuseTakeStockSheetVo;
-import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApprovePassTakeStockSheetVo;
-import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApproveRefuseTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.CreateTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
@@ -34,12 +32,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -257,20 +253,6 @@ public class TakeStockSheetController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核通过
-   */
-  @ApiOperation("批量审核通过")
-  @HasPermission({"stock:take:sheet:approve"})
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @Valid @RequestBody BatchApprovePassTakeStockSheetVo vo) {
-
-    takeStockSheetService.batchApprovePass(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 审核拒绝
    */
   @ApiOperation("审核拒绝")
@@ -279,20 +261,6 @@ public class TakeStockSheetController extends DefaultBaseController {
   public InvokeResult<Void> approveRefuse(@Valid ApproveRefuseTakeStockSheetVo vo) {
 
     takeStockSheetService.approveRefuse(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量审核拒绝
-   */
-  @ApiOperation("批量审核拒绝")
-  @HasPermission({"stock:take:sheet:approve"})
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @Valid @RequestBody BatchApproveRefuseTakeStockSheetVo vo) {
-
-    takeStockSheetService.batchApproveRefuse(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -324,19 +292,4 @@ public class TakeStockSheetController extends DefaultBaseController {
 
     return InvokeResultBuilder.success();
   }
-
-  /**
-   * 批量删除
-   */
-  @ApiOperation("批量删除")
-  @HasPermission({"stock:take:sheet:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> batchDelete(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择要执行操作的库存盘点单！") @RequestBody List<String> ids) {
-
-    takeStockSheetService.batchDelete(ids);
-
-    return InvokeResultBuilder.success();
-  }
-
 }

@@ -8,7 +8,6 @@ import com.lframework.starter.common.constants.PatternPool;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
@@ -98,28 +97,20 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
     return getOne(queryWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用用户，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用用户，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchEnable(List<String> ids) {
+  public void enable(String id) {
 
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
-
-    this.doBatchEnable(ids);
+    this.doEnable(id);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用用户，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用用户，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(List<String> ids) {
+  public void unable(String id) {
 
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
-
-    this.doBatchUnable(ids);
+    this.doUnable(id);
   }
 
   @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增用户，ID：{}, 编号：{}", params = {"#id",
@@ -219,17 +210,17 @@ public class SysUserServiceImpl extends BaseMpServiceImpl<SysUserMapper, SysUser
     return getBaseMapper().findById(id);
   }
 
-  protected void doBatchEnable(List<String> ids) {
+  protected void doEnable(String id) {
 
     Wrapper<SysUser> updateWrapper = Wrappers.lambdaUpdate(SysUser.class)
-        .set(SysUser::getAvailable, Boolean.TRUE).in(SysUser::getId, ids);
+        .set(SysUser::getAvailable, Boolean.TRUE).eq(SysUser::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 
-  protected void doBatchUnable(List<String> ids) {
+  protected void doUnable(String id) {
 
     Wrapper<SysUser> updateWrapper = Wrappers.lambdaUpdate(SysUser.class)
-        .set(SysUser::getAvailable, Boolean.FALSE).in(SysUser::getId, ids);
+        .set(SysUser::getAvailable, Boolean.FALSE).eq(SysUser::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultSysException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
@@ -47,8 +46,6 @@ import com.lframework.xingyun.settle.service.CustomerSettleFeeSheetService;
 import com.lframework.xingyun.settle.service.CustomerSettlePreSheetService;
 import com.lframework.xingyun.settle.vo.check.customer.ApprovePassCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.ApproveRefuseCustomerSettleCheckSheetVo;
-import com.lframework.xingyun.settle.vo.check.customer.BatchApprovePassCustomerSettleCheckSheetVo;
-import com.lframework.xingyun.settle.vo.check.customer.BatchApproveRefuseCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.CreateCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.CustomerSettleCheckSheetItemVo;
 import com.lframework.xingyun.settle.vo.check.customer.QueryCustomerSettleCheckSheetVo;
@@ -297,46 +294,6 @@ public class CustomerSettleCheckSheetServiceImpl extends
         OpLogUtil.setExtra(vo);
     }
 
-    @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void batchApprovePass(BatchApprovePassCustomerSettleCheckSheetVo vo) {
-
-        CustomerSettleCheckSheetService thisService = getThis(this.getClass());
-        int orderNo = 1;
-        for (String id : vo.getIds()) {
-            ApprovePassCustomerSettleCheckSheetVo approveVo = new ApprovePassCustomerSettleCheckSheetVo();
-            approveVo.setId(id);
-            try {
-                thisService.approvePass(approveVo);
-            } catch (ClientException e) {
-                throw new DefaultClientException("第" + orderNo + "个客户对账单审核通过失败，失败原因：" + e.getMsg());
-            }
-            orderNo++;
-        }
-    }
-
-    @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void batchApproveRefuse(BatchApproveRefuseCustomerSettleCheckSheetVo vo) {
-
-        CustomerSettleCheckSheetService thisService = getThis(this.getClass());
-        int orderNo = 1;
-        for (String id : vo.getIds()) {
-            ApproveRefuseCustomerSettleCheckSheetVo approveVo = new ApproveRefuseCustomerSettleCheckSheetVo();
-            approveVo.setId(id);
-            approveVo.setRefuseReason(vo.getRefuseReason());
-
-            try {
-                thisService.approveRefuse(approveVo);
-            } catch (ClientException e) {
-                throw new DefaultClientException("第" + orderNo + "个客户对账单审核拒绝失败，失败原因：" + e.getMsg());
-            }
-            orderNo++;
-        }
-    }
-
     @OpLog(type = SettleOpLogType.SETTLE, name = "删除客户对账单，单号：{}", params = "#code")
     @OrderTimeLineLog(orderId = "#id", delete = true)
     @Transactional(rollbackFor = Exception.class)
@@ -380,28 +337,6 @@ public class CustomerSettleCheckSheetServiceImpl extends
         getBaseMapper().deleteById(id);
 
         OpLogUtil.setVariable("code", sheet.getCode());
-    }
-
-    @OrderTimeLineLog(orderId = "#ids", delete = true)
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void deleteByIds(List<String> ids) {
-
-        if (!CollectionUtil.isEmpty(ids)) {
-            int orderNo = 1;
-            for (String id : ids) {
-
-                try {
-                    CustomerSettleCheckSheetService thisService = getThis(this.getClass());
-                    thisService.deleteById(id);
-                } catch (ClientException e) {
-                    throw new DefaultClientException(
-                            "第" + orderNo + "个客户对账单删除失败，失败原因：" + e.getMsg());
-                }
-
-                orderNo++;
-            }
-        }
     }
 
     @Override

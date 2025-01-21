@@ -6,8 +6,6 @@ import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.RetailReturn;
 import com.lframework.xingyun.sc.vo.retail.returned.ApprovePassRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.ApproveRefuseRetailReturnVo;
-import com.lframework.xingyun.sc.vo.retail.returned.BatchApprovePassRetailReturnVo;
-import com.lframework.xingyun.sc.vo.retail.returned.BatchApproveRefuseRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.CreateRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.QueryRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.UpdateRetailReturnVo;
@@ -64,13 +62,6 @@ public interface RetailReturnService extends BaseMpService<RetailReturn> {
   void approvePass(ApprovePassRetailReturnVo vo);
 
   /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassRetailReturnVo vo);
-
-  /**
    * 直接审核通过
    *
    * @param vo
@@ -85,23 +76,9 @@ public interface RetailReturnService extends BaseMpService<RetailReturn> {
   void approveRefuse(ApproveRefuseRetailReturnVo vo);
 
   /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseRetailReturnVo vo);
-
-  /**
    * 根据ID删除
    *
    * @param id
    */
   void deleteById(String id);
-
-  /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
 }

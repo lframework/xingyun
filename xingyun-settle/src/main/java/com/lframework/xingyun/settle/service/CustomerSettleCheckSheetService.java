@@ -8,8 +8,6 @@ import com.lframework.xingyun.settle.entity.CustomerSettleCheckSheet;
 import com.lframework.xingyun.settle.enums.CustomerSettleCheckSheetBizType;
 import com.lframework.xingyun.settle.vo.check.customer.ApprovePassCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.ApproveRefuseCustomerSettleCheckSheetVo;
-import com.lframework.xingyun.settle.vo.check.customer.BatchApprovePassCustomerSettleCheckSheetVo;
-import com.lframework.xingyun.settle.vo.check.customer.BatchApproveRefuseCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.CreateCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.QueryCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.QueryCustomerUnCheckBizItemVo;
@@ -84,32 +82,11 @@ public interface CustomerSettleCheckSheetService extends BaseMpService<CustomerS
     void approveRefuse(ApproveRefuseCustomerSettleCheckSheetVo vo);
 
     /**
-     * 批量审核通过
-     *
-     * @param vo
-     */
-    void batchApprovePass(BatchApprovePassCustomerSettleCheckSheetVo vo);
-
-    /**
-     * 批量审核拒绝
-     *
-     * @param vo
-     */
-    void batchApproveRefuse(BatchApproveRefuseCustomerSettleCheckSheetVo vo);
-
-    /**
      * 根据ID删除
      *
      * @param id
      */
     void deleteById(String id);
-
-    /**
-     * 根据IDs删除
-     *
-     * @param ids
-     */
-    void deleteByIds(List<String> ids);
 
     /**
      * 查询业务单据

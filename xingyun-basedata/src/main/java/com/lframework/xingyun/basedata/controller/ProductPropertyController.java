@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ThreadUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.threads.DefaultRunnable;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.threads.DefaultRunnable;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.product.property.GetProductPropertyBo;
 import com.lframework.xingyun.basedata.bo.product.property.ProductPropertyModelorBo;
 import com.lframework.xingyun.basedata.bo.product.property.QueryProductPropertyBo;
@@ -103,37 +103,33 @@ public class ProductPropertyController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用属性
+   * 停用属性
    */
-  @ApiOperation("批量停用属性")
+  @ApiOperation("停用属性")
   @HasPermission({"base-data:product:property:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的属性！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "属性ID不能为空！") String id) {
 
-    productPropertyService.batchUnable(ids);
+    productPropertyService.unable(id);
 
-    for (String id : ids) {
-      productPropertyService.cleanCacheByKey(id);
-    }
+    productPropertyService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用属性
+   * 启用属性
    */
-  @ApiOperation("批量启用属性")
+  @ApiOperation("启用属性")
   @HasPermission({"base-data:product:property:modify"})
-  @PatchMapping("/enable/batch")
+  @PatchMapping("/enable")
   public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的属性！") @RequestBody List<String> ids) {
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "属性ID不能为空！") String id) {
 
-    productPropertyService.batchEnable(ids);
+    productPropertyService.enable(id);
 
-    for (String id : ids) {
-      productPropertyService.cleanCacheByKey(id);
-    }
+    productPropertyService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

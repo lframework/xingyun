@@ -2,13 +2,13 @@ package com.lframework.xingyun.basedata.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.customer.GetCustomerBo;
 import com.lframework.xingyun.basedata.bo.customer.QueryCustomerBo;
 import com.lframework.xingyun.basedata.entity.Customer;
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -95,37 +94,33 @@ public class CustomerController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用客户
+   * 停用客户
    */
-  @ApiOperation("批量停用客户")
+  @ApiOperation("停用客户")
   @HasPermission({"base-data:customer:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的客户！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "客户ID不能为空！") String id) {
 
-    customerService.batchUnable(ids);
+    customerService.unable(id);
 
-    for (String id : ids) {
-      customerService.cleanCacheByKey(id);
-    }
+    customerService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用客户
+   * 启用客户
    */
-  @ApiOperation("批量启用客户")
+  @ApiOperation("启用客户")
   @HasPermission({"base-data:customer:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的客户！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "客户ID不能为空！") String id) {
 
-    customerService.batchEnable(ids);
+    customerService.enable(id);
 
-    for (String id : ids) {
-      customerService.cleanCacheByKey(id);
-    }
+    customerService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

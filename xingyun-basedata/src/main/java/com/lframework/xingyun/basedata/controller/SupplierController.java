@@ -2,13 +2,13 @@ package com.lframework.xingyun.basedata.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.supplier.GetSupplierBo;
 import com.lframework.xingyun.basedata.bo.supplier.QuerySupplierBo;
 import com.lframework.xingyun.basedata.entity.Supplier;
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,37 +95,33 @@ public class SupplierController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用供应商
+   * 停用供应商
    */
-  @ApiOperation("批量停用供应商")
+  @ApiOperation("停用供应商")
   @HasPermission({"base-data:supplier:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的供应商！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "供应商ID不能为空！") String id) {
 
-    supplierService.batchUnable(ids);
+    supplierService.unable(id);
 
-    for (String id : ids) {
-      supplierService.cleanCacheByKey(id);
-    }
+    supplierService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用供应商
+   * 启用供应商
    */
-  @ApiOperation("批量启用供应商")
+  @ApiOperation("启用供应商")
   @HasPermission({"base-data:supplier:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的供应商！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "供应商ID不能为空！") String id) {
 
-    supplierService.batchEnable(ids);
+    supplierService.enable(id);
 
-    for (String id : ids) {
-      supplierService.cleanCacheByKey(id);
-    }
+    supplierService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

@@ -74,31 +74,23 @@ public class SettleInItemServiceImpl extends BaseMpServiceImpl<SettleInItemMappe
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = SettleOpLogType.SETTLE, name = "停用收入项目，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = SettleOpLogType.SETTLE, name = "停用收入项目，ID：{}", params = "#id")
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void batchUnable(Collection<String> ids) {
-
-        if (CollectionUtil.isEmpty(ids)) {
-            return;
-        }
+    public void unable(String id) {
 
         Wrapper<SettleInItem> updateWrapper = Wrappers.lambdaUpdate(SettleInItem.class)
-                .set(SettleInItem::getAvailable, Boolean.FALSE).in(SettleInItem::getId, ids);
+                .set(SettleInItem::getAvailable, Boolean.FALSE).eq(SettleInItem::getId, id);
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = SettleOpLogType.SETTLE, name = "启用收入项目，ID：{}", params = "#ids", loopFormat = true)
+    @OpLog(type = SettleOpLogType.SETTLE, name = "启用收入项目，ID：{}", params = "#id")
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void batchEnable(Collection<String> ids) {
-
-        if (CollectionUtil.isEmpty(ids)) {
-            return;
-        }
+    public void enable(String id) {
 
         Wrapper<SettleInItem> updateWrapper = Wrappers.lambdaUpdate(SettleInItem.class)
-                .set(SettleInItem::getAvailable, Boolean.TRUE).in(SettleInItem::getId, ids);
+                .set(SettleInItem::getAvailable, Boolean.TRUE).eq(SettleInItem::getId, id);
         getBaseMapper().update(updateWrapper);
     }
 

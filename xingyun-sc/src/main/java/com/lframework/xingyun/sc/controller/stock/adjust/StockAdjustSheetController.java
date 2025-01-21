@@ -21,8 +21,6 @@ import com.lframework.xingyun.sc.excel.stock.adjust.StockAdjustSheetExportModel;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustSheetService;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApprovePassStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApproveRefuseStockAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.stock.BatchApprovePassStockAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.stock.BatchApproveRefuseStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.CreateStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustSheetVo;
@@ -31,12 +29,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -233,20 +229,6 @@ public class StockAdjustSheetController extends DefaultBaseController {
   }
 
   /**
-   * 批量删除
-   */
-  @ApiOperation("批量删除")
-  @HasPermission({"stock:adjust:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的库存调整单！") List<String> ids) {
-
-    stockAdjustSheetService.deleteByIds(ids);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 审核通过
    */
   @ApiOperation("审核通过")
@@ -255,20 +237,6 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassStockAdjustSheetVo vo) {
 
     stockAdjustSheetService.approvePass(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量审核通过
-   */
-  @ApiOperation("批量审核通过")
-  @HasPermission({"stock:adjust:approve"})
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @RequestBody @Valid BatchApprovePassStockAdjustSheetVo vo) {
-
-    stockAdjustSheetService.batchApprovePass(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -296,20 +264,6 @@ public class StockAdjustSheetController extends DefaultBaseController {
       @RequestBody @Valid ApproveRefuseStockAdjustSheetVo vo) {
 
     stockAdjustSheetService.approveRefuse(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量审核拒绝
-   */
-  @ApiOperation("批量审核拒绝")
-  @HasPermission({"stock:adjust:approve"})
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefuseStockAdjustSheetVo vo) {
-
-    stockAdjustSheetService.batchApproveRefuse(vo);
 
     return InvokeResultBuilder.success();
   }

@@ -8,10 +8,10 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.components.security.SecurityConstants;
-import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.components.security.IUserTokenResolver;
+import com.lframework.starter.web.components.security.SecurityConstants;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.SpelUtil;
@@ -19,21 +19,23 @@ import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.enums.DefaultOpLogType;
 import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.template.inner.dto.MenuDto;
+import com.lframework.xingyun.template.inner.entity.SysMenu;
 import com.lframework.xingyun.template.inner.enums.system.SysMenuComponentType;
 import com.lframework.xingyun.template.inner.enums.system.SysMenuDisplay;
+import com.lframework.xingyun.template.inner.mappers.system.SysMenuMapper;
+import com.lframework.xingyun.template.inner.service.system.SysMenuService;
 import com.lframework.xingyun.template.inner.vo.system.menu.CreateSysMenuVo;
 import com.lframework.xingyun.template.inner.vo.system.menu.SysMenuSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.menu.UpdateSysMenuVo;
-import com.lframework.xingyun.template.inner.mappers.system.SysMenuMapper;
-import com.lframework.xingyun.template.inner.entity.SysMenu;
-import com.lframework.xingyun.template.inner.service.system.SysMenuService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -77,7 +79,8 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     return this.doGetById(id);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增菜单，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增菜单，ID：{}, 编号：{}", params = {"#id",
+      "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(@NonNull CreateSysMenuVo vo) {
@@ -91,7 +94,8 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改菜单，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改菜单，ID：{}, 编号：{}", params = {"#id",
+      "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(@NonNull UpdateSysMenuVo vo) {
@@ -131,28 +135,20 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     return this.doSelector(vo, moduleIds);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用菜单，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用菜单，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchEnable(@NonNull List<String> ids, @NonNull String userId) {
+  public void enable(@NonNull String id) {
 
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
-
-    this.doBatchEnable(ids, userId);
+    this.doEnable(id);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用菜单，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用菜单，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(@NonNull List<String> ids, @NonNull String userId) {
+  public void unable(@NonNull String id) {
 
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
-
-    this.doBatchUnable(ids, userId);
+    this.doUnable(id);
   }
 
   @Override
@@ -222,14 +218,48 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     return getBaseMapper().selector(vo, moduleIds);
   }
 
-  protected void doBatchEnable(@NonNull List<String> ids, @NonNull String userId) {
+  protected void doEnable(@NonNull String id) {
 
+    List<String> ids = new ArrayList<>();
+    // 启用时，需要将父级菜单也启用
+    ids.add(id);
+
+    String tmpId = id;
+    while (!StringUtil.isBlank(tmpId)) {
+      SysMenu sysMenu = getById(tmpId);
+      if (sysMenu == null) {
+        break;
+      }
+      if (StringUtil.isBlank(sysMenu.getParentId())) {
+        break;
+      }
+
+      ids.add(sysMenu.getParentId());
+
+      tmpId = sysMenu.getParentId();
+    }
     Wrapper<SysMenu> wrapper = Wrappers.lambdaUpdate(SysMenu.class)
         .set(SysMenu::getAvailable, Boolean.TRUE).in(SysMenu::getId, ids);
     getBaseMapper().update(new SysMenu(), wrapper);
   }
 
-  protected void doBatchUnable(@NonNull List<String> ids, @NonNull String userId) {
+  protected void doUnable(@NonNull String id) {
+
+    Set<String> ids = new HashSet<>();
+    // 停用时，需要将子级菜单也停用
+    ids.add(id);
+    while (true) {
+      List<SysMenu> sysMenuList = list(Wrappers.lambdaQuery(SysMenu.class)
+          .in(SysMenu::getParentId, ids));
+
+      int oldSize = ids.size();
+      if (CollectionUtil.isNotEmpty(sysMenuList)) {
+        ids.addAll(sysMenuList.stream().map(SysMenu::getId).collect(Collectors.toList()));
+      }
+      if (oldSize == ids.size()) {
+        break;
+      }
+    }
 
     Wrapper<SysMenu> wrapper = Wrappers.lambdaUpdate(SysMenu.class)
         .set(SysMenu::getAvailable, Boolean.FALSE).in(SysMenu::getId, ids);
@@ -253,7 +283,7 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     data.setCode(vo.getCode());
     data.setTitle(vo.getTitle());
     // fix 这里需要用null代替空字符串
-    data.setParentId(parentMenu == null ? null: parentMenu.getId());
+    data.setParentId(parentMenu == null ? null : parentMenu.getId());
     data.setDisplay(sysMenuDisplay);
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
@@ -357,7 +387,8 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
   }
 
   @Override
-  public Set<String> getPermissionsByUserId(String userId, boolean isAdmin, List<Integer> moduleIds) {
+  public Set<String> getPermissionsByUserId(String userId, boolean isAdmin,
+      List<Integer> moduleIds) {
 
     return getBaseMapper().getPermissionsByUserId(userId, isAdmin, moduleIds);
   }

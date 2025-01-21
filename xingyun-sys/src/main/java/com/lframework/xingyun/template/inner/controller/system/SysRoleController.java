@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -89,37 +88,33 @@ public class SysRoleController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用角色
+   * 停用角色
    */
-  @ApiOperation("批量停用角色")
+  @ApiOperation("停用角色")
   @HasPermission({"system:role:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "角色ID", required = true) @NotEmpty(message = "请选择需要停用的角色！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "角色ID", required = true) @NotEmpty(message = "角色ID不能为空！") String id) {
 
-    sysRoleService.batchUnable(ids);
+    sysRoleService.unable(id);
 
-    for (String id : ids) {
-      sysRoleService.cleanCacheByKey(id);
-    }
+    sysRoleService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用角色
+   * 启用角色
    */
-  @ApiOperation("批量启用角色")
+  @ApiOperation("启用角色")
   @HasPermission({"system:role:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "角色ID", required = true) @NotEmpty(message = "请选择需要启用的角色！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "角色ID", required = true) @NotEmpty(message = "角色ID不能为空！") String id) {
 
-    sysRoleService.batchEnable(ids);
+    sysRoleService.enable(id);
 
-    for (String id : ids) {
-      sysRoleService.cleanCacheByKey(id);
-    }
+    sysRoleService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

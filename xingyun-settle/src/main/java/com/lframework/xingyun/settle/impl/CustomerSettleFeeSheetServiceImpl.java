@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.security.AbstractUserDetails;
@@ -39,8 +37,6 @@ import com.lframework.xingyun.settle.service.SettleInItemService;
 import com.lframework.xingyun.settle.service.SettleOutItemService;
 import com.lframework.xingyun.settle.vo.fee.customer.ApprovePassCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.ApproveRefuseCustomerSettleFeeSheetVo;
-import com.lframework.xingyun.settle.vo.fee.customer.BatchApprovePassCustomerSettleFeeSheetVo;
-import com.lframework.xingyun.settle.vo.fee.customer.BatchApproveRefuseCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.CreateCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.CustomerSettleFeeSheetItemVo;
 import com.lframework.xingyun.settle.vo.fee.customer.QueryCustomerSettleFeeSheetVo;
@@ -270,48 +266,6 @@ public class CustomerSettleFeeSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassCustomerSettleFeeSheetVo vo) {
-
-    CustomerSettleFeeSheetService thisService = getThis(this.getClass());
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassCustomerSettleFeeSheetVo approveVo = new ApprovePassCustomerSettleFeeSheetVo();
-      approveVo.setId(id);
-      try {
-        thisService.approvePass(approveVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个客户费用单审核通过失败，失败原因：" + e.getMsg());
-      }
-      orderNo++;
-    }
-  }
-
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseCustomerSettleFeeSheetVo vo) {
-
-    CustomerSettleFeeSheetService thisService = getThis(this.getClass());
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseCustomerSettleFeeSheetVo approveVo = new ApproveRefuseCustomerSettleFeeSheetVo();
-      approveVo.setId(id);
-      approveVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        thisService.approveRefuse(approveVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个客户费用单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-      orderNo++;
-    }
-  }
-
   @OpLog(type = SettleOpLogType.SETTLE, name = "删除客户费用单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -344,28 +298,6 @@ public class CustomerSettleFeeSheetServiceImpl extends
     getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
-  }
-
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          CustomerSettleFeeSheetService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException(
-              "第" + orderNo + "个客户费用单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   @Transactional(rollbackFor = Exception.class)

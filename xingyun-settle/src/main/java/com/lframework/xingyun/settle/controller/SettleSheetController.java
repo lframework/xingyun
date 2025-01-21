@@ -1,25 +1,24 @@
 package com.lframework.xingyun.settle.controller;
 
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.controller.DefaultBaseController;
+import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
+import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.settle.bo.sheet.GetSettleSheetBo;
 import com.lframework.xingyun.settle.bo.sheet.QuerySettleSheetBo;
 import com.lframework.xingyun.settle.bo.sheet.SettleBizItemBo;
-import com.lframework.xingyun.settle.excel.sheet.SettleSheetExportModel;
 import com.lframework.xingyun.settle.dto.sheet.SettleBizItemDto;
 import com.lframework.xingyun.settle.dto.sheet.SettleSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettleSheet;
+import com.lframework.xingyun.settle.excel.sheet.SettleSheetExportModel;
 import com.lframework.xingyun.settle.service.SettleSheetService;
 import com.lframework.xingyun.settle.vo.sheet.ApprovePassSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.ApproveRefuseSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.BatchApprovePassSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.BatchApproveRefuseSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.CreateSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.QuerySettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.QueryUnSettleBizItemVo;
@@ -27,14 +26,11 @@ import com.lframework.xingyun.settle.vo.sheet.UpdateSettleSheetVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.lframework.starter.web.annotations.security.HasPermission;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -169,19 +165,6 @@ public class SettleSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核通过供应商结算单
-     */
-    @ApiOperation("批量审核通过供应商结算单")
-    @HasPermission({"settle:sheet:approve"})
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassSettleSheetVo vo) {
-
-        settleSheetService.batchApprovePass(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 直接审核通过供应商结算单
      */
     @ApiOperation("直接审核通过供应商结算单")
@@ -208,19 +191,6 @@ public class SettleSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核拒绝供应商结算单
-     */
-    @ApiOperation("批量审核拒绝供应商结算单")
-    @HasPermission({"settle:sheet:approve"})
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult<Void> batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSettleSheetVo vo) {
-
-        settleSheetService.batchApproveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 删除供应商结算单
      */
     @ApiOperation("删除供应商结算单")
@@ -230,20 +200,6 @@ public class SettleSheetController extends DefaultBaseController {
     public InvokeResult<Void> deleteById(@NotBlank(message = "供应商结算单ID不能为空！") String id) {
 
         settleSheetService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除供应商结算单
-     */
-    @ApiOperation("批量删除供应商结算单")
-    @HasPermission({"settle:sheet:delete"})
-    @DeleteMapping("/batch")
-    public InvokeResult<Void> deleteByIds(
-            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的供应商结算单！") List<String> ids) {
-
-        settleSheetService.deleteByIds(ids);
 
         return InvokeResultBuilder.success();
     }

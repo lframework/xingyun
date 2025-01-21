@@ -7,8 +7,6 @@ import com.lframework.xingyun.sc.entity.SaleReturn;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.sale.returned.ApprovePassSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.ApproveRefuseSaleReturnVo;
-import com.lframework.xingyun.sc.vo.sale.returned.BatchApprovePassSaleReturnVo;
-import com.lframework.xingyun.sc.vo.sale.returned.BatchApproveRefuseSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.CreateSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.UpdateSaleReturnVo;
@@ -66,13 +64,6 @@ public interface SaleReturnService extends BaseMpService<SaleReturn> {
   void approvePass(ApprovePassSaleReturnVo vo);
 
   /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassSaleReturnVo vo);
-
-  /**
    * 直接审核通过
    *
    * @param vo
@@ -87,25 +78,11 @@ public interface SaleReturnService extends BaseMpService<SaleReturn> {
   void approveRefuse(ApproveRefuseSaleReturnVo vo);
 
   /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseSaleReturnVo vo);
-
-  /**
    * 根据ID删除
    *
    * @param id
    */
   void deleteById(String id);
-
-  /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
 
   /**
    * 设置成未结算

@@ -25,8 +25,6 @@ import com.lframework.xingyun.sc.excel.sale.out.SaleOutSheetExportModel;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
 import com.lframework.xingyun.sc.vo.sale.out.ApprovePassSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.ApproveRefuseSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.BatchApprovePassSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.BatchApproveRefuseSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.CreateSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetWithReturnVo;
@@ -34,12 +32,10 @@ import com.lframework.xingyun.sc.vo.sale.out.UpdateSaleOutSheetVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -275,20 +271,6 @@ public class SaleOutSheetController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核通过
-   */
-  @ApiOperation("批量审核通过")
-  @HasPermission({"sale:out:approve"})
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @RequestBody @Valid BatchApprovePassSaleOutSheetVo vo) {
-
-    saleOutSheetService.batchApprovePass(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 直接审核通过
    */
   @ApiOperation("直接审核通过")
@@ -315,20 +297,6 @@ public class SaleOutSheetController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核拒绝
-   */
-  @ApiOperation("批量审核拒绝")
-  @HasPermission({"sale:out:approve"})
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefuseSaleOutSheetVo vo) {
-
-    saleOutSheetService.batchApproveRefuse(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 删除
    */
   @ApiOperation("删除")
@@ -338,20 +306,6 @@ public class SaleOutSheetController extends DefaultBaseController {
   public InvokeResult<Void> deleteById(@NotBlank(message = "销售出库单ID不能为空！") String id) {
 
     saleOutSheetService.deleteById(id);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量删除
-   */
-  @ApiOperation("批量删除")
-  @HasPermission({"sale:out:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的销售出库单！") List<String> ids) {
-
-    saleOutSheetService.deleteByIds(ids);
 
     return InvokeResultBuilder.success();
   }

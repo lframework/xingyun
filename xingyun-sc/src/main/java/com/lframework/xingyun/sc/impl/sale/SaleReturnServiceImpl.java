@@ -5,11 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.security.SecurityUtil;
@@ -30,7 +28,6 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
 import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
-import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.xingyun.core.utils.OpLogUtil;
@@ -58,13 +55,12 @@ import com.lframework.xingyun.sc.service.sale.SaleReturnService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.sale.returned.ApprovePassSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.ApproveRefuseSaleReturnVo;
-import com.lframework.xingyun.sc.vo.sale.returned.BatchApprovePassSaleReturnVo;
-import com.lframework.xingyun.sc.vo.sale.returned.BatchApproveRefuseSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.CreateSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.QuerySaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.SaleReturnProductVo;
 import com.lframework.xingyun.sc.vo.sale.returned.UpdateSaleReturnVo;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -303,28 +299,6 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassSaleReturnVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassSaleReturnVo approvePassVo = new ApprovePassSaleReturnVo();
-      approvePassVo.setId(id);
-
-      try {
-        SaleReturnService thisService = getThis(this.getClass());
-        thisService.approvePass(approvePassVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个销售退货单审核通过失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -383,29 +357,6 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseSaleReturnVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseSaleReturnVo approveRefuseVo = new ApproveRefuseSaleReturnVo();
-      approveRefuseVo.setId(id);
-      approveRefuseVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        SaleReturnService thisService = getThis(this.getClass());
-        thisService.approveRefuse(approveRefuseVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个销售退货单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OpLog(type = ScOpLogType.SALE, name = "删除销售退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -448,31 +399,14 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     saleReturnDetailService.remove(deleteDetailWrapper);
 
     // 删除退货单
-    getBaseMapper().deleteById(id);
+    Wrapper<SaleReturn> deleteWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
+        .eq(SaleReturn::getId, id)
+        .in(SaleReturn::getStatus, SaleReturnStatus.CREATED, SaleReturnStatus.APPROVE_REFUSE);
+    if (!remove(deleteWrapper)) {
+      throw new DefaultClientException("销售退货单信息已过期，请刷新重试！");
+    }
 
     OpLogUtil.setVariable("code", saleReturn.getCode());
-  }
-
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          SaleReturnService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException(
-              "第" + orderNo + "个销售退货单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   @Transactional(rollbackFor = Exception.class)

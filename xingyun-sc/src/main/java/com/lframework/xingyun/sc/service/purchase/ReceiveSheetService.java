@@ -9,8 +9,6 @@ import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApprovePassReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApproveRefuseReceiveSheetVo;
-import com.lframework.xingyun.sc.vo.purchase.receive.BatchApprovePassReceiveSheetVo;
-import com.lframework.xingyun.sc.vo.purchase.receive.BatchApproveRefuseReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.CreateReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetWithReturnVo;
@@ -106,13 +104,6 @@ public interface ReceiveSheetService extends BaseMpService<ReceiveSheet> {
   void approvePass(ApprovePassReceiveSheetVo vo);
 
   /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassReceiveSheetVo vo);
-
-  /**
    * 直接审核通过
    *
    * @param vo
@@ -127,25 +118,11 @@ public interface ReceiveSheetService extends BaseMpService<ReceiveSheet> {
   void approveRefuse(ApproveRefuseReceiveSheetVo vo);
 
   /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseReceiveSheetVo vo);
-
-  /**
    * 根据ID删除
    *
    * @param id
    */
   void deleteById(String id);
-
-  /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
 
   /**
    * 设置成未结算

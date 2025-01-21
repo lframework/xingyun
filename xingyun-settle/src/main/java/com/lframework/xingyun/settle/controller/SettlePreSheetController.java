@@ -16,20 +16,16 @@ import com.lframework.xingyun.settle.entity.SettlePreSheet;
 import com.lframework.xingyun.settle.service.SettlePreSheetService;
 import com.lframework.xingyun.settle.vo.pre.ApprovePassSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.ApproveRefuseSettlePreSheetVo;
-import com.lframework.xingyun.settle.vo.pre.BatchApprovePassSettlePreSheetVo;
-import com.lframework.xingyun.settle.vo.pre.BatchApproveRefuseSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.CreateSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.QuerySettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.UpdateSettlePreSheetVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import org.springframework.validation.annotation.Validated;
@@ -166,19 +162,6 @@ public class SettlePreSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核通过供应商预付款单
-     */
-    @ApiOperation("批量审核通过供应商预付款单")
-    @HasPermission({"settle:pre-sheet:approve"})
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassSettlePreSheetVo vo) {
-
-        settlePreSheetService.batchApprovePass(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 直接审核通过供应商预付款单
      */
     @ApiOperation("直接审核通过供应商预付款单")
@@ -205,19 +188,6 @@ public class SettlePreSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核拒绝供应商预付款单
-     */
-    @ApiOperation("批量审核拒绝供应商预付款单")
-    @HasPermission({"settle:pre-sheet:approve"})
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult<Void> batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSettlePreSheetVo vo) {
-
-        settlePreSheetService.batchApproveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 删除供应商预付款单
      */
     @ApiOperation("删除供应商预付款单")
@@ -227,20 +197,6 @@ public class SettlePreSheetController extends DefaultBaseController {
     public InvokeResult<Void> deleteById(@NotBlank(message = "供应商预付款单ID不能为空！") String id) {
 
         settlePreSheetService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除供应商预付款单
-     */
-    @ApiOperation("批量删除供应商预付款单")
-    @HasPermission({"settle:pre-sheet:delete"})
-    @DeleteMapping("/batch")
-    public InvokeResult<Void> deleteByIds(
-            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的供应商预付款单！") List<String> ids) {
-
-        settlePreSheetService.deleteByIds(ids);
 
         return InvokeResultBuilder.success();
     }

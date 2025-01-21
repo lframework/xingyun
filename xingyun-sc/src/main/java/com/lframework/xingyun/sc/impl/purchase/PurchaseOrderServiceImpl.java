@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
@@ -28,7 +27,6 @@ import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
 import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
-import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.xingyun.core.utils.OpLogUtil;
@@ -50,8 +48,6 @@ import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.BatchApprovePassPurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.BatchApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseProductVo;
@@ -59,6 +55,7 @@ import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithReceiveVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -292,28 +289,6 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   }
 
   @Transactional(rollbackFor = Exception.class)
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Override
-  public void batchApprovePass(BatchApprovePassPurchaseOrderVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassPurchaseOrderVo approvePassPurchaseOrderVo = new ApprovePassPurchaseOrderVo();
-      approvePassPurchaseOrderVo.setId(id);
-
-      try {
-        PurchaseOrderService thisService = getThis(this.getClass());
-        thisService.approvePass(approvePassPurchaseOrderVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个采购订单审核通过失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
-  @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Override
   public String directApprovePass(CreatePurchaseOrderVo vo) {
@@ -372,29 +347,6 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     OpLogUtil.setExtra(vo);
   }
 
-  @Transactional(rollbackFor = Exception.class)
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Override
-  public void batchApproveRefuse(BatchApproveRefusePurchaseOrderVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefusePurchaseOrderVo approveRefusePurchaseOrderVo = new ApproveRefusePurchaseOrderVo();
-      approveRefusePurchaseOrderVo.setId(id);
-      approveRefusePurchaseOrderVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        PurchaseOrderService thisService = getThis(this.getClass());
-        thisService.approveRefuse(approveRefusePurchaseOrderVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个采购订单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OpLog(type = ScOpLogType.PURCHASE, name = "删除订单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -424,33 +376,17 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     purchaseOrderDetailService.remove(deleteDetailWrapper);
 
     // 删除订单
-    getBaseMapper().deleteById(id);
+    Wrapper<PurchaseOrder> deleteWrapper = Wrappers.lambdaQuery(PurchaseOrder.class)
+        .eq(PurchaseOrder::getId, order.getId())
+        .in(PurchaseOrder::getStatus, PurchaseOrderStatus.CREATED,
+            PurchaseOrderStatus.APPROVE_REFUSE);
+    if (!remove(deleteWrapper)) {
+      throw new DefaultClientException("订单信息已过期，请刷新重试！");
+    }
 
     orderPayTypeService.deleteByOrderId(id);
 
     OpLogUtil.setVariable("code", order.getCode());
-  }
-
-  @Transactional(rollbackFor = Exception.class)
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          PurchaseOrderService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException(
-              "第" + orderNo + "个采购订单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   @OpLog(type = ScOpLogType.PURCHASE, name = "取消审核订单，单号：{}", params = "#code")

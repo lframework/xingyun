@@ -75,32 +75,11 @@ public interface SettlePreSheetService extends BaseMpService<SettlePreSheet> {
     void approveRefuse(ApproveRefuseSettlePreSheetVo vo);
 
     /**
-     * 批量审核通过
-     *
-     * @param vo
-     */
-    void batchApprovePass(BatchApprovePassSettlePreSheetVo vo);
-
-    /**
-     * 批量审核拒绝
-     *
-     * @param vo
-     */
-    void batchApproveRefuse(BatchApproveRefuseSettlePreSheetVo vo);
-
-    /**
      * 根据ID删除
      *
      * @param id
      */
     void deleteById(String id);
-
-    /**
-     * 根据IDs删除
-     *
-     * @param ids
-     */
-    void deleteByIds(List<String> ids);
 
     /**
      * 设置成未结算

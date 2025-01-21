@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.security.SecurityUtil;
@@ -41,8 +39,6 @@ import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApprovePassStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApproveRefuseStockAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.stock.BatchApprovePassStockAdjustSheetVo;
-import com.lframework.xingyun.sc.vo.stock.adjust.stock.BatchApproveRefuseStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.CreateStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustSheetVo;
@@ -203,28 +199,6 @@ public class StockAdjustSheetServiceImpl extends
     stockAdjustSheetDetailService.remove(deleteDetailWrapper);
   }
 
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          StockAdjustSheetService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException(
-              "第" + orderNo + "个库存调整单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
-  }
-
   @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "审核通过库存调整单，ID：{}", params = {"#vo.id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
@@ -300,28 +274,6 @@ public class StockAdjustSheetServiceImpl extends
     }
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassStockAdjustSheetVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassStockAdjustSheetVo approvePassVo = new ApprovePassStockAdjustSheetVo();
-      approvePassVo.setId(id);
-
-      try {
-        StockAdjustSheetService thisService = getThis(this.getClass());
-        thisService.approvePass(approvePassVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个库存调整单审核通过失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -376,30 +328,6 @@ public class StockAdjustSheetServiceImpl extends
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setExtra(vo);
   }
-
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseStockAdjustSheetVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseStockAdjustSheetVo approveRefuseVo = new ApproveRefuseStockAdjustSheetVo();
-      approveRefuseVo.setId(id);
-      approveRefuseVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        StockAdjustSheetService thisService = getThis(this.getClass());
-        thisService.approveRefuse(approveRefuseVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个库存调整单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
 
   @Override
   public PageResult<StockAdjustProductDto> queryStockAdjustByCondition(Integer pageIndex,

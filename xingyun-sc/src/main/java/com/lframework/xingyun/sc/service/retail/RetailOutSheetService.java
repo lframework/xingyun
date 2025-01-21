@@ -9,8 +9,6 @@ import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.vo.retail.out.ApprovePassRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.ApproveRefuseRetailOutSheetVo;
-import com.lframework.xingyun.sc.vo.retail.out.BatchApprovePassRetailOutSheetVo;
-import com.lframework.xingyun.sc.vo.retail.out.BatchApproveRefuseRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.CreateRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetWithReturnVo;
@@ -107,13 +105,6 @@ public interface RetailOutSheetService extends BaseMpService<RetailOutSheet> {
   void approvePass(ApprovePassRetailOutSheetVo vo);
 
   /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassRetailOutSheetVo vo);
-
-  /**
    * 直接审核通过
    *
    * @param vo
@@ -128,25 +119,11 @@ public interface RetailOutSheetService extends BaseMpService<RetailOutSheet> {
   void approveRefuse(ApproveRefuseRetailOutSheetVo vo);
 
   /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseRetailOutSheetVo vo);
-
-  /**
    * 根据ID删除
    *
    * @param id
    */
   void deleteById(String id);
-
-  /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
 
   /**
    * 根据关键字查询零售商品信息

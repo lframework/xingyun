@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,32 +96,32 @@ public class ProductCategoryController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用分类
+   * 停用分类
    */
-  @ApiOperation("批量停用分类")
+  @ApiOperation("停用分类")
   @HasPermission({"base-data:product:category:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的分类！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "分类ID不能为空！") String id) {
 
-    productCategoryService.batchUnable(ids);
+    productCategoryService.unable(id);
+    productCategoryService.cleanCacheByKey(id);
+
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用分类
+   * 启用分类
    */
-  @ApiOperation("批量启用分类")
+  @ApiOperation("启用分类")
   @HasPermission({"base-data:product:category:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的分类！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "分类ID不能为空！") String id) {
 
-    productCategoryService.batchEnable(ids);
+    productCategoryService.enable(id);
 
-    for (String id : ids) {
-      productCategoryService.cleanCacheByKey(id);
-    }
+    productCategoryService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

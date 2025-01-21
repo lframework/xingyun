@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
@@ -15,12 +14,14 @@ import com.lframework.starter.web.components.security.AbstractUserDetails;
 import com.lframework.starter.web.components.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
+import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.settle.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.settle.dto.sheet.SettleBizItemDto;
 import com.lframework.xingyun.settle.dto.sheet.SettleSheetFullDto;
@@ -35,15 +36,11 @@ import com.lframework.xingyun.settle.service.SettleSheetDetailService;
 import com.lframework.xingyun.settle.service.SettleSheetService;
 import com.lframework.xingyun.settle.vo.sheet.ApprovePassSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.ApproveRefuseSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.BatchApprovePassSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.BatchApproveRefuseSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.CreateSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.QuerySettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.QueryUnSettleBizItemVo;
 import com.lframework.xingyun.settle.vo.sheet.SettleSheetItemVo;
 import com.lframework.xingyun.settle.vo.sheet.UpdateSettleSheetVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -271,46 +268,6 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassSettleSheetVo vo) {
-
-    SettleSheetService thisService = getThis(this.getClass());
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassSettleSheetVo approveVo = new ApprovePassSettleSheetVo();
-      approveVo.setId(id);
-      try {
-        thisService.approvePass(approveVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个供应商结算单审核通过失败，失败原因：" + e.getMsg());
-      }
-      orderNo++;
-    }
-  }
-
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseSettleSheetVo vo) {
-
-    SettleSheetService thisService = getThis(this.getClass());
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseSettleSheetVo approveVo = new ApproveRefuseSettleSheetVo();
-      approveVo.setId(id);
-      approveVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        thisService.approveRefuse(approveVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个供应商结算单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-      orderNo++;
-    }
-  }
-
   @OpLog(type = SettleOpLogType.SETTLE, name = "删除供应商结算单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -347,30 +304,14 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
     settleSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除单据
-    getBaseMapper().deleteById(id);
+    Wrapper<SettleSheet> deleteWrapper = Wrappers.lambdaUpdate(SettleSheet.class)
+        .eq(SettleSheet::getId, id)
+        .in(SettleSheet::getStatus, SettleSheetStatus.CREATED, SettleSheetStatus.APPROVE_REFUSE);
+    if (!remove(deleteWrapper)) {
+      throw new DefaultClientException("供应商结算单信息已过期，请刷新重试！");
+    }
 
     OpLogUtil.setVariable("code", sheet.getCode());
-  }
-
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          SettleSheetService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个供应商结算单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   @Override
@@ -481,7 +422,8 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
 
         if (NumberUtil.gt(item.getTotalUnPayAmount(),
             NumberUtil.add(itemVo.getPayAmount(), itemVo.getDiscountAmount()))) {
-          throw new DefaultClientException("第" + orderNo + "行实付金额与优惠金额相加不允许小于未付款金额！");
+          throw new DefaultClientException(
+              "第" + orderNo + "行实付金额与优惠金额相加不允许小于未付款金额！");
         }
       } else if (NumberUtil.gt(item.getTotalPayAmount(), 0)) {
         if (NumberUtil.lt(itemVo.getPayAmount(), 0)) {
@@ -498,7 +440,8 @@ public class SettleSheetServiceImpl extends BaseMpServiceImpl<SettleSheetMapper,
         }
         if (NumberUtil.lt(item.getTotalUnPayAmount(),
             NumberUtil.add(itemVo.getPayAmount(), itemVo.getDiscountAmount()))) {
-          throw new DefaultClientException("第" + orderNo + "行实付金额与优惠金额相加不允许大于未付款金额！");
+          throw new DefaultClientException(
+              "第" + orderNo + "行实付金额与优惠金额相加不允许大于未付款金额！");
         }
       } else {
         // 单据应付款等于0

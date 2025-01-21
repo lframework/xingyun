@@ -16,20 +16,16 @@ import com.lframework.xingyun.settle.entity.CustomerSettlePreSheet;
 import com.lframework.xingyun.settle.service.CustomerSettlePreSheetService;
 import com.lframework.xingyun.settle.vo.pre.customer.ApprovePassCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.ApproveRefuseCustomerSettlePreSheetVo;
-import com.lframework.xingyun.settle.vo.pre.customer.BatchApprovePassCustomerSettlePreSheetVo;
-import com.lframework.xingyun.settle.vo.pre.customer.BatchApproveRefuseCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.CreateCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.QueryCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.UpdateCustomerSettlePreSheetVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import org.springframework.validation.annotation.Validated;
@@ -173,20 +169,6 @@ public class CustomerSettlePreSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核通过客户预付款单
-     */
-    @ApiOperation("批量审核通过客户预付款单")
-    @HasPermission({"customer-settle:pre-sheet:approve"})
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult<Void> batchApprovePass(
-            @RequestBody @Valid BatchApprovePassCustomerSettlePreSheetVo vo) {
-
-        settlePreSheetService.batchApprovePass(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 直接审核通过客户预付款单
      */
     @ApiOperation("直接审核通过客户预付款单")
@@ -215,20 +197,6 @@ public class CustomerSettlePreSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核拒绝客户预付款单
-     */
-    @ApiOperation("批量审核拒绝客户预付款单")
-    @HasPermission({"customer-settle:pre-sheet:approve"})
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult<Void> batchApproveRefuse(
-            @RequestBody @Valid BatchApproveRefuseCustomerSettlePreSheetVo vo) {
-
-        settlePreSheetService.batchApproveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 删除客户预付款单
      */
     @ApiOperation("删除客户预付款单")
@@ -238,20 +206,6 @@ public class CustomerSettlePreSheetController extends DefaultBaseController {
     public InvokeResult<Void> deleteById(@NotBlank(message = "客户预付款单ID不能为空！") String id) {
 
         settlePreSheetService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除客户预付款单
-     */
-    @ApiOperation("批量删除客户预付款单")
-    @HasPermission({"customer-settle:pre-sheet:delete"})
-    @DeleteMapping("/batch")
-    public InvokeResult<Void> deleteByIds(
-            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的客户预付款单！") List<String> ids) {
-
-        settlePreSheetService.deleteByIds(ids);
 
         return InvokeResultBuilder.success();
     }

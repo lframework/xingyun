@@ -4,20 +4,19 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.template.gen.components.custom.page.CustomPageConfig;
+import com.lframework.xingyun.template.gen.entity.GenCustomPage;
+import com.lframework.xingyun.template.gen.mappers.GenCustomPageMapper;
 import com.lframework.xingyun.template.gen.service.GenCustomPageService;
 import com.lframework.xingyun.template.gen.vo.custom.page.CreateGenCustomPageVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.GenCustomPageSelectorVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.QueryGenCustomPageVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.UpdateGenCustomPageVo;
-import com.lframework.xingyun.template.gen.entity.GenCustomPage;
-import com.lframework.xingyun.template.gen.mappers.GenCustomPageMapper;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
@@ -106,18 +105,6 @@ public class GenCustomPageServiceImpl extends
   @Override
   public void delete(Integer id) {
     this.removeById(id);
-  }
-
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchDelete(List<Integer> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
-
-    for (Integer id : ids) {
-      this.delete(id);
-    }
   }
 
   @CacheEvict(value = {GenCustomPage.CACHE_NAME,

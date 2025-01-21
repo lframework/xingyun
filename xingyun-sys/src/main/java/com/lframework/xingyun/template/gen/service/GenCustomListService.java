@@ -70,24 +70,18 @@ public interface GenCustomListService extends BaseMpService<GenCustomList> {
   void delete(String id);
 
   /**
-   * 批量删除
-   * @param ids
+   * 启用
+   *
+   * @param id
    */
-  void batchDelete(List<String> ids);
+  void enable(String id);
 
   /**
-   * 批量启用
+   * 停用
    *
-   * @param ids
+   * @param id
    */
-  void batchEnable(List<String> ids);
-
-  /**
-   * 批量停用
-   *
-   * @param ids
-   */
-  void batchUnable(List<String> ids);
+  void unable(String id);
 
   /**
    * 查询所有关联了数据对象的自定义列表ID

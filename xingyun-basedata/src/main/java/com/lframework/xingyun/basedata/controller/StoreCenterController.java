@@ -2,13 +2,13 @@ package com.lframework.xingyun.basedata.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.storecenter.GetStoreCenterBo;
 import com.lframework.xingyun.basedata.bo.storecenter.QueryStoreCenterBo;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,37 +95,33 @@ public class StoreCenterController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用仓库
+   * 停用仓库
    */
-  @ApiOperation("批量停用仓库")
+  @ApiOperation("停用仓库")
   @HasPermission({"base-data:store-center:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的仓库！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "仓库ID不能为空！") String id) {
 
-    storeCenterService.batchUnable(ids);
+    storeCenterService.unable(id);
 
-    for (String id : ids) {
-      storeCenterService.cleanCacheByKey(id);
-    }
+    storeCenterService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用仓库
+   * 启用仓库
    */
-  @ApiOperation("批量启用仓库")
+  @ApiOperation("启用仓库")
   @HasPermission({"base-data:store-center:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的仓库！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "仓库ID不能为空！") String id) {
 
-    storeCenterService.batchEnable(ids);
+    storeCenterService.enable(id);
 
-    for (String id : ids) {
-      storeCenterService.cleanCacheByKey(id);
-    }
+    storeCenterService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

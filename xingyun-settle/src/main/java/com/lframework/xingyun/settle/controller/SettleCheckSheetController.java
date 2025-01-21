@@ -18,8 +18,6 @@ import com.lframework.xingyun.settle.entity.SettleCheckSheet;
 import com.lframework.xingyun.settle.service.SettleCheckSheetService;
 import com.lframework.xingyun.settle.vo.check.ApprovePassSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.ApproveRefuseSettleCheckSheetVo;
-import com.lframework.xingyun.settle.vo.check.BatchApprovePassSettleCheckSheetVo;
-import com.lframework.xingyun.settle.vo.check.BatchApproveRefuseSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.CreateSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.QuerySettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.QueryUnCheckBizItemVo;
@@ -27,12 +25,10 @@ import com.lframework.xingyun.settle.vo.check.UpdateSettleCheckSheetVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import org.springframework.validation.annotation.Validated;
@@ -169,19 +165,6 @@ public class SettleCheckSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核通过供应商对账单
-     */
-    @ApiOperation("批量审核通过供应商对账单")
-    @HasPermission({"settle:check-sheet:approve"})
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassSettleCheckSheetVo vo) {
-
-        settleCheckSheetService.batchApprovePass(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 直接审核通过供应商对账单
      */
     @ApiOperation("直接审核通过供应商对账单")
@@ -208,19 +191,6 @@ public class SettleCheckSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核拒绝供应商对账单
-     */
-    @ApiOperation("批量审核拒绝供应商对账单")
-    @HasPermission({"settle:check-sheet:approve"})
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult<Void> batchApproveRefuse(@RequestBody @Valid BatchApproveRefuseSettleCheckSheetVo vo) {
-
-        settleCheckSheetService.batchApproveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 删除供应商对账单
      */
     @ApiOperation("删除供应商对账单")
@@ -230,20 +200,6 @@ public class SettleCheckSheetController extends DefaultBaseController {
     public InvokeResult<Void> deleteById(@NotBlank(message = "供应商对账单ID不能为空！") String id) {
 
         settleCheckSheetService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除供应商对账单
-     */
-    @ApiOperation("批量删除供应商对账单")
-    @HasPermission({"settle:check-sheet:delete"})
-    @DeleteMapping("/batch")
-    public InvokeResult<Void> deleteByIds(
-            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的供应商对账单！") List<String> ids) {
-
-        settleCheckSheetService.deleteByIds(ids);
 
         return InvokeResultBuilder.success();
     }

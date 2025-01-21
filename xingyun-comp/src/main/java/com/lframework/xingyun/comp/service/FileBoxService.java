@@ -46,10 +46,10 @@ public interface FileBoxService extends BaseMpService<FileBox> {
 
 
   /**
-   * 批量删除
-   * @param ids
+   * 根据ID删除
+   * @param id
    */
-  void batchDelete(List<String> ids);
+  void deleteById(String id);
 
   /**
    * 创建文件夹

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
@@ -35,8 +34,6 @@ import com.lframework.xingyun.settle.service.CustomerSettleSheetDetailService;
 import com.lframework.xingyun.settle.service.CustomerSettleSheetService;
 import com.lframework.xingyun.settle.vo.sheet.customer.ApprovePassCustomerSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.customer.ApproveRefuseCustomerSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.customer.BatchApprovePassCustomerSettleSheetVo;
-import com.lframework.xingyun.settle.vo.sheet.customer.BatchApproveRefuseCustomerSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.customer.CreateCustomerSettleSheetVo;
 import com.lframework.xingyun.settle.vo.sheet.customer.CustomerSettleSheetItemVo;
 import com.lframework.xingyun.settle.vo.sheet.customer.QueryCustomerSettleSheetVo;
@@ -282,46 +279,6 @@ public class CustomerSettleSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassCustomerSettleSheetVo vo) {
-
-    CustomerSettleSheetService thisService = getThis(this.getClass());
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassCustomerSettleSheetVo approveVo = new ApprovePassCustomerSettleSheetVo();
-      approveVo.setId(id);
-      try {
-        thisService.approvePass(approveVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个客户结算单审核通过失败，失败原因：" + e.getMsg());
-      }
-      orderNo++;
-    }
-  }
-
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseCustomerSettleSheetVo vo) {
-
-    CustomerSettleSheetService thisService = getThis(this.getClass());
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseCustomerSettleSheetVo approveVo = new ApproveRefuseCustomerSettleSheetVo();
-      approveVo.setId(id);
-      approveVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        thisService.approveRefuse(approveVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个客户结算单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-      orderNo++;
-    }
-  }
-
   @OpLog(type = SettleOpLogType.SETTLE, name = "删除客户结算单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -365,27 +322,6 @@ public class CustomerSettleSheetServiceImpl extends
     getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
-  }
-
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          CustomerSettleSheetService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个客户结算单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   @Override

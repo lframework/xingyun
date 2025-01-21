@@ -2,19 +2,19 @@ package com.lframework.xingyun.template.inner.controller.system;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.xingyun.template.inner.entity.SysDept;
-import com.lframework.xingyun.template.inner.enums.system.SysDeptNodeType;
-import com.lframework.xingyun.core.service.RecursionMappingService;
-import com.lframework.xingyun.template.inner.service.system.SysDeptService;
-import com.lframework.xingyun.template.inner.vo.system.dept.CreateSysDeptVo;
-import com.lframework.xingyun.template.inner.vo.system.dept.UpdateSysDeptVo;
-import com.lframework.xingyun.template.inner.bo.system.dept.GetSysDeptBo;
-import com.lframework.xingyun.template.inner.bo.system.dept.SysDeptTreeBo;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.xingyun.core.service.RecursionMappingService;
+import com.lframework.xingyun.template.inner.bo.system.dept.GetSysDeptBo;
+import com.lframework.xingyun.template.inner.bo.system.dept.SysDeptTreeBo;
+import com.lframework.xingyun.template.inner.entity.SysDept;
+import com.lframework.xingyun.template.inner.enums.system.SysDeptNodeType;
+import com.lframework.xingyun.template.inner.service.system.SysDeptService;
+import com.lframework.xingyun.template.inner.vo.system.dept.CreateSysDeptVo;
+import com.lframework.xingyun.template.inner.vo.system.dept.UpdateSysDeptVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -91,46 +90,44 @@ public class SysDeptController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用部门
+   * 停用部门
    */
-  @ApiOperation("批量停用部门")
+  @ApiOperation("停用部门")
   @HasPermission({"system:dept:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "部门ID", required = true) @NotEmpty(message = "请选择需要停用的部门！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "部门ID", required = true) @NotEmpty(message = "部门ID不能为空！") String id) {
 
-    sysDeptService.batchUnable(ids);
+    sysDeptService.unable(id);
 
-    List<String> batchIds = new ArrayList<>(ids);
+    List<String> batchIds = new ArrayList<>();
+    batchIds.add(id);
 
-    for (String id : ids) {
-      List<String> tmp = recursionMappingService.getNodeChildIds(id,
-          ApplicationUtil.getBean(SysDeptNodeType.class));
-      batchIds.addAll(tmp);
-    }
+    List<String> tmp = recursionMappingService.getNodeChildIds(id,
+        ApplicationUtil.getBean(SysDeptNodeType.class));
+    batchIds.addAll(tmp);
     sysDeptService.cleanCacheByKeys(batchIds);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用部门
+   * 启用部门
    */
-  @ApiOperation("批量启用部门")
+  @ApiOperation("启用部门")
   @HasPermission({"system:dept:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "部门ID", required = true) @NotEmpty(message = "请选择需要启用的部门！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "部门ID", required = true) @NotEmpty(message = "部门ID不能为空！") String id) {
 
-    sysDeptService.batchEnable(ids);
+    sysDeptService.enable(id);
 
-    List<String> batchIds = new ArrayList<>(ids);
+    List<String> batchIds = new ArrayList<>();
+    batchIds.add(id);
 
-    for (String id : ids) {
-      List<String> tmp = recursionMappingService.getNodeParentIds(id,
-          ApplicationUtil.getBean(SysDeptNodeType.class));
-      batchIds.addAll(tmp);
-    }
+    List<String> tmp = recursionMappingService.getNodeParentIds(id,
+        ApplicationUtil.getBean(SysDeptNodeType.class));
+    batchIds.addAll(tmp);
     sysDeptService.cleanCacheByKeys(batchIds);
 
     return InvokeResultBuilder.success();

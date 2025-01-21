@@ -31,8 +31,6 @@ import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApprovePassReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.ApproveRefuseReceiveSheetVo;
-import com.lframework.xingyun.sc.vo.purchase.receive.BatchApprovePassReceiveSheetVo;
-import com.lframework.xingyun.sc.vo.purchase.receive.BatchApproveRefuseReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.CreateReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetWithReturnVo;
@@ -40,12 +38,10 @@ import com.lframework.xingyun.sc.vo.purchase.receive.UpdateReceiveSheetVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -282,20 +278,6 @@ public class ReceiveSheetController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核通过
-   */
-  @ApiOperation("批量审核通过")
-  @HasPermission({"purchase:receive:approve"})
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @RequestBody @Valid BatchApprovePassReceiveSheetVo vo) {
-
-    receiveSheetService.batchApprovePass(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 直接审核通过
    */
   @ApiOperation("直接审核通过")
@@ -322,20 +304,6 @@ public class ReceiveSheetController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核拒绝
-   */
-  @ApiOperation("批量审核拒绝")
-  @HasPermission({"purchase:receive:approve"})
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefuseReceiveSheetVo vo) {
-
-    receiveSheetService.batchApproveRefuse(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 删除
    */
   @ApiOperation("删除")
@@ -345,20 +313,6 @@ public class ReceiveSheetController extends DefaultBaseController {
   public InvokeResult<Void> deleteById(@NotBlank(message = "采购收货单ID不能为空！") String id) {
 
     receiveSheetService.deleteById(id);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量删除
-   */
-  @ApiOperation("批量删除")
-  @HasPermission({"purchase:receive:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的采购收货单！") List<String> ids) {
-
-    receiveSheetService.deleteByIds(ids);
 
     return InvokeResultBuilder.success();
   }

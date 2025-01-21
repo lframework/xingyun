@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
@@ -30,7 +29,6 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
 import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
-import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
 import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.xingyun.core.utils.OpLogUtil;
@@ -60,13 +58,12 @@ import com.lframework.xingyun.sc.service.retail.RetailReturnService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.retail.returned.ApprovePassRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.ApproveRefuseRetailReturnVo;
-import com.lframework.xingyun.sc.vo.retail.returned.BatchApprovePassRetailReturnVo;
-import com.lframework.xingyun.sc.vo.retail.returned.BatchApproveRefuseRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.CreateRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.QueryRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.RetailReturnProductVo;
 import com.lframework.xingyun.sc.vo.retail.returned.UpdateRetailReturnVo;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -318,28 +315,6 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassRetailReturnVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassRetailReturnVo approvePassVo = new ApprovePassRetailReturnVo();
-      approvePassVo.setId(id);
-
-      try {
-        RetailReturnService thisService = getThis(this.getClass());
-        thisService.approvePass(approvePassVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个零售退货单审核通过失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -398,29 +373,6 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseRetailReturnVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseRetailReturnVo approveRefuseVo = new ApproveRefuseRetailReturnVo();
-      approveRefuseVo.setId(id);
-      approveRefuseVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        RetailReturnService thisService = getThis(this.getClass());
-        thisService.approveRefuse(approveRefuseVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个零售退货单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OpLog(type = ScOpLogType.RETAIL, name = "删除零售退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -464,33 +416,16 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     retailReturnDetailService.remove(deleteDetailWrapper);
 
     // 删除退货单
-    getBaseMapper().deleteById(id);
+    Wrapper<RetailReturn> deleteWrapper = Wrappers.lambdaQuery(RetailReturn.class)
+        .eq(RetailReturn::getId, retailReturn.getId())
+        .in(RetailReturn::getStatus, RetailReturnStatus.CREATED, RetailReturnStatus.APPROVE_REFUSE);
+    if (!remove(deleteWrapper)) {
+      throw new DefaultClientException("零售退货单信息已过期，请刷新重试！");
+    }
 
     orderPayTypeService.deleteByOrderId(id);
 
     OpLogUtil.setVariable("code", retailReturn.getCode());
-  }
-
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          RetailReturnService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException(
-              "第" + orderNo + "个零售退货单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   private void create(RetailReturn retailReturn, CreateRetailReturnVo vo, boolean requireOut) {

@@ -7,28 +7,26 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.components.security.SecurityConstants;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.components.security.SecurityConstants;
-import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.enums.DefaultOpLogType;
 import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.template.inner.entity.SysRole;
+import com.lframework.xingyun.template.inner.mappers.system.SysRoleMapper;
 import com.lframework.xingyun.template.inner.service.system.SysMenuService;
 import com.lframework.xingyun.template.inner.service.system.SysRoleService;
-import com.lframework.xingyun.template.inner.mappers.system.SysRoleMapper;
 import com.lframework.xingyun.template.inner.vo.system.role.CreateSysRoleVo;
 import com.lframework.xingyun.template.inner.vo.system.role.QuerySysRoleVo;
 import com.lframework.xingyun.template.inner.vo.system.role.SysRoleSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.role.UpdateSysRoleVo;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -82,49 +80,38 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用角色，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用角色，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(Collection<String> ids) {
+  public void unable(String id) {
 
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
+    SysRole role = this.findById(id);
+    if (SecurityConstants.PERMISSION_ADMIN_NAME.equals(role.getPermission())) {
+      throw new DefaultClientException(
+          "角色【" + role.getName() + "】的权限为【" + SecurityConstants.PERMISSION_ADMIN_NAME
+              + "】，不允许停用！");
     }
 
-    for (String id : ids) {
-      SysRole role = this.findById(id);
-      if (SecurityConstants.PERMISSION_ADMIN_NAME.equals(role.getPermission())) {
-        throw new DefaultClientException(
-            "角色【" + role.getName() + "】的权限为【" + SecurityConstants.PERMISSION_ADMIN_NAME
-                + "】，不允许停用！");
-      }
-    }
-
-    this.doBatchUnable(ids);
+    this.doUnable(id);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用角色，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用角色，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchEnable(Collection<String> ids) {
+  public void enable(String id) {
 
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
+    SysRole role = this.findById(id);
+    if (SecurityConstants.PERMISSION_ADMIN_NAME.equals(role.getPermission())) {
+      throw new DefaultClientException(
+          "角色【" + role.getName() + "】的权限为【" + SecurityConstants.PERMISSION_ADMIN_NAME
+              + "】，不允许启用！");
     }
 
-    for (String id : ids) {
-      SysRole role = this.findById(id);
-      if (SecurityConstants.PERMISSION_ADMIN_NAME.equals(role.getPermission())) {
-        throw new DefaultClientException(
-            "角色【" + role.getName() + "】的权限为【" + SecurityConstants.PERMISSION_ADMIN_NAME
-                + "】，不允许启用！");
-      }
-    }
-
-    this.doBatchEnable(ids);
+    this.doEnable(id);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增角色，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "新增角色，ID：{}, 编号：{}", params = {"#id",
+      "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSysRoleVo vo) {
@@ -152,7 +139,8 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     return data.getId();
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改角色，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "修改角色，ID：{}, 编号：{}", params = {"#id",
+      "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSysRoleVo vo) {
@@ -208,17 +196,17 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     return getBaseMapper().selector(vo);
   }
 
-  protected void doBatchUnable(Collection<String> ids) {
+  protected void doUnable(String id) {
 
     Wrapper<SysRole> updateWrapper = Wrappers.lambdaUpdate(SysRole.class)
-        .set(SysRole::getAvailable, Boolean.FALSE).in(SysRole::getId, ids);
+        .set(SysRole::getAvailable, Boolean.FALSE).eq(SysRole::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 
-  protected void doBatchEnable(Collection<String> ids) {
+  protected void doEnable(String id) {
 
     Wrapper<SysRole> updateWrapper = Wrappers.lambdaUpdate(SysRole.class)
-        .set(SysRole::getAvailable, Boolean.TRUE).in(SysRole::getId, ids);
+        .set(SysRole::getAvailable, Boolean.TRUE).eq(SysRole::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 

@@ -16,20 +16,16 @@ import com.lframework.xingyun.settle.entity.CustomerSettleFeeSheet;
 import com.lframework.xingyun.settle.service.CustomerSettleFeeSheetService;
 import com.lframework.xingyun.settle.vo.fee.customer.ApprovePassCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.ApproveRefuseCustomerSettleFeeSheetVo;
-import com.lframework.xingyun.settle.vo.fee.customer.BatchApprovePassCustomerSettleFeeSheetVo;
-import com.lframework.xingyun.settle.vo.fee.customer.BatchApproveRefuseCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.CreateCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.QueryCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.UpdateCustomerSettleFeeSheetVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import org.springframework.validation.annotation.Validated;
@@ -173,20 +169,6 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核通过客户费用单
-     */
-    @ApiOperation("批量审核通过客户费用单")
-    @HasPermission({"customer-settle:fee-sheet:approve"})
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult<Void> batchApprovePass(
-            @RequestBody @Valid BatchApprovePassCustomerSettleFeeSheetVo vo) {
-
-        customerSettleFeeSheetService.batchApprovePass(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 直接审核通过客户费用单
      */
     @ApiOperation("直接审核通过客户费用单")
@@ -215,20 +197,6 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核拒绝客户费用单
-     */
-    @ApiOperation("批量审核拒绝客户费用单")
-    @HasPermission({"customer-settle:fee-sheet:approve"})
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult<Void> batchApproveRefuse(
-            @RequestBody @Valid BatchApproveRefuseCustomerSettleFeeSheetVo vo) {
-
-        customerSettleFeeSheetService.batchApproveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 删除客户费用单
      */
     @ApiOperation("删除客户费用单")
@@ -238,20 +206,6 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
     public InvokeResult<Void> deleteById(@NotBlank(message = "客户费用单ID不能为空！") String id) {
 
         customerSettleFeeSheetService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除客户费用单
-     */
-    @ApiOperation("批量删除客户费用单")
-    @HasPermission({"customer-settle:fee-sheet:delete"})
-    @DeleteMapping("/batch")
-    public InvokeResult<Void> deleteByIds(
-            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的客户费用单！") List<String> ids) {
-
-        customerSettleFeeSheetService.deleteByIds(ids);
 
         return InvokeResultBuilder.success();
     }

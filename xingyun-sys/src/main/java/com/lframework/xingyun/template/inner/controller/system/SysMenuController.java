@@ -5,21 +5,22 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.template.inner.entity.SysMenu;
-import com.lframework.xingyun.template.inner.enums.system.SysMenuDisplay;
-import com.lframework.xingyun.template.inner.bo.system.menu.GetSysMenuBo;
-import com.lframework.xingyun.template.inner.bo.system.menu.QuerySysMenuBo;
-import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
-import com.lframework.xingyun.template.inner.service.system.SysMenuService;
-import com.lframework.xingyun.template.inner.vo.system.menu.CreateSysMenuVo;
-import com.lframework.xingyun.template.inner.vo.system.menu.UpdateSysMenuVo;
+import com.lframework.starter.common.utils.ThreadUtil;
+import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.components.tenant.TenantContextHolder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.components.security.SecurityUtil;
 import com.lframework.starter.web.utils.TenantUtil;
+import com.lframework.xingyun.template.inner.bo.system.menu.GetSysMenuBo;
+import com.lframework.xingyun.template.inner.bo.system.menu.QuerySysMenuBo;
+import com.lframework.xingyun.template.inner.entity.SysMenu;
+import com.lframework.xingyun.template.inner.enums.system.SysMenuDisplay;
+import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
+import com.lframework.xingyun.template.inner.service.system.SysMenuService;
+import com.lframework.xingyun.template.inner.vo.system.menu.CreateSysMenuVo;
+import com.lframework.xingyun.template.inner.vo.system.menu.UpdateSysMenuVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -30,14 +31,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.lframework.starter.web.annotations.security.HasPermission;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,7 +68,8 @@ public class SysMenuController extends DefaultBaseController {
     // 先查询当前租户使用的module
     List<Integer> moduleIds = null;
     if (TenantUtil.enableTenant()) {
-      moduleIds = sysModuleTenantService.getAvailableModuleIdsByTenantId(TenantContextHolder.getTenantId());
+      moduleIds = sysModuleTenantService.getAvailableModuleIdsByTenantId(
+          TenantContextHolder.getTenantId());
     }
 
     List<QuerySysMenuBo> results = CollectionUtil.emptyList();
@@ -147,37 +147,33 @@ public class SysMenuController extends DefaultBaseController {
   }
 
   /**
-   * 批量启用
+   * 启用
    */
-  @ApiOperation("批量启用")
+  @ApiOperation("启用")
   @HasPermission({"system:menu:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "菜单ID", required = true) @NotEmpty(message = "请选择需要启用的菜单！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "菜单ID", required = true) @NotEmpty(message = "菜单ID不能为空！") String id) {
 
-    sysMenuService.batchEnable(ids, SecurityUtil.getCurrentUser().getId());
+    sysMenuService.enable(id);
 
-    for (String id : ids) {
-      sysMenuService.cleanCacheByKey(id);
-    }
+    sysMenuService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量停用
+   * 停用
    */
-  @ApiOperation("批量停用")
+  @ApiOperation("停用")
   @HasPermission({"system:menu:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "菜单ID", required = true) @NotEmpty(message = "请选择需要停用的菜单！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "菜单ID", required = true) @NotEmpty(message = "菜单ID不能为空！") String id) {
 
-    sysMenuService.batchUnable(ids, SecurityUtil.getCurrentUser().getId());
+    sysMenuService.unable(id);
 
-    for (String id : ids) {
-      sysMenuService.cleanCacheByKey(id);
-    }
+    sysMenuService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

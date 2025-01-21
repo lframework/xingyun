@@ -255,20 +255,6 @@ public class LogisticsSheetController extends DefaultBaseController {
   }
 
   /**
-   * 批量删除物流单
-   */
-  @ApiOperation("批量删除物流单")
-  @HasPermission({"logistics:sheet:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的物流单！") List<String> ids) {
-
-    logisticsSheetService.deleteByIds(ids);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 查询物流单发货信息
    */
   @ApiOperation("查询物流单发货信息")

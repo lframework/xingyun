@@ -19,20 +19,16 @@ import com.lframework.xingyun.sc.excel.purchase.returned.PurchaseReturnExportMod
 import com.lframework.xingyun.sc.service.purchase.PurchaseReturnService;
 import com.lframework.xingyun.sc.vo.purchase.returned.ApprovePassPurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.ApproveRefusePurchaseReturnVo;
-import com.lframework.xingyun.sc.vo.purchase.returned.BatchApprovePassPurchaseReturnVo;
-import com.lframework.xingyun.sc.vo.purchase.returned.BatchApproveRefusePurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.CreatePurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.QueryPurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.UpdatePurchaseReturnVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -190,20 +186,6 @@ public class PurchaseReturnController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核通过
-   */
-  @ApiOperation("批量审核通过")
-  @HasPermission({"purchase:return:approve"})
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @RequestBody @Valid BatchApprovePassPurchaseReturnVo vo) {
-
-    purchaseReturnService.batchApprovePass(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 直接审核通过
    */
   @ApiOperation("直接审核通过")
@@ -230,20 +212,6 @@ public class PurchaseReturnController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核拒绝
-   */
-  @ApiOperation("批量审核拒绝")
-  @HasPermission({"purchase:return:approve"})
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefusePurchaseReturnVo vo) {
-
-    purchaseReturnService.batchApproveRefuse(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 删除
    */
   @ApiOperation("删除")
@@ -253,20 +221,6 @@ public class PurchaseReturnController extends DefaultBaseController {
   public InvokeResult<Void> deleteById(@NotBlank(message = "采购退货单ID不能为空！") String id) {
 
     purchaseReturnService.deleteById(id);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量删除
-   */
-  @ApiOperation("批量删除")
-  @HasPermission({"purchase:return:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的采购退货单！") List<String> ids) {
-
-    purchaseReturnService.deleteByIds(ids);
 
     return InvokeResultBuilder.success();
   }

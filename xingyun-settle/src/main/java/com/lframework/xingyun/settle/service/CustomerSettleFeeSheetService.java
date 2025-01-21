@@ -7,8 +7,6 @@ import com.lframework.xingyun.settle.dto.fee.customer.CustomerSettleFeeSheetFull
 import com.lframework.xingyun.settle.entity.CustomerSettleFeeSheet;
 import com.lframework.xingyun.settle.vo.fee.customer.ApprovePassCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.ApproveRefuseCustomerSettleFeeSheetVo;
-import com.lframework.xingyun.settle.vo.fee.customer.BatchApprovePassCustomerSettleFeeSheetVo;
-import com.lframework.xingyun.settle.vo.fee.customer.BatchApproveRefuseCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.CreateCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.QueryCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.UpdateCustomerSettleFeeSheetVo;
@@ -81,32 +79,11 @@ public interface CustomerSettleFeeSheetService extends BaseMpService<CustomerSet
     void approveRefuse(ApproveRefuseCustomerSettleFeeSheetVo vo);
 
     /**
-     * 批量审核通过
-     *
-     * @param vo
-     */
-    void batchApprovePass(BatchApprovePassCustomerSettleFeeSheetVo vo);
-
-    /**
-     * 批量审核拒绝
-     *
-     * @param vo
-     */
-    void batchApproveRefuse(BatchApproveRefuseCustomerSettleFeeSheetVo vo);
-
-    /**
      * 根据ID删除
      *
      * @param id
      */
     void deleteById(String id);
-
-    /**
-     * 根据IDs删除
-     *
-     * @param ids
-     */
-    void deleteByIds(List<String> ids);
 
     /**
      * 设置成未结算

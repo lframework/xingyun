@@ -27,8 +27,6 @@ import com.lframework.xingyun.sc.service.stock.transfer.ScTransferOrderDetailRec
 import com.lframework.xingyun.sc.service.stock.transfer.ScTransferOrderService;
 import com.lframework.xingyun.sc.vo.stock.transfer.ApprovePassScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ApproveRefuseScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.BatchApprovePassScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.BatchApproveRefuseScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.CreateScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferOrderDetailReceiveVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferOrderVo;
@@ -39,12 +37,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -244,20 +240,6 @@ public class ScTransferOrderController extends DefaultBaseController {
   }
 
   /**
-   * 批量删除
-   */
-  @ApiOperation("批量删除")
-  @HasPermission({"stock:sc-transfer:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的仓库调拨单！") List<String> ids) {
-
-    scTransferOrderService.deleteByIds(ids);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 审核通过
    */
   @ApiOperation("审核通过")
@@ -266,20 +248,6 @@ public class ScTransferOrderController extends DefaultBaseController {
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassScTransferOrderVo vo) {
 
     scTransferOrderService.approvePass(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量审核通过
-   */
-  @ApiOperation("批量审核通过")
-  @HasPermission({"stock:sc-transfer:approve"})
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @RequestBody @Valid BatchApprovePassScTransferOrderVo vo) {
-
-    scTransferOrderService.batchApprovePass(vo);
 
     return InvokeResultBuilder.success();
   }
@@ -307,20 +275,6 @@ public class ScTransferOrderController extends DefaultBaseController {
       @RequestBody @Valid ApproveRefuseScTransferOrderVo vo) {
 
     scTransferOrderService.approveRefuse(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量审核拒绝
-   */
-  @ApiOperation("批量审核拒绝")
-  @HasPermission({"stock:sc-transfer:approve"})
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefuseScTransferOrderVo vo) {
-
-    scTransferOrderService.batchApproveRefuse(vo);
 
     return InvokeResultBuilder.success();
   }

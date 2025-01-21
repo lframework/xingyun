@@ -77,31 +77,23 @@ public class StockAdjustReasonServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "停用库存调整原因，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "停用库存调整原因，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void unable(String id) {
 
     Wrapper<StockAdjustReason> updateWrapper = Wrappers.lambdaUpdate(StockAdjustReason.class)
-        .set(StockAdjustReason::getAvailable, Boolean.FALSE).in(StockAdjustReason::getId, ids);
+        .set(StockAdjustReason::getAvailable, Boolean.FALSE).eq(StockAdjustReason::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "启用库存调整原因，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "启用库存调整原因，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchEnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void enable(String id) {
 
     Wrapper<StockAdjustReason> updateWrapper = Wrappers.lambdaUpdate(StockAdjustReason.class)
-        .set(StockAdjustReason::getAvailable, Boolean.TRUE).in(StockAdjustReason::getId, ids);
+        .set(StockAdjustReason::getAvailable, Boolean.TRUE).eq(StockAdjustReason::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 

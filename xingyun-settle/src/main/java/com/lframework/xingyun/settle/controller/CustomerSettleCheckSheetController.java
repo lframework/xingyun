@@ -18,8 +18,6 @@ import com.lframework.xingyun.settle.entity.CustomerSettleCheckSheet;
 import com.lframework.xingyun.settle.service.CustomerSettleCheckSheetService;
 import com.lframework.xingyun.settle.vo.check.customer.ApprovePassCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.ApproveRefuseCustomerSettleCheckSheetVo;
-import com.lframework.xingyun.settle.vo.check.customer.BatchApprovePassCustomerSettleCheckSheetVo;
-import com.lframework.xingyun.settle.vo.check.customer.BatchApproveRefuseCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.CreateCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.QueryCustomerSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.customer.QueryCustomerUnCheckBizItemVo;
@@ -27,12 +25,10 @@ import com.lframework.xingyun.settle.vo.check.customer.UpdateCustomerSettleCheck
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import org.springframework.validation.annotation.Validated;
@@ -176,20 +172,6 @@ public class CustomerSettleCheckSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核通过客户对账单
-     */
-    @ApiOperation("批量审核通过客户对账单")
-    @HasPermission({"customer-settle:check-sheet:approve"})
-    @PatchMapping("/approve/pass/batch")
-    public InvokeResult<Void> batchApprovePass(
-            @RequestBody @Valid BatchApprovePassCustomerSettleCheckSheetVo vo) {
-
-        customerSettleCheckSheetService.batchApprovePass(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 直接审核通过客户对账单
      */
     @ApiOperation("直接审核通过客户对账单")
@@ -218,20 +200,6 @@ public class CustomerSettleCheckSheetController extends DefaultBaseController {
     }
 
     /**
-     * 批量审核拒绝客户对账单
-     */
-    @ApiOperation("批量审核拒绝客户对账单")
-    @HasPermission({"customer-settle:check-sheet:approve"})
-    @PatchMapping("/approve/refuse/batch")
-    public InvokeResult<Void> batchApproveRefuse(
-            @RequestBody @Valid BatchApproveRefuseCustomerSettleCheckSheetVo vo) {
-
-        customerSettleCheckSheetService.batchApproveRefuse(vo);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
      * 删除客户对账单
      */
     @ApiOperation("删除客户对账单")
@@ -241,20 +209,6 @@ public class CustomerSettleCheckSheetController extends DefaultBaseController {
     public InvokeResult<Void> deleteById(@NotBlank(message = "客户对账单ID不能为空！") String id) {
 
         customerSettleCheckSheetService.deleteById(id);
-
-        return InvokeResultBuilder.success();
-    }
-
-    /**
-     * 批量删除客户对账单
-     */
-    @ApiOperation("批量删除客户对账单")
-    @HasPermission({"customer-settle:check-sheet:delete"})
-    @DeleteMapping("/batch")
-    public InvokeResult<Void> deleteByIds(
-            @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的客户对账单！") List<String> ids) {
-
-        customerSettleCheckSheetService.deleteByIds(ids);
 
         return InvokeResultBuilder.success();
     }

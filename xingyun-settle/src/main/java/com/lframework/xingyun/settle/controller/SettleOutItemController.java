@@ -121,37 +121,33 @@ public class SettleOutItemController extends DefaultBaseController {
     }
 
     /**
-     * 批量停用支出项目
+     * 停用支出项目
      */
-    @ApiOperation("批量停用支出项目")
+    @ApiOperation("停用支出项目")
     @HasPermission({"settle:out-item:modify"})
-    @PatchMapping("/unable/batch")
-    public InvokeResult<Void> batchUnable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的支出项目！") @RequestBody List<String> ids) {
+    @PatchMapping("/unable")
+    public InvokeResult<Void> unable(
+            @ApiParam(value = "ID", required = true) @NotEmpty(message = "支出项目ID不能为空！") String id) {
 
-        settleOutItemService.batchUnable(ids);
+        settleOutItemService.unable(id);
 
-        for (String id : ids) {
-            settleOutItemService.cleanCacheByKey(id);
-        }
+        settleOutItemService.cleanCacheByKey(id);
 
         return InvokeResultBuilder.success();
     }
 
     /**
-     * 批量启用支出项目
+     * 启用支出项目
      */
-    @ApiOperation("批量启用支出项目")
+    @ApiOperation("启用支出项目")
     @HasPermission({"settle:out-item:modify"})
-    @PatchMapping("/enable/batch")
-    public InvokeResult<Void> batchEnable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的支出项目！") @RequestBody List<String> ids) {
+    @PatchMapping("/enable")
+    public InvokeResult<Void> enable(
+        @ApiParam(value = "ID", required = true) @NotEmpty(message = "支出项目ID不能为空！") String id) {
 
-        settleOutItemService.batchEnable(ids);
+        settleOutItemService.enable(id);
 
-        for (String id : ids) {
-            settleOutItemService.cleanCacheByKey(id);
-        }
+        settleOutItemService.cleanCacheByKey(id);
 
         return InvokeResultBuilder.success();
     }

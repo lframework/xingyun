@@ -6,8 +6,12 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.template.gen.components.custom.selector.CustomSelectorConfig;
 import com.lframework.xingyun.template.gen.entity.GenCustomSelector;
 import com.lframework.xingyun.template.gen.mappers.GenCustomSelectorMapper;
@@ -16,11 +20,6 @@ import com.lframework.xingyun.template.gen.vo.custom.selector.CreateGenCustomSel
 import com.lframework.xingyun.template.gen.vo.custom.selector.GenCustomSelectorSelectorVo;
 import com.lframework.xingyun.template.gen.vo.custom.selector.QueryGenCustomSelectorVo;
 import com.lframework.xingyun.template.gen.vo.custom.selector.UpdateGenCustomSelectorVo;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.utils.IdUtil;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
@@ -137,37 +136,19 @@ public class GenCustomSelectorServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchDelete(List<String> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
-
-    for (String id : ids) {
-      this.delete(id);
-    }
-  }
-
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchEnable(List<String> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void enable(String id) {
 
     Wrapper<GenCustomSelector> wrapper = Wrappers.lambdaUpdate(GenCustomSelector.class)
-        .set(GenCustomSelector::getAvailable, Boolean.TRUE).in(GenCustomSelector::getId, ids);
+        .set(GenCustomSelector::getAvailable, Boolean.TRUE).eq(GenCustomSelector::getId, id);
     getBaseMapper().update(wrapper);
   }
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(List<String> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void unable(String id) {
 
     Wrapper<GenCustomSelector> wrapper = Wrappers.lambdaUpdate(GenCustomSelector.class)
-        .set(GenCustomSelector::getAvailable, Boolean.FALSE).in(GenCustomSelector::getId, ids);
+        .set(GenCustomSelector::getAvailable, Boolean.FALSE).eq(GenCustomSelector::getId, id);
     getBaseMapper().update(wrapper);
   }
 
@@ -176,7 +157,8 @@ public class GenCustomSelectorServiceImpl extends
     return getBaseMapper().getRelaGenCustomListIds(customListId);
   }
 
-  @CacheEvict(value = {GenCustomSelector.CACHE_NAME, CustomSelectorConfig.CACHE_NAME}, key = "@cacheVariables.tenantId() + #key")
+  @CacheEvict(value = {GenCustomSelector.CACHE_NAME,
+      CustomSelectorConfig.CACHE_NAME}, key = "@cacheVariables.tenantId() + #key")
   @Override
   public void cleanCacheByKey(Serializable key) {
     super.cleanCacheByKey(key);

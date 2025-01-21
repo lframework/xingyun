@@ -57,52 +57,34 @@ public class SysDeptServiceImpl extends BaseMpServiceImpl<SysDeptMapper, SysDept
     return getOne(queryWrapper);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用部门，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "停用部门，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void unable(String id) {
 
     List<String> batchIds = new ArrayList<>();
-    for (String id : ids) {
-      List<String> nodeChildIds = recursionMappingService.getNodeChildIds(id,
-          ApplicationUtil.getBean(SysDeptNodeType.class));
-      if (CollectionUtil.isEmpty(nodeChildIds)) {
-        continue;
-      }
-
+    batchIds.add(id);
+    List<String> nodeChildIds = recursionMappingService.getNodeChildIds(id,
+        ApplicationUtil.getBean(SysDeptNodeType.class));
+    if (CollectionUtil.isNotEmpty(nodeChildIds)) {
       batchIds.addAll(nodeChildIds);
     }
-
-    batchIds.addAll(ids);
 
     this.doBatchUnable(batchIds);
   }
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用部门，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "启用部门，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchEnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void enable(String id) {
 
     List<String> batchIds = new ArrayList<>();
-    for (String id : ids) {
-      List<String> nodeChildIds = recursionMappingService.getNodeParentIds(id,
-          ApplicationUtil.getBean(SysDeptNodeType.class));
-      if (CollectionUtil.isEmpty(nodeChildIds)) {
-        continue;
-      }
-
+    batchIds.add(id);
+    List<String> nodeChildIds = recursionMappingService.getNodeParentIds(id,
+        ApplicationUtil.getBean(SysDeptNodeType.class));
+    if (CollectionUtil.isNotEmpty(nodeChildIds)) {
       batchIds.addAll(nodeChildIds);
     }
-
-    batchIds.addAll(ids);
 
     this.doBatchEnable(batchIds);
   }
@@ -250,9 +232,9 @@ public class SysDeptServiceImpl extends BaseMpServiceImpl<SysDeptMapper, SysDept
     getBaseMapper().update(updateWrapper);
 
     if (vo.getAvailable()) {
-      this.batchEnable(Collections.singletonList(vo.getId()));
+      this.enable(vo.getId());
     } else {
-      this.batchUnable(Collections.singletonList(vo.getId()));
+      this.unable(vo.getId());
     }
   }
 

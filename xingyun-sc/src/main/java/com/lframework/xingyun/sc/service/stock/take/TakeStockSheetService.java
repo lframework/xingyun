@@ -7,8 +7,6 @@ import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApprovePassTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApproveRefuseTakeStockSheetVo;
-import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApprovePassTakeStockSheetVo;
-import com.lframework.xingyun.sc.vo.stock.take.sheet.BatchApproveRefuseTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.CreateTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.QueryTakeStockSheetVo;
@@ -68,13 +66,6 @@ public interface TakeStockSheetService extends BaseMpService<TakeStockSheet> {
   void approvePass(ApprovePassTakeStockSheetVo vo);
 
   /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassTakeStockSheetVo vo);
-
-  /**
    * 直接审核通过
    *
    * @param vo
@@ -89,13 +80,6 @@ public interface TakeStockSheetService extends BaseMpService<TakeStockSheet> {
   void approveRefuse(ApproveRefuseTakeStockSheetVo vo);
 
   /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseTakeStockSheetVo vo);
-
-  /**
    * 取消审核
    *
    * @param id
@@ -108,13 +92,6 @@ public interface TakeStockSheetService extends BaseMpService<TakeStockSheet> {
    * @param id
    */
   void deleteById(String id);
-
-  /**
-   * 根据ID删除
-   *
-   * @param ids
-   */
-  void batchDelete(List<String> ids);
 
   /**
    * 根据预先盘点单ID判断是否有盘点单关联

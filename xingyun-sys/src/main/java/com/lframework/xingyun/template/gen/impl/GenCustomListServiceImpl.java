@@ -467,37 +467,19 @@ public class GenCustomListServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchDelete(List<String> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
-
-    for (String id : ids) {
-      this.delete(id);
-    }
-  }
-
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchEnable(List<String> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void enable(String id) {
 
     Wrapper<GenCustomList> wrapper = Wrappers.lambdaUpdate(GenCustomList.class)
-        .set(GenCustomList::getAvailable, Boolean.TRUE).in(GenCustomList::getId, ids);
+        .set(GenCustomList::getAvailable, Boolean.TRUE).eq(GenCustomList::getId, id);
     getBaseMapper().update(wrapper);
   }
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(List<String> ids) {
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void unable(String id) {
 
     Wrapper<GenCustomList> wrapper = Wrappers.lambdaUpdate(GenCustomList.class)
-        .set(GenCustomList::getAvailable, Boolean.FALSE).in(GenCustomList::getId, ids);
+        .set(GenCustomList::getAvailable, Boolean.FALSE).eq(GenCustomList::getId, id);
     getBaseMapper().update(wrapper);
   }
 

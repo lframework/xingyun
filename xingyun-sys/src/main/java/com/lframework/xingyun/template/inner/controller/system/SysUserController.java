@@ -2,12 +2,12 @@ package com.lframework.xingyun.template.inner.controller.system;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.template.inner.bo.system.user.GetSysUserBo;
 import com.lframework.xingyun.template.inner.bo.system.user.QuerySysUserBo;
 import com.lframework.xingyun.template.inner.entity.SysUser;
@@ -89,37 +89,33 @@ public class SysUserController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用用户
+   * 停用用户
    */
-  @ApiOperation("批量停用用户")
+  @ApiOperation("停用用户")
   @HasPermission({"system:user:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "用户ID", required = true) @NotEmpty(message = "请选择需要停用的用户！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "用户ID", required = true) @NotEmpty(message = "用户ID不能为空！") String id) {
 
-    sysUserService.batchUnable(ids);
+    sysUserService.unable(id);
 
-    for (String id : ids) {
-      sysUserService.cleanCacheByKey(id);
-    }
+    sysUserService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用用户
+   * 启用用户
    */
-  @ApiOperation("批量启用用户")
+  @ApiOperation("启用用户")
   @HasPermission({"system:user:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "用户ID", required = true) @NotEmpty(message = "请选择需要启用的用户！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "用户ID", required = true) @NotEmpty(message = "用户ID不能为空！") String id) {
 
-    sysUserService.batchEnable(ids);
+    sysUserService.enable(id);
 
-    for (String id : ids) {
-      sysUserService.cleanCacheByKey(id);
-    }
+    sysUserService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

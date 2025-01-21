@@ -7,23 +7,22 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.xingyun.core.service.RecursionMappingService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.mappers.ProductCategoryMapper;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.service.RecursionMappingService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -58,61 +57,44 @@ public class ProductCategoryServiceImpl extends
     return getBaseMapper().selector(vo);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品分类，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品分类，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void unable(String id) {
 
     List<String> batchIds = new ArrayList<>();
-    for (String id : ids) {
-      List<String> nodeChildIds = recursionMappingService.getNodeChildIds(id,
-          ApplicationUtil.getBean(ProductCategoryNodeType.class));
-      if (CollectionUtil.isEmpty(nodeChildIds)) {
-        continue;
-      }
-
+    batchIds.add(id);
+    List<String> nodeChildIds = recursionMappingService.getNodeChildIds(id,
+        ApplicationUtil.getBean(ProductCategoryNodeType.class));
+    if (CollectionUtil.isNotEmpty(nodeChildIds)) {
       batchIds.addAll(nodeChildIds);
     }
-
-    batchIds.addAll(ids);
 
     Wrapper<ProductCategory> updateWrapper = Wrappers.lambdaUpdate(ProductCategory.class)
         .set(ProductCategory::getAvailable, Boolean.FALSE).in(ProductCategory::getId, batchIds);
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品分类，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品分类，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchEnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void enable(String id) {
 
     List<String> batchIds = new ArrayList<>();
-    for (String id : ids) {
-      List<String> nodeParentIds = recursionMappingService.getNodeParentIds(id,
-          ApplicationUtil.getBean(ProductCategoryNodeType.class));
-      if (CollectionUtil.isEmpty(nodeParentIds)) {
-        continue;
-      }
-
+    batchIds.add(id);
+    List<String> nodeParentIds = recursionMappingService.getNodeParentIds(id,
+        ApplicationUtil.getBean(ProductCategoryNodeType.class));
+    if (CollectionUtil.isNotEmpty(nodeParentIds)) {
       batchIds.addAll(nodeParentIds);
     }
-
-    batchIds.addAll(ids);
 
     Wrapper<ProductCategory> updateWrapper = Wrappers.lambdaUpdate(ProductCategory.class)
         .set(ProductCategory::getAvailable, Boolean.TRUE).in(ProductCategory::getId, batchIds);
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品分类，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品分类，ID：{}, 编号：{}", params = {"#id",
+      "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductCategoryVo vo) {
@@ -161,7 +143,8 @@ public class ProductCategoryServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品分类，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品分类，ID：{}, 编号：{}", params = {"#id",
+      "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductCategoryVo vo) {
@@ -197,20 +180,12 @@ public class ProductCategoryServiceImpl extends
     if (!vo.getAvailable()) {
       if (data.getAvailable()) {
         //如果是停用 子节点全部停用
-        List<String> childrenIds = recursionMappingService.getNodeChildIds(data.getId(),
-            ApplicationUtil.getBean(ProductCategoryNodeType.class));
-        if (!CollectionUtil.isEmpty(childrenIds)) {
-          this.batchUnable(childrenIds);
-        }
+        this.unable(data.getId());
       }
     } else {
       if (!data.getAvailable()) {
         //如果是启用 父节点全部启用
-        List<String> parentIds = recursionMappingService.getNodeParentIds(data.getId(),
-            ApplicationUtil.getBean(ProductCategoryNodeType.class));
-        if (!CollectionUtil.isEmpty(parentIds)) {
-          this.batchEnable(parentIds);
-        }
+        this.enable(data.getId());
       }
     }
 

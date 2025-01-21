@@ -70,25 +70,18 @@ public interface GenDataObjService extends BaseMpService<GenDataObj> {
   void delete(String id);
 
   /**
-   * 根据ID批量删除
+   * 启用
    *
-   * @param ids
+   * @param id
    */
-  void batchDelete(List<String> ids);
+  void enable(String id);
 
   /**
-   * 批量启用
+   * 停用
    *
-   * @param ids
+   * @param id
    */
-  void batchEnable(List<String> ids);
-
-  /**
-   * 批量停用
-   *
-   * @param ids
-   */
-  void batchUnable(List<String> ids);
+  void unable(String id);
 
   /**
    * 查询所有关联了数据实体的数据对象ID

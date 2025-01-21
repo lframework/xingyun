@@ -2,12 +2,12 @@ package com.lframework.xingyun.basedata.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.logistics.company.GetLogisticsCompanyBo;
 import com.lframework.xingyun.basedata.bo.logistics.company.QueryLogisticsCompanyBo;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -93,37 +92,33 @@ public class LogisticsCompanyController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用物流公司
+   * 停用物流公司
    */
-  @ApiOperation("批量停用物流公司")
+  @ApiOperation("停用物流公司")
   @HasPermission({"base-data:logistics-company:modify"})
-  @PatchMapping("/unable/batch")
+  @PatchMapping("/unable")
   public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的物流公司！") @RequestBody List<String> ids) {
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "物流公司ID不能为空！") String id) {
 
-    logisticsCompanyService.batchUnable(ids);
+    logisticsCompanyService.unable(id);
 
-    for (String id : ids) {
-      logisticsCompanyService.cleanCacheByKey(id);
-    }
+    logisticsCompanyService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用物流公司
+   * 启用物流公司
    */
-  @ApiOperation("批量启用物流公司")
+  @ApiOperation("启用物流公司")
   @HasPermission({"base-data:logistics-company:modify"})
-  @PatchMapping("/enable/batch")
+  @PatchMapping("/enable")
   public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的物流公司！") @RequestBody List<String> ids) {
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "物流公司ID不能为空！") String id) {
 
-    logisticsCompanyService.batchEnable(ids);
+    logisticsCompanyService.enable(id);
 
-    for (String id : ids) {
-      logisticsCompanyService.cleanCacheByKey(id);
-    }
+    logisticsCompanyService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

@@ -8,8 +8,6 @@ import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.BatchApprovePassPurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.BatchApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.PurchaseOrderSelectorVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
@@ -99,13 +97,6 @@ public interface PurchaseOrderService extends BaseMpService<PurchaseOrder> {
   void approvePass(ApprovePassPurchaseOrderVo vo);
 
   /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassPurchaseOrderVo vo);
-
-  /**
    * 直接审核通过
    *
    * @param vo
@@ -120,25 +111,11 @@ public interface PurchaseOrderService extends BaseMpService<PurchaseOrder> {
   void approveRefuse(ApproveRefusePurchaseOrderVo vo);
 
   /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefusePurchaseOrderVo vo);
-
-  /**
    * 根据ID删除
    *
    * @param id
    */
   void deleteById(String id);
-
-  /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
 
   /**
    * 取消审核

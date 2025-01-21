@@ -2,13 +2,13 @@ package com.lframework.xingyun.basedata.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.product.brand.GetProductBrandBo;
 import com.lframework.xingyun.basedata.bo.product.brand.QueryProductBrandBo;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -98,37 +97,33 @@ public class ProductBrandController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用品牌
+   * 停用品牌
    */
-  @ApiOperation("批量停用品牌")
+  @ApiOperation("停用品牌")
   @HasPermission({"base-data:product:brand:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的品牌！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "品牌ID不能为空！") String id) {
 
-    productBrandService.batchUnable(ids);
+    productBrandService.unable(id);
 
-    for (String id : ids) {
-      productBrandService.cleanCacheByKey(id);
-    }
+    productBrandService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用品牌
+   * 启用品牌
    */
-  @ApiOperation("批量启用品牌")
+  @ApiOperation("启用品牌")
   @HasPermission({"base-data:product:brand:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的品牌！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "品牌ID不能为空！") String id) {
 
-    productBrandService.batchEnable(ids);
+    productBrandService.enable(id);
 
-    for (String id : ids) {
-      productBrandService.cleanCacheByKey(id);
-    }
+    productBrandService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

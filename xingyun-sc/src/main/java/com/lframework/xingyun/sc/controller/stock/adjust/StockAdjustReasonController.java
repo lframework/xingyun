@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -92,37 +91,33 @@ public class StockAdjustReasonController extends DefaultBaseController {
   }
 
   /**
-   * 批量停用库存调整原因
+   * 停用库存调整原因
    */
-  @ApiOperation("批量停用库存调整原因")
+  @ApiOperation("停用库存调整原因")
   @HasPermission({"stock:adjust:reason:modify"})
-  @PatchMapping("/unable/batch")
-  public InvokeResult<Void> batchUnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要停用的库存调整原因！") @RequestBody List<String> ids) {
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "库存调整原因ID不能为空！") String id) {
 
-    stockAdjustReasonService.batchUnable(ids);
+    stockAdjustReasonService.unable(id);
 
-    for (String id : ids) {
-      stockAdjustReasonService.cleanCacheByKey(id);
-    }
+    stockAdjustReasonService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }
 
   /**
-   * 批量启用库存调整原因
+   * 启用库存调整原因
    */
-  @ApiOperation("批量启用库存调整原因")
+  @ApiOperation("启用库存调整原因")
   @HasPermission({"stock:adjust:reason:modify"})
-  @PatchMapping("/enable/batch")
-  public InvokeResult<Void> batchEnable(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "请选择需要启用的库存调整原因！") @RequestBody List<String> ids) {
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "库存调整原因ID不能为空！") String id) {
 
-    stockAdjustReasonService.batchEnable(ids);
+    stockAdjustReasonService.enable(id);
 
-    for (String id : ids) {
-      stockAdjustReasonService.cleanCacheByKey(id);
-    }
+    stockAdjustReasonService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

@@ -11,7 +11,6 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.sc.bo.purchase.GetPurchaseOrderBo;
 import com.lframework.xingyun.sc.bo.purchase.PrintPurchaseOrderBo;
@@ -31,8 +30,6 @@ import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderPayTypeImportModel;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.BatchApprovePassPurchaseOrderVo;
-import com.lframework.xingyun.sc.vo.purchase.BatchApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithReceiveVo;
@@ -42,12 +39,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -74,9 +69,6 @@ public class PurchaseOrderController extends DefaultBaseController {
 
   @Autowired
   private PurchaseOrderService purchaseOrderService;
-
-  @Autowired
-  private ProductService productService;
 
   /**
    * 打印
@@ -273,20 +265,6 @@ public class PurchaseOrderController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核通过订单
-   */
-  @ApiOperation("批量审核通过订单")
-  @HasPermission({"purchase:order:approve"})
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(
-      @RequestBody @Valid BatchApprovePassPurchaseOrderVo vo) {
-
-    purchaseOrderService.batchApprovePass(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 直接审核通过订单
    */
   @ApiOperation("直接审核通过订单")
@@ -313,20 +291,6 @@ public class PurchaseOrderController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核拒绝订单
-   */
-  @ApiOperation("批量审核拒绝订单")
-  @HasPermission({"purchase:order:approve"})
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefusePurchaseOrderVo vo) {
-
-    purchaseOrderService.batchApproveRefuse(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 删除订单
    */
   @ApiOperation("删除订单")
@@ -336,20 +300,6 @@ public class PurchaseOrderController extends DefaultBaseController {
   public InvokeResult<Void> deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
 
     purchaseOrderService.deleteById(id);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量删除订单
-   */
-  @ApiOperation("批量删除订单")
-  @HasPermission({"purchase:order:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
-
-    purchaseOrderService.deleteByIds(ids);
 
     return InvokeResultBuilder.success();
   }

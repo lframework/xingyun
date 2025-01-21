@@ -8,8 +8,6 @@ import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.vo.sale.ApprovePassSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.ApproveRefuseSaleOrderVo;
-import com.lframework.xingyun.sc.vo.sale.BatchApprovePassSaleOrderVo;
-import com.lframework.xingyun.sc.vo.sale.BatchApproveRefuseSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.CreateSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
@@ -98,13 +96,6 @@ public interface SaleOrderService extends BaseMpService<SaleOrder> {
   void approvePass(ApprovePassSaleOrderVo vo);
 
   /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassSaleOrderVo vo);
-
-  /**
    * 直接审核通过
    *
    * @param vo
@@ -119,25 +110,11 @@ public interface SaleOrderService extends BaseMpService<SaleOrder> {
   void approveRefuse(ApproveRefuseSaleOrderVo vo);
 
   /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseSaleOrderVo vo);
-
-  /**
    * 根据ID删除
    *
    * @param id
    */
   void deleteById(String id);
-
-  /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
 
   /**
    * 根据关键字查询销售商品信息

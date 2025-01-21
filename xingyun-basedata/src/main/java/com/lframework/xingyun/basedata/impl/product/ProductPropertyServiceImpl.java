@@ -11,21 +11,18 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.service.RecursionMappingService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.utils.PageHelperUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.ColumnDataType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
@@ -38,9 +35,11 @@ import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.UpdateProductPropertyVo;
+import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.xingyun.core.service.RecursionMappingService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,31 +93,23 @@ public class ProductPropertyServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品属性，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品属性，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchUnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void unable(String id) {
 
     Wrapper<ProductProperty> updateWrapper = Wrappers.lambdaUpdate(ProductProperty.class)
-        .set(ProductProperty::getAvailable, Boolean.FALSE).in(ProductProperty::getId, ids);
+        .set(ProductProperty::getAvailable, Boolean.FALSE).eq(ProductProperty::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品属性，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品属性，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchEnable(Collection<String> ids) {
-
-    if (CollectionUtil.isEmpty(ids)) {
-      return;
-    }
+  public void enable(String id) {
 
     Wrapper<ProductProperty> updateWrapper = Wrappers.lambdaUpdate(ProductProperty.class)
-        .set(ProductProperty::getAvailable, Boolean.TRUE).in(ProductProperty::getId, ids);
+        .set(ProductProperty::getAvailable, Boolean.TRUE).eq(ProductProperty::getId, id);
     getBaseMapper().update(updateWrapper);
   }
 
@@ -147,7 +138,8 @@ public class ProductPropertyServiceImpl extends
     return results;
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品属性，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品属性，ID：{}, 编号：{}", params = {"#id",
+      "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductPropertyVo vo) {
@@ -213,7 +205,8 @@ public class ProductPropertyServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品属性，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品属性，ID：{}, 编号：{}", params = {"#id",
+      "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductPropertyVo vo) {
@@ -238,7 +231,8 @@ public class ProductPropertyServiceImpl extends
     //如果字段类型是手动录入，那么不允许修改字段类型
     if (data.getColumnType() == ColumnType.CUSTOM) {
       if (vo.getColumnType() != ColumnType.CUSTOM.getCode().intValue()) {
-        throw new InputErrorException("该属性的字段类型为“" + ColumnType.CUSTOM.getDesc() + "”，不允许修改！");
+        throw new InputErrorException(
+            "该属性的字段类型为“" + ColumnType.CUSTOM.getDesc() + "”，不允许修改！");
       }
 
       if (vo.getColumnDataType() == null) {
@@ -257,7 +251,8 @@ public class ProductPropertyServiceImpl extends
     if (data.getColumnType() != ColumnType.CUSTOM
         && vo.getColumnType() == ColumnType.CUSTOM.getCode().intValue()) {
       //从其他类型更改为手动录入
-      throw new InputErrorException("该属性不允许将字段类型修改为“" + ColumnType.CUSTOM.getDesc() + "”！");
+      throw new InputErrorException(
+          "该属性不允许将字段类型修改为“" + ColumnType.CUSTOM.getDesc() + "”！");
     }
 
     if (data.getPropertyType() != PropertyType.NONE

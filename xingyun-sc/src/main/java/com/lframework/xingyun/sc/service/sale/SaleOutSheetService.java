@@ -9,8 +9,6 @@ import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.vo.sale.out.ApprovePassSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.ApproveRefuseSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.BatchApprovePassSaleOutSheetVo;
-import com.lframework.xingyun.sc.vo.sale.out.BatchApproveRefuseSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.CreateSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetWithReturnVo;
@@ -106,13 +104,6 @@ public interface SaleOutSheetService extends BaseMpService<SaleOutSheet> {
   void approvePass(ApprovePassSaleOutSheetVo vo);
 
   /**
-   * 批量审核通过
-   *
-   * @param vo
-   */
-  void batchApprovePass(BatchApprovePassSaleOutSheetVo vo);
-
-  /**
    * 直接审核通过
    *
    * @param vo
@@ -127,25 +118,11 @@ public interface SaleOutSheetService extends BaseMpService<SaleOutSheet> {
   void approveRefuse(ApproveRefuseSaleOutSheetVo vo);
 
   /**
-   * 批量审核拒绝
-   *
-   * @param vo
-   */
-  void batchApproveRefuse(BatchApproveRefuseSaleOutSheetVo vo);
-
-  /**
    * 根据ID删除
    *
    * @param id
    */
   void deleteById(String id);
-
-  /**
-   * 根据IDs删除
-   *
-   * @param ids
-   */
-  void deleteByIds(List<String> ids);
 
   /**
    * 设置成未结算

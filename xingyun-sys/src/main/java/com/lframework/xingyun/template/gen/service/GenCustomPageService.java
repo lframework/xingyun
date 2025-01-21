@@ -1,12 +1,12 @@
 package com.lframework.xingyun.template.gen.service;
 
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.xingyun.template.gen.entity.GenCustomPage;
 import com.lframework.xingyun.template.gen.vo.custom.page.CreateGenCustomPageVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.GenCustomPageSelectorVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.QueryGenCustomPageVo;
 import com.lframework.xingyun.template.gen.vo.custom.page.UpdateGenCustomPageVo;
-import com.lframework.xingyun.template.gen.entity.GenCustomPage;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
 import java.util.List;
 
 public interface GenCustomPageService extends BaseMpService<GenCustomPage> {
@@ -70,11 +70,4 @@ public interface GenCustomPageService extends BaseMpService<GenCustomPage> {
    * @param id
    */
   void delete(Integer id);
-
-  /**
-   * 批量删除
-   *
-   * @param ids
-   */
-  void batchDelete(List<Integer> ids);
 }

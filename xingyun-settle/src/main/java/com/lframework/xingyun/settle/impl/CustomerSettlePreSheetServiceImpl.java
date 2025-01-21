@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.security.AbstractUserDetails;
@@ -35,8 +33,6 @@ import com.lframework.xingyun.settle.service.CustomerSettlePreSheetService;
 import com.lframework.xingyun.settle.service.SettleInItemService;
 import com.lframework.xingyun.settle.vo.pre.customer.ApprovePassCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.ApproveRefuseCustomerSettlePreSheetVo;
-import com.lframework.xingyun.settle.vo.pre.customer.BatchApprovePassCustomerSettlePreSheetVo;
-import com.lframework.xingyun.settle.vo.pre.customer.BatchApproveRefuseCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.CreateCustomerSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.customer.CustomerSettlePreSheetItemVo;
 import com.lframework.xingyun.settle.vo.pre.customer.QueryCustomerSettlePreSheetVo;
@@ -263,46 +259,6 @@ public class CustomerSettlePreSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassCustomerSettlePreSheetVo vo) {
-
-    CustomerSettlePreSheetService thisService = getThis(this.getClass());
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassCustomerSettlePreSheetVo approveVo = new ApprovePassCustomerSettlePreSheetVo();
-      approveVo.setId(id);
-      try {
-        thisService.approvePass(approveVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个客户预付款单审核通过失败，失败原因：" + e.getMsg());
-      }
-      orderNo++;
-    }
-  }
-
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseCustomerSettlePreSheetVo vo) {
-
-    CustomerSettlePreSheetService thisService = getThis(this.getClass());
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseCustomerSettlePreSheetVo approveVo = new ApproveRefuseCustomerSettlePreSheetVo();
-      approveVo.setId(id);
-      approveVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        thisService.approveRefuse(approveVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException("第" + orderNo + "个客户预付款单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-      orderNo++;
-    }
-  }
-
   @OpLog(type = SettleOpLogType.SETTLE, name = "删除客户预付款单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
@@ -335,27 +291,6 @@ public class CustomerSettlePreSheetServiceImpl extends
     getBaseMapper().deleteById(id);
 
     OpLogUtil.setVariable("code", sheet.getCode());
-  }
-
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          CustomerSettlePreSheetService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException("第" + orderNo + "个客户预付款单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
   }
 
   @Transactional(rollbackFor = Exception.class)

@@ -26,8 +26,6 @@ import com.lframework.xingyun.sc.excel.sale.SaleOrderExportModel;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
 import com.lframework.xingyun.sc.vo.sale.ApprovePassSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.ApproveRefuseSaleOrderVo;
-import com.lframework.xingyun.sc.vo.sale.BatchApprovePassSaleOrderVo;
-import com.lframework.xingyun.sc.vo.sale.BatchApproveRefuseSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.CreateSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
@@ -37,12 +35,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -259,19 +255,6 @@ public class SaleOrderController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核通过订单
-   */
-  @ApiOperation("批量审核通过订单")
-  @HasPermission({"sale:order:approve"})
-  @PatchMapping("/approve/pass/batch")
-  public InvokeResult<Void> batchApprovePass(@RequestBody @Valid BatchApprovePassSaleOrderVo vo) {
-
-    saleOrderService.batchApprovePass(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 直接审核通过订单
    */
   @ApiOperation("直接审核通过订单")
@@ -298,20 +281,6 @@ public class SaleOrderController extends DefaultBaseController {
   }
 
   /**
-   * 批量审核拒绝订单
-   */
-  @ApiOperation("批量审核拒绝订单")
-  @HasPermission({"sale:order:approve"})
-  @PatchMapping("/approve/refuse/batch")
-  public InvokeResult<Void> batchApproveRefuse(
-      @RequestBody @Valid BatchApproveRefuseSaleOrderVo vo) {
-
-    saleOrderService.batchApproveRefuse(vo);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
    * 删除订单
    */
   @ApiOperation("删除订单")
@@ -321,20 +290,6 @@ public class SaleOrderController extends DefaultBaseController {
   public InvokeResult<Void> deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
 
     saleOrderService.deleteById(id);
-
-    return InvokeResultBuilder.success();
-  }
-
-  /**
-   * 批量删除订单
-   */
-  @ApiOperation("批量删除订单")
-  @HasPermission({"sale:order:delete"})
-  @DeleteMapping("/batch")
-  public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的订单！") List<String> ids) {
-
-    saleOrderService.deleteByIds(ids);
 
     return InvokeResultBuilder.success();
   }

@@ -39,16 +39,16 @@ public interface LogisticsCompanyService extends BaseMpService<LogisticsCompany>
   /**
    * 根据ID停用
    *
-   * @param ids
+   * @param id
    */
-  void batchUnable(Collection<String> ids);
+  void unable(String id);
 
   /**
    * 根据ID启用
    *
-   * @param ids
+   * @param id
    */
-  void batchEnable(Collection<String> ids);
+  void enable(String id);
 
   /**
    * 创建

@@ -4,25 +4,25 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.security.SecurityUtil;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
+import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto;
@@ -41,8 +41,6 @@ import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ApprovePassScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ApproveRefuseScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.BatchApprovePassScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.BatchApproveRefuseScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.CreateScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferProductVo;
@@ -50,8 +48,6 @@ import com.lframework.xingyun.sc.vo.stock.transfer.ReceiveScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ReceiveScTransferOrderVo.ReceiveScTransferProductVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ScTransferProductVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.UpdateScTransferOrderVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -211,28 +207,6 @@ public class ScTransferOrderServiceImpl extends
     scTransferOrderDetailReceiveService.remove(deleteDetailReceiveWrapper);
   }
 
-  @OrderTimeLineLog(orderId = "#ids", delete = true)
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void deleteByIds(List<String> ids) {
-
-    if (!CollectionUtil.isEmpty(ids)) {
-      int orderNo = 1;
-      for (String id : ids) {
-
-        try {
-          ScTransferOrderService thisService = getThis(this.getClass());
-          thisService.deleteById(id);
-        } catch (ClientException e) {
-          throw new DefaultClientException(
-              "第" + orderNo + "个仓库调拨单删除失败，失败原因：" + e.getMsg());
-        }
-
-        orderNo++;
-      }
-    }
-  }
-
   @OpLog(type = ScOpLogType.SC_TRANSFER, name = "审核通过仓库调拨单，ID：{}", params = {"#vo.id"})
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
@@ -305,28 +279,6 @@ public class ScTransferOrderServiceImpl extends
     this.update(updateWrapper);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.ids", name = "审核通过")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApprovePass(BatchApprovePassScTransferOrderVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApprovePassScTransferOrderVo approvePassVo = new ApprovePassScTransferOrderVo();
-      approvePassVo.setId(id);
-
-      try {
-        ScTransferOrderService thisService = getThis(this.getClass());
-        thisService.approvePass(approvePassVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个仓库调拨单审核通过失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
-  }
-
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -380,29 +332,6 @@ public class ScTransferOrderServiceImpl extends
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setExtra(vo);
-  }
-
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.ids", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
-  @Transactional(rollbackFor = Exception.class)
-  @Override
-  public void batchApproveRefuse(BatchApproveRefuseScTransferOrderVo vo) {
-
-    int orderNo = 1;
-    for (String id : vo.getIds()) {
-      ApproveRefuseScTransferOrderVo approveRefuseVo = new ApproveRefuseScTransferOrderVo();
-      approveRefuseVo.setId(id);
-      approveRefuseVo.setRefuseReason(vo.getRefuseReason());
-
-      try {
-        ScTransferOrderService thisService = getThis(this.getClass());
-        thisService.approveRefuse(approveRefuseVo);
-      } catch (ClientException e) {
-        throw new DefaultClientException(
-            "第" + orderNo + "个仓库调拨单审核拒绝失败，失败原因：" + e.getMsg());
-      }
-
-      orderNo++;
-    }
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.RECEIVE, orderId = "#vo.id", name = "仓库调拨单收货")

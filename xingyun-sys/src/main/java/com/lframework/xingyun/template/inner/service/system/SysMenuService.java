@@ -73,18 +73,16 @@ public interface SysMenuService extends BaseMpService<SysMenu> {
   /**
    * 批量启用
    *
-   * @param ids
-   * @param userId
+   * @param id
    */
-  void batchEnable(List<String> ids, String userId);
+  void enable(String id);
 
   /**
-   * 批量停用
+   * 停用
    *
-   * @param ids
-   * @param userId
+   * @param id
    */
-  void batchUnable(List<String> ids, String userId);
+  void unable(String id);
 
   /**
    * 是否存在权限

@@ -2,13 +2,14 @@ package com.lframework.xingyun.core.components.permission;
 
 import cn.dev33.satoken.exception.SaTokenException;
 import cn.dev33.satoken.session.SaSession;
-import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
 import com.lframework.starter.common.exceptions.impl.DefaultSysException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.components.security.AbstractUserDetails;
 import com.lframework.starter.web.components.security.SecurityConstants;
+import com.lframework.starter.web.components.security.SecurityUtil;
 import com.lframework.xingyun.core.annotations.permission.DataPermission;
 import com.lframework.xingyun.core.annotations.permission.DataPermissionGroup;
 import com.lframework.xingyun.core.annotations.permission.DataPermissions;
@@ -63,10 +64,16 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
     Map<String, String> dataPermissionMap = null;
     Map<String, String> dataPermissionVar = null;
     try {
-      SaSession session = StpUtil.getSession(false);
+      AbstractUserDetails currenUser = SecurityUtil.getCurrentUser();
+      if (currenUser == null) {
+        return EMPTY_SQL;
+      }
+
+      SaSession session = SecurityUtil.getSessionByLoginId(currenUser.getLoginId());
       if (session == null) {
         return EMPTY_SQL;
       }
+
       dataPermissionMap = (Map<String, String>) session.get(
           SecurityConstants.DATA_PERMISSION_SQL_MAP);
 

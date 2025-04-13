@@ -7,12 +7,15 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.FileUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.components.security.SecurityUtil;
+import com.lframework.starter.web.components.upload.client.dto.UploadDto;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.service.SysConfService;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.starter.web.utils.PageHelperUtil;
@@ -30,6 +33,7 @@ import com.lframework.xingyun.comp.vo.sw.filebox.UpdateFileBoxVo;
 import com.lframework.xingyun.comp.vo.sw.filebox.UploadFileBoxVo;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.service.RecursionMappingService;
+import com.lframework.xingyun.core.service.SecurityUploadRecordService;
 import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,6 +49,9 @@ public class FileBoxServiceImpl extends
 
   @Autowired
   private RecursionMappingService recursionMappingService;
+
+  @Autowired
+  private SecurityUploadRecordService securityUploadRecordService;
 
   @Override
   public PageResult<FileBox> query(Integer pageIndex, Integer pageSize, QueryFileBoxVo vo) {
@@ -166,12 +173,16 @@ public class FileBoxServiceImpl extends
   @Override
   public void upload(UploadFileBoxVo vo) {
     MultipartFile file = vo.getFile();
-    String url = UploadUtil.upload(file);
+    UploadDto uploadDto = UploadUtil.upload(file,
+        CollectionUtil.toList("filebox", SecurityUtil.getCurrentUser().getId()), true);
+
+    String recordId = securityUploadRecordService.create(uploadDto.getUploadType(),
+        uploadDto.getObjectName());
 
     FileBox record = new FileBox();
     record.setId(IdUtil.getId());
     record.setName(file.getOriginalFilename());
-    record.setUrl(url);
+    record.setRecordId(recordId);
     record.setContentType(file.getContentType());
     record.setFileType(FileBoxFileType.FILE);
     record.setFileSize(FileUtil.readableFileSize(file.getSize()));

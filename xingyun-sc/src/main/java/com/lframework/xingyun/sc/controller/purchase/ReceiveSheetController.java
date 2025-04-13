@@ -3,7 +3,6 @@ package com.lframework.xingyun.sc.controller.purchase;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
@@ -11,6 +10,7 @@ import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.receive.GetPaymentDateBo;
 import com.lframework.xingyun.sc.bo.purchase.receive.GetReceiveSheetBo;
 import com.lframework.xingyun.sc.bo.purchase.receive.PrintReceiveSheetBo;
@@ -22,7 +22,7 @@ import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
-import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetExportModel;
+import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetExportTaskWorker;
 import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetImportListener;
 import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetImportModel;
 import com.lframework.xingyun.sc.excel.purchase.receive.ReceiveSheetPayTypeImportListener;
@@ -119,29 +119,11 @@ public class ReceiveSheetController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"purchase:receive:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryReceiveSheetVo vo) {
+  public InvokeResult<Void> export(@Valid QueryReceiveSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("采购收货单信息",
-        ReceiveSheetExportModel.class);
+    ExportTaskUtil.exportTask("采购收货单信息", ReceiveSheetExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<ReceiveSheet> pageResult = receiveSheetService.query(pageIndex, getExportSize(),
-            vo);
-        List<ReceiveSheet> datas = pageResult.getDatas();
-        List<ReceiveSheetExportModel> models = datas.stream().map(ReceiveSheetExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

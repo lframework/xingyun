@@ -163,7 +163,7 @@ public class RetailReturnExportModel extends BaseBo<RetailReturn> implements Exc
     StoreCenter sc = storeCenterService.findById(dto.getScId());
 
     MemberService memberService = ApplicationUtil.getBean(MemberService.class);
-    Member member = memberService.findById(dto.getMemberId());
+    Member member = !StringUtil.isBlank(dto.getMemberId()) ? memberService.findById(dto.getMemberId()) : null;
 
     SysUserService userService = ApplicationUtil.getBean(SysUserService.class);
     SysUser saler = null;
@@ -178,8 +178,8 @@ public class RetailReturnExportModel extends BaseBo<RetailReturn> implements Exc
     this.setCode(dto.getCode());
     this.setScCode(sc.getCode());
     this.setScName(sc.getName());
-    this.setMemberCode(member.getCode());
-    this.setMemberName(member.getName());
+    this.setMemberCode(member == null ? null : member.getCode());
+    this.setMemberName(member == null ? null : member.getName());
     this.setSalerName(saler == null ? null : saler.getName());
     this.setTotalAmount(dto.getTotalAmount());
     this.setTotalNum(dto.getTotalNum());

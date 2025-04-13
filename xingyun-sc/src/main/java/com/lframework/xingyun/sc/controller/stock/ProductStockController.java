@@ -2,16 +2,15 @@ package com.lframework.xingyun.sc.controller.stock;
 
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.stock.product.QueryProductStockBo;
 import com.lframework.xingyun.sc.entity.ProductStock;
-import com.lframework.xingyun.sc.excel.stock.ProductStockExportModel;
+import com.lframework.xingyun.sc.excel.stock.ProductStockExportTaskWorker;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
 import io.swagger.annotations.Api;
@@ -65,28 +64,10 @@ public class ProductStockController extends DefaultBaseController {
   @ApiOperation("导出商品库存")
   @HasPermission({"stock:product:export"})
   @GetMapping("/export")
-  public void export(@Valid QueryProductStockVo vo) {
+  public InvokeResult<Void> export(@Valid QueryProductStockVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("商品库存信息",
-        ProductStockExportModel.class);
+    ExportTaskUtil.exportTask("商品库存信息", ProductStockExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<ProductStock> pageResult = productStockService.query(pageIndex, getExportSize(),
-            vo);
-        List<ProductStock> datas = pageResult.getDatas();
-        List<ProductStockExportModel> models = datas.stream().map(ProductStockExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 }

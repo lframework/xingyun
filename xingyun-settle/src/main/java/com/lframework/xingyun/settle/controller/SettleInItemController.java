@@ -2,17 +2,17 @@ package com.lframework.xingyun.settle.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.controller.DefaultBaseController;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
-import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.settle.bo.item.in.GetSettleInItemBo;
 import com.lframework.xingyun.settle.bo.item.in.QuerySettleInItemBo;
-import com.lframework.xingyun.settle.excel.item.in.SettleInItemExportModel;
 import com.lframework.xingyun.settle.entity.SettleInItem;
+import com.lframework.xingyun.settle.excel.item.in.SettleInItemExportTaskWorker;
 import com.lframework.xingyun.settle.service.SettleInItemService;
 import com.lframework.xingyun.settle.vo.item.in.CreateSettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.QuerySettleInItemVo;
@@ -27,7 +27,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.lframework.starter.web.annotations.security.HasPermission;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,135 +46,119 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/settle/item/in")
 public class SettleInItemController extends DefaultBaseController {
 
-    @Autowired
-    private SettleInItemService settleInItemService;
+  @Autowired
+  private SettleInItemService settleInItemService;
 
-    /**
-     * 收入项目列表
-     */
-    @ApiOperation("收入项目列表")
-    @HasPermission({"settle:in-item:query","settle:in-item:add","settle:in-item:modify"})
-    @GetMapping("/query")
-    public InvokeResult<PageResult<QuerySettleInItemBo>> query(@Valid QuerySettleInItemVo vo) {
+  /**
+   * 收入项目列表
+   */
+  @ApiOperation("收入项目列表")
+  @HasPermission({"settle:in-item:query", "settle:in-item:add", "settle:in-item:modify"})
+  @GetMapping("/query")
+  public InvokeResult<PageResult<QuerySettleInItemBo>> query(@Valid QuerySettleInItemVo vo) {
 
-        PageResult<SettleInItem> pageResult = settleInItemService.query(getPageIndex(vo), getPageSize(vo), vo);
+    PageResult<SettleInItem> pageResult = settleInItemService.query(getPageIndex(vo),
+        getPageSize(vo), vo);
 
-        List<SettleInItem> datas = pageResult.getDatas();
-        List<QuerySettleInItemBo> results = null;
+    List<SettleInItem> datas = pageResult.getDatas();
+    List<QuerySettleInItemBo> results = null;
 
-        if (!CollectionUtil.isEmpty(datas)) {
-            results = datas.stream().map(QuerySettleInItemBo::new).collect(Collectors.toList());
-        }
-
-        return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(QuerySettleInItemBo::new).collect(Collectors.toList());
     }
 
-    /**
-     * 查询收入项目
-     */
-    @ApiOperation("查询收入项目")
-    @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
-    @HasPermission({"settle:in-item:query","settle:in-item:add","settle:in-item:modify"})
-    @GetMapping
-    public InvokeResult<GetSettleInItemBo> get(@NotBlank(message = "ID不能为空！") String id) {
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
 
-        SettleInItem data = settleInItemService.findById(id);
-        if (data == null) {
-            throw new DefaultClientException("收入项目不存在！");
-        }
+  /**
+   * 查询收入项目
+   */
+  @ApiOperation("查询收入项目")
+  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @HasPermission({"settle:in-item:query", "settle:in-item:add", "settle:in-item:modify"})
+  @GetMapping
+  public InvokeResult<GetSettleInItemBo> get(@NotBlank(message = "ID不能为空！") String id) {
 
-        GetSettleInItemBo result = new GetSettleInItemBo(data);
-
-        return InvokeResultBuilder.success(result);
+    SettleInItem data = settleInItemService.findById(id);
+    if (data == null) {
+      throw new DefaultClientException("收入项目不存在！");
     }
 
-    /**
-     * 导出收入项目
-     */
-    @ApiOperation("导出收入项目")
-    @HasPermission({"settle:in-item:export"})
-    @PostMapping("/export")
-    public void export(@Valid QuerySettleInItemVo vo) {
+    GetSettleInItemBo result = new GetSettleInItemBo(data);
 
-        ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("收入项目信息",
-                SettleInItemExportModel.class);
+    return InvokeResultBuilder.success(result);
+  }
 
-        try {
-            int pageIndex = 1;
-            while (true) {
-                PageResult<SettleInItem> pageResult = settleInItemService.query(pageIndex, getExportSize(), vo);
-                List<SettleInItem> datas = pageResult.getDatas();
-                List<SettleInItemExportModel> models = datas.stream().map(SettleInItemExportModel::new)
-                        .collect(Collectors.toList());
-                builder.doWrite(models);
+  /**
+   * 导出收入项目
+   */
+  @ApiOperation("导出收入项目")
+  @HasPermission({"settle:in-item:export"})
+  @PostMapping("/export")
+  public InvokeResult<Void> export(@Valid QuerySettleInItemVo vo) {
 
-                if (!pageResult.isHasNext()) {
-                    break;
-                }
-                pageIndex++;
-            }
-        } finally {
-            builder.finish();
-        }
-    }
+    ExportTaskUtil.exportTask("收入项目信息", SettleInItemExportTaskWorker.class, vo);
 
-    /**
-     * 停用收入项目
-     */
-    @ApiOperation("停用收入项目")
-    @HasPermission({"settle:in-item:modify"})
-    @PatchMapping("/unable")
-    public InvokeResult<Void> unable(
-            @ApiParam(value = "ID", required = true) @NotEmpty(message = "收入项目ID不能为空！") String id) {
+    return InvokeResultBuilder.success();
+  }
 
-        settleInItemService.unable(id);
+  /**
+   * 停用收入项目
+   */
+  @ApiOperation("停用收入项目")
+  @HasPermission({"settle:in-item:modify"})
+  @PatchMapping("/unable")
+  public InvokeResult<Void> unable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "收入项目ID不能为空！") String id) {
 
-        settleInItemService.cleanCacheByKey(id);
+    settleInItemService.unable(id);
 
-        return InvokeResultBuilder.success();
-    }
+    settleInItemService.cleanCacheByKey(id);
 
-    /**
-     * 启用收入项目
-     */
-    @ApiOperation("启用收入项目")
-    @HasPermission({"settle:in-item:modify"})
-    @PatchMapping("/enable")
-    public InvokeResult<Void> enable(
-        @ApiParam(value = "ID", required = true) @NotEmpty(message = "收入项目ID不能为空！") String id) {
+    return InvokeResultBuilder.success();
+  }
 
-        settleInItemService.enable(id);
+  /**
+   * 启用收入项目
+   */
+  @ApiOperation("启用收入项目")
+  @HasPermission({"settle:in-item:modify"})
+  @PatchMapping("/enable")
+  public InvokeResult<Void> enable(
+      @ApiParam(value = "ID", required = true) @NotEmpty(message = "收入项目ID不能为空！") String id) {
 
-        settleInItemService.cleanCacheByKey(id);
+    settleInItemService.enable(id);
 
-        return InvokeResultBuilder.success();
-    }
+    settleInItemService.cleanCacheByKey(id);
 
-    /**
-     * 新增收入项目
-     */
-    @ApiOperation("新增收入项目")
-    @HasPermission({"settle:in-item:add"})
-    @PostMapping
-    public InvokeResult<Void> create(@Valid CreateSettleInItemVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        settleInItemService.create(vo);
+  /**
+   * 新增收入项目
+   */
+  @ApiOperation("新增收入项目")
+  @HasPermission({"settle:in-item:add"})
+  @PostMapping
+  public InvokeResult<Void> create(@Valid CreateSettleInItemVo vo) {
 
-        return InvokeResultBuilder.success();
-    }
+    settleInItemService.create(vo);
 
-    /**
-     * 修改收入项目
-     */
-    @ApiOperation("修改收入项目")
-    @HasPermission({"settle:in-item:modify"})
-    @PutMapping
-    public InvokeResult<Void> update(@Valid UpdateSettleInItemVo vo) {
+    return InvokeResultBuilder.success();
+  }
 
-        settleInItemService.update(vo);
+  /**
+   * 修改收入项目
+   */
+  @ApiOperation("修改收入项目")
+  @HasPermission({"settle:in-item:modify"})
+  @PutMapping
+  public InvokeResult<Void> update(@Valid UpdateSettleInItemVo vo) {
 
-        settleInItemService.cleanCacheByKey(vo.getId());
+    settleInItemService.update(vo);
 
-        return InvokeResultBuilder.success();
-    }
+    settleInItemService.cleanCacheByKey(vo.getId());
+
+    return InvokeResultBuilder.success();
+  }
 }

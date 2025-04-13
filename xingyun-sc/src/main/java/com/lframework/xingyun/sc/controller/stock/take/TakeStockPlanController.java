@@ -6,15 +6,15 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ThreadUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
 import com.lframework.starter.web.components.tenant.TenantContextHolder;
-import com.lframework.starter.web.threads.DefaultRunnable;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
+import com.lframework.starter.web.threads.DefaultRunnable;
 import com.lframework.starter.web.utils.CronUtil;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.components.qrtz.QrtzHandler;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.stock.take.plan.GetTakeStockPlanBo;
 import com.lframework.xingyun.sc.bo.stock.take.plan.QueryTakeStockPlanBo;
 import com.lframework.xingyun.sc.bo.stock.take.plan.QueryTakeStockPlanProductBo;
@@ -23,7 +23,7 @@ import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDt
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
-import com.lframework.xingyun.sc.excel.stock.take.plan.TakeStockPlanExportModel;
+import com.lframework.xingyun.sc.excel.stock.take.plan.TakeStockPlanExportTaskWorker;
 import com.lframework.xingyun.sc.impl.stock.take.TakeStockPlanServiceImpl;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
@@ -32,7 +32,6 @@ import com.lframework.xingyun.sc.vo.stock.take.plan.CreateTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.HandleTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
-import com.lframework.xingyun.core.components.qrtz.QrtzHandler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -98,29 +97,11 @@ public class TakeStockPlanController extends DefaultBaseController {
   @ApiOperation("导出列表")
   @HasPermission({"stock:take:plan:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryTakeStockPlanVo vo) {
+  public InvokeResult<Void> export(@Valid QueryTakeStockPlanVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("盘点任务信息",
-        TakeStockPlanExportModel.class);
+    ExportTaskUtil.exportTask("盘点任务信息", TakeStockPlanExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<TakeStockPlan> pageResult = takeStockPlanService.query(pageIndex,
-            getExportSize(), vo);
-        List<TakeStockPlan> datas = pageResult.getDatas();
-        List<TakeStockPlanExportModel> models = datas.stream().map(TakeStockPlanExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

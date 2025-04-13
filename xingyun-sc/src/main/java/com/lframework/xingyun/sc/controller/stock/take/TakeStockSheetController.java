@@ -4,13 +4,12 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.stock.take.sheet.QueryTakeStockSheetBo;
 import com.lframework.xingyun.sc.bo.stock.take.sheet.TakeStockSheetFullBo;
 import com.lframework.xingyun.sc.bo.stock.take.sheet.TakeStockSheetProductBo;
@@ -19,7 +18,7 @@ import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
-import com.lframework.xingyun.sc.excel.stock.take.sheet.TakeStockSheetExportModel;
+import com.lframework.xingyun.sc.excel.stock.take.sheet.TakeStockSheetExportTaskWorker;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockSheetService;
 import com.lframework.xingyun.sc.vo.stock.take.sheet.ApprovePassTakeStockSheetVo;
@@ -91,29 +90,11 @@ public class TakeStockSheetController extends DefaultBaseController {
   @ApiOperation("导出列表")
   @HasPermission({"stock:take:sheet:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryTakeStockSheetVo vo) {
+  public InvokeResult<Void> export(@Valid QueryTakeStockSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("库存盘点单信息",
-        TakeStockSheetExportModel.class);
+    ExportTaskUtil.exportTask("库存盘点单信息", TakeStockSheetExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<TakeStockSheet> pageResult = takeStockSheetService.query(pageIndex,
-            getExportSize(), vo);
-        List<TakeStockSheet> datas = pageResult.getDatas();
-        List<TakeStockSheetExportModel> models = datas.stream().map(TakeStockSheetExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

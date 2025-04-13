@@ -2,20 +2,19 @@ package com.lframework.xingyun.sc.controller.purchase;
 
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.returned.GetPurchaseReturnBo;
 import com.lframework.xingyun.sc.bo.purchase.returned.PrintPurchaseReturnBo;
 import com.lframework.xingyun.sc.bo.purchase.returned.QueryPurchaseReturnBo;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
 import com.lframework.xingyun.sc.entity.PurchaseReturn;
-import com.lframework.xingyun.sc.excel.purchase.returned.PurchaseReturnExportModel;
+import com.lframework.xingyun.sc.excel.purchase.returned.PurchaseReturnExportTaskWorker;
 import com.lframework.xingyun.sc.service.purchase.PurchaseReturnService;
 import com.lframework.xingyun.sc.vo.purchase.returned.ApprovePassPurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.ApproveRefusePurchaseReturnVo;
@@ -101,29 +100,11 @@ public class PurchaseReturnController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"purchase:return:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryPurchaseReturnVo vo) {
+  public InvokeResult<Void> export(@Valid QueryPurchaseReturnVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("采购退货单信息",
-        PurchaseReturnExportModel.class);
+    ExportTaskUtil.exportTask("采购退货单信息", PurchaseReturnExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<PurchaseReturn> pageResult = purchaseReturnService.query(pageIndex,
-            getExportSize(), vo);
-        List<PurchaseReturn> datas = pageResult.getDatas();
-        List<PurchaseReturnExportModel> models = datas.stream().map(PurchaseReturnExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**
@@ -133,7 +114,8 @@ public class PurchaseReturnController extends DefaultBaseController {
   @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @HasPermission({"purchase:return:query"})
   @GetMapping
-  public InvokeResult<GetPurchaseReturnBo> findById(@NotBlank(message = "退单ID不能为空！") String id) {
+  public InvokeResult<GetPurchaseReturnBo> findById(
+      @NotBlank(message = "退单ID不能为空！") String id) {
 
     PurchaseReturnFullDto data = purchaseReturnService.getDetail(id);
 

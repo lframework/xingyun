@@ -25,4 +25,15 @@ public interface MqStringPool {
   String SYS_SITE_MESSAGE_EXCHANGE = "sys_site_message.direct";
   String SYS_SITE_MESSAGE_ROUTING_KEY = "sys_site_message_routing_key";
   String SYS_SITE_MESSAGE_QUEUE = "sys_site_message";
+
+  // 新增导出任务
+  String ADD_EXPORT_TASK_EXCHANGE = "add_export_task.direct";
+  String ADD_EXPORT_TASK_ROUTING_KEY = "add_export_task_routing_key";
+  String ADD_EXPORT_TASK_QUEUE = "add_export_task";
+
+  // 执行导出任务
+  String EXECUTE_EXPORT_TASK_EXCHANGE = "execute_export_task.direct";
+  String EXECUTE_EXPORT_TASK_ROUTING_KEY = "execute_export_task_routing_key";
+  String EXECUTE_EXPORT_TASK_QUEUE = "execute_export_task";
+
 }

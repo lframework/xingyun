@@ -40,4 +40,16 @@ public class MqConstants {
    */
   public static final QueueDefinition SYS_SITE_MESSAGE = new RabbitMQQueueDefinition(
       MqStringPool.SYS_SITE_MESSAGE_EXCHANGE, MqStringPool.SYS_SITE_MESSAGE_ROUTING_KEY);
+
+  /**
+   * 新增导出任务
+   */
+  public static final QueueDefinition ADD_EXPORT_TASK = new RabbitMQQueueDefinition(
+      MqStringPool.ADD_EXPORT_TASK_EXCHANGE, MqStringPool.ADD_EXPORT_TASK_ROUTING_KEY);
+
+  /**
+   * 执行导出任务
+   */
+  public static final QueueDefinition EXECUTE_EXPORT_TASK = new RabbitMQQueueDefinition(
+      MqStringPool.EXECUTE_EXPORT_TASK_EXCHANGE, MqStringPool.EXECUTE_EXPORT_TASK_ROUTING_KEY);
 }

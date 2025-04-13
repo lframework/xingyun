@@ -507,8 +507,14 @@ public class AuthController extends DefaultBaseController {
       throw new UserLoginException("账户未授权，不允许登录！");
     }
     // 登录
-    StpUtil.login(
-        (user.getTenantId() == null ? "" : user.getTenantId() + "@") + user.getUsername());
+    // loginId需要唯一
+    String loginId =
+        (user.getTenantId() == null ? "" : user.getTenantId() + "@") + user.getUsername() + "@"
+            + IdUtil.getUUID();
+
+    StpUtil.login(loginId);
+
+    user.setLoginId(loginId);
 
     StpUtil.getSession().set(SecurityConstants.USER_INFO_KEY, user);
 

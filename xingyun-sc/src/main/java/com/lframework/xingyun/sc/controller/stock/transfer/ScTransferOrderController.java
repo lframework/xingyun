@@ -7,13 +7,12 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.stock.transfer.QueryScTransferOrderBo;
 import com.lframework.xingyun.sc.bo.stock.transfer.QueryScTransferOrderDetailReceiveBo;
 import com.lframework.xingyun.sc.bo.stock.transfer.ScTransferOrderFullBo;
@@ -22,7 +21,7 @@ import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto;
 import com.lframework.xingyun.sc.entity.ScTransferOrder;
 import com.lframework.xingyun.sc.entity.ScTransferOrderDetailReceive;
-import com.lframework.xingyun.sc.excel.stock.transfer.ScTransferOrderExportModel;
+import com.lframework.xingyun.sc.excel.stock.transfer.ScTransferOrderExportTaskWorker;
 import com.lframework.xingyun.sc.service.stock.transfer.ScTransferOrderDetailReceiveService;
 import com.lframework.xingyun.sc.service.stock.transfer.ScTransferOrderService;
 import com.lframework.xingyun.sc.vo.stock.transfer.ApprovePassScTransferOrderVo;
@@ -118,30 +117,11 @@ public class ScTransferOrderController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"stock:sc-transfer:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryScTransferOrderVo vo) {
+  public InvokeResult<Void> export(@Valid QueryScTransferOrderVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("仓库调拨单信息",
-        ScTransferOrderExportModel.class);
+    ExportTaskUtil.exportTask("仓库调拨单信息", ScTransferOrderExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<ScTransferOrder> pageResult = scTransferOrderService.query(pageIndex,
-            getExportSize(), vo);
-        List<ScTransferOrder> datas = pageResult.getDatas();
-        List<ScTransferOrderExportModel> models = datas.stream()
-            .map(ScTransferOrderExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

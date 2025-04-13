@@ -2,24 +2,24 @@ package com.lframework.xingyun.basedata.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
+import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.address.GetAddressBo;
 import com.lframework.xingyun.basedata.bo.address.QueryAddressBo;
 import com.lframework.xingyun.basedata.entity.Address;
-import com.lframework.xingyun.basedata.excel.address.AddressExportModel;
+import com.lframework.xingyun.basedata.excel.address.AddressExportTaskWorker;
 import com.lframework.xingyun.basedata.excel.address.AddressImportListener;
 import com.lframework.xingyun.basedata.excel.address.AddressImportModel;
 import com.lframework.xingyun.basedata.service.address.AddressService;
 import com.lframework.xingyun.basedata.vo.address.CreateAddressVo;
 import com.lframework.xingyun.basedata.vo.address.QueryAddressVo;
 import com.lframework.xingyun.basedata.vo.address.UpdateAddressVo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -124,28 +124,11 @@ public class AddressController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"base-data:address:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryAddressVo vo) {
+  public InvokeResult<Void> export(@Valid QueryAddressVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("地址信息",
-        AddressExportModel.class);
+    ExportTaskUtil.exportTask("地址信息", AddressExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<Address> pageResult = addressService.query(pageIndex, getExportSize(), vo);
-        List<Address> datas = pageResult.getDatas();
-        List<AddressExportModel> models = datas.stream().map(AddressExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   @ApiOperation("下载导入模板")

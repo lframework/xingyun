@@ -3,14 +3,13 @@ package com.lframework.xingyun.sc.controller.sale;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.receive.GetPaymentDateBo;
 import com.lframework.xingyun.sc.bo.sale.out.GetSaleOutSheetBo;
 import com.lframework.xingyun.sc.bo.sale.out.PrintSaleOutSheetBo;
@@ -21,7 +20,7 @@ import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
-import com.lframework.xingyun.sc.excel.sale.out.SaleOutSheetExportModel;
+import com.lframework.xingyun.sc.excel.sale.out.SaleOutSheetExportTaskWorker;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
 import com.lframework.xingyun.sc.vo.sale.out.ApprovePassSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.ApproveRefuseSaleOutSheetVo;
@@ -111,29 +110,11 @@ public class SaleOutSheetController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"sale:out:export"})
   @PostMapping("/export")
-  public void export(@Valid QuerySaleOutSheetVo vo) {
+  public InvokeResult<Void> export(@Valid QuerySaleOutSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售出库单信息",
-        SaleOutSheetExportModel.class);
+    ExportTaskUtil.exportTask("销售出库单信息", SaleOutSheetExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<SaleOutSheet> pageResult = saleOutSheetService.query(pageIndex, getExportSize(),
-            vo);
-        List<SaleOutSheet> datas = pageResult.getDatas();
-        List<SaleOutSheetExportModel> models = datas.stream().map(SaleOutSheetExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

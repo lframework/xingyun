@@ -3,20 +3,19 @@ package com.lframework.xingyun.sc.controller.sale;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.sale.returned.GetSaleReturnBo;
 import com.lframework.xingyun.sc.bo.sale.returned.PrintSaleReturnBo;
 import com.lframework.xingyun.sc.bo.sale.returned.QuerySaleReturnBo;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleReturn;
-import com.lframework.xingyun.sc.excel.sale.returned.SaleReturnExportModel;
+import com.lframework.xingyun.sc.excel.sale.returned.SaleReturnExportTaskWorker;
 import com.lframework.xingyun.sc.service.sale.SaleReturnService;
 import com.lframework.xingyun.sc.vo.sale.returned.ApprovePassSaleReturnVo;
 import com.lframework.xingyun.sc.vo.sale.returned.ApproveRefuseSaleReturnVo;
@@ -106,28 +105,11 @@ public class SaleReturnController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"sale:return:export"})
   @PostMapping("/export")
-  public void export(@Valid QuerySaleReturnVo vo) {
+  public InvokeResult<Void> export(@Valid QuerySaleReturnVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售退货单信息",
-        SaleReturnExportModel.class);
+    ExportTaskUtil.exportTask("销售退货单信息", SaleReturnExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<SaleReturn> pageResult = saleReturnService.query(pageIndex, getExportSize(), vo);
-        List<SaleReturn> datas = pageResult.getDatas();
-        List<SaleReturnExportModel> models = datas.stream().map(SaleReturnExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

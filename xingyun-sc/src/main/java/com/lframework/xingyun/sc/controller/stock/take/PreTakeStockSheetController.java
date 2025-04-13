@@ -4,13 +4,12 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.stock.take.pre.GetPreTakeStockSheetBo;
 import com.lframework.xingyun.sc.bo.stock.take.pre.PreTakeStockProductBo;
 import com.lframework.xingyun.sc.bo.stock.take.pre.QueryPreTakeStockSheetBo;
@@ -21,7 +20,7 @@ import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProduc
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
-import com.lframework.xingyun.sc.excel.stock.take.pre.PreTakeStockSheetExportModel;
+import com.lframework.xingyun.sc.excel.stock.take.pre.PreTakeStockSheetExportTaskWorker;
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
@@ -92,31 +91,11 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   @ApiOperation("导出列表")
   @HasPermission({"stock:take:pre:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryPreTakeStockSheetVo vo) {
+  public InvokeResult<Void> export(@Valid QueryPreTakeStockSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("预先盘点单信息",
-        PreTakeStockSheetExportModel.class);
+    ExportTaskUtil.exportTask("预先盘点单信息", PreTakeStockSheetExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<PreTakeStockSheet> pageResult = preTakeStockSheetService.query(pageIndex,
-            getExportSize(),
-            vo);
-        List<PreTakeStockSheet> datas = pageResult.getDatas();
-        List<PreTakeStockSheetExportModel> models = datas.stream()
-            .map(PreTakeStockSheetExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

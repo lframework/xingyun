@@ -31,9 +31,9 @@ public class FileBox extends BaseEntity implements BaseDto {
   private String name;
 
   /**
-   * Url
+   * 上传记录ID
    */
-  private String url;
+  private String recordId;
 
   /**
    * ContentType

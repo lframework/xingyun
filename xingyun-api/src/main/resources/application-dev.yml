@@ -97,6 +97,7 @@ sa-token:
     timeout: ${spring.redis.timeout}
 
 jugg:
+  # 公开上传
   upload:
     #下载时的baseUrl，与domain的区别：会在url后面拼接/**作为静态资源的url，而domain是后端系统的具体域名，下载时的完整url例如：upload.domain + upload.url/xxx.jpg
     url: /oss
@@ -104,3 +105,9 @@ jugg:
     domain: http://localhost:8080
     #上传文件的路径
     location: D:\upload\upload-data
+  # 安全上传
+  security-upload:
+    #下载时的域名，一般情况下和公开上传的域名一致
+    domain: ${jugg.upload.domain}
+    # 上传文件的路径
+    location: ${jugg.upload.location}

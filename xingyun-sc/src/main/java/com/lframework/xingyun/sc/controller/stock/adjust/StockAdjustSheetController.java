@@ -4,20 +4,19 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.stock.adjust.stock.QueryStockAdjustSheetBo;
 import com.lframework.xingyun.sc.bo.stock.adjust.stock.StockAdjustProductBo;
 import com.lframework.xingyun.sc.bo.stock.adjust.stock.StockAdjustSheetFullBo;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;
-import com.lframework.xingyun.sc.excel.stock.adjust.StockAdjustSheetExportModel;
+import com.lframework.xingyun.sc.excel.stock.adjust.StockAdjustSheetExportTaskWorker;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustSheetService;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApprovePassStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApproveRefuseStockAdjustSheetVo;
@@ -107,30 +106,11 @@ public class StockAdjustSheetController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"stock:adjust:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryStockAdjustSheetVo vo) {
+  public InvokeResult<Void> export(@Valid QueryStockAdjustSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("库存调整单信息",
-        StockAdjustSheetExportModel.class);
+    ExportTaskUtil.exportTask("库存调整单信息", StockAdjustSheetExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<StockAdjustSheet> pageResult = stockAdjustSheetService.query(pageIndex,
-            getExportSize(), vo);
-        List<StockAdjustSheet> datas = pageResult.getDatas();
-        List<StockAdjustSheetExportModel> models = datas.stream()
-            .map(StockAdjustSheetExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

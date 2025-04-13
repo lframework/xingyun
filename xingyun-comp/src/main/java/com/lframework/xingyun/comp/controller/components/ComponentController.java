@@ -18,8 +18,8 @@ import com.lframework.starter.web.utils.UploadUtil;
 import com.lframework.xingyun.comp.bo.components.MapLocationBo;
 import com.lframework.xingyun.comp.bo.components.OrderTimeLineBo;
 import com.lframework.xingyun.core.entity.OrderTimeLine;
-import com.lframework.xingyun.core.service.OrderTimeLineService;
 import com.lframework.xingyun.core.service.GenerateCodeService;
+import com.lframework.xingyun.core.service.OrderTimeLineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -61,7 +61,8 @@ public class ComponentController extends DefaultBaseController {
 
   @ApiOperation("查询导入Excel任务")
   @GetMapping("/import/task")
-  public InvokeResult<ExcelImportBo> getExcelImportTask(@NotBlank(message = "ID不能为空！") String id) {
+  public InvokeResult<ExcelImportBo> getExcelImportTask(
+      @NotBlank(message = "ID不能为空！") String id) {
 
     return InvokeResultBuilder.success(ExcelImportUtil.getTask(id));
   }
@@ -76,7 +77,8 @@ public class ComponentController extends DefaultBaseController {
 
   @ApiOperation("根据地址查询经纬度")
   @GetMapping("/map/location")
-  public InvokeResult<MapLocationBo> getMapLocation(@NotEmpty(message = "地址不能为空！") String address) {
+  public InvokeResult<MapLocationBo> getMapLocation(
+      @NotEmpty(message = "地址不能为空！") String address) {
 
     String key = sysConfService.findRequiredByKey("tx-map.key");
     String secret = sysConfService.findRequiredByKey("tx-map.secret");
@@ -133,12 +135,14 @@ public class ComponentController extends DefaultBaseController {
   @ApiOperation("通用上传图片")
   @PostMapping("/upload/image")
   public InvokeResult<String> uploadImage(MultipartFile file) {
-    if (!FileUtil.IMG_SUFFIX.contains(FileUtil.getSuffix(file.getOriginalFilename()).toLowerCase())) {
+    if (!FileUtil.IMG_SUFFIX.contains(
+        FileUtil.getSuffix(file.getOriginalFilename()).toLowerCase())) {
       throw new DefaultClientException(
-          "上传图片仅支持【" + CollectionUtil.join(FileUtil.IMG_SUFFIX, StringPool.STR_SPLIT_CN) + "】格式！");
+          "上传图片仅支持【" + CollectionUtil.join(FileUtil.IMG_SUFFIX, StringPool.STR_SPLIT_CN)
+              + "】格式！");
     }
 
-    String url = UploadUtil.upload(file);
+    String url = UploadUtil.upload(file).getUrl();
 
     return InvokeResultBuilder.success(url);
   }
@@ -146,17 +150,20 @@ public class ComponentController extends DefaultBaseController {
   @ApiOperation("通用上传视频")
   @PostMapping("/upload/video")
   public InvokeResult<String> uploadVideo(MultipartFile file) {
-    if (!FileUtil.VIDEO_SUFFIX.contains(FileUtil.getSuffix(file.getOriginalFilename()).toLowerCase())) {
+    if (!FileUtil.VIDEO_SUFFIX.contains(
+        FileUtil.getSuffix(file.getOriginalFilename()).toLowerCase())) {
       throw new DefaultClientException(
-          "上传视频仅支持【" + CollectionUtil.join(FileUtil.VIDEO_SUFFIX, StringPool.STR_SPLIT_CN) + "】格式！");
+          "上传视频仅支持【" + CollectionUtil.join(FileUtil.VIDEO_SUFFIX, StringPool.STR_SPLIT_CN)
+              + "】格式！");
     }
 
-    String url = UploadUtil.upload(file);
+    String url = UploadUtil.upload(file).getUrl();
 
     return InvokeResultBuilder.success(url);
   }
 
   @ApiOperation("获取编号")
+  @ApiImplicitParam(value = "编号类型", name = "type", paramType = "query", required = true)
   @GetMapping("/generate/code")
   public InvokeResult<String> generateCode(@NotNull(message = "编号类型不能为空！") Integer type) {
     return InvokeResultBuilder.success(generateCodeService.generate(type));

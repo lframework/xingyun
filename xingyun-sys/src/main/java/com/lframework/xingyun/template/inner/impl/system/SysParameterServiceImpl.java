@@ -190,6 +190,28 @@ public class SysParameterServiceImpl extends
     return value;
   }
 
+  @Override
+  public Long getLong(String key) {
+    SysConfService thisService = getThis(getClass());
+    String value = thisService.findByKey(key);
+    try {
+      return value == null ? null : Long.valueOf(value);
+    } catch (NumberFormatException e) {
+      // 转换失败
+      return null;
+    }
+  }
+
+  @Override
+  public Long getLong(String key, Long defaultValue) {
+    Long value = getLong(key);
+    if (value == null) {
+      return defaultValue;
+    }
+
+    return value;
+  }
+
   @CacheEvict(value = SysParameter.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
   @Override
   public void cleanCacheByKey(Serializable key) {

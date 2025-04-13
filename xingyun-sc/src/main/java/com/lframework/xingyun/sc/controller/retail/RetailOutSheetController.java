@@ -4,14 +4,13 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.receive.GetPaymentDateBo;
 import com.lframework.xingyun.sc.bo.retail.RetailProductBo;
 import com.lframework.xingyun.sc.bo.retail.out.GetRetailOutSheetBo;
@@ -24,7 +23,7 @@ import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
-import com.lframework.xingyun.sc.excel.retail.out.RetailOutSheetExportModel;
+import com.lframework.xingyun.sc.excel.retail.out.RetailOutSheetExportTaskWorker;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import com.lframework.xingyun.sc.vo.retail.out.ApprovePassRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.ApproveRefuseRetailOutSheetVo;
@@ -116,29 +115,11 @@ public class RetailOutSheetController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"retail:out:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryRetailOutSheetVo vo) {
+  public InvokeResult<Void> export(@Valid QueryRetailOutSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("零售出库单信息",
-        RetailOutSheetExportModel.class);
+    ExportTaskUtil.exportTask("零售出库单信息", RetailOutSheetExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<RetailOutSheet> pageResult = retailOutSheetService.query(pageIndex,
-            getExportSize(), vo);
-        List<RetailOutSheet> datas = pageResult.getDatas();
-        List<RetailOutSheetExportModel> models = datas.stream().map(RetailOutSheetExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

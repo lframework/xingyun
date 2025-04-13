@@ -4,7 +4,6 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
@@ -12,6 +11,7 @@ import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.EnumUtil;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.logistics.GetLogisticsSheetBo;
 import com.lframework.xingyun.sc.bo.logistics.GetLogisticsSheetDeliveryBo;
 import com.lframework.xingyun.sc.bo.logistics.QueryLogisticsSheetBizOrderBo;
@@ -22,7 +22,7 @@ import com.lframework.xingyun.sc.entity.LogisticsSheet;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import com.lframework.xingyun.sc.excel.logistics.LogisticsSheetDeliveryImportListener;
 import com.lframework.xingyun.sc.excel.logistics.LogisticsSheetDeliveryImportModel;
-import com.lframework.xingyun.sc.excel.logistics.LogisticsSheetExportModel;
+import com.lframework.xingyun.sc.excel.logistics.LogisticsSheetExportTaskWorker;
 import com.lframework.xingyun.sc.excel.logistics.LogisticsSheetImportListener;
 import com.lframework.xingyun.sc.excel.logistics.LogisticsSheetImportModel;
 import com.lframework.xingyun.sc.service.logistics.LogisticsSheetService;
@@ -38,14 +38,12 @@ import com.lframework.xingyun.sc.vo.logistics.UpdateLogisticsSheetVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -291,29 +289,11 @@ public class LogisticsSheetController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"logistics:sheet:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryLogisticsSheetVo vo) {
+  public InvokeResult<Void> export(@Valid QueryLogisticsSheetVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("物流单信息",
-        LogisticsSheetExportModel.class);
+    ExportTaskUtil.exportTask("物流单信息", LogisticsSheetExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<LogisticsSheet> pageResult = logisticsSheetService.query(pageIndex,
-            getExportSize(), vo);
-        List<LogisticsSheet> datas = pageResult.getDatas();
-        List<LogisticsSheetExportModel> models = datas.stream().map(LogisticsSheetExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   @ApiOperation("下载导入模板")

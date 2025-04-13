@@ -30,10 +30,10 @@ public class GetFileBoxBo extends BaseBo<FileBox> {
   private String name;
 
   /**
-   * Url
+   * 上传记录ID
    */
-  @ApiModelProperty("Url")
-  private String url;
+  @ApiModelProperty("上传记录ID")
+  private String recordId;
 
   /**
    * 上传类型

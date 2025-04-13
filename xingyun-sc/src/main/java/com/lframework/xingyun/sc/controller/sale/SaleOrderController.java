@@ -4,14 +4,13 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.sale.GetSaleOrderBo;
 import com.lframework.xingyun.sc.bo.sale.PrintSaleOrderBo;
 import com.lframework.xingyun.sc.bo.sale.QuerySaleOrderBo;
@@ -22,7 +21,7 @@ import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
-import com.lframework.xingyun.sc.excel.sale.SaleOrderExportModel;
+import com.lframework.xingyun.sc.excel.sale.SaleOrderExportTaskWorker;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
 import com.lframework.xingyun.sc.vo.sale.ApprovePassSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.ApproveRefuseSaleOrderVo;
@@ -115,28 +114,11 @@ public class SaleOrderController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"sale:order:export"})
   @PostMapping("/export")
-  public void export(@Valid QuerySaleOrderVo vo) {
+  public InvokeResult<Void> export(@Valid QuerySaleOrderVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("销售单信息",
-        SaleOrderExportModel.class);
+    ExportTaskUtil.exportTask("销售单信息", SaleOrderExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<SaleOrder> pageResult = saleOrderService.query(pageIndex, getExportSize(), vo);
-        List<SaleOrder> datas = pageResult.getDatas();
-        List<SaleOrderExportModel> models = datas.stream().map(SaleOrderExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

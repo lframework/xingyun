@@ -8,7 +8,6 @@ import com.lframework.starter.common.exceptions.impl.DefaultSysException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
-import com.lframework.starter.mq.core.producer.MqProducer;
 import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ApplicationUtil;
@@ -21,10 +20,9 @@ import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.events.stock.AddStockEvent;
 import com.lframework.xingyun.sc.events.stock.SubStockEvent;
-import com.lframework.xingyun.core.queue.MqConstants;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.mappers.ProductStockMapper;
 import com.lframework.xingyun.sc.service.stock.ProductStockLogService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
@@ -39,7 +37,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Service
 public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMapper, ProductStock>

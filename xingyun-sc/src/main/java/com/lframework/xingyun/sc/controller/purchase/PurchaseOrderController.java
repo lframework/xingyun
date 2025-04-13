@@ -4,7 +4,6 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
@@ -12,6 +11,7 @@ import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.GetPurchaseOrderBo;
 import com.lframework.xingyun.sc.bo.purchase.PrintPurchaseOrderBo;
 import com.lframework.xingyun.sc.bo.purchase.PurchaseOrderWithReceiveBo;
@@ -22,7 +22,7 @@ import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
-import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderExportModel;
+import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderExportTaskWorker;
 import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderImportListener;
 import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderImportModel;
 import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderPayTypeImportListener;
@@ -121,29 +121,11 @@ public class PurchaseOrderController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"purchase:order:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryPurchaseOrderVo vo) {
+  public InvokeResult<Void> export(@Valid QueryPurchaseOrderVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("采购单信息",
-        PurchaseOrderExportModel.class);
+    ExportTaskUtil.exportTask("采购单信息", PurchaseOrderExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<PurchaseOrder> pageResult = purchaseOrderService.query(pageIndex,
-            getExportSize(), vo);
-        List<PurchaseOrder> datas = pageResult.getDatas();
-        List<PurchaseOrderExportModel> models = datas.stream().map(PurchaseOrderExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

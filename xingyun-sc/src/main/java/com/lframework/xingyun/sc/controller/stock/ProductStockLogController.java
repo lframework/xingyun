@@ -2,16 +2,15 @@ package com.lframework.xingyun.sc.controller.stock;
 
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.stock.product.log.QueryProductStockLogBo;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
-import com.lframework.xingyun.sc.excel.stock.ProductStockLogExportModel;
+import com.lframework.xingyun.sc.excel.stock.ProductStockLogExportTaskWorker;
 import com.lframework.xingyun.sc.service.stock.ProductStockLogService;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
 import io.swagger.annotations.Api;
@@ -65,29 +64,10 @@ public class ProductStockLogController extends DefaultBaseController {
   @ApiOperation("导出商品库存变动记录")
   @HasPermission({"stock:product-log:export"})
   @GetMapping("/export")
-  public void export(@Valid QueryProductStockLogVo vo) {
+  public InvokeResult<Void> export(@Valid QueryProductStockLogVo vo) {
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("商品库存变动记录信息",
-        ProductStockLogExportModel.class);
+    ExportTaskUtil.exportTask("商品库存变动记录信息", ProductStockLogExportTaskWorker.class, vo);
 
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<ProductStockLog> pageResult = productStockLogService.query(pageIndex,
-            getExportSize(), vo);
-        List<ProductStockLog> datas = pageResult.getDatas();
-        List<ProductStockLogExportModel> models = datas.stream()
-            .map(ProductStockLogExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 }

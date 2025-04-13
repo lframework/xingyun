@@ -3,20 +3,19 @@ package com.lframework.xingyun.sc.controller.retail;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.components.excel.ExcelMultipartWriterSheetBuilder;
 import com.lframework.starter.web.controller.DefaultBaseController;
 import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
+import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.retail.returned.GetRetailReturnBo;
 import com.lframework.xingyun.sc.bo.retail.returned.PrintRetailReturnBo;
 import com.lframework.xingyun.sc.bo.retail.returned.QueryRetailReturnBo;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.RetailReturn;
-import com.lframework.xingyun.sc.excel.retail.returned.RetailReturnExportModel;
+import com.lframework.xingyun.sc.excel.retail.returned.RetailReturnExportTaskWorker;
 import com.lframework.xingyun.sc.service.retail.RetailReturnService;
 import com.lframework.xingyun.sc.vo.retail.returned.ApprovePassRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.ApproveRefuseRetailReturnVo;
@@ -105,29 +104,10 @@ public class RetailReturnController extends DefaultBaseController {
   @ApiOperation("导出")
   @HasPermission({"retail:return:export"})
   @PostMapping("/export")
-  public void export(@Valid QueryRetailReturnVo vo) {
+  public InvokeResult<Void> export(@Valid QueryRetailReturnVo vo) {
+    ExportTaskUtil.exportTask("零售退货单信息", RetailReturnExportTaskWorker.class, vo);
 
-    ExcelMultipartWriterSheetBuilder builder = ExcelUtil.multipartExportXls("零售退货单信息",
-        RetailReturnExportModel.class);
-
-    try {
-      int pageIndex = 1;
-      while (true) {
-        PageResult<RetailReturn> pageResult = retailReturnService.query(pageIndex, getExportSize(),
-            vo);
-        List<RetailReturn> datas = pageResult.getDatas();
-        List<RetailReturnExportModel> models = datas.stream().map(RetailReturnExportModel::new)
-            .collect(Collectors.toList());
-        builder.doWrite(models);
-
-        if (!pageResult.isHasNext()) {
-          break;
-        }
-        pageIndex++;
-      }
-    } finally {
-      builder.finish();
-    }
+    return InvokeResultBuilder.success();
   }
 
   /**

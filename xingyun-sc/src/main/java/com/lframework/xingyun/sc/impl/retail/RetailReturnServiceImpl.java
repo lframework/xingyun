@@ -313,6 +313,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
 
     OpLogUtil.setVariable("code", retailReturn.getCode());
     OpLogUtil.setExtra(vo);
+
+    this.sendApprovePassEvent(retailReturn);
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")

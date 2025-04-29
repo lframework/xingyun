@@ -455,6 +455,8 @@ public class RetailOutSheetServiceImpl extends
 
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
+
+    this.sendApprovePassEvent(sheet);
   }
 
   @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")

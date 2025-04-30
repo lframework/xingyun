@@ -131,4 +131,11 @@ public interface SysMenuService extends BaseMpService<SysMenu> {
    * @param menuId
    */
   void cancelCollect(String userId, String menuId);
+
+  /**
+   * 根据菜单ID查询父级菜单ID
+   * @param menuId
+   * @return
+   */
+  List<String> getParentMenuIds(String menuId);
 }

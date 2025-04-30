@@ -5,14 +5,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.components.security.SecurityConstants;
+import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.template.inner.entity.SysRole;
 import com.lframework.xingyun.template.inner.entity.SysRoleMenu;
 import com.lframework.xingyun.template.inner.mappers.system.SysRoleMenuMapper;
-import com.lframework.xingyun.template.inner.entity.SysRole;
+import com.lframework.xingyun.template.inner.service.system.SysMenuService;
 import com.lframework.xingyun.template.inner.service.system.SysRoleMenuService;
 import com.lframework.xingyun.template.inner.service.system.SysRoleService;
 import com.lframework.xingyun.template.inner.vo.system.role.SysRoleMenuSettingVo;
@@ -31,7 +32,11 @@ public class SysRoleMenuServiceImpl extends
   @Autowired
   private SysRoleService sysRoleService;
 
-  @OpLog(type = DefaultOpLogType.SYSTEM, name = "角色授权菜单，角色ID：{}，菜单ID：{}", params = {"#vo.roleIds",
+  @Autowired
+  private SysMenuService sysMenuService;
+
+  @OpLog(type = DefaultOpLogType.SYSTEM, name = "角色授权菜单，角色ID：{}，菜单ID：{}", params = {
+      "#vo.roleIds",
       "#vo.menuIds"}, loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -62,6 +67,11 @@ public class SysRoleMenuServiceImpl extends
     List<SysRoleMenu> records = new ArrayList<>();
     if (!CollectionUtil.isEmpty(menuIds)) {
       Set<String> menuIdSet = new HashSet<>(menuIds);
+
+      // 根据所有的menuIds查询父级ID，父级ID需要添加
+      for (String menuId : menuIds) {
+        menuIdSet.addAll(sysMenuService.getParentMenuIds(menuId));
+      }
 
       for (String menuId : menuIdSet) {
         SysRoleMenu record = new SysRoleMenu();

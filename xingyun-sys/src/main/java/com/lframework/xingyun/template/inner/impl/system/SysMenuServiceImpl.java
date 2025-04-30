@@ -422,6 +422,24 @@ public class SysMenuServiceImpl extends BaseMpServiceImpl<SysMenuMapper, SysMenu
     getBaseMapper().cancelCollectMenu(userId, menuId);
   }
 
+  @Override
+  public List<String> getParentMenuIds(String menuId) {
+    List<String> results = new ArrayList<>();
+
+    String tmpMenuId = menuId;
+    while (tmpMenuId != null) {
+      SysMenu menu = getThis(this.getClass()).findById(tmpMenuId);
+      if (menu != null && StringUtil.isNotBlank(menu.getParentId())) {
+        results.add(menu.getParentId());
+        tmpMenuId = menu.getParentId();
+      } else {
+        break;
+      }
+    }
+
+    return results;
+  }
+
   private List<String> getAllExpressions(String s) {
 
     if (!this.hasSpecExpression(s)) {

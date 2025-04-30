@@ -10,8 +10,10 @@ import com.lframework.starter.web.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.utils.IdUtil;
 import com.lframework.xingyun.core.annotations.OpLog;
 import com.lframework.xingyun.core.enums.DefaultOpLogType;
+import com.lframework.xingyun.template.inner.entity.SysMenu;
 import com.lframework.xingyun.template.inner.entity.SysRole;
 import com.lframework.xingyun.template.inner.entity.SysRoleMenu;
+import com.lframework.xingyun.template.inner.enums.system.SysMenuDisplay;
 import com.lframework.xingyun.template.inner.mappers.system.SysRoleMenuMapper;
 import com.lframework.xingyun.template.inner.service.system.SysMenuService;
 import com.lframework.xingyun.template.inner.service.system.SysRoleMenuService;
@@ -73,6 +75,12 @@ public class SysRoleMenuServiceImpl extends
         menuIdSet.addAll(sysMenuService.getParentMenuIds(menuId));
       }
 
+      if (menuIdSet.stream().noneMatch(t -> {
+        SysMenu menu = sysMenuService.findById(t);
+        return menu != null && (menu.getDisplay() == SysMenuDisplay.FUNCTION || menu.getDisplay() == SysMenuDisplay.PERMISSION);
+      })) {
+        throw new DefaultClientException("授权失败，不能只选择类型是“" + SysMenuDisplay.CATALOG.getDesc() +  "”的菜单！");
+      }
       for (String menuId : menuIdSet) {
         SysRoleMenu record = new SysRoleMenu();
         record.setId(IdUtil.getId());

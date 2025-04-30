@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,11 +76,34 @@ public class SysRoleMenuServiceImpl extends
         menuIdSet.addAll(sysMenuService.getParentMenuIds(menuId));
       }
 
-      if (menuIdSet.stream().noneMatch(t -> {
-        SysMenu menu = sysMenuService.findById(t);
-        return menu != null && (menu.getDisplay() == SysMenuDisplay.FUNCTION || menu.getDisplay() == SysMenuDisplay.PERMISSION);
-      })) {
-        throw new DefaultClientException("授权失败，不能只选择类型是“" + SysMenuDisplay.CATALOG.getDesc() +  "”的菜单！");
+      List<SysMenu> allMenus = menuIdSet.stream().map(sysMenuService::findById).collect(
+          Collectors.toList());
+      // 需要判断每一个类型是目录的菜单是否都包含菜单或权限的子菜单
+      for (SysMenu menu : allMenus) {
+        if (menu.getDisplay() != SysMenuDisplay.CATALOG) {
+          continue;
+        }
+
+        List<String> parentIds = new ArrayList<>();
+        parentIds.add(menu.getId());
+        List<SysMenu> childrenMenus = new ArrayList<>();
+        while (true) {
+          List<SysMenu> children = allMenus.stream()
+              .filter(t -> parentIds.contains(t.getParentId())).collect(
+                  Collectors.toList());
+          if (CollectionUtil.isEmpty(children)) {
+            break;
+          }
+          childrenMenus.addAll(children);
+          parentIds.clear();
+          parentIds.addAll(children.stream().map(SysMenu::getId).collect(Collectors.toList()));
+        }
+
+        if (childrenMenus.stream().noneMatch(t -> t.getDisplay() == SysMenuDisplay.FUNCTION
+            || t.getDisplay() == SysMenuDisplay.PERMISSION)) {
+          throw new DefaultClientException("菜单：“" + menu.getTitle() + "”授权失败，该菜单的类型是“"
+              + SysMenuDisplay.CATALOG.getDesc() + "”，必须包含子菜单！");
+        }
       }
       for (String menuId : menuIdSet) {
         SysRoleMenu record = new SysRoleMenu();

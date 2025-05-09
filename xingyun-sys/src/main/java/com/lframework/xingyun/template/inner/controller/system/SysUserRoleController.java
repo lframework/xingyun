@@ -2,16 +2,18 @@ package com.lframework.xingyun.template.inner.controller.system;
 
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
+import com.lframework.starter.web.annotations.security.HasPermission;
+import com.lframework.starter.web.components.security.SecurityConstants;
+import com.lframework.starter.web.components.security.SecurityUtil;
+import com.lframework.starter.web.controller.DefaultBaseController;
+import com.lframework.starter.web.resp.InvokeResult;
+import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.xingyun.template.inner.bo.system.user.QueryUserRoleBo;
 import com.lframework.xingyun.template.inner.entity.SysRole;
 import com.lframework.xingyun.template.inner.service.system.SysRoleService;
 import com.lframework.xingyun.template.inner.service.system.SysUserRoleService;
 import com.lframework.xingyun.template.inner.vo.system.role.QuerySysRoleVo;
 import com.lframework.xingyun.template.inner.vo.system.user.SysUserRoleSettingVo;
-import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.controller.DefaultBaseController;
-import com.lframework.starter.web.resp.InvokeResult;
-import com.lframework.starter.web.resp.InvokeResultBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -59,6 +61,12 @@ public class SysUserRoleController extends DefaultBaseController {
     sysRoleVo.setAvailable(Boolean.TRUE);
     List<SysRole> allRole = sysRoleService.query(sysRoleVo);
     if (!CollectionUtil.isEmpty(allRole)) {
+      if (!SecurityUtil.getCurrentUser().isAdmin()) {
+        allRole = allRole.stream()
+            .filter(t -> !SecurityConstants.PERMISSION_ADMIN_NAME.equals(t.getPermission()))
+            .collect(
+                Collectors.toList());
+      }
       results = allRole.stream().map(QueryUserRoleBo::new).collect(Collectors.toList());
 
       if (!StringUtil.isBlank(userId)) {

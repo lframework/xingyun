@@ -9,7 +9,6 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.sale.GetSaleOrderBo;
 import com.lframework.xingyun.sc.bo.sale.PrintSaleOrderBo;
@@ -70,7 +69,7 @@ public class SaleOrderController extends DefaultBaseController {
   @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @HasPermission({"sale:order:query"})
   @GetMapping("/print")
-  public InvokeResult<A4ExcelPortraitPrintBo<PrintSaleOrderBo>> print(
+  public InvokeResult<PrintSaleOrderBo> print(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
     SaleOrderFullDto data = saleOrderService.getDetail(id);
@@ -80,11 +79,7 @@ public class SaleOrderController extends DefaultBaseController {
 
     PrintSaleOrderBo result = new PrintSaleOrderBo(data);
 
-    A4ExcelPortraitPrintBo<PrintSaleOrderBo> printResult = new A4ExcelPortraitPrintBo<>(
-        "print/sale-order.ftl",
-        result);
-
-    return InvokeResultBuilder.success(printResult);
+    return InvokeResultBuilder.success(result);
   }
 
   /**

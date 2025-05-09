@@ -10,7 +10,6 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.GetPurchaseOrderBo;
 import com.lframework.xingyun.sc.bo.purchase.PrintPurchaseOrderBo;
@@ -77,7 +76,7 @@ public class PurchaseOrderController extends DefaultBaseController {
   @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @HasPermission({"purchase:order:query"})
   @GetMapping("/print")
-  public InvokeResult<A4ExcelPortraitPrintBo<PrintPurchaseOrderBo>> print(
+  public InvokeResult<PrintPurchaseOrderBo> print(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
     PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
@@ -87,10 +86,7 @@ public class PurchaseOrderController extends DefaultBaseController {
 
     PrintPurchaseOrderBo result = new PrintPurchaseOrderBo(data);
 
-    A4ExcelPortraitPrintBo<PrintPurchaseOrderBo> printResult = new A4ExcelPortraitPrintBo<>(
-        "print/purchase-order.ftl", result);
-
-    return InvokeResultBuilder.success(printResult);
+    return InvokeResultBuilder.success(result);
   }
 
   /**

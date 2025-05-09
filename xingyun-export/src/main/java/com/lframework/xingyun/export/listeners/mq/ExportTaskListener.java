@@ -106,7 +106,7 @@ public class ExportTaskListener {
           .in(ExportTask::getStatus, ExportTaskStatus.CREATED, ExportTaskStatus.EXPORTING)
           .ne(ExportTask::getId, task.getId());
       if (exportTaskService.count(checkWrapper) > 0) {
-        throw new DefaultClientException("导出任务重复，请勿重新导出。");
+        throw new DefaultClientException("导出任务重复，请勿重复导出。");
       }
 
       ExportTaskHandler exportTaskHandler = new ExportTaskHandler(task.getId(),

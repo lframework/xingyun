@@ -6,7 +6,6 @@ import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.bo.BasePrintDataBo;
 import com.lframework.starter.web.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class PrintReceiveSheetBo extends BasePrintDataBo<ReceiveSheetFullDto> {
+public class PrintReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
 
   /**
    * 单号

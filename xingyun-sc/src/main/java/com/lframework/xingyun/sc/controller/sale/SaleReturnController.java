@@ -8,7 +8,6 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.sale.returned.GetSaleReturnBo;
 import com.lframework.xingyun.sc.bo.sale.returned.PrintSaleReturnBo;
@@ -61,7 +60,7 @@ public class SaleReturnController extends DefaultBaseController {
   @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @HasPermission({"sale:return:query"})
   @GetMapping("/print")
-  public InvokeResult<A4ExcelPortraitPrintBo<PrintSaleReturnBo>> print(
+  public InvokeResult<PrintSaleReturnBo> print(
       @NotBlank(message = "退单ID不能为空！") String id) {
 
     SaleReturnFullDto data = saleReturnService.getDetail(id);
@@ -72,10 +71,7 @@ public class SaleReturnController extends DefaultBaseController {
 
     PrintSaleReturnBo result = new PrintSaleReturnBo(data);
 
-    A4ExcelPortraitPrintBo<PrintSaleReturnBo> printResult = new A4ExcelPortraitPrintBo<PrintSaleReturnBo>(
-        "print/sale-return.ftl", result);
-
-    return InvokeResultBuilder.success(printResult);
+    return InvokeResultBuilder.success(result);
   }
 
   /**

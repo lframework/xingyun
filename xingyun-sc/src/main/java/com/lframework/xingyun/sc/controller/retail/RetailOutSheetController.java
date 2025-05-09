@@ -9,7 +9,6 @@ import com.lframework.starter.web.resp.InvokeResult;
 import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.receive.GetPaymentDateBo;
 import com.lframework.xingyun.sc.bo.retail.RetailProductBo;
@@ -72,7 +71,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @HasPermission({"retail:out:query"})
   @GetMapping("/print")
-  public InvokeResult<A4ExcelPortraitPrintBo<PrintRetailOutSheetBo>> print(
+  public InvokeResult<PrintRetailOutSheetBo> print(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
     RetailOutSheetFullDto data = retailOutSheetService.getDetail(id);
@@ -81,10 +80,8 @@ public class RetailOutSheetController extends DefaultBaseController {
     }
 
     PrintRetailOutSheetBo result = new PrintRetailOutSheetBo(data);
-    A4ExcelPortraitPrintBo<PrintRetailOutSheetBo> printResult = new A4ExcelPortraitPrintBo<>(
-        "print/retail-out-sheet.ftl", result);
 
-    return InvokeResultBuilder.success(printResult);
+    return InvokeResultBuilder.success(result);
   }
 
   /**

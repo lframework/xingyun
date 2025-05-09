@@ -9,7 +9,6 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.ExcelUtil;
 import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.bo.print.A4ExcelPortraitPrintBo;
 import com.lframework.xingyun.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.receive.GetPaymentDateBo;
 import com.lframework.xingyun.sc.bo.purchase.receive.GetReceiveSheetBo;
@@ -79,17 +78,14 @@ public class ReceiveSheetController extends DefaultBaseController {
   @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
   @HasPermission({"purchase:receive:query"})
   @GetMapping("/print")
-  public InvokeResult<A4ExcelPortraitPrintBo<PrintReceiveSheetBo>> print(
+  public InvokeResult<PrintReceiveSheetBo> print(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
     ReceiveSheetFullDto data = receiveSheetService.getDetail(id);
 
     PrintReceiveSheetBo result = new PrintReceiveSheetBo(data);
 
-    A4ExcelPortraitPrintBo<PrintReceiveSheetBo> printResult = new A4ExcelPortraitPrintBo<PrintReceiveSheetBo>(
-        "print/receive-sheet.ftl", result);
-
-    return InvokeResultBuilder.success(printResult);
+    return InvokeResultBuilder.success(result);
   }
 
   /**

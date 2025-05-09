@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.PrintTemplateMapper">
+
+    <sql id="PrintTemplate_sql">
+        SELECT
+            tb.*
+        FROM tbl_print_template AS tb
+    </sql>
+    <select id="query" resultType="com.lframework.xingyun.basedata.entity.PrintTemplate">
+        <include refid="PrintTemplate_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.name != null and vo.name != ''">
+                    AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+            </if>
+        </where>
+        ORDER BY tb.create_time
+    </select>
+</mapper>

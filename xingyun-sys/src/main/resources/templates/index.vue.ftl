@@ -22,7 +22,7 @@
           <#if query?? && queryParams??>
           <template #form>
             <j-border>
-              <j-form label-width="80px" @collapse="$refs.grid.refreshColumn()">
+              <j-form bordered label-width="80px" @collapse="$refs.grid.refreshColumn()">
                 <#list queryParams.columns as column>
                 <j-form-item label="${column.description}"<#if column.viewType != 0 && column.viewType != 1 && column.viewType != 5 && column.viewType != 7> :content-nest="false"</#if>>
                   <#assign formData="searchFormData"/>

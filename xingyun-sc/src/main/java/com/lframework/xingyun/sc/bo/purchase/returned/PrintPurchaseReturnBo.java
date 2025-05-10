@@ -216,9 +216,9 @@ public class PrintPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
     private Integer returnNum;
 
     /**
-     * 采购价
+     * 退货价
      */
-    @ApiModelProperty("采购价")
+    @ApiModelProperty("退货价")
     private BigDecimal purchasePrice;
 
     /**

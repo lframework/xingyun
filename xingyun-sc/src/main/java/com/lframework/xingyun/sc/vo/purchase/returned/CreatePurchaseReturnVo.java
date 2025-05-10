@@ -136,15 +136,15 @@ public class CreatePurchaseReturnVo implements BaseVo, Serializable {
 
       if (!requireReceive) {
         if (product.getPurchasePrice() == null) {
-          throw new InputErrorException("第" + orderNo + "行商品采购价不能为空！");
+          throw new InputErrorException("第" + orderNo + "行商品退货价不能为空！");
         }
 
         if (product.getPurchasePrice().doubleValue() < 0D) {
-          throw new InputErrorException("第" + orderNo + "行商品采购价不允许小于0！");
+          throw new InputErrorException("第" + orderNo + "行商品退货价不允许小于0！");
         }
 
         if (!NumberUtil.isNumberPrecision(product.getPurchasePrice(), 2)) {
-          throw new InputErrorException("第" + orderNo + "行商品采购价最多允许2位小数！");
+          throw new InputErrorException("第" + orderNo + "行商品退货价最多允许2位小数！");
         }
       } else {
         if (StringUtil.isNotBlank(product.getReceiveSheetDetailId())) {

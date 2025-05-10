@@ -18,9 +18,9 @@ public class ReturnProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
-   * 采购价
+   * 退货价
    */
-  @ApiModelProperty("采购价")
+  @ApiModelProperty("退货价")
   private BigDecimal purchasePrice;
 
   /**

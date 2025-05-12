@@ -106,7 +106,6 @@ public class UpdateProductVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "进项税率（%）")
   @Min(value = 0, message = "进项税率（%）不允许小于0！")
-  @Digits(integer = 10, fraction = 0, message = "进项税率（%）必须为整数！")
   private BigDecimal taxRate = BigDecimal.ZERO;
 
   /**
@@ -114,7 +113,6 @@ public class UpdateProductVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "销项税率（%）")
   @Min(value = 0, message = "销项税率（%）不允许小于0！")
-  @Digits(integer = 10, fraction = 0, message = "销项税率（%）必须为整数！")
   private BigDecimal saleTaxRate = BigDecimal.ZERO;
 
   /**

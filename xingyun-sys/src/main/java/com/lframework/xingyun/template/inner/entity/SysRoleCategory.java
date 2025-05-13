@@ -3,36 +3,30 @@ package com.lframework.xingyun.template.inner.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.lframework.starter.web.entity.BaseEntity;
 import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.entity.BaseEntity;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 /**
  * <p>
- *
+ * 角色分类
  * </p>
  *
  * @author zmj
- * @since 2021-07-02
  */
 @Data
-@TableName("sys_role")
-public class SysRole extends BaseEntity implements BaseDto {
+@TableName("sys_role_category")
+public class SysRoleCategory extends BaseEntity implements BaseDto {
+
+  public static final String CACHE_NAME = "SysRoleCategory";
 
   private static final long serialVersionUID = 1L;
-
-  public static final String CACHE_NAME = "SysRole";
 
   /**
    * ID
    */
   private String id;
-
-  /**
-   * 分类ID
-   */
-  private String categoryId;
 
   /**
    * 编号
@@ -43,21 +37,6 @@ public class SysRole extends BaseEntity implements BaseDto {
    * 名称
    */
   private String name;
-
-  /**
-   * 权限
-   */
-  private String permission;
-
-  /**
-   * 状态
-   */
-  private Boolean available;
-
-  /**
-   * 备注
-   */
-  private String description;
 
   /**
    * 创建人ID 新增时赋值
@@ -72,7 +51,7 @@ public class SysRole extends BaseEntity implements BaseDto {
   private String createBy;
 
   /**
-   * 创建时间 新增时赋值
+   * 创建时间
    */
   @TableField(fill = FieldFill.INSERT)
   private LocalDateTime createTime;
@@ -90,7 +69,7 @@ public class SysRole extends BaseEntity implements BaseDto {
   private String updateById;
 
   /**
-   * 修改时间 新增和修改时赋值
+   * 修改时间
    */
   @TableField(fill = FieldFill.INSERT_UPDATE)
   private LocalDateTime updateTime;

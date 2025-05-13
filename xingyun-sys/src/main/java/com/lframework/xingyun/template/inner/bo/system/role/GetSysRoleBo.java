@@ -27,6 +27,12 @@ public class GetSysRoleBo extends BaseBo<SysRole> {
   private String name;
 
   /**
+   * 分类ID
+   */
+  @ApiModelProperty("分类ID")
+  private String categoryId;
+
+  /**
    * 权限
    */
   @ApiModelProperty("权限")

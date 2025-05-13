@@ -36,6 +36,13 @@ public class UpdateSysRoleVo implements BaseVo, Serializable {
   private String name;
 
   /**
+   * 分类ID
+   */
+  @ApiModelProperty(value = "分类ID", required = true)
+  @NotBlank(message = "请选择分类！")
+  private String categoryId;
+
+  /**
    * 权限
    */
   @ApiModelProperty("权限")

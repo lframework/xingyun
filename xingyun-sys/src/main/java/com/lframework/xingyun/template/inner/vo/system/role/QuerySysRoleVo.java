@@ -28,4 +28,10 @@ public class QuerySysRoleVo extends SortPageVo implements BaseVo, Serializable {
    */
   @ApiModelProperty("状态")
   private Boolean available;
+
+  /**
+   * 分类ID
+   */
+  @ApiModelProperty("分类ID")
+  private String categoryId;
 }

@@ -9,7 +9,6 @@ import com.lframework.starter.web.resp.InvokeResultBuilder;
 import com.lframework.starter.web.resp.PageResult;
 import com.lframework.starter.web.utils.PageResultUtil;
 import com.lframework.starter.web.utils.TenantUtil;
-import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.template.inner.bo.system.dept.SysDeptSelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.dic.SysDataDicSelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.dic.category.SysDataDicCategorySelectorBo;
@@ -17,6 +16,7 @@ import com.lframework.xingyun.template.inner.bo.system.menu.SysMenuSelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.notify.SysNotifyGroupSelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.open.SysOpenDomainSelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.role.SysRoleSelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.role.category.SysRoleCategorySelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.tenant.TenantSelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.user.SysUserSelectorBo;
 import com.lframework.xingyun.template.inner.entity.SysDataDic;
@@ -26,6 +26,8 @@ import com.lframework.xingyun.template.inner.entity.SysMenu;
 import com.lframework.xingyun.template.inner.entity.SysNotifyGroup;
 import com.lframework.xingyun.template.inner.entity.SysOpenDomain;
 import com.lframework.xingyun.template.inner.entity.SysRole;
+import com.lframework.xingyun.template.inner.entity.SysRoleCategory;
+import com.lframework.xingyun.template.inner.entity.SysUser;
 import com.lframework.xingyun.template.inner.entity.Tenant;
 import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
 import com.lframework.xingyun.template.inner.service.TenantService;
@@ -35,6 +37,7 @@ import com.lframework.xingyun.template.inner.service.system.SysDeptService;
 import com.lframework.xingyun.template.inner.service.system.SysMenuService;
 import com.lframework.xingyun.template.inner.service.system.SysNotifyGroupService;
 import com.lframework.xingyun.template.inner.service.system.SysOpenDomainService;
+import com.lframework.xingyun.template.inner.service.system.SysRoleCategoryService;
 import com.lframework.xingyun.template.inner.service.system.SysRoleService;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import com.lframework.xingyun.template.inner.vo.system.dic.SysDataDicSelectorVo;
@@ -43,6 +46,7 @@ import com.lframework.xingyun.template.inner.vo.system.menu.SysMenuSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.notify.SysNotifyGroupSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.open.SysOpenDomainSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.role.SysRoleSelectorVo;
+import com.lframework.xingyun.template.inner.vo.system.role.category.SysRoleCategorySelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.tenant.TenantSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.user.SysUserSelectorVo;
 import io.swagger.annotations.Api;
@@ -81,6 +85,9 @@ public class DefaultSysSelectorController extends DefaultBaseController {
 
   @Autowired
   private SysRoleService sysRoleService;
+
+  @Autowired
+  private SysRoleCategoryService sysRoleCategoryService;
 
   @Autowired
   private SysDataDicCategoryService sysDataDicCategoryService;
@@ -165,6 +172,43 @@ public class DefaultSysSelectorController extends DefaultBaseController {
     List<SysRole> datas = ids.stream().filter(StringUtil::isNotBlank)
         .map(t -> sysRoleService.findById(t)).filter(Objects::nonNull).collect(Collectors.toList());
     List<SysRoleSelectorBo> results = datas.stream().map(SysRoleSelectorBo::new)
+        .collect(Collectors.toList());
+
+    return InvokeResultBuilder.success(results);
+  }
+
+  @ApiOperation("角色分类")
+  @GetMapping("/role/category")
+  public InvokeResult<PageResult<SysRoleCategorySelectorBo>> roleCategory(
+      @Valid SysRoleCategorySelectorVo vo) {
+
+    PageResult<SysRoleCategory> pageResult = sysRoleCategoryService.selector(getPageIndex(vo),
+        getPageSize(vo), vo);
+    List<SysRoleCategory> datas = pageResult.getDatas();
+    List<SysRoleCategorySelectorBo> results = null;
+    if (CollectionUtil.isNotEmpty(datas)) {
+      results = datas.stream().map(SysRoleCategorySelectorBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 加载角色分类
+   */
+  @ApiOperation("加载角色分类")
+  @PostMapping("/role/category/load")
+  public InvokeResult<List<SysRoleCategorySelectorBo>> loadRoleCategory(
+      @RequestBody(required = false) List<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return InvokeResultBuilder.success(CollectionUtil.emptyList());
+    }
+
+    List<SysRoleCategory> datas = ids.stream().filter(StringUtil::isNotBlank)
+        .map(t -> sysRoleCategoryService.findById(t)).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    List<SysRoleCategorySelectorBo> results = datas.stream().map(SysRoleCategorySelectorBo::new)
         .collect(Collectors.toList());
 
     return InvokeResultBuilder.success(results);

@@ -5839,6 +5839,7 @@ INSERT INTO `sys_parameter` VALUES (19, 'export.timeout', '600', '单个导出�
 DROP TABLE IF EXISTS `sys_role`;
 CREATE TABLE `sys_role`  (
   `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `category_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '分类ID',
   `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编号',
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `permission` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '权限',
@@ -5852,13 +5853,37 @@ CREATE TABLE `sys_role`  (
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `code`(`code`) USING BTREE,
-  UNIQUE INDEX `name`(`name`) USING BTREE
+  UNIQUE INDEX `name`(`name`) USING BTREE,
+  INDEX `category_id`(`category_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role
 -- ----------------------------
-INSERT INTO `sys_role` VALUES ('1', '001', '系统管理员', 'admin', 1, '系统管理员', '系统管理员', '1', '2021-05-08 18:04:41', '系统管理员', '1', '2021-05-08 18:04:45');
+INSERT INTO `sys_role` VALUES ('1', '1', '001', '系统管理员', 'admin', 1, '系统管理员', '系统管理员', '1', '2021-05-08 18:04:41', '系统管理员', '1', '2021-05-08 18:04:45');
+
+-- ----------------------------
+-- Table structure for sys_role_category
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_role_category`;
+CREATE TABLE `sys_role_category`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编号',
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
+  `create_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人',
+  `create_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人',
+  `update_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人ID',
+  `update_time` datetime NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `code`(`code`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色分类' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_role_category
+-- ----------------------------
+INSERT INTO `sys_role_category` VALUES ('1', '001', '默认', '系统管理员', '1', '2025-05-12 00:00:00', '系统管理员', '1', '2025-05-12 00:00:00');
 
 -- ----------------------------
 -- Table structure for sys_role_menu

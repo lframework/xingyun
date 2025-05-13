@@ -228,6 +228,7 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     data.setId(IdUtil.getId());
     data.setCode(vo.getCode());
     data.setName(vo.getName());
+    data.setCategoryId(vo.getCategoryId());
 
     if (!StringUtil.isBlank(vo.getPermission())) {
 
@@ -261,6 +262,7 @@ public class SysRoleServiceImpl extends BaseMpServiceImpl<SysRoleMapper, SysRole
     LambdaUpdateWrapper<SysRole> updateWrapper = Wrappers.lambdaUpdate(SysRole.class)
         .set(SysRole::getCode, vo.getCode()).set(SysRole::getName, vo.getName())
         .set(SysRole::getPermission, null)
+        .set(SysRole::getCategoryId, vo.getCategoryId())
         .set(SysRole::getAvailable, vo.getAvailable())
         .set(SysRole::getDescription,
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())

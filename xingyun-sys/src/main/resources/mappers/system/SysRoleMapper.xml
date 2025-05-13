@@ -14,6 +14,9 @@
                 <if test="vo.code != null and vo.code != ''">
                     AND code = #{vo.code}
                 </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND category_id = #{vo.categoryId}
+                </if>
                 <if test="vo.name != null and vo.name != ''">
                     AND name LIKE CONCAT('%', #{vo.name}, '%')
                 </if>

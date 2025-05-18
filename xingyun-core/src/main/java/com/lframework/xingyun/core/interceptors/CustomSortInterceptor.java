@@ -103,7 +103,7 @@ public class CustomSortInterceptor extends JsqlParserSupport implements InnerInt
                 if (sort.autoParse()) {
                     sortKeyMap.put(sort.value(), (StringUtil.isEmpty(sort.alias()) ? "" : (sort.alias() + ".")) + StringUtil.toUnderlineCase(sort.value()));
                 } else {
-                    sortKeyMap.put(sort.value(), sort.alias());
+                    sortKeyMap.put(sort.value(), StringUtil.isEmpty(sort.alias()) ? "" : sort.alias());
                 }
             }
 

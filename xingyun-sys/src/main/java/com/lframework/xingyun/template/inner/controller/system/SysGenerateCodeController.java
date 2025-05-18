@@ -131,8 +131,6 @@ public class SysGenerateCodeController extends DefaultBaseController {
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotNull(message = "id不能为空！") Integer id) {
 
-    SysGenerateCode data = sysGenerateCodeService.findById(id);
-
     sysGenerateCodeService.deleteById(id);
 
     sysGenerateCodeService.cleanCacheByKey(id);

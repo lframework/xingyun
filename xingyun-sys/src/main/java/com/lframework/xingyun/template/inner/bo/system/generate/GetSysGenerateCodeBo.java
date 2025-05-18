@@ -2,7 +2,12 @@ package com.lframework.xingyun.template.inner.bo.system.generate;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.xingyun.core.dto.GenerateCodeDto;
+import com.lframework.xingyun.core.service.GenerateCodeService;
 import com.lframework.xingyun.template.inner.entity.SysGenerateCode;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -45,4 +50,15 @@ public class GetSysGenerateCodeBo extends BaseBo<SysGenerateCode> {
     super(dto);
   }
 
+  @Override
+  protected void afterInit(SysGenerateCode dto) {
+    if (!StringUtil.isBlank(dto.getConfigStr())) {
+      GenerateCodeService generateCodeService = ApplicationUtil.getBean(GenerateCodeService.class);
+      GenerateCodeDto generateCodeDto = new GenerateCodeDto();
+      generateCodeDto.setId(dto.getId());
+      generateCodeDto.setConfigStr(dto.getConfigStr());
+
+      this.configStr = JsonUtil.toJsonString(generateCodeService.getRules(generateCodeDto));
+    }
+  }
 }

@@ -21,6 +21,7 @@ import com.lframework.xingyun.core.service.RecursionMappingService;
 import com.lframework.xingyun.template.inner.entity.SysNotifyGroup;
 import com.lframework.xingyun.template.inner.entity.SysNotifyGroupReceiver;
 import com.lframework.xingyun.template.inner.entity.SysUserDept;
+import com.lframework.xingyun.template.inner.entity.SysUserGroupDetail;
 import com.lframework.xingyun.template.inner.entity.SysUserRole;
 import com.lframework.xingyun.template.inner.enums.system.SysDeptNodeType;
 import com.lframework.xingyun.template.inner.enums.system.SysNotifyReceiverType;
@@ -28,6 +29,7 @@ import com.lframework.xingyun.template.inner.mappers.system.SysNotifyGroupMapper
 import com.lframework.xingyun.template.inner.service.system.SysNotifyGroupReceiverService;
 import com.lframework.xingyun.template.inner.service.system.SysNotifyGroupService;
 import com.lframework.xingyun.template.inner.service.system.SysUserDeptService;
+import com.lframework.xingyun.template.inner.service.system.SysUserGroupDetailService;
 import com.lframework.xingyun.template.inner.service.system.SysUserRoleService;
 import com.lframework.xingyun.template.inner.vo.system.notify.CreateSysNotifyGroupVo;
 import com.lframework.xingyun.template.inner.vo.system.notify.QuerySysNotifyGroupVo;
@@ -62,6 +64,9 @@ public class SysNotifyGroupServiceImpl extends
 
   @Autowired
   private SysUserRoleService sysUserRoleService;
+
+  @Autowired
+  private SysUserGroupDetailService sysUserGroupDetailService;
 
   @Override
   public PageResult<SysNotifyGroup> query(Integer pageIndex, Integer pageSize,
@@ -232,6 +237,21 @@ public class SysNotifyGroupServiceImpl extends
           List<SysUserRole> sysUserRoleList = sysUserRoleService.list(queryWrapper);
           userIds.addAll(
               sysUserRoleList.stream().map(SysUserRole::getUserId).collect(Collectors.toList()));
+        }
+
+        break;
+      }
+
+      case USER_GROUP: {
+        List<String> userGroupIds = sysNotifyGroupReceiverService.getReceiverIdsByGroupId(
+            notifyGroup.getId());
+        if (CollectionUtil.isNotEmpty(userGroupIds)) {
+          Wrapper<SysUserGroupDetail> queryWrapper = Wrappers.lambdaQuery(SysUserGroupDetail.class)
+              .select(SysUserGroupDetail::getUserId)
+              .in(SysUserGroupDetail::getGroupId, userGroupIds);
+          List<SysUserGroupDetail> sysUserRoleList = sysUserGroupDetailService.list(queryWrapper);
+          userIds.addAll(
+              sysUserRoleList.stream().map(SysUserGroupDetail::getUserId).collect(Collectors.toList()));
         }
 
         break;

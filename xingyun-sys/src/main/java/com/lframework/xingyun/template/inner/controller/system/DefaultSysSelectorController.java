@@ -19,6 +19,7 @@ import com.lframework.xingyun.template.inner.bo.system.role.SysRoleSelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.role.category.SysRoleCategorySelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.tenant.TenantSelectorBo;
 import com.lframework.xingyun.template.inner.bo.system.user.SysUserSelectorBo;
+import com.lframework.xingyun.template.inner.bo.system.user.group.SysUserGroupSelectorBo;
 import com.lframework.xingyun.template.inner.entity.SysDataDic;
 import com.lframework.xingyun.template.inner.entity.SysDataDicCategory;
 import com.lframework.xingyun.template.inner.entity.SysDept;
@@ -28,6 +29,7 @@ import com.lframework.xingyun.template.inner.entity.SysOpenDomain;
 import com.lframework.xingyun.template.inner.entity.SysRole;
 import com.lframework.xingyun.template.inner.entity.SysRoleCategory;
 import com.lframework.xingyun.template.inner.entity.SysUser;
+import com.lframework.xingyun.template.inner.entity.SysUserGroup;
 import com.lframework.xingyun.template.inner.entity.Tenant;
 import com.lframework.xingyun.template.inner.service.SysModuleTenantService;
 import com.lframework.xingyun.template.inner.service.TenantService;
@@ -39,6 +41,7 @@ import com.lframework.xingyun.template.inner.service.system.SysNotifyGroupServic
 import com.lframework.xingyun.template.inner.service.system.SysOpenDomainService;
 import com.lframework.xingyun.template.inner.service.system.SysRoleCategoryService;
 import com.lframework.xingyun.template.inner.service.system.SysRoleService;
+import com.lframework.xingyun.template.inner.service.system.SysUserGroupService;
 import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import com.lframework.xingyun.template.inner.vo.system.dic.SysDataDicSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.dic.category.SysDataDicCategorySelectorVo;
@@ -49,6 +52,7 @@ import com.lframework.xingyun.template.inner.vo.system.role.SysRoleSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.role.category.SysRoleCategorySelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.tenant.TenantSelectorVo;
 import com.lframework.xingyun.template.inner.vo.system.user.SysUserSelectorVo;
+import com.lframework.xingyun.template.inner.vo.system.user.group.SysUserGroupSelectorVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -106,6 +110,9 @@ public class DefaultSysSelectorController extends DefaultBaseController {
 
   @Autowired
   private SysNotifyGroupService sysNotifyGroupService;
+
+  @Autowired
+  private SysUserGroupService sysUserGroupService;
 
   /**
    * 系统菜单
@@ -431,6 +438,43 @@ public class DefaultSysSelectorController extends DefaultBaseController {
         .map(t -> sysNotifyGroupService.findById(t)).filter(Objects::nonNull)
         .collect(Collectors.toList());
     List<SysNotifyGroupSelectorBo> results = datas.stream().map(SysNotifyGroupSelectorBo::new)
+        .collect(Collectors.toList());
+
+    return InvokeResultBuilder.success(results);
+  }
+
+  @ApiOperation("用户组")
+  @GetMapping("/user/group")
+  public InvokeResult<PageResult<SysUserGroupSelectorBo>> userGroup(
+      @Valid SysUserGroupSelectorVo vo) {
+
+    PageResult<SysUserGroup> pageResult = sysUserGroupService.selector(getPageIndex(vo),
+        getPageSize(vo), vo);
+    List<SysUserGroup> datas = pageResult.getDatas();
+    List<SysUserGroupSelectorBo> results = null;
+    if (CollectionUtil.isNotEmpty(datas)) {
+      results = datas.stream().map(SysUserGroupSelectorBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 加载用户组
+   */
+  @ApiOperation("加载用户组")
+  @PostMapping("/user/group/load")
+  public InvokeResult<List<SysUserGroupSelectorBo>> loadUserGroup(
+      @RequestBody(required = false) List<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return InvokeResultBuilder.success(CollectionUtil.emptyList());
+    }
+
+    List<SysUserGroup> datas = ids.stream().filter(StringUtil::isNotBlank)
+        .map(t -> sysUserGroupService.findById(t)).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    List<SysUserGroupSelectorBo> results = datas.stream().map(SysUserGroupSelectorBo::new)
         .collect(Collectors.toList());
 
     return InvokeResultBuilder.success(results);

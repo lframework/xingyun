@@ -5,7 +5,7 @@ import com.lframework.starter.web.enums.BaseEnum;
 
 public enum SysNotifyReceiverType implements BaseEnum<Integer> {
 
-  DEPT(0, "部门及其子部门"), USER(1, "用户"), ROLE(2, "角色");
+  DEPT(0, "部门及其子部门"), USER(1, "用户"), ROLE(2, "角色"), USER_GROUP(3, "用户组");
 
   @EnumValue
   private final Integer code;

@@ -5320,6 +5320,8 @@ INSERT INTO `sys_generate_code` VALUES (7, '会员编号', '[{\"type\":6,\"val\"
 INSERT INTO `sys_generate_code` VALUES (8, '门店编号', '[{\"type\":6,\"val\":\"M\"},{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"f3021011fee745c18eb6eba410c17527\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (9, '品牌编号', '[{\"type\":6,\"val\":\"B\"},{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"331e5e9818194b3096ccbe941f6dedc6\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (10, '商品编号', '[{\"type\":6,\"val\":\"P\"},{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"c9b6e74117f84fe68346201de3554b50\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
+INSERT INTO `sys_generate_code` VALUES (11, '用户分组编号', '[{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"4bf9dafec322744f1f08bdf2d2569076a4d7\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
+INSERT INTO `sys_generate_code` VALUES (99, '通用编号', '[{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"9dfa3174afa0464794e98e19ad7bb121ef24\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (200, '采购订单号', '[{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"37366f903834c842d5e8144bd707bdb77e35\",\"len\":10,\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (201, '采购收货单号', '[{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"12099be638c90d466b2a4af5465ed632459f\",\"len\":10,\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (202, '采购退单号', '[{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"60fdc467f35db94c8569f6ed68d103ce5452\",\"len\":10,\"step\":1,\"expireSeconds\":86400}]');
@@ -5451,6 +5453,9 @@ INSERT INTO `sys_menu` VALUES ('1000013', '1000013', 'SysGenerateCode', '编号�
 INSERT INTO `sys_menu` VALUES ('1000014', '1000014', 'SysNotifyGroup', '消息通知组', NULL, 0, '/system/notify-group/index', NULL, '1000', '2', '/notify-group', 0, 1, 0, 'system:notify-group:query', 1, 1, '', '系统管理员', '1', '2021-05-08 18:37:01', '系统管理员', '1', '2021-12-09 17:54:42');
 INSERT INTO `sys_menu` VALUES ('1000014001', '1000014001', '', '新增消息通知组', NULL, 0, '', NULL, '1000014', '8', '', 0, 2, 0, 'system:notify-group:add', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('1000014002', '1000014002', '', '修改消息通知组', NULL, 0, '', NULL, '1000014', '8', '', 0, 2, 0, 'system:notify-group:modify', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('1000015', '1000015', 'UserGroup', '用户分组', NULL, 0, '/system/user-group/index', NULL, '1000', '2', '/user-group', 0, 1, 0, 'system:user-group:query', 1, 1, '', '系统管理员', '1', '2021-05-08 18:37:01', '系统管理员', '1', '2025-01-19 18:36:11');
+INSERT INTO `sys_menu` VALUES ('1000015001', '1000015001', '', '新增用户分组', NULL, 0, '', NULL, '1000015', '8', '', 0, 2, 0, 'system:user-group:add', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2025-01-19 18:36:11');
+INSERT INTO `sys_menu` VALUES ('1000015002', '1000015002', '', '修改用户分组', NULL, 0, '', NULL, '1000015', '8', '', 0, 2, 0, 'system:user-group:modify', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2025-01-19 18:36:11');
 INSERT INTO `sys_menu` VALUES ('1001', '1001', 'Platform', '平台管理', 'ant-design:global-outlined', NULL, '', NULL, NULL, '1', '/platform', 0, 0, 0, '', 1, 1, '', '系统管理员', '1', '2021-07-04 00:22:05', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('1001001', '1001001', 'OnelineCode', '在线开发', NULL, 0, '/iframes/index', NULL, '1001', '1', '/online-code?src=${magic-api.base-url}${magic-api.web}/index.html', 0, 1, 0, 'system:online-code:config', 1, 1, '', '系统管理员', '1', '2021-05-08 18:37:01', '系统管理员', '1', '2021-12-09 17:54:42');
 INSERT INTO `sys_menu` VALUES ('1002', '1002', 'MsgCenter', '消息中心', 'ant-design:message-outlined', NULL, '', NULL, NULL, '2', '/msg-center', 0, 0, 0, '', 1, 1, '', '系统管理员', '1', '2021-07-04 00:22:05', '系统管理员', '1', '2021-07-04 00:34:23');
@@ -5979,6 +5984,48 @@ CREATE TABLE `sys_user_dept`  (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for sys_user_group
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user_group`;
+CREATE TABLE `sys_user_group`  (
+  `id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编号',
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
+  `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `create_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人',
+  `create_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人',
+  `update_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人ID',
+  `update_time` datetime NOT NULL COMMENT '修改时间',
+  `available` tinyint(1) NOT NULL COMMENT '状态',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `name`(`name`) USING BTREE,
+  UNIQUE INDEX `code`(`code`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户组' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_user_group
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for sys_user_group_detail
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user_group_detail`;
+CREATE TABLE `sys_user_group_detail`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `user_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户ID',
+  `group_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户组ID',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `user_id, group_id`(`user_id`, `group_id`) USING BTREE,
+  INDEX `group_id`(`group_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户与用户组关系表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_user_group_detail
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for sys_user_position
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_user_position`;
@@ -6242,7 +6289,7 @@ CREATE TABLE `tbl_print_template`  (
   `update_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人ID',
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '打印模板' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '打印模板' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tbl_print_template
@@ -6266,7 +6313,7 @@ CREATE TABLE `tbl_print_template_comp`  (
   `comp_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组件配置',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `template_id`(`template_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '打印模板组件' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '打印模板组件' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tbl_print_template_comp

@@ -41,7 +41,7 @@ public class DefaultCheckSignHandler implements CheckSignHandler {
     }
 
     String sign = req.getSign();
-    if (StringUtil.isBlank(params)) {
+    if (StringUtil.isBlank(sign)) {
       return false;
     }
 

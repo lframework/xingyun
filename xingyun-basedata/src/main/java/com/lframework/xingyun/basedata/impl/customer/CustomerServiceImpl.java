@@ -199,7 +199,6 @@ public class CustomerServiceImpl extends BaseMpServiceImpl<CustomerMapper, Custo
         .set(Customer::getContact, !StringUtil.isBlank(vo.getContact()) ? vo.getContact() : null)
         .set(Customer::getTelephone,
             !StringUtil.isBlank(vo.getTelephone()) ? vo.getTelephone() : null)
-        .set(Customer::getAddress, !StringUtil.isBlank(vo.getAddress()) ? vo.getAddress() : null)
         .set(Customer::getEmail, !StringUtil.isBlank(vo.getEmail()) ? vo.getEmail() : null)
         .set(Customer::getZipCode, !StringUtil.isBlank(vo.getZipCode()) ? vo.getZipCode() : null)
         .set(Customer::getFax, !StringUtil.isBlank(vo.getFax()) ? vo.getFax() : null)

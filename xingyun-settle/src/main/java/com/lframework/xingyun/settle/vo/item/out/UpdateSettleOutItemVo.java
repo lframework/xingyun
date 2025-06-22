@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.vo.item.out;
 
-import com.lframework.starter.web.components.validation.IsCode;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.components.validation.IsCode;
+import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;

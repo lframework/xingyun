@@ -6,19 +6,19 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.sc.entity.ProductStockWarning;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
+import com.lframework.xingyun.sc.enums.StockWarningOpLogType;
 import com.lframework.xingyun.sc.mappers.ProductStockWarningMapper;
 import com.lframework.xingyun.sc.service.stock.warning.ProductStockWarningService;
 import com.lframework.xingyun.sc.vo.stock.warning.CreateProductStockWarningVo;
 import com.lframework.xingyun.sc.vo.stock.warning.QueryProductStockWarningVo;
 import com.lframework.xingyun.sc.vo.stock.warning.UpdateProductStockWarningVo;
-import com.lframework.xingyun.core.annotations.OpLog;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +50,7 @@ public class ProductStockWarningServiceImpl extends
     return this.getById(id);
   }
 
-  @OpLog(type = ScOpLogType.STOCK_WARNING, name = "创建库存预警，ID：{}", params = "#_result", autoSaveParams = true)
+  @OpLog(type = StockWarningOpLogType.class, name = "创建库存预警，ID：{}", params = "#_result", autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductStockWarningVo vo) {
@@ -78,7 +78,7 @@ public class ProductStockWarningServiceImpl extends
     return record.getId();
   }
 
-  @OpLog(type = ScOpLogType.STOCK_WARNING, name = "修改库存预警，ID：{}", params = "#vo.id", autoSaveParams = true)
+  @OpLog(type = StockWarningOpLogType.class, name = "修改库存预警，ID：{}", params = "#vo.id", autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductStockWarningVo vo) {
@@ -109,7 +109,7 @@ public class ProductStockWarningServiceImpl extends
     this.update(updateWrapper);
   }
 
-  @OpLog(type = ScOpLogType.STOCK_WARNING, name = "删除库存预警，ID：{}", params = {"#id"})
+  @OpLog(type = StockWarningOpLogType.class, name = "删除库存预警，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {

@@ -1,7 +1,7 @@
 package com.lframework.xingyun.comp.bo.dic;
 
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.inner.dto.dic.city.DicCityDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

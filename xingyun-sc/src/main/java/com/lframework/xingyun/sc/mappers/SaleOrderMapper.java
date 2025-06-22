@@ -1,6 +1,12 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.OrderDataPermissionDataPermissionType;
+import com.lframework.starter.web.inner.components.permission.ProductDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
 import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
@@ -9,11 +15,6 @@ import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.SaleOrderSelectorVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -37,7 +38,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
       @Sort(value = "code", alias = "o", autoParse = true),
       @Sort(value = "createTime", alias = "o", autoParse = true),
   })
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "o")
   })
   List<SaleOrder> query(@Param("vo") QuerySaleOrderVo vo);
@@ -56,7 +57,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "o")
   })
   List<SaleOrder> selector(@Param("vo") SaleOrderSelectorVo vo);
@@ -75,7 +76,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "o")
   })
   List<SaleOrder> queryWithOut(@Param("vo") QuerySaleOrderWithOutVo vo,
@@ -87,7 +88,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param condition
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")
@@ -101,7 +102,7 @@ public interface SaleOrderMapper extends BaseMapper<SaleOrder> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")

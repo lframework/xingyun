@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.service.print;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.PrintTemplate;
 import com.lframework.xingyun.basedata.vo.print.CreatePrintTemplateVo;
 import com.lframework.xingyun.basedata.vo.print.QueryPrintTemplateVo;

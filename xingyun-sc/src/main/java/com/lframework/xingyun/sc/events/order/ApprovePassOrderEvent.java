@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.events.order;
 
-import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
+import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

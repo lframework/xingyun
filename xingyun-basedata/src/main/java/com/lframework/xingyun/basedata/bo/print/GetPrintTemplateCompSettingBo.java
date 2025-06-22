@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.bo.print;
 
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.JsonUtil;
 import com.lframework.xingyun.basedata.entity.PrintTemplateComp;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Map;

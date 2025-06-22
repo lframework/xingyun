@@ -1,7 +1,7 @@
 package com.lframework.xingyun.comp.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum FileBoxFileType implements BaseEnum<Integer> {
   DIR(0, "目录"),

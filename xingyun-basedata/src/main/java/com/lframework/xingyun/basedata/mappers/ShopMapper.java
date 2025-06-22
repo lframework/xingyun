@@ -1,10 +1,10 @@
 package com.lframework.xingyun.basedata.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.vo.shop.QueryShopVo;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

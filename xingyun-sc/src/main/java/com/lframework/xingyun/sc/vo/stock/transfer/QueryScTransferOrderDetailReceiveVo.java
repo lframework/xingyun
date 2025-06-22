@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.transfer;
 
-import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.core.vo.BaseVo;
+import com.lframework.starter.web.core.vo.PageVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;

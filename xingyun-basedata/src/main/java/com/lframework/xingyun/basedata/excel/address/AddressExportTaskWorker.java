@@ -1,12 +1,12 @@
 package com.lframework.xingyun.basedata.excel.address;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
+import com.lframework.starter.web.core.utils.JsonUtil;
 import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.service.address.AddressService;
 import com.lframework.xingyun.basedata.vo.address.QueryAddressVo;
-import com.lframework.xingyun.core.components.export.ExportTaskWorker;
+import com.lframework.starter.mq.core.components.export.ExportTaskWorker;
 
 public class AddressExportTaskWorker implements
     ExportTaskWorker<QueryAddressVo, Address, AddressExportModel> {

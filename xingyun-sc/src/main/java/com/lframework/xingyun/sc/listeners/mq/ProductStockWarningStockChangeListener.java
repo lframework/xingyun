@@ -4,13 +4,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.locker.LockBuilder;
 import com.lframework.starter.common.locker.Locker;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.mq.core.producer.MqProducer;
-import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.starter.mq.core.service.MqProducerService;
+import com.lframework.starter.web.core.utils.JsonUtil;
+import com.lframework.starter.web.inner.dto.notify.SysNotifyDto;
+import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.core.dto.notify.SysNotifyDto;
-import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.core.queue.MqConstants;
 import com.lframework.xingyun.core.queue.MqStringPool;
 import com.lframework.xingyun.sc.entity.ProductStockWarning;
 import com.lframework.xingyun.sc.entity.ProductStockWarningNotify;
@@ -45,7 +44,7 @@ public class ProductStockWarningStockChangeListener {
   private ProductStockWarningNotifyService productStockWarningNotifyService;
 
   @Autowired
-  private MqProducer mqProducer;
+  private MqProducerService mqProducerService;
 
   @Autowired
   private ProductService productService;
@@ -136,8 +135,9 @@ public class ProductStockWarningStockChangeListener {
       sysNotifyDto.setNotifyGroupId(notify.getNotifyGroupId());
 
       try {
-        mqProducer.sendMessage(MqConstants.SYS_NOTIFY, sysNotifyDto);
-        productStockWarningNotifyService.setLastNotifyTime(productStockWarning.getId(), notify.getNotifyGroupId());
+        mqProducerService.createSysNotify(sysNotifyDto);
+        productStockWarningNotifyService.setLastNotifyTime(productStockWarning.getId(),
+            notify.getNotifyGroupId());
       } catch (Exception e) {
         log.error("发送通知失败: {}", e.getMessage(), e);
       }

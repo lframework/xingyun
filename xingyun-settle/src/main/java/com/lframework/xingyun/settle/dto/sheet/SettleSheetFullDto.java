@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.dto.sheet;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.settle.enums.SettleSheetStatus;
 import java.io.Serializable;
 import java.math.BigDecimal;

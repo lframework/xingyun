@@ -1,19 +1,18 @@
 package com.lframework.xingyun.settle.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.OrderDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.dto.pre.SettlePreSheetFullDto;
 import com.lframework.xingyun.settle.entity.SettlePreSheet;
 import com.lframework.xingyun.settle.vo.pre.QuerySettlePreSheetVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
-import org.apache.ibatis.annotations.Param;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -36,7 +35,7 @@ public interface SettlePreSheetMapper extends BaseMapper<SettlePreSheet> {
         @Sort(value = "createTime", alias = "s", autoParse = true),
         @Sort(value = "approveTime", alias = "s", autoParse = true),
     })
-    @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+    @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
         @DataPermission(template = "order", alias = "s")
     })
     List<SettlePreSheet> query(@Param("vo") QuerySettlePreSheetVo vo);

@@ -1,6 +1,6 @@
 package com.lframework.xingyun.comp.bo.components;
 
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import lombok.Data;

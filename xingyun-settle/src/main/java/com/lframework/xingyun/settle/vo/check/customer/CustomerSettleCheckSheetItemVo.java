@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.vo.check.customer;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.settle.enums.CustomerSettleCheckSheetBizType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;

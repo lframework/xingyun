@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum TakeStockPlanType implements BaseEnum<Integer> {
   ALL(0, "全场盘点"), SIMPLE(1, "单品盘点"), CATEGORY(2, "分类盘点"), BRAND(3, "品牌盘点");

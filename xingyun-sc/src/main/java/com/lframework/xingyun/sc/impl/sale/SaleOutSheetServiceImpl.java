@@ -10,12 +10,23 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.security.SecurityUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.components.security.SecurityUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
+import com.lframework.starter.web.inner.entity.SysUser;
+import com.lframework.starter.web.inner.service.GenerateCodeService;
+import com.lframework.starter.web.inner.service.system.SysUserService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
@@ -26,12 +37,6 @@ import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
-import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
-import com.lframework.xingyun.core.service.GenerateCodeService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
@@ -48,8 +53,8 @@ import com.lframework.xingyun.sc.entity.SaleOutSheetDetailBundle;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetailLot;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
+import com.lframework.xingyun.sc.enums.SaleOpLogType;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.mappers.SaleOutSheetMapper;
 import com.lframework.xingyun.sc.service.logistics.LogisticsSheetDetailService;
@@ -71,8 +76,6 @@ import com.lframework.xingyun.sc.vo.sale.out.SaleOutProductVo;
 import com.lframework.xingyun.sc.vo.sale.out.SaleOutSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.sale.out.UpdateSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
-import com.lframework.xingyun.template.inner.entity.SysUser;
-import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -223,8 +226,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = ScOpLogType.SALE, name = "创建销售出库单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建出库单")
+  @OpLog(type = SaleOpLogType.class, name = "创建销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = CreateOrderTimeLineBizType.class, orderId = "#_result", name = "创建出库单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateSaleOutSheetVo vo) {
@@ -247,8 +250,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     return sheet.getId();
   }
 
-  @OpLog(type = ScOpLogType.SALE, name = "修改销售出库单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改出库单")
+  @OpLog(type = SaleOpLogType.class, name = "修改销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = UpdateOrderTimeLineBizType.class, orderId = "#vo.id", name = "修改出库单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateSaleOutSheetVo vo) {
@@ -315,8 +318,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.SALE, name = "审核通过销售出库单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
+  @OpLog(type = SaleOpLogType.class, name = "审核通过销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassSaleOutSheetVo vo) {
@@ -492,7 +495,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateSaleOutSheetVo vo) {
@@ -510,8 +513,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     return sheetId;
   }
 
-  @OpLog(type = ScOpLogType.SALE, name = "审核拒绝销售出库单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
+  @OpLog(type = SaleOpLogType.class, name = "审核拒绝销售出库单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseSaleOutSheetVo vo) {
@@ -550,7 +553,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.SALE, name = "删除销售出库单，单号：{}", params = "#code")
+  @OpLog(type = SaleOpLogType.class, name = "删除销售出库单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

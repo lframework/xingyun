@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.vo.pre.customer;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.PageVo;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.enums.CustomerSettlePreSheetStatus;
 import io.swagger.annotations.ApiModelProperty;

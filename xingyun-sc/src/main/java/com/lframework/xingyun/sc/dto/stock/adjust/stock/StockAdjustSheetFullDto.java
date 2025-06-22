@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.dto.stock.adjust.stock;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import java.io.Serializable;

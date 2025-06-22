@@ -9,15 +9,15 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.service.GenerateCodeService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.inner.service.GenerateCodeService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
@@ -25,7 +25,7 @@ import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProduc
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheetDetail;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
+import com.lframework.xingyun.sc.enums.TakeStockOpLogType;
 import com.lframework.xingyun.sc.mappers.PreTakeStockSheetMapper;
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetDetailService;
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetService;
@@ -105,7 +105,7 @@ public class PreTakeStockSheetServiceImpl extends
     return getBaseMapper().getProducts(id, planId);
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "新增预先盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "新增预先盘点单，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreatePreTakeStockSheetVo vo) {
@@ -140,7 +140,7 @@ public class PreTakeStockSheetServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "修改预先盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "修改预先盘点单，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdatePreTakeStockSheetVo vo) {
@@ -183,7 +183,7 @@ public class PreTakeStockSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "删除预先盘点单，ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "删除预先盘点单，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {

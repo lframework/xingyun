@@ -9,14 +9,14 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.mappers.PayTypeMapper;
 import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
@@ -72,7 +72,7 @@ public class PayTypeServiceImpl extends BaseMpServiceImpl<PayTypeMapper, PayType
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增支付方式，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增支付方式，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -108,7 +108,7 @@ public class PayTypeServiceImpl extends BaseMpServiceImpl<PayTypeMapper, PayType
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改支付方式，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "修改支付方式，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override

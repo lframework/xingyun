@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.vo.product.poly.saleprop;
 
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.vo.BaseVo;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Data;

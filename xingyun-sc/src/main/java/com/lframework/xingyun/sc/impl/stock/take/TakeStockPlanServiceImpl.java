@@ -11,26 +11,23 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.components.qrtz.QrtzJob;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.inner.service.GenerateCodeService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.components.qrtz.QrtzJob;
-import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.sc.events.stock.take.DeleteTakeStockPlanEvent;
-import com.lframework.xingyun.core.queue.MqStringPool;
-import com.lframework.xingyun.core.service.GenerateCodeService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
@@ -39,10 +36,10 @@ import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
+import com.lframework.xingyun.sc.enums.TakeStockOpLogType;
 import com.lframework.xingyun.sc.enums.TakeStockPlanStatus;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
-import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
+import com.lframework.xingyun.sc.events.stock.take.DeleteTakeStockPlanEvent;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanMapper;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
@@ -63,14 +60,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
-import org.springframework.amqp.core.ExchangeTypes;
-import org.springframework.amqp.rabbit.annotation.Exchange;
-import org.springframework.amqp.rabbit.annotation.Queue;
-import org.springframework.amqp.rabbit.annotation.QueueBinding;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -139,7 +129,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "新增盘点任务，ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "新增盘点任务，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateTakeStockPlanVo vo) {
@@ -220,7 +210,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return data.getId();
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "修改盘点任务，ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "修改盘点任务，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateTakeStockPlanVo vo) {
@@ -247,7 +237,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     return getBaseMapper().getProducts(planId);
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "差异生成，盘点任务ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "差异生成，盘点任务ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void createDiff(String id) {
@@ -290,7 +280,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     }
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "差异处理，盘点任务ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "差异处理，盘点任务ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void handleDiff(HandleTakeStockPlanVo vo) {
@@ -389,7 +379,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "作废盘点任务，ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "作废盘点任务，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void cancel(CancelTakeStockPlanVo vo) {
@@ -412,7 +402,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.TAKE_STOCK, name = "删除盘点任务，ID：{}", params = {"#id"})
+  @OpLog(type = TakeStockOpLogType.class, name = "删除盘点任务，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {

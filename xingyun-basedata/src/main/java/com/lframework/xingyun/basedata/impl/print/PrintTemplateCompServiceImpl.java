@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.impl.print;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.entity.PrintTemplateComp;
 import com.lframework.xingyun.basedata.mappers.PrintTemplateCompMapper;
 import com.lframework.xingyun.basedata.service.print.PrintTemplateCompService;

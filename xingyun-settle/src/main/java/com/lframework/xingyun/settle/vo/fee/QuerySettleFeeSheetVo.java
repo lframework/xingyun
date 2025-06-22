@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.vo.fee;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.SortPageVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.SortPageVo;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.enums.SettleFeeSheetStatus;
 import io.swagger.annotations.ApiModelProperty;

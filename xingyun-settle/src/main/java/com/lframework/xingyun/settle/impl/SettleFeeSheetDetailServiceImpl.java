@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.impl;
 
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.settle.entity.SettleFeeSheetDetail;
 import com.lframework.xingyun.settle.mappers.SettleFeeSheetDetailMapper;
 import com.lframework.xingyun.settle.service.SettleFeeSheetDetailService;

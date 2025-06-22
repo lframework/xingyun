@@ -1,6 +1,6 @@
-### 注意
+**项目代码开源免费可商用 遵循开源协议即可**
 
-不知道为什么每年上半年（1月至6月）就会有大量的学生朋友来这里做毕业设计或者准备实习工作，这个项目不是用来做这些事情的，如果您是因为这些事情才关注这个项目的话，请自行下载研究，就不要加交流群了，谢谢合作！
+**过去、现在和未来都不会有商业版！！！**
 
 ### 项目介绍
 
@@ -9,10 +9,6 @@
 #### 单体架构
 
 集成常用的SpringBoot、MybatisPlus等框架，更利于上手使用或二次开发。
-
-#### 关于商业使用的说明
-
-项目使用Apache 2.0 License，编写的代码无任何闭源情况，均可免费使用。我们对商业使用行为没有限制，只需要遵循Apache2.0 License即可。
 
 ### 演示环境地址
 
@@ -87,8 +83,6 @@ QQ交流群号： **717574596（已满员）** **562654879**
 
 项目依赖的底层框架全部封装成starter，关于这部分的代码详见：<a href="https://gitee.com/lframework/jugg" target="_blank">点此进入</a>
 
-BPM工作流目前是整合AgileBPM工作流管理平台，由于AgileBPM的Licence是GPL，所以使用这部分功能需要遵守GPL许可证的限制条件，关于这部分的代码详见：<a href="https://gitee.com/lframework/xingyun-bpm" target="_blank">点此进入</a>，如果不使用此部分代码及功能，请忽略此条说明
-
 ### License
 
 项目使用Apache 2.0许可证，请遵守此许可证的限制条件。
@@ -104,3 +98,5 @@ BPM工作流目前是整合AgileBPM工作流管理平台，由于AgileBPM的Lice
 <a href="https://gitee.com/xiaoym/knife4j" target="_blank">knife4j</a> knife4j是为Java MVC框架集成Swagger生成Api文档的工具
 
 <a href="https://github.com/xaboy/form-create" target="_blank">FormCreate</a> 强大的动态表单生成器
+
+<a href="https://gitee.com/dromara/warm-flow" target="_blank">Warm-Flow</a> Dromara Warm-Flow国产工作流引擎

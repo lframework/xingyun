@@ -1,6 +1,6 @@
 package com.lframework.xingyun.chart.bo;
 
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.chart.dto.OrderChartTodayDto;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;

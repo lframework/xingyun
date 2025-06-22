@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.service.purchase;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
@@ -53,7 +53,7 @@ public interface PurchaseOrderService extends BaseMpService<PurchaseOrder> {
    * @param id
    * @return
    */
-  PurchaseOrderFullDto getDetail(String id);
+  PurchaseOrderFullDto getDetail(String id, Boolean isForm);
 
   /**
    * 根据ID查询（收货业务）

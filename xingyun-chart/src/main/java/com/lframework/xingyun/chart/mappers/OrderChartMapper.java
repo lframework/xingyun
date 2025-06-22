@@ -1,6 +1,6 @@
 package com.lframework.xingyun.chart.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.chart.dto.OrderChartSameMonthDto;
 import com.lframework.xingyun.chart.dto.OrderChartSumDto;
 import com.lframework.xingyun.chart.dto.OrderChartTodayDto;

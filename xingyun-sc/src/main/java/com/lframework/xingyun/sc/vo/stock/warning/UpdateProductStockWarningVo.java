@@ -1,8 +1,6 @@
 package com.lframework.xingyun.sc.vo.stock.warning;
 
-import com.lframework.starter.web.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;

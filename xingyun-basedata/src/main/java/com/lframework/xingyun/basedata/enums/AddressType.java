@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum AddressType implements BaseEnum<Integer> {
   DELIVERY(1, "发货地址"), RECEIVE(2, "收货地址");

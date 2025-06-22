@@ -1,7 +1,12 @@
 package com.lframework.xingyun.settle.enums;
 
-public interface SettleOpLogType {
+import com.lframework.starter.web.core.components.oplog.OpLogType;
+import org.springframework.stereotype.Component;
 
-    // 结算业务
-    int SETTLE = 3000;
+@Component
+public class SettleOpLogType implements OpLogType {
+    @Override
+    public Integer getCode() {
+        return 3000;
+    }
 }

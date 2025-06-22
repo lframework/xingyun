@@ -10,23 +10,25 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.security.SecurityUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.service.GenerateCodeService;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.components.security.SecurityUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.inner.service.GenerateCodeService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.logistics.LogisticsSheetBizOrderDto;
 import com.lframework.xingyun.sc.dto.logistics.LogisticsSheetFullDto;
 import com.lframework.xingyun.sc.entity.LogisticsSheet;
 import com.lframework.xingyun.sc.entity.LogisticsSheetDetail;
+import com.lframework.xingyun.sc.enums.LogisticsOpLogType;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import com.lframework.xingyun.sc.enums.LogisticsSheetStatus;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.mappers.LogisticsSheetMapper;
 import com.lframework.xingyun.sc.service.logistics.LogisticsSheetDetailService;
 import com.lframework.xingyun.sc.service.logistics.LogisticsSheetService;
@@ -36,8 +38,6 @@ import com.lframework.xingyun.sc.vo.logistics.LogisticsSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetBizOrderVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetVo;
 import com.lframework.xingyun.sc.vo.logistics.UpdateLogisticsSheetVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +107,7 @@ public class LogisticsSheetServiceImpl extends
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = ScOpLogType.LOGISTICS, name = "创建物流单，单号：{}", params = "#code")
+  @OpLog(type = LogisticsOpLogType.class, name = "创建物流单，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateLogisticsSheetVo vo) {
@@ -127,7 +127,7 @@ public class LogisticsSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = ScOpLogType.LOGISTICS, name = "修改物流单，单号：{}", params = "#code")
+  @OpLog(type = LogisticsOpLogType.class, name = "修改物流单，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateLogisticsSheetVo vo) {
@@ -162,7 +162,7 @@ public class LogisticsSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.LOGISTICS, name = "物流单发货，单号：{}", params = "#code")
+  @OpLog(type = LogisticsOpLogType.class, name = "物流单发货，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void delivery(DeliveryLogisticsSheetVo vo) {
@@ -195,7 +195,7 @@ public class LogisticsSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.LOGISTICS, name = "删除物流单，单号：{}", params = "#code")
+  @OpLog(type = LogisticsOpLogType.class, name = "删除物流单，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {

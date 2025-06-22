@@ -1,6 +1,12 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.OrderDataPermissionDataPermissionType;
+import com.lframework.starter.web.inner.components.permission.ProductDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
@@ -8,11 +14,6 @@ import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -35,7 +36,7 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
       @Sort(value = "code", alias = "tb", autoParse = true),
       @Sort(value = "updateTime", alias = "tb", autoParse = true),
   })
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "tb")
   })
   List<PreTakeStockSheet> query(@Param("vo") QueryPreTakeStockSheetVo vo);
@@ -54,7 +55,7 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "tb")
   })
   List<PreTakeStockSheet> selector(@Param("vo") PreTakeStockSheetSelectorVo vo);
@@ -75,7 +76,7 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
    * @param condition
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")
@@ -88,7 +89,7 @@ public interface PreTakeStockSheetMapper extends BaseMapper<PreTakeStockSheet> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")

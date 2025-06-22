@@ -1,14 +1,13 @@
 package com.lframework.xingyun.settle.service;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.settle.entity.SettleInItem;
 import com.lframework.xingyun.settle.vo.item.in.CreateSettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.QuerySettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.SettleInItemSelectorVo;
 import com.lframework.xingyun.settle.vo.item.in.UpdateSettleInItemVo;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface SettleInItemService extends BaseMpService<SettleInItem> {

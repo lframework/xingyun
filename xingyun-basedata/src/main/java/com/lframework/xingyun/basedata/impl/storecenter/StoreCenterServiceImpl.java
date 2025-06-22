@@ -10,11 +10,11 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.mappers.StoreCenterMapper;
@@ -23,10 +23,10 @@ import com.lframework.xingyun.basedata.vo.storecenter.CreateStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.UpdateStoreCenterVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
-import com.lframework.xingyun.core.service.DicCityService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.inner.dto.dic.city.DicCityDto;
+import com.lframework.starter.web.inner.service.DicCityService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用仓库，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "停用仓库，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void unable(String id) {
@@ -71,7 +71,7 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用仓库，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "启用仓库，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void enable(String id) {
@@ -81,7 +81,7 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增仓库，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增仓库，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -134,7 +134,7 @@ public class StoreCenterServiceImpl extends BaseMpServiceImpl<StoreCenterMapper,
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改仓库，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "修改仓库，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override

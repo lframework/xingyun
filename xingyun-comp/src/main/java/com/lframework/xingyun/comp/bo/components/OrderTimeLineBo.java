@@ -2,8 +2,8 @@ package com.lframework.xingyun.comp.bo.components;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.xingyun.core.entity.OrderTimeLine;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.inner.entity.OrderTimeLine;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -62,6 +62,6 @@ public class OrderTimeLineBo extends BaseBo<OrderTimeLine> {
   @Override
   protected void afterInit(OrderTimeLine dto) {
 
-    this.bizType = dto.getBizType().getCode();
+    this.bizType = dto.getBizType();
   }
 }

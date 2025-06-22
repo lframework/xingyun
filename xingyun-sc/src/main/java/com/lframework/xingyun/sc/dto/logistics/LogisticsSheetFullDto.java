@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.dto.logistics;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 import com.lframework.xingyun.sc.enums.LogisticsSheetStatus;
 import java.io.Serializable;

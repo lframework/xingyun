@@ -1,13 +1,12 @@
 package com.lframework.xingyun.sc.service.stock.adjust;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.StockAdjustReason;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.CreateStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.QueryStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.StockAdjustReasonSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.UpdateStockAdjustReasonVo;
-import java.util.Collection;
 import java.util.List;
 
 public interface StockAdjustReasonService extends BaseMpService<StockAdjustReason> {

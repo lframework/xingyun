@@ -1,8 +1,8 @@
 package com.lframework.xingyun.basedata.vo.shop;
 
-import com.lframework.starter.web.components.validation.IsCode;
-import com.lframework.starter.web.components.validation.TypeMismatch;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.components.validation.IsCode;
+import com.lframework.starter.web.core.components.validation.TypeMismatch;
+import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;

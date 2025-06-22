@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.dto.product;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.basedata.enums.ColumnType;
 import java.io.Serializable;
 import lombok.Data;

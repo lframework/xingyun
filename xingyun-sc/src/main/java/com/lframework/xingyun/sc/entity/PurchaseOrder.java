@@ -3,8 +3,8 @@ package com.lframework.xingyun.sc.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.lframework.starter.web.dto.BaseDto;
-import com.lframework.starter.web.entity.BaseEntity;
+import com.lframework.starter.web.core.dto.BaseDto;
+import com.lframework.starter.web.core.entity.BaseEntity;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,106 +28,111 @@ public class PurchaseOrder extends BaseEntity implements BaseDto {
   /**
    * ID
    */
-  private String id;
+  protected String id;
 
   /**
    * 单号
    */
-  private String code;
+  protected String code;
 
   /**
    * 仓库ID
    */
-  private String scId;
+  protected String scId;
 
   /**
    * 供应商ID
    */
-  private String supplierId;
+  protected String supplierId;
 
   /**
    * 采购员ID
    */
-  private String purchaserId;
+  protected String purchaserId;
 
   /**
    * 预计到货日期
    */
-  private LocalDate expectArriveDate;
+  protected LocalDate expectArriveDate;
 
   /**
    * 采购数量
    */
-  private Integer totalNum;
+  protected Integer totalNum;
 
   /**
    * 赠品数量
    */
-  private Integer totalGiftNum;
+  protected Integer totalGiftNum;
 
   /**
    * 采购金额
    */
-  private BigDecimal totalAmount;
+  protected BigDecimal totalAmount;
 
   /**
    * 备注
    */
-  private String description;
+  protected String description;
 
   /**
    * 创建人ID 新增时赋值
    */
   @TableField(fill = FieldFill.INSERT)
-  private String createById;
+  protected String createById;
 
   /**
    * 创建人 新增时赋值
    */
   @TableField(fill = FieldFill.INSERT)
-  private String createBy;
+  protected String createBy;
 
   /**
    * 创建时间 新增时赋值
    */
   @TableField(fill = FieldFill.INSERT)
-  private LocalDateTime createTime;
+  protected LocalDateTime createTime;
 
   /**
    * 修改人 新增和修改时赋值
    */
   @TableField(fill = FieldFill.INSERT_UPDATE)
-  private String updateBy;
+  protected String updateBy;
 
   /**
    * 修改人ID 新增和修改时赋值
    */
   @TableField(fill = FieldFill.INSERT_UPDATE)
-  private String updateById;
+  protected String updateById;
 
   /**
    * 修改时间 新增和修改时赋值
    */
   @TableField(fill = FieldFill.INSERT_UPDATE)
-  private LocalDateTime updateTime;
+  protected LocalDateTime updateTime;
 
   /**
    * 审核人
    */
-  private String approveBy;
+  protected String approveBy;
 
   /**
    * 审核时间
    */
-  private LocalDateTime approveTime;
+  protected LocalDateTime approveTime;
 
   /**
    * 状态
    */
-  private PurchaseOrderStatus status;
+  protected PurchaseOrderStatus status;
 
   /**
    * 拒绝原因
    */
-  private String refuseReason;
+  protected String refuseReason;
+
+  /**
+   * 关联的审批流程ID
+   */
+  private Long flowInstanceId;
 }

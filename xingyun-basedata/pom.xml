@@ -17,9 +17,5 @@
             <groupId>com.lframework</groupId>
             <artifactId>xingyun-core</artifactId>
         </dependency>
-      <dependency>
-        <groupId>com.lframework</groupId>
-        <artifactId>xingyun-sys</artifactId>
-      </dependency>
     </dependencies>
 </project>

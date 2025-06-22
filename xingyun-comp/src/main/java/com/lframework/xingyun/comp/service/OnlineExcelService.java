@@ -1,7 +1,7 @@
 package com.lframework.xingyun.comp.service;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.comp.entity.OnlineExcel;
 import com.lframework.xingyun.comp.vo.sw.excel.BatchSendOnlineExcelVo;
 import com.lframework.xingyun.comp.vo.sw.excel.CreateOnlineExcelVo;

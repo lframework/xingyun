@@ -1,16 +1,17 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.OrderDataPermissionDataPermissionType;
+import com.lframework.starter.web.inner.components.permission.ProductDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustSheetVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -34,7 +35,7 @@ public interface StockAdjustSheetMapper extends BaseMapper<StockAdjustSheet> {
       @Sort(value = "updateTime", alias = "tb", autoParse = true),
       @Sort(value = "approveTime", alias = "tb", autoParse = true),
   })
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "tb")
   })
   List<StockAdjustSheet> query(@Param("vo") QueryStockAdjustSheetVo vo);
@@ -54,7 +55,7 @@ public interface StockAdjustSheetMapper extends BaseMapper<StockAdjustSheet> {
    * @param condition
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")
@@ -68,7 +69,7 @@ public interface StockAdjustSheetMapper extends BaseMapper<StockAdjustSheet> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")

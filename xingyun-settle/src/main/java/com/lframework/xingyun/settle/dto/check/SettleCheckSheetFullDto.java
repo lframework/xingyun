@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.dto.check;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetCalcType;

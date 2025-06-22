@@ -1,14 +1,14 @@
 package com.lframework.xingyun.basedata.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductSelectorVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.ProductDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,7 +28,7 @@ public interface ProductMapper extends BaseMapper<Product> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")
@@ -55,7 +55,7 @@ public interface ProductMapper extends BaseMapper<Product> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")

@@ -1,6 +1,6 @@
 package com.lframework.xingyun.comp.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.comp.entity.OnlineExcel;
 import com.lframework.xingyun.comp.vo.sw.excel.QueryOnlineExcelVo;
 import java.util.List;

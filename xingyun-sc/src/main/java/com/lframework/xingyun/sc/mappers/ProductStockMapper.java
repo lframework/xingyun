@@ -1,13 +1,13 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.ProductDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.math.BigDecimal;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -33,7 +33,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
       @Sort(value = "productCode", alias = "g.code"),
       @Sort(value = "stockNum", alias = "gs.stock_num"),
   })
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")

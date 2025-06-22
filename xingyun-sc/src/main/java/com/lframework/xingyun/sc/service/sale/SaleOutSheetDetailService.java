@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.service.sale;
 
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.SaleOutSheetDetail;
 import java.math.BigDecimal;
 import java.util.List;

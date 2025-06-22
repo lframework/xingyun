@@ -1,6 +1,6 @@
 package com.lframework.xingyun.comp.enums;
 
-import com.lframework.xingyun.core.enums.NodeType;
+import com.lframework.starter.web.inner.enums.system.NodeType;
 import java.io.Serializable;
 import org.springframework.stereotype.Component;
 

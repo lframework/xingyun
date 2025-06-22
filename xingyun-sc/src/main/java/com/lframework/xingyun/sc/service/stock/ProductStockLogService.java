@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.service.stock;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithAddStockVo;
 import com.lframework.xingyun.sc.vo.stock.log.AddLogWithSubStockVo;

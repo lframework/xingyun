@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.service.product;
 
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.vo.product.purchase.CreateProductPurchaseVo;
 import com.lframework.xingyun.basedata.vo.product.purchase.UpdateProductPurchaseVo;

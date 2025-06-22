@@ -1,8 +1,8 @@
 package com.lframework.xingyun.basedata.vo.product.info;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.BaseVo;
+import com.lframework.starter.web.core.vo.PageVo;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;

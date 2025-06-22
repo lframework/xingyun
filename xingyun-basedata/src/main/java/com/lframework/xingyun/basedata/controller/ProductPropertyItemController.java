@@ -2,12 +2,12 @@ package com.lframework.xingyun.basedata.controller;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.controller.DefaultBaseController;
-import com.lframework.starter.web.resp.InvokeResult;
-import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.security.HasPermission;
+import com.lframework.starter.web.core.controller.DefaultBaseController;
+import com.lframework.starter.web.core.components.resp.InvokeResult;
+import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
 import com.lframework.xingyun.basedata.bo.product.property.item.GetProductPropertyItemBo;
 import com.lframework.xingyun.basedata.bo.product.property.item.QueryProductPropertyItemBo;
 import com.lframework.xingyun.basedata.entity.ProductPropertyItem;

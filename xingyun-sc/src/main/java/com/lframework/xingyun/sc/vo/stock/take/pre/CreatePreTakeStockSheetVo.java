@@ -1,10 +1,10 @@
 package com.lframework.xingyun.sc.vo.stock.take.pre;
 
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.components.validation.TypeMismatch;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.components.validation.TypeMismatch;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;

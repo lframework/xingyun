@@ -1,10 +1,10 @@
 package com.lframework.xingyun.sc.bo.stock.warning;
 
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.ProductStockWarningNotify;
-import com.lframework.xingyun.template.inner.entity.SysNotifyGroup;
-import com.lframework.xingyun.template.inner.service.system.SysNotifyGroupService;
+import com.lframework.starter.web.inner.entity.SysNotifyGroup;
+import com.lframework.starter.web.inner.service.system.SysNotifyGroupService;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

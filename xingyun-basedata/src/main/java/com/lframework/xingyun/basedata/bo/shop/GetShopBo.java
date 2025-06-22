@@ -1,11 +1,11 @@
 package com.lframework.xingyun.basedata.bo.shop;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Shop;
-import com.lframework.xingyun.template.inner.entity.SysDept;
-import com.lframework.xingyun.template.inner.service.system.SysDeptService;
+import com.lframework.starter.web.inner.entity.SysDept;
+import com.lframework.starter.web.inner.service.system.SysDeptService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import lombok.Data;

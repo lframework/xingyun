@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum ProductStockBizType implements BaseEnum<Integer> {
   PURCHASE(1, "采购入库"), PURCHASE_RETURN(2, "采购退货出库"), SALE(3, "销售出库"), SALE_RETURN(4,

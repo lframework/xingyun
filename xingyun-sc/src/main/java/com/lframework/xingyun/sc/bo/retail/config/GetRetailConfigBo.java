@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.bo.retail.config;
 
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.sc.entity.RetailConfig;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

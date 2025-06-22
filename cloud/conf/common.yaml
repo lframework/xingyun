@@ -144,7 +144,7 @@ pagehelper:
   support-methods-arguments: false
 mybatis-plus:
   mapper-locations: classpath*:/mappers/**/*.xml
-  typeEnumsPackage: com.lframework.xingyun.**.enums
+  typeEnumsPackage: com.lframework.xingyun.**.enums,com.lframework.xingyun.**.enums
 
 op-logs:
   #是否开启
@@ -164,4 +164,3 @@ feign:
       default:
         connect-timeout: 500
         read-time-out: 60000
-

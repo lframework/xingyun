@@ -1,13 +1,12 @@
 package com.lframework.xingyun.basedata.service.member;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
 import com.lframework.xingyun.basedata.vo.member.UpdateMemberVo;
-import java.util.Collection;
 import java.util.List;
 
 public interface MemberService extends BaseMpService<Member> {

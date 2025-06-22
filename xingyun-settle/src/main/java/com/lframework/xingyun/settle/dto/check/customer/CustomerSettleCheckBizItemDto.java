@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.dto.check.customer;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.settle.enums.CustomerSettleCheckSheetBizType;
 import com.lframework.xingyun.settle.enums.CustomerSettleCheckSheetCalcType;
 import java.io.Serializable;

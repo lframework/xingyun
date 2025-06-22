@@ -1,9 +1,9 @@
 package com.lframework.xingyun.basedata.bo.print;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.JsonUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
+import com.lframework.starter.web.core.utils.JsonUtil;
 import com.lframework.xingyun.basedata.entity.PrintTemplate;
 import com.lframework.xingyun.basedata.service.print.PrintTemplateCompService;
 import io.swagger.annotations.ApiModelProperty;

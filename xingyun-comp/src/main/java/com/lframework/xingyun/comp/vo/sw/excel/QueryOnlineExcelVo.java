@@ -1,8 +1,8 @@
 package com.lframework.xingyun.comp.vo.sw.excel;
 
-import com.lframework.starter.web.components.validation.TypeMismatch;
-import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.core.components.validation.TypeMismatch;
+import com.lframework.starter.web.core.vo.BaseVo;
+import com.lframework.starter.web.core.vo.PageVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;

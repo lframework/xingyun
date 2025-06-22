@@ -7,26 +7,24 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.entity.StockAdjustReason;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
+import com.lframework.xingyun.sc.enums.StockAdjustOpLogType;
 import com.lframework.xingyun.sc.mappers.StockAdjustReasonMapper;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.CreateStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.QueryStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.StockAdjustReasonSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.UpdateStockAdjustReasonVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -77,7 +75,7 @@ public class StockAdjustReasonServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "停用库存调整原因，ID：{}", params = "#id")
+  @OpLog(type = StockAdjustOpLogType.class, name = "停用库存调整原因，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void unable(String id) {
@@ -87,7 +85,7 @@ public class StockAdjustReasonServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "启用库存调整原因，ID：{}", params = "#id")
+  @OpLog(type = StockAdjustOpLogType.class, name = "启用库存调整原因，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void enable(String id) {
@@ -97,7 +95,7 @@ public class StockAdjustReasonServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "新增库存调整原因，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = StockAdjustOpLogType.class, name = "新增库存调整原因，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -126,7 +124,7 @@ public class StockAdjustReasonServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = ScOpLogType.STOCK_ADJUST, name = "修改库存调整原因，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = StockAdjustOpLogType.class, name = "修改库存调整原因，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override

@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.dto.purchase;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -103,6 +103,11 @@ public class PurchaseOrderFullDto implements BaseDto, Serializable {
    * 拒绝原因
    */
   private String refuseReason;
+
+  /**
+   * 关联的审批流程ID
+   */
+  private Long flowInstanceId;
 
   /**
    * 订单明细

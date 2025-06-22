@@ -40,16 +40,6 @@
 
     <dependency>
       <groupId>com.lframework</groupId>
-      <artifactId>xingyun-sys</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.lframework</groupId>
-      <artifactId>xingyun-export</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.lframework</groupId>
       <artifactId>cloud-starter</artifactId>
     </dependency>
   </dependencies>

@@ -1,6 +1,6 @@
 package com.lframework.xingyun.comp.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.comp.entity.FileBox;
 import com.lframework.xingyun.comp.vo.sw.filebox.QueryFileBoxVo;
 import java.util.List;

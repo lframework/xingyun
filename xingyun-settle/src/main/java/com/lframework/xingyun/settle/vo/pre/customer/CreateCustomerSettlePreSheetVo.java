@@ -3,7 +3,7 @@ package com.lframework.xingyun.settle.vo.pre.customer;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.List;

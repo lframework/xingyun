@@ -1,6 +1,12 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.OrderDataPermissionDataPermissionType;
+import com.lframework.starter.web.inner.components.permission.ProductDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
@@ -9,11 +15,6 @@ import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailProductVo;
 import com.lframework.xingyun.sc.vo.retail.out.RetailOutSheetSelectorVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -38,7 +39,7 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
       @Sort(value = "createTime", alias = "s", autoParse = true),
       @Sort(value = "approveTime", alias = "s", autoParse = true),
   })
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "s")
   })
   List<RetailOutSheet> query(@Param("vo") QueryRetailOutSheetVo vo);
@@ -49,7 +50,7 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "s")
   })
   List<RetailOutSheet> selector(@Param("vo") RetailOutSheetSelectorVo vo);
@@ -77,7 +78,7 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "s")
   })
   List<RetailOutSheet> queryWithReturn(@Param("vo") QueryRetailOutSheetWithReturnVo vo,
@@ -89,7 +90,7 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param condition
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")
@@ -103,7 +104,7 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.PRODUCT, value = {
+  @DataPermissions(type = ProductDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "product", alias = "g"),
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")

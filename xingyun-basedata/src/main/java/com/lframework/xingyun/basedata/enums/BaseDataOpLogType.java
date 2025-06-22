@@ -1,7 +1,12 @@
 package com.lframework.xingyun.basedata.enums;
 
-public interface BaseDataOpLogType {
+import com.lframework.starter.web.core.components.oplog.OpLogType;
+import org.springframework.stereotype.Component;
 
-    // 基础信息
-    int BASE_DATA = 1000;
+@Component
+public class BaseDataOpLogType implements OpLogType {
+    @Override
+    public Integer getCode() {
+        return 1000;
+    }
 }

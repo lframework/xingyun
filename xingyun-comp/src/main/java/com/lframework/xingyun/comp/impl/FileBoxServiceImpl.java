@@ -11,16 +11,17 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.FileUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.security.SecurityUtil;
-import com.lframework.starter.web.components.upload.client.dto.UploadDto;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.SysConfService;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.utils.UploadUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.components.security.SecurityUtil;
+import com.lframework.starter.web.core.components.upload.client.dto.UploadDto;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.core.utils.UploadUtil;
+import com.lframework.starter.web.inner.service.RecursionMappingService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.comp.entity.FileBox;
 import com.lframework.xingyun.comp.enums.FileBoxFileType;
 import com.lframework.xingyun.comp.enums.FileBoxNodeType;
@@ -31,10 +32,6 @@ import com.lframework.xingyun.comp.vo.sw.filebox.CreateFileBoxDirVo;
 import com.lframework.xingyun.comp.vo.sw.filebox.QueryFileBoxVo;
 import com.lframework.xingyun.comp.vo.sw.filebox.UpdateFileBoxVo;
 import com.lframework.xingyun.comp.vo.sw.filebox.UploadFileBoxVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.service.RecursionMappingService;
-import com.lframework.xingyun.core.service.SecurityUploadRecordService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,9 +46,6 @@ public class FileBoxServiceImpl extends
 
   @Autowired
   private RecursionMappingService recursionMappingService;
-
-  @Autowired
-  private SecurityUploadRecordService securityUploadRecordService;
 
   @Override
   public PageResult<FileBox> query(Integer pageIndex, Integer pageSize, QueryFileBoxVo vo) {
@@ -77,7 +71,7 @@ public class FileBoxServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "修改文件，ID：{}", params = {"#id"})
+  @OpLog(type = SwOpLogType.class, name = "修改文件，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateFileBoxVo vo) {
@@ -100,7 +94,7 @@ public class FileBoxServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "删除文件，ID：{}", params = {"#id"})
+  @OpLog(type = SwOpLogType.class, name = "删除文件，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteById(String id) {
@@ -109,11 +103,11 @@ public class FileBoxServiceImpl extends
     delIds.add(id);
 
     List<String> childIds = recursionMappingService.getNodeChildIds(id,
-        ApplicationUtil.getBean(FileBoxNodeType.class));
+        FileBoxNodeType.class);
     delIds.addAll(childIds);
 
     recursionMappingService.deleteNodeAndChildren(id,
-        ApplicationUtil.getBean(FileBoxNodeType.class));
+        FileBoxNodeType.class);
 
     Wrapper<FileBox> deleteWrapper = Wrappers.lambdaQuery(FileBox.class)
         .in(FileBox::getId, delIds)
@@ -121,7 +115,7 @@ public class FileBoxServiceImpl extends
     this.remove(deleteWrapper);
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "创建文件夹，父级目录：{}，文件夹名称：{}", params = {
+  @OpLog(type = SwOpLogType.class, name = "创建文件夹，父级目录：{}，文件夹名称：{}", params = {
       "#vo.parentPath", "#vo.name"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -144,7 +138,7 @@ public class FileBoxServiceImpl extends
 
     if ("/".equals(vo.getParentPath())) {
       recursionMappingService.saveNode(dir.getId(),
-          ApplicationUtil.getBean(FileBoxNodeType.class));
+          FileBoxNodeType.class);
     } else {
       String path = vo.getParentPath().substring(0,
           vo.getParentPath().lastIndexOf("/") == 0 ? 1 : vo.getParentPath().lastIndexOf("/"));
@@ -159,15 +153,15 @@ public class FileBoxServiceImpl extends
       }
 
       List<String> parentIds = recursionMappingService.getNodeParentIds(fileBox.getId(),
-          ApplicationUtil.getBean(FileBoxNodeType.class));
+          FileBoxNodeType.class);
       parentIds.add(fileBox.getId());
 
       recursionMappingService.saveNode(dir.getId(),
-          ApplicationUtil.getBean(FileBoxNodeType.class), parentIds);
+          FileBoxNodeType.class, parentIds);
     }
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "上传文件，父级目录：{}，文件名称：{}", params = {
+  @OpLog(type = SwOpLogType.class, name = "上传文件，父级目录：{}，文件名称：{}", params = {
       "#vo.path", "#vo.name"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -176,8 +170,7 @@ public class FileBoxServiceImpl extends
     UploadDto uploadDto = UploadUtil.upload(file,
         CollectionUtil.toList("filebox", SecurityUtil.getCurrentUser().getId()), true);
 
-    String recordId = securityUploadRecordService.create(uploadDto.getUploadType(),
-        uploadDto.getObjectName());
+    String recordId = uploadDto.getSecurityUploadRecordId();
 
     FileBox record = new FileBox();
     record.setId(IdUtil.getId());
@@ -194,7 +187,7 @@ public class FileBoxServiceImpl extends
 
     if ("/".equals(vo.getPath())) {
       recursionMappingService.saveNode(record.getId(),
-          ApplicationUtil.getBean(FileBoxNodeType.class));
+          FileBoxNodeType.class);
     } else {
       String path = vo.getPath()
           .substring(0, vo.getPath().lastIndexOf("/") == 0 ? 1 : vo.getPath().lastIndexOf("/"));
@@ -209,11 +202,11 @@ public class FileBoxServiceImpl extends
       }
 
       List<String> parentIds = recursionMappingService.getNodeParentIds(fileBox.getId(),
-          ApplicationUtil.getBean(FileBoxNodeType.class));
+          FileBoxNodeType.class);
       parentIds.add(fileBox.getId());
 
       recursionMappingService.saveNode(record.getId(),
-          ApplicationUtil.getBean(FileBoxNodeType.class), parentIds);
+          FileBoxNodeType.class, parentIds);
     }
   }
 

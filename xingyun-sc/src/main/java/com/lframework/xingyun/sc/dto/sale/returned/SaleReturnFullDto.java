@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.dto.sale.returned;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.SaleReturnStatus;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import java.io.Serializable;

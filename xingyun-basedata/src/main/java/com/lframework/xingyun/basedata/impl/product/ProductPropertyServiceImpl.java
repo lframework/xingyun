@@ -11,13 +11,12 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
@@ -35,9 +34,9 @@ import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.UpdateProductPropertyVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.service.RecursionMappingService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.inner.service.RecursionMappingService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -93,7 +92,7 @@ public class ProductPropertyServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品属性，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "停用商品属性，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void unable(String id) {
@@ -103,7 +102,7 @@ public class ProductPropertyServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品属性，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "启用商品属性，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void enable(String id) {
@@ -125,7 +124,7 @@ public class ProductPropertyServiceImpl extends
     for (String categoryId : categoryIds) {
 
       List<String> children = recursionMappingService.getNodeChildIds(categoryId,
-          ApplicationUtil.getBean(ProductCategoryNodeType.class));
+          ProductCategoryNodeType.class);
       if (!CollectionUtil.isEmpty(children)) {
         childCategoryIds.addAll(children);
       }
@@ -138,7 +137,7 @@ public class ProductPropertyServiceImpl extends
     return results;
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品属性，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增商品属性，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -205,7 +204,7 @@ public class ProductPropertyServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品属性，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "修改商品属性，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -350,7 +349,7 @@ public class ProductPropertyServiceImpl extends
   public List<ProductPropertyModelorDto> getModelorByCategoryId(String categoryId) {
 
     List<String> parentCategoryIds = recursionMappingService.getNodeParentIds(categoryId,
-        ApplicationUtil.getBean(ProductCategoryNodeType.class));
+        ProductCategoryNodeType.class);
     List<String> categoryIds = new ArrayList<>(parentCategoryIds);
     categoryIds.add(categoryId);
     List<ProductPropertyModelorDto> datas = getBaseMapper().getModelorByCategoryId(categoryIds);

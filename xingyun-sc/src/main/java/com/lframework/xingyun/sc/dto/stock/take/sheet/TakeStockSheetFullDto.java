@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.dto.stock.take.sheet;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.TakeStockSheetStatus;
 import java.io.Serializable;
 import java.time.LocalDateTime;

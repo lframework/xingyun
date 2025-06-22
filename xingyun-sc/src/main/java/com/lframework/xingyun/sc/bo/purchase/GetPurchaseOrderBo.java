@@ -6,8 +6,8 @@ import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
@@ -18,7 +18,7 @@ import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
-import com.lframework.xingyun.template.inner.service.system.SysUserService;
+import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -152,6 +152,12 @@ public class GetPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
    */
   @ApiModelProperty("拒绝原因")
   private String refuseReason;
+
+  /**
+   * 关联的审批流程ID
+   */
+  @ApiModelProperty(value = "关联的审批流程ID")
+  private String flowInstanceId;
 
   /**
    * 订单明细

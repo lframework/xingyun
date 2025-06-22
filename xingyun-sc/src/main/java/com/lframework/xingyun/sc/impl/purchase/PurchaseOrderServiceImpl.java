@@ -4,32 +4,46 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
+import com.lframework.starter.bpm.dto.FlowInstanceExtDto;
+import com.lframework.starter.bpm.enums.FlowDefinitionExtBizType;
+import com.lframework.starter.bpm.listeners.BpmBizListener;
+import com.lframework.starter.bpm.service.FlowInstanceWrapperService;
+import com.lframework.starter.bpm.transfers.FlowCuInstanceTransfer;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.BeanUtil;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.security.SecurityUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.components.security.SecurityUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.JsonUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.CancelApproveOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
+import com.lframework.starter.web.inner.entity.SysUser;
+import com.lframework.starter.web.inner.service.GenerateCodeService;
+import com.lframework.starter.web.inner.service.system.SysUserService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
-import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
-import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
-import com.lframework.xingyun.core.service.GenerateCodeService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.xingyun.sc.bo.purchase.GetPurchaseOrderBo;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
@@ -38,9 +52,13 @@ import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
+import com.lframework.xingyun.sc.entity.PurchaseOrderDetailForm;
+import com.lframework.xingyun.sc.entity.PurchaseOrderForm;
+import com.lframework.xingyun.sc.enums.PurchaseOpLogType;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.events.order.impl.ApprovePassPurchaseOrderEvent;
+import com.lframework.xingyun.sc.mappers.PurchaseOrderDetailFormMapper;
+import com.lframework.xingyun.sc.mappers.PurchaseOrderFormMapper;
 import com.lframework.xingyun.sc.mappers.PurchaseOrderMapper;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
@@ -55,19 +73,26 @@ import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseOrderWithReceiveVo;
 import com.lframework.xingyun.sc.vo.purchase.QueryPurchaseProductVo;
 import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
-import com.lframework.xingyun.template.inner.entity.SysUser;
-import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.dromara.warm.flow.core.dto.FlowParams;
+import org.dromara.warm.flow.core.entity.Instance;
+import org.dromara.warm.flow.core.listener.ListenerVariable;
+import org.dromara.warm.flow.core.service.InsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMapper, PurchaseOrder>
     implements PurchaseOrderService {
+
+  private static final String BPM_FLAG = "PurchaseOrder";
 
   @Autowired
   private PurchaseOrderDetailService purchaseOrderDetailService;
@@ -92,6 +117,18 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
   @Autowired
   private OrderPayTypeService orderPayTypeService;
+
+  @Autowired
+  private InsService insService;
+
+  @Autowired
+  private PurchaseOrderFormMapper purchaseOrderFormMapper;
+
+  @Autowired
+  private PurchaseOrderDetailFormMapper purchaseOrderDetailFormMapper;
+
+  @Autowired
+  private FlowInstanceWrapperService flowInstanceWrapperService;
 
   @Override
   public PageResult<PurchaseOrder> query(Integer pageIndex, Integer pageSize,
@@ -126,9 +163,12 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   }
 
   @Override
-  public PurchaseOrderFullDto getDetail(String id) {
+  public PurchaseOrderFullDto getDetail(String id, Boolean isForm) {
+    if (isForm == null) {
+      isForm = false;
+    }
 
-    PurchaseOrderFullDto order = getBaseMapper().getDetail(id);
+    PurchaseOrderFullDto order = getBaseMapper().getDetail(id, isForm);
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -165,21 +205,29 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
-  @OpLog(type = ScOpLogType.PURCHASE, name = "创建订单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建订单")
+  @OpLog(type = PurchaseOpLogType.class, name = "创建订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = CreateOrderTimeLineBizType.class, orderId = "#_result", name = "创建订单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreatePurchaseOrderVo vo) {
 
-    PurchaseOrder order = new PurchaseOrder();
+    PurchaseConfig config = purchaseConfigService.get();
+
+    PurchaseOrder order = newOrder(config.getPurchaseRequireBpm());
     order.setId(IdUtil.getId());
     order.setCode(generateCodeService.generate(GenerateCodeTypePool.PURCHASE_ORDER));
 
-    this.create(order, vo);
+    this.create(order, vo, config.getPurchaseRequireBpm());
 
     order.setStatus(PurchaseOrderStatus.CREATED);
 
-    getBaseMapper().insert(order);
+    if (config.getPurchaseRequireBpm()) {
+      purchaseOrderFormMapper.insert((PurchaseOrderForm) order);
+      Instance instance = this.startBpmInstance(config.getPurchaseBpmProcessCode(), order.getId());
+      order.setFlowInstanceId(instance.getId());
+    } else {
+      getBaseMapper().insert(order);
+    }
 
     OpLogUtil.setVariable("code", order.getCode());
     OpLogUtil.setExtra(vo);
@@ -187,13 +235,14 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     return order.getId();
   }
 
-  @OpLog(type = ScOpLogType.PURCHASE, name = "修改订单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改订单")
+  @OpLog(type = PurchaseOpLogType.class, name = "修改订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = UpdateOrderTimeLineBizType.class, orderId = "#vo.id", name = "修改订单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdatePurchaseOrderVo vo) {
 
-    PurchaseOrder order = getBaseMapper().selectById(vo.getId());
+    PurchaseOrder order = vo.getIsForm() ? purchaseOrderFormMapper.selectById(vo.getId())
+        : getBaseMapper().selectById(vo.getId());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
     }
@@ -209,12 +258,19 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     }
 
     // 删除订单明细
-    Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-            PurchaseOrderDetail.class)
-        .eq(PurchaseOrderDetail::getOrderId, order.getId());
-    purchaseOrderDetailService.remove(deleteDetailWrapper);
+    if (vo.getIsForm()) {
+      Wrapper<PurchaseOrderDetailForm> deleteDetailWrapper = Wrappers.lambdaQuery(
+              PurchaseOrderDetailForm.class)
+          .eq(PurchaseOrderDetailForm::getOrderId, order.getId());
+      purchaseOrderDetailFormMapper.delete(deleteDetailWrapper);
+    } else {
+      Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
+              PurchaseOrderDetail.class)
+          .eq(PurchaseOrderDetail::getOrderId, order.getId());
+      purchaseOrderDetailService.remove(deleteDetailWrapper);
+    }
 
-    this.create(order, vo);
+    this.create(order, vo, vo.getIsForm());
 
     order.setStatus(PurchaseOrderStatus.CREATED);
 
@@ -222,21 +278,51 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     statusList.add(PurchaseOrderStatus.CREATED);
     statusList.add(PurchaseOrderStatus.APPROVE_REFUSE);
 
-    Wrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(PurchaseOrder.class)
-        .set(PurchaseOrder::getApproveBy, null).set(PurchaseOrder::getApproveTime, null)
-        .set(PurchaseOrder::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(PurchaseOrder::getId, order.getId())
-        .in(PurchaseOrder::getStatus, statusList);
-    if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
-      throw new DefaultClientException("订单信息已过期，请刷新重试！");
+    if (vo.getIsForm()) {
+      PurchaseConfig config = purchaseConfigService.get();
+      if (!config.getPurchaseRequireBpm()) {
+        throw new DefaultClientException("已关闭审批流程，无法重新发起该订单！");
+      }
+      if (!flowInstanceWrapperService.canRestart(order.getId())) {
+        throw new DefaultClientException("订单不允许重新发起！");
+      }
+      LambdaUpdateWrapper<PurchaseOrderForm> updateOrderWrapper = Wrappers.lambdaUpdate(
+              PurchaseOrderForm.class)
+          .set(PurchaseOrderForm::getApproveBy, null).set(PurchaseOrderForm::getApproveTime, null)
+          .set(PurchaseOrderForm::getRefuseReason, StringPool.EMPTY_STR)
+          .eq(PurchaseOrderForm::getId, order.getId())
+          .in(PurchaseOrderForm::getStatus, statusList);
+
+      if (purchaseOrderFormMapper.updateAllColumn((PurchaseOrderForm) order, updateOrderWrapper)
+          != 1) {
+        throw new DefaultClientException("订单信息已过期，请刷新重试！");
+      }
+
+      Instance instance = this.startBpmInstance(config.getPurchaseBpmProcessCode(), order.getId());
+      updateOrderWrapper = Wrappers.lambdaUpdate(
+              PurchaseOrderForm.class)
+          .set(PurchaseOrderForm::getFlowInstanceId, instance.getId())
+          .eq(PurchaseOrderForm::getId, order.getId());
+      purchaseOrderFormMapper.update(updateOrderWrapper);
+    } else {
+      LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
+              PurchaseOrder.class)
+          .set(PurchaseOrder::getApproveBy, null).set(PurchaseOrder::getApproveTime, null)
+          .set(PurchaseOrder::getRefuseReason, StringPool.EMPTY_STR)
+          .eq(PurchaseOrder::getId, order.getId())
+          .in(PurchaseOrder::getStatus, statusList);
+
+      if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
+        throw new DefaultClientException("订单信息已过期，请刷新重试！");
+      }
     }
 
     OpLogUtil.setVariable("code", order.getCode());
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.PURCHASE, name = "审核通过订单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
+  @OpLog(type = PurchaseOpLogType.class, name = "审核通过订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassPurchaseOrderVo vo) {
@@ -268,9 +354,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
         .eq(PurchaseOrder::getId, order.getId())
         .in(PurchaseOrder::getStatus, statusList);
-    if (!StringUtil.isBlank(vo.getDescription())) {
-      updateOrderWrapper.set(PurchaseOrder::getDescription, vo.getDescription());
-    }
+
     if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
     }
@@ -289,7 +373,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   }
 
   @Transactional(rollbackFor = Exception.class)
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Override
   public String directApprovePass(CreatePurchaseOrderVo vo) {
 
@@ -299,15 +383,14 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     ApprovePassPurchaseOrderVo approvePassPurchaseOrderVo = new ApprovePassPurchaseOrderVo();
     approvePassPurchaseOrderVo.setId(orderId);
-    approvePassPurchaseOrderVo.setDescription(vo.getDescription());
 
     thisService.approvePass(approvePassPurchaseOrderVo);
 
     return orderId;
   }
 
-  @OpLog(type = ScOpLogType.PURCHASE, name = "审核拒绝订单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
+  @OpLog(type = PurchaseOpLogType.class, name = "审核拒绝订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefusePurchaseOrderVo vo) {
@@ -347,7 +430,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.PURCHASE, name = "删除订单，单号：{}", params = "#code")
+  @OpLog(type = PurchaseOpLogType.class, name = "删除订单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -389,8 +472,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     OpLogUtil.setVariable("code", order.getCode());
   }
 
-  @OpLog(type = ScOpLogType.PURCHASE, name = "取消审核订单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.CANCEL_APPROVE, orderId = "#id", name = "取消审核")
+  @OpLog(type = PurchaseOpLogType.class, name = "取消审核订单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = CancelApproveOrderTimeLineBizType.class, orderId = "#id", name = "取消审核")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void cancelApprovePass(String id) {
@@ -421,7 +504,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     OpLogUtil.setVariable("code", order.getCode());
   }
 
-  private void create(PurchaseOrder order, CreatePurchaseOrderVo vo) {
+  private void create(PurchaseOrder order, CreatePurchaseOrderVo vo, boolean isForm) {
 
     StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
@@ -464,7 +547,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       totalAmount = NumberUtil.add(totalAmount,
           NumberUtil.mul(productVo.getPurchasePrice(), productVo.getPurchaseNum()));
 
-      PurchaseOrderDetail orderDetail = new PurchaseOrderDetail();
+      PurchaseOrderDetail orderDetail = newOrderDetail(isForm);
       orderDetail.setId(IdUtil.getId());
       orderDetail.setOrderId(order.getId());
 
@@ -487,7 +570,12 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
               : productVo.getDescription());
       orderDetail.setOrderNo(orderNo);
 
-      purchaseOrderDetailService.save(orderDetail);
+      if (isForm) {
+        purchaseOrderDetailFormMapper.insert((PurchaseOrderDetailForm) orderDetail);
+      } else {
+        purchaseOrderDetailService.save(orderDetail);
+      }
+
       orderNo++;
     }
     order.setTotalNum(purchaseNum);
@@ -547,5 +635,110 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     ApprovePassPurchaseOrderEvent event = new ApprovePassPurchaseOrderEvent(this, dto);
 
     ApplicationUtil.publishEvent(event);
+  }
+
+  /**
+   * 发起流程实例
+   *
+   * @param processCode
+   * @param businessId
+   * @return
+   */
+  private Instance startBpmInstance(String processCode, String businessId) {
+    if (this.getById(businessId) != null) {
+      throw new DefaultClientException("订单已办理完成，无法重新发起！");
+    }
+    FlowParams flowParams = new FlowParams();
+    flowParams.flowCode(processCode);
+
+    String title = this.getBpmTitle(businessId);
+    FlowCuInstanceTransfer.setTitle(title);
+
+    FlowInstanceExtDto ext = new FlowInstanceExtDto();
+    ext.setBizType(FlowDefinitionExtBizType.SYSTEM.getCode());
+    ext.setBizFlag(BPM_FLAG);
+
+    flowParams.ext(JsonUtil.toJsonString(ext));
+
+    // 需要传入表单变量
+    GetPurchaseOrderBo detail = new GetPurchaseOrderBo(this.getDetail(businessId, true));
+    flowParams.variable(
+        JsonUtil.parseMap(JsonUtil.toJsonString(detail), String.class, Object.class));
+
+    Instance instance = insService.start(businessId, flowParams);
+
+    return instance;
+  }
+
+  @Slf4j
+  @Component
+  public static class PurchaseOrderBpmListener implements BpmBizListener {
+
+    @Autowired
+    private PurchaseOrderService purchaseOrderService;
+    @Autowired
+    private PurchaseOrderFormMapper purchaseOrderFormMapper;
+    @Autowired
+    private PurchaseOrderDetailFormMapper purchaseOrderDetailFormMapper;
+    @Autowired
+    private PurchaseOrderDetailService purchaseOrderDetailService;
+
+    @Override
+    public boolean isMatch(FlowInstanceExtDto ext) {
+      return BPM_FLAG.equals(ext.getBizFlag());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void businessComplete(ListenerVariable listenerVariable, String businessId,
+        String startById) {
+      log.info("接收到业务完成事件");
+      PurchaseOrderForm orderForm = purchaseOrderFormMapper.selectById(businessId);
+      Wrapper<PurchaseOrderDetailForm> queryWrapper = Wrappers.lambdaQuery(
+              PurchaseOrderDetailForm.class)
+          .eq(PurchaseOrderDetailForm::getOrderId, orderForm.getId());
+      List<PurchaseOrderDetailForm> detailFormList = purchaseOrderDetailFormMapper.selectList(
+          queryWrapper);
+
+      PurchaseOrder order = new PurchaseOrder();
+      BeanUtil.copyProperties(orderForm, order);
+
+      List<PurchaseOrderDetail> detailList = detailFormList.stream().map(detailForm -> {
+        PurchaseOrderDetail detail = new PurchaseOrderDetail();
+        BeanUtil.copyProperties(detailForm, detail);
+        return detail;
+      }).collect(Collectors.toList());
+
+      purchaseOrderService.save(order);
+
+      purchaseOrderDetailService.saveBatch(detailList);
+
+      // 目前订单是已保存状态
+      ApprovePassPurchaseOrderVo approveVo = new ApprovePassPurchaseOrderVo();
+      approveVo.setId(order.getId());
+
+      purchaseOrderService.approvePass(approveVo);
+    }
+  }
+
+  // 扩展点，可以自定义标题
+  private String getBpmTitle(String orderId) {
+    return "";
+  }
+
+  private PurchaseOrder newOrder(boolean isForm) {
+    if (isForm) {
+      return new PurchaseOrderForm();
+    } else {
+      return new PurchaseOrder();
+    }
+  }
+
+  private PurchaseOrderDetail newOrderDetail(boolean isForm) {
+    if (isForm) {
+      return new PurchaseOrderDetailForm();
+    } else {
+      return new PurchaseOrderDetail();
+    }
   }
 }

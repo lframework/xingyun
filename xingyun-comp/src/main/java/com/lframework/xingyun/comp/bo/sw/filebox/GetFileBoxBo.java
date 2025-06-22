@@ -2,8 +2,8 @@ package com.lframework.xingyun.comp.bo.sw.filebox;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.web.annotations.convert.EnumConvert;
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.annotations.convert.EnumConvert;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.comp.entity.FileBox;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;

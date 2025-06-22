@@ -1,9 +1,9 @@
 package com.lframework.xingyun.sc.vo.stock.take.plan;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.components.validation.TypeMismatch;
-import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.components.validation.TypeMismatch;
+import com.lframework.starter.web.core.vo.BaseVo;
+import com.lframework.starter.web.core.vo.PageVo;
 import com.lframework.xingyun.sc.enums.TakeStockPlanStatus;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import io.swagger.annotations.ApiModelProperty;

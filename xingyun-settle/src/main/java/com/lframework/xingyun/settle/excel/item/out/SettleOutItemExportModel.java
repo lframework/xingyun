@@ -1,8 +1,8 @@
 package com.lframework.xingyun.settle.excel.item.out;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.components.excel.ExcelModel;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.components.excel.ExcelModel;
 import com.lframework.xingyun.settle.entity.SettleOutItem;
 import lombok.Data;
 

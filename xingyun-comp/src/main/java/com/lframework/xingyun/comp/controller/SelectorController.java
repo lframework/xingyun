@@ -1,12 +1,12 @@
 package com.lframework.xingyun.comp.controller;
 
 import com.lframework.starter.common.utils.CollectionUtil;
-import com.lframework.starter.web.controller.DefaultBaseController;
-import com.lframework.starter.web.resp.InvokeResult;
-import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.core.controller.DefaultBaseController;
+import com.lframework.starter.web.core.components.resp.InvokeResult;
+import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
 import com.lframework.xingyun.comp.bo.dic.CitySelectorBo;
-import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
-import com.lframework.xingyun.core.service.DicCityService;
+import com.lframework.starter.web.inner.dto.dic.city.DicCityDto;
+import com.lframework.starter.web.inner.service.DicCityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;

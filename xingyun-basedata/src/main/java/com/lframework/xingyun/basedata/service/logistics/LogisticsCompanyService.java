@@ -1,13 +1,12 @@
 package com.lframework.xingyun.basedata.service.logistics;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
 import com.lframework.xingyun.basedata.vo.logistics.company.CreateLogisticsCompanyVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanySelectorVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanyVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.UpdateLogisticsCompanyVo;
-import java.util.Collection;
 import java.util.List;
 
 public interface LogisticsCompanyService extends BaseMpService<LogisticsCompany> {

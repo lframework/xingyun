@@ -2,7 +2,7 @@ package com.lframework.xingyun.sc.bo.stock.adjust.stock.reason;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.sc.entity.StockAdjustReason;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;

@@ -2,10 +2,10 @@ package com.lframework.xingyun.basedata.impl.product;
 
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductSale;
 import com.lframework.xingyun.basedata.mappers.ProductSaleMapper;
 import com.lframework.xingyun.basedata.service.product.ProductSaleService;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductSaleServiceImpl extends BaseMpServiceImpl<ProductSaleMapper, ProductSale>
     implements ProductSaleService {
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
+  @OpLog(type = BaseDataOpLogType.class, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductSaleVo vo) {
@@ -36,7 +36,7 @@ public class ProductSaleServiceImpl extends BaseMpServiceImpl<ProductSaleMapper,
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
+  @OpLog(type = BaseDataOpLogType.class, name = "设置商品销售价，ID：{}, 销售价：{}", params = {"#vo.id", "#vo.price"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductSaleVo vo) {

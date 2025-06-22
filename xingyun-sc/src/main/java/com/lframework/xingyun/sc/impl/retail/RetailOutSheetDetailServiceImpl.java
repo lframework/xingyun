@@ -6,7 +6,7 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductService;

@@ -2,8 +2,8 @@ package com.lframework.xingyun.sc.vo.stock.adjust.stock;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.NumberUtil;
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;

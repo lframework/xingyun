@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.vo.check.customer;
 
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;

@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.events.stock;
 
-import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
+import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
 import org.springframework.context.ApplicationEvent;
 
 /**

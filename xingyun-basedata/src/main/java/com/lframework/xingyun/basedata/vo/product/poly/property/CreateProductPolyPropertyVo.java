@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.vo.product.poly.property;
 
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;

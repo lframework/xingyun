@@ -1,13 +1,12 @@
 package com.lframework.xingyun.basedata.service.customer;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerSelectorVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.UpdateCustomerVo;
-import java.util.Collection;
 import java.util.List;
 
 public interface CustomerService extends BaseMpService<Customer> {

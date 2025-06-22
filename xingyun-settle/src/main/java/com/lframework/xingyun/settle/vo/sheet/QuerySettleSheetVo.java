@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.vo.sheet;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.PageVo;
 import com.lframework.xingyun.settle.enums.SettleSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;

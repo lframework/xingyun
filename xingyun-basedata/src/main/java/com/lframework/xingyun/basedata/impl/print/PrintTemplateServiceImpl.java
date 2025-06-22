@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.PrintTemplate;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.mappers.PrintTemplateMapper;
@@ -18,11 +18,9 @@ import com.lframework.xingyun.basedata.vo.print.QueryPrintTemplateVo;
 import com.lframework.xingyun.basedata.vo.print.UpdatePrintTemplateDemoDataVo;
 import com.lframework.xingyun.basedata.vo.print.UpdatePrintTemplateSettingVo;
 import com.lframework.xingyun.basedata.vo.print.UpdatePrintTemplateVo;
-import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import java.io.Serializable;
 import java.util.List;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +51,7 @@ public class PrintTemplateServiceImpl extends
     return getById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增打印模板，名称：{}", params = {"#vo.name"})
+  @OpLog(type = BaseDataOpLogType.class, name = "新增打印模板，名称：{}", params = {"#vo.name"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public Integer create(CreatePrintTemplateVo vo) {
@@ -71,7 +69,7 @@ public class PrintTemplateServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改打印模板，ID：{}，名称：{}", params = {
+  @OpLog(type = BaseDataOpLogType.class, name = "修改打印模板，ID：{}，名称：{}", params = {
       "#vo.id", "#vo.name"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -93,7 +91,7 @@ public class PrintTemplateServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改打印模板设置，ID：{}", params = {
+  @OpLog(type = BaseDataOpLogType.class, name = "修改打印模板设置，ID：{}", params = {
       "#vo.id"}, autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -110,7 +108,7 @@ public class PrintTemplateServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改打印模板示例数据，ID：{}", params = {
+  @OpLog(type = BaseDataOpLogType.class, name = "修改打印模板示例数据，ID：{}", params = {
       "#vo.id"}, autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

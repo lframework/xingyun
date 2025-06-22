@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.bo.paytype;
 
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
 import com.lframework.xingyun.sc.entity.OrderPayType;

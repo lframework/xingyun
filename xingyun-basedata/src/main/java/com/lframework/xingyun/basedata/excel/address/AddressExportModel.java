@@ -1,9 +1,9 @@
 package com.lframework.xingyun.basedata.excel.address;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.components.excel.ExcelModel;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
+import com.lframework.starter.web.core.components.excel.ExcelModel;
 import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Member;
@@ -16,8 +16,8 @@ import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
-import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
-import com.lframework.xingyun.core.service.DicCityService;
+import com.lframework.starter.web.inner.dto.dic.city.DicCityDto;
+import com.lframework.starter.web.inner.service.DicCityService;
 import lombok.Data;
 
 @Data

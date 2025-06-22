@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum CustomerSettleCheckSheetCalcType implements BaseEnum<Integer> {
   ADD(1, "加"), SUB(2, "减");

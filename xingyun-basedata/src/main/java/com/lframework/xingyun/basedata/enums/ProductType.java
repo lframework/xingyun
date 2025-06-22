@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum ProductType implements BaseEnum<Integer> {
   NORMAL(1, "普通商品"), BUNDLE(2, "组合商品");

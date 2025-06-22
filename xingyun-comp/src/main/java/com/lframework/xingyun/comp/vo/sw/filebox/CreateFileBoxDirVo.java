@@ -1,7 +1,7 @@
 package com.lframework.xingyun.comp.vo.sw.filebox;
 
-import com.lframework.starter.web.components.validation.Pattern;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.components.validation.Pattern;
+import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;

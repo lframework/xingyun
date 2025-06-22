@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum PropertyType implements BaseEnum<Integer> {
   COMMON(1, "通用属性"), APPOINT(2, "指定分类属性"), NONE(3, "无");

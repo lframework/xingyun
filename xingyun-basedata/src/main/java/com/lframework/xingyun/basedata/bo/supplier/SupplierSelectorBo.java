@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.bo.supplier;
 
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

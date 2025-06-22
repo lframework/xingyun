@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.retail.out;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.PageVo;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;

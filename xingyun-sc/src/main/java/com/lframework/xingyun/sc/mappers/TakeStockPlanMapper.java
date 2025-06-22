@@ -1,16 +1,16 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.OrderDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -34,7 +34,7 @@ public interface TakeStockPlanMapper extends BaseMapper<TakeStockPlan> {
       @Sort(value = "createTime", alias = "tb", autoParse = true),
       @Sort(value = "updateTime", alias = "tb", autoParse = true),
   })
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "tb")
   })
   List<TakeStockPlan> query(@Param("vo") QueryTakeStockPlanVo vo);
@@ -45,7 +45,7 @@ public interface TakeStockPlanMapper extends BaseMapper<TakeStockPlan> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "tb")
   })
   List<TakeStockPlan> selector(@Param("vo") TakeStockPlanSelectorVo vo);

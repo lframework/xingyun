@@ -1,15 +1,15 @@
 package com.lframework.xingyun.settle.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.OrderDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.dto.fee.customer.CustomerSettleFeeSheetFullDto;
 import com.lframework.xingyun.settle.entity.CustomerSettleFeeSheet;
 import com.lframework.xingyun.settle.vo.fee.customer.QueryCustomerSettleFeeSheetVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -35,7 +35,7 @@ public interface CustomerSettleFeeSheetMapper extends BaseMapper<CustomerSettleF
         @Sort(value = "createTime", alias = "s", autoParse = true),
         @Sort(value = "approveTime", alias = "s", autoParse = true),
     })
-    @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+    @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
         @DataPermission(template = "order", alias = "s")
     })
     List<CustomerSettleFeeSheet> query(@Param("vo") QueryCustomerSettleFeeSheetVo vo);

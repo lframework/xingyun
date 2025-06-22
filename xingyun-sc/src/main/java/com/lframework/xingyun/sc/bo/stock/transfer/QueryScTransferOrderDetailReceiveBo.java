@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.bo.stock.transfer;
 
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.sc.entity.ScTransferOrderDetailReceive;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.transfer;
 
-import com.lframework.starter.web.components.validation.TypeMismatch;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.components.validation.TypeMismatch;
+import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.List;

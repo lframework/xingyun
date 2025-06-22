@@ -1,6 +1,6 @@
 package com.lframework.xingyun.chart.dto;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.Data;

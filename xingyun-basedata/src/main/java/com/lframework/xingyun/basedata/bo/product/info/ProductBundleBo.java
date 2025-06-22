@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.bo.product.info;
 
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;

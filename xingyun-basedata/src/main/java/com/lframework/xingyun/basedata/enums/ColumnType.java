@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum ColumnType implements BaseEnum<Integer> {
   MULTIPLE(1, "多选"), SINGLE(2, "单选"), CUSTOM(3, "手动录入");

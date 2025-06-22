@@ -3,14 +3,14 @@ package com.lframework.xingyun.sc.bo.purchase;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
-import com.lframework.xingyun.template.inner.service.system.SysUserService;
+import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -86,6 +86,12 @@ public class QueryPurchaseOrderBo extends BaseBo<PurchaseOrder> {
    */
   @ApiModelProperty("采购金额")
   private BigDecimal totalAmount;
+
+  /**
+   * 关联的审批流程ID
+   */
+  @ApiModelProperty("关联的审批流程ID")
+  private String flowInstanceId;
 
   /**
    * 备注

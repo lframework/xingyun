@@ -24,18 +24,16 @@
         <module>xingyun-sc</module>
         <module>xingyun-chart</module>
         <module>xingyun-settle</module>
-        <module>xingyun-sys</module>
         <module>cloud/xingyun-cloud-api</module>
         <module>xingyun-comp</module>
         <module>cloud/xingyun-cloud-gateway</module>
-      <module>xingyun-export</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <xingyun.version>1.0.0-SNAPSHOT</xingyun.version>
-        <jugg.version>3.1.8</jugg.version>
+        <jugg.version>4.0.0</jugg.version>
     </properties>
 
     <dependencyManagement>
@@ -79,19 +77,7 @@
 
             <dependency>
                 <groupId>com.lframework</groupId>
-                <artifactId>xingyun-sys</artifactId>
-                <version>${xingyun.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.lframework</groupId>
                 <artifactId>xingyun-settle</artifactId>
-                <version>${xingyun.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.lframework</groupId>
-                <artifactId>xingyun-export</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
 

@@ -9,12 +9,12 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.ManageType;
@@ -25,10 +25,10 @@ import com.lframework.xingyun.basedata.vo.supplier.CreateSupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierSelectorVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.UpdateSupplierVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
-import com.lframework.xingyun.core.service.DicCityService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.inner.dto.dic.city.DicCityDto;
+import com.lframework.starter.web.inner.service.DicCityService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用供应商，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "停用供应商，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void unable(String id) {
@@ -79,7 +79,7 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用供应商，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "启用供应商，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void enable(String id) {
@@ -89,7 +89,7 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增供应商，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增供应商，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -167,7 +167,7 @@ public class SupplierServiceImpl extends BaseMpServiceImpl<SupplierMapper, Suppl
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改供应商，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "修改供应商，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override

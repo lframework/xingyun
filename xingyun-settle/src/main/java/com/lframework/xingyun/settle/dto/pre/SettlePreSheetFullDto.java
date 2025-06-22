@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.dto.pre;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.enums.SettlePreSheetStatus;
 import java.io.Serializable;

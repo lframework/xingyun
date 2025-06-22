@@ -1,8 +1,8 @@
 package com.lframework.xingyun.basedata.vo.customer;
 
-import com.lframework.starter.web.components.validation.IsCode;
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.components.validation.IsCode;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;

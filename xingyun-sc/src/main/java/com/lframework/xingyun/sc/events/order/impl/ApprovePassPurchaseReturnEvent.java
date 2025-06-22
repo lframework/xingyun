@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.events.order.impl;
 
-import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
-import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto.OrderType;
+import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
+import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto.OrderType;
 import com.lframework.xingyun.sc.events.order.ApprovePassOrderEvent;
 
 public class ApprovePassPurchaseReturnEvent extends ApprovePassOrderEvent {

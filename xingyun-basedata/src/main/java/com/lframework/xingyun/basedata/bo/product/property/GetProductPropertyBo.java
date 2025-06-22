@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.bo.product.property;
 
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.enums.PropertyType;

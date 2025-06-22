@@ -1,13 +1,12 @@
 package com.lframework.xingyun.basedata.service.supplier;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.vo.supplier.CreateSupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierSelectorVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.UpdateSupplierVo;
-import java.util.Collection;
 import java.util.List;
 
 public interface SupplierService extends BaseMpService<Supplier> {

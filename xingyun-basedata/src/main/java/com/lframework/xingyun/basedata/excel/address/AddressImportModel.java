@@ -2,8 +2,8 @@ package com.lframework.xingyun.basedata.excel.address;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.lframework.starter.web.annotations.excel.ExcelRequired;
-import com.lframework.starter.web.components.excel.ExcelModel;
+import com.lframework.starter.web.core.annotations.excel.ExcelRequired;
+import com.lframework.starter.web.core.components.excel.ExcelModel;
 import com.lframework.xingyun.basedata.enums.AddressEntityType;
 import com.lframework.xingyun.basedata.enums.AddressType;
 import lombok.Data;

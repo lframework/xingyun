@@ -4,7 +4,7 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.vo.BaseVo;
+import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;

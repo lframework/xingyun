@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum StockAdjustSheetBizType implements BaseEnum<Integer> {
   IN(0, "入库"), OUT(2, "出库");

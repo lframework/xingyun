@@ -11,13 +11,24 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.security.SecurityUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.components.security.SecurityUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
+import com.lframework.starter.web.inner.entity.SysUser;
+import com.lframework.starter.web.inner.service.GenerateCodeService;
+import com.lframework.starter.web.inner.service.system.SysUserService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
@@ -26,12 +37,6 @@ import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
-import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
-import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
-import com.lframework.xingyun.core.service.GenerateCodeService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
@@ -43,8 +48,8 @@ import com.lframework.xingyun.sc.entity.RetailOutSheetDetail;
 import com.lframework.xingyun.sc.entity.RetailReturn;
 import com.lframework.xingyun.sc.entity.RetailReturnDetail;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
+import com.lframework.xingyun.sc.enums.RetailOpLogType;
 import com.lframework.xingyun.sc.enums.RetailReturnStatus;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.sc.events.order.impl.ApprovePassRetailReturnEvent;
 import com.lframework.xingyun.sc.mappers.RetailReturnMapper;
@@ -63,8 +68,6 @@ import com.lframework.xingyun.sc.vo.retail.returned.QueryRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.RetailReturnProductVo;
 import com.lframework.xingyun.sc.vo.retail.returned.UpdateRetailReturnVo;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
-import com.lframework.xingyun.template.inner.entity.SysUser;
-import com.lframework.xingyun.template.inner.service.system.SysUserService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -141,8 +144,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = ScOpLogType.RETAIL, name = "创建零售退货单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建退单")
+  @OpLog(type = RetailOpLogType.class, name = "创建零售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = CreateOrderTimeLineBizType.class, orderId = "#_result", name = "创建退单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateRetailReturnVo vo) {
@@ -165,8 +168,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     return retailReturn.getId();
   }
 
-  @OpLog(type = ScOpLogType.RETAIL, name = "修改零售退货单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改退单")
+  @OpLog(type = RetailOpLogType.class, name = "修改零售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = UpdateOrderTimeLineBizType.class, orderId = "#vo.id", name = "修改退单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateRetailReturnVo vo) {
@@ -230,8 +233,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.RETAIL, name = "审核通过零售退货单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
+  @OpLog(type = RetailOpLogType.class, name = "审核通过零售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassRetailReturnVo vo) {
@@ -317,7 +320,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     this.sendApprovePassEvent(retailReturn);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateRetailReturnVo vo) {
@@ -335,8 +338,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     return returnId;
   }
 
-  @OpLog(type = ScOpLogType.RETAIL, name = "审核拒绝零售退货单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
+  @OpLog(type = RetailOpLogType.class, name = "审核拒绝零售退货单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseRetailReturnVo vo) {
@@ -375,7 +378,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.RETAIL, name = "删除零售退货单，单号：{}", params = "#code")
+  @OpLog(type = RetailOpLogType.class, name = "删除零售退货单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

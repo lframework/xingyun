@@ -2,8 +2,8 @@ package com.lframework.xingyun.basedata.excel.storecenter;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.lframework.starter.web.annotations.excel.ExcelRequired;
-import com.lframework.starter.web.components.excel.ExcelModel;
+import com.lframework.starter.web.core.annotations.excel.ExcelRequired;
+import com.lframework.starter.web.core.components.excel.ExcelModel;
 import lombok.Data;
 
 @Data

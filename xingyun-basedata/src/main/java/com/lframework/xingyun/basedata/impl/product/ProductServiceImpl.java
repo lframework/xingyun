@@ -10,18 +10,18 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.JsonUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.JsonUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.entity.ProductPropertyItem;
+import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.enums.ProductType;
@@ -46,10 +46,9 @@ import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.retail.UpdateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
 import com.lframework.xingyun.basedata.vo.product.sale.UpdateProductSaleVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
-import com.lframework.xingyun.core.service.RecursionMappingService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.inner.service.RecursionMappingService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -146,7 +145,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     return getBaseMapper().getIdByCategoryId(categoryId);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.class, name = "停用商品，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchUnable(Collection<String> ids) {
@@ -160,7 +159,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品，ID：{}", params = "#ids", loopFormat = true)
+  @OpLog(type = BaseDataOpLogType.class, name = "启用商品，ID：{}", params = "#ids", loopFormat = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void batchEnable(Collection<String> ids) {
@@ -174,7 +173,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品，ID：{}, 编号：{}", params = {"#_result",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增商品，ID：{}, 编号：{}", params = {"#_result",
       "#vo.code"}, autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -349,7 +348,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品，ID：{}, 编号：{}", params = {"#id", "#code"})
+  @OpLog(type = BaseDataOpLogType.class, name = "修改商品，ID：{}, 编号：{}", params = {"#id", "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductVo vo) {
@@ -522,7 +521,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     List<String> children = new ArrayList<>();
     for (String categoryId : categoryIds) {
       children.addAll(recursionMappingService.getNodeChildIds(categoryId,
-          ApplicationUtil.getBean(ProductCategoryNodeType.class)));
+          ProductCategoryNodeType.class));
     }
 
     children.addAll(categoryIds);

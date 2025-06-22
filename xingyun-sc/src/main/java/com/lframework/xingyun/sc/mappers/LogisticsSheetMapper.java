@@ -1,17 +1,17 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.starter.web.core.annotations.permission.DataPermission;
+import com.lframework.starter.web.core.annotations.permission.DataPermissions;
+import com.lframework.starter.web.core.annotations.sort.Sort;
+import com.lframework.starter.web.core.annotations.sort.Sorts;
+import com.lframework.starter.web.inner.components.permission.OrderDataPermissionDataPermissionType;
 import com.lframework.xingyun.sc.dto.logistics.LogisticsSheetBizOrderDto;
 import com.lframework.xingyun.sc.dto.logistics.LogisticsSheetFullDto;
 import com.lframework.xingyun.sc.entity.LogisticsSheet;
 import com.lframework.xingyun.sc.vo.logistics.LogisticsSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetBizOrderVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetVo;
-import com.lframework.xingyun.core.annotations.permission.DataPermission;
-import com.lframework.xingyun.core.annotations.permission.DataPermissions;
-import com.lframework.xingyun.core.annotations.sort.Sort;
-import com.lframework.xingyun.core.annotations.sort.Sorts;
-import com.lframework.xingyun.core.components.permission.SysDataPermissionDataPermissionType;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -36,7 +36,7 @@ public interface LogisticsSheetMapper extends BaseMapper<LogisticsSheet> {
       @Sort(value = "createTime", alias = "o", autoParse = true),
       @Sort(value = "deliveryTime", alias = "o", autoParse = true),
   })
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "o")
   })
   List<LogisticsSheet> query(@Param("vo") QueryLogisticsSheetVo vo);
@@ -55,7 +55,7 @@ public interface LogisticsSheetMapper extends BaseMapper<LogisticsSheet> {
    * @param vo
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "o")
   })
   List<LogisticsSheet> selector(@Param("vo") LogisticsSheetSelectorVo vo);
@@ -64,10 +64,9 @@ public interface LogisticsSheetMapper extends BaseMapper<LogisticsSheet> {
    * 查询业务单据列表
    *
    * @param vo
-   * @param dataPermission
    * @return
    */
-  @DataPermissions(type = SysDataPermissionDataPermissionType.ORDER, value = {
+  @DataPermissions(type = OrderDataPermissionDataPermissionType.class, value = {
       @DataPermission(template = "order", alias = "o")
   })
   List<LogisticsSheetBizOrderDto> queryBizOrder(@Param("vo") QueryLogisticsSheetBizOrderVo vo);

@@ -1,8 +1,8 @@
 package com.lframework.xingyun.sc.bo.stock.transfer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;

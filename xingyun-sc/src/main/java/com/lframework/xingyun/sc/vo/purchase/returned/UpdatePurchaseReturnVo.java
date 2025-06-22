@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.purchase.returned;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.service.purchase.PurchaseReturnService;
 import io.swagger.annotations.ApiModelProperty;

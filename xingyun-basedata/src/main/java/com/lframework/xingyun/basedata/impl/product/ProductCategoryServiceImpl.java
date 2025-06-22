@@ -7,9 +7,8 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.utils.ApplicationUtil;
-import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
@@ -18,9 +17,9 @@ import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.service.RecursionMappingService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.inner.service.RecursionMappingService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +56,7 @@ public class ProductCategoryServiceImpl extends
     return getBaseMapper().selector(vo);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品分类，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "停用商品分类，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void unable(String id) {
@@ -65,7 +64,7 @@ public class ProductCategoryServiceImpl extends
     List<String> batchIds = new ArrayList<>();
     batchIds.add(id);
     List<String> nodeChildIds = recursionMappingService.getNodeChildIds(id,
-        ApplicationUtil.getBean(ProductCategoryNodeType.class));
+        ProductCategoryNodeType.class);
     if (CollectionUtil.isNotEmpty(nodeChildIds)) {
       batchIds.addAll(nodeChildIds);
     }
@@ -75,7 +74,7 @@ public class ProductCategoryServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品分类，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "启用商品分类，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void enable(String id) {
@@ -83,7 +82,7 @@ public class ProductCategoryServiceImpl extends
     List<String> batchIds = new ArrayList<>();
     batchIds.add(id);
     List<String> nodeParentIds = recursionMappingService.getNodeParentIds(id,
-        ApplicationUtil.getBean(ProductCategoryNodeType.class));
+        ProductCategoryNodeType.class);
     if (CollectionUtil.isNotEmpty(nodeParentIds)) {
       batchIds.addAll(nodeParentIds);
     }
@@ -93,7 +92,7 @@ public class ProductCategoryServiceImpl extends
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品分类，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增商品分类，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -143,7 +142,7 @@ public class ProductCategoryServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品分类，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "修改商品分类，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -205,18 +204,18 @@ public class ProductCategoryServiceImpl extends
 
     if (!StringUtil.isBlank(parentId)) {
       List<String> parentIds = recursionMappingService.getNodeParentIds(parentId,
-          ApplicationUtil.getBean(ProductCategoryNodeType.class));
+          ProductCategoryNodeType.class);
       if (CollectionUtil.isEmpty(parentIds)) {
         parentIds = new ArrayList<>();
       }
       parentIds.add(parentId);
 
       recursionMappingService.saveNode(categoryId,
-          ApplicationUtil.getBean(ProductCategoryNodeType.class),
+          ProductCategoryNodeType.class,
           parentIds);
     } else {
       recursionMappingService.saveNode(categoryId,
-          ApplicationUtil.getBean(ProductCategoryNodeType.class));
+          ProductCategoryNodeType.class);
     }
   }
 

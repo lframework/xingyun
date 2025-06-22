@@ -3,7 +3,7 @@ package com.lframework.xingyun.chart.listeners.mq;
 import com.lframework.xingyun.chart.enums.OrderChartBizType;
 import com.lframework.xingyun.chart.service.OrderChartService;
 import com.lframework.xingyun.chart.vo.CreateOrderChartVo;
-import com.lframework.xingyun.core.dto.order.ApprovePassOrderDto;
+import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
 import com.lframework.xingyun.core.queue.MqStringPool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;

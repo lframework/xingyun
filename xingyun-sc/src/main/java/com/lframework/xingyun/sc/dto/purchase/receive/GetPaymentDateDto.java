@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.dto.purchase.receive;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.Data;

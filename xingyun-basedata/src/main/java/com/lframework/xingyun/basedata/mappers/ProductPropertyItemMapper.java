@@ -1,6 +1,6 @@
 package com.lframework.xingyun.basedata.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.entity.ProductPropertyItem;
 import com.lframework.xingyun.basedata.vo.product.property.item.QueryProductPropertyItemVo;
 import java.util.List;

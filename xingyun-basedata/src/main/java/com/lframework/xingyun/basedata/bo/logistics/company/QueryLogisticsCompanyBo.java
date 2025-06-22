@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.bo.logistics.company;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;

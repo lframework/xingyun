@@ -22,34 +22,4 @@ public class MqConstants {
    */
   public static final QueueDefinition APPROVE_PASS_ORDER = new RabbitMQQueueDefinition(
       MqStringPool.APPROVE_PASS_ORDER_EXCHANGE);
-
-  /**
-   * 消息通知
-   */
-  public static final QueueDefinition SYS_NOTIFY = new RabbitMQQueueDefinition(
-      MqStringPool.SYS_NOTIFY_EXCHANGE, MqStringPool.SYS_NOTIFY_ROUTING_KEY);
-
-  /**
-   * 邮件消息
-   */
-  public static final QueueDefinition SYS_MAIL_MESSAGE = new RabbitMQQueueDefinition(
-      MqStringPool.SYS_MAIL_MESSAGE_EXCHANGE, MqStringPool.SYS_MAIL_MESSAGE_ROUTING_KEY);
-
-  /**
-   * 站内信
-   */
-  public static final QueueDefinition SYS_SITE_MESSAGE = new RabbitMQQueueDefinition(
-      MqStringPool.SYS_SITE_MESSAGE_EXCHANGE, MqStringPool.SYS_SITE_MESSAGE_ROUTING_KEY);
-
-  /**
-   * 新增导出任务
-   */
-  public static final QueueDefinition ADD_EXPORT_TASK = new RabbitMQQueueDefinition(
-      MqStringPool.ADD_EXPORT_TASK_EXCHANGE, MqStringPool.ADD_EXPORT_TASK_ROUTING_KEY);
-
-  /**
-   * 执行导出任务
-   */
-  public static final QueueDefinition EXECUTE_EXPORT_TASK = new RabbitMQQueueDefinition(
-      MqStringPool.EXECUTE_EXPORT_TASK_EXCHANGE, MqStringPool.EXECUTE_EXPORT_TASK_ROUTING_KEY);
 }

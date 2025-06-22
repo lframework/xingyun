@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum SettleType implements BaseEnum<Integer> {
   ARBITRARILY(1, "任意指定"), CASH_ON_DELIVERY(2, "货到付款");

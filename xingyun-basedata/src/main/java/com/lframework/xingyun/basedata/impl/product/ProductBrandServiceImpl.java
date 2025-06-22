@@ -7,17 +7,16 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.mappers.ProductBrandMapper;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
@@ -26,7 +25,6 @@ import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelecto
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandVo;
 import com.lframework.xingyun.basedata.vo.product.brand.UpdateProductBrandVo;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -74,7 +72,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         return getBaseMapper().selectById(id);
     }
 
-    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用商品品牌，ID：{}", params = "#id")
+    @OpLog(type = BaseDataOpLogType.class, name = "停用商品品牌，ID：{}", params = "#id")
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void unable(String id) {
@@ -84,7 +82,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用商品品牌，ID：{}", params = "#id")
+    @OpLog(type = BaseDataOpLogType.class, name = "启用商品品牌，ID：{}", params = "#id")
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void enable(String id) {
@@ -94,7 +92,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         getBaseMapper().update(updateWrapper);
     }
 
-    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @OpLog(type = BaseDataOpLogType.class, name = "新增商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateProductBrandVo vo) {
@@ -132,7 +130,7 @@ public class ProductBrandServiceImpl extends BaseMpServiceImpl<ProductBrandMappe
         return data.getId();
     }
 
-    @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
+    @OpLog(type = BaseDataOpLogType.class, name = "修改商品品牌，ID：{}, 编号：{}", params = {"#id", "#code"})
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(UpdateProductBrandVo vo) {

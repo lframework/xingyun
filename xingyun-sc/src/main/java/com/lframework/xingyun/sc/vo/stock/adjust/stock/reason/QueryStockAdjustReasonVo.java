@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.adjust.stock.reason;
 
-import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.SortPageVo;
+import com.lframework.starter.web.core.vo.BaseVo;
+import com.lframework.starter.web.core.vo.SortPageVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import lombok.Data;

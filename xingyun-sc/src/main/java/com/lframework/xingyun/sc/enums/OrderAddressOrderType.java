@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum OrderAddressOrderType implements BaseEnum<Integer> {
   PURCHASE_ORDER(0, "采购订单"), RECEIVE_SHEET(1, "采购收货单"), PURCHASE_RETURN(2, "采购退单"),

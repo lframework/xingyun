@@ -1,8 +1,8 @@
 package com.lframework.xingyun.sc.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.lframework.starter.web.dto.BaseDto;
-import com.lframework.starter.web.entity.BaseEntity;
+import com.lframework.starter.web.core.dto.BaseDto;
+import com.lframework.starter.web.core.entity.BaseEntity;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -23,50 +23,50 @@ public class PurchaseOrderDetail extends BaseEntity implements BaseDto {
   /**
    * ID
    */
-  private String id;
+  protected String id;
 
   /**
    * 订单ID
    */
-  private String orderId;
+  protected String orderId;
 
   /**
    * 商品ID
    */
-  private String productId;
+  protected String productId;
 
   /**
    * 采购数量
    */
-  private Integer orderNum;
+  protected Integer orderNum;
 
   /**
    * 采购价
    */
-  private BigDecimal taxPrice;
+  protected BigDecimal taxPrice;
 
   /**
    * 是否赠品
    */
-  private Boolean isGift;
+  protected Boolean isGift;
 
   /**
    * 税率（%）
    */
-  private BigDecimal taxRate;
+  protected BigDecimal taxRate;
 
   /**
    * 备注
    */
-  private String description;
+  protected String description;
 
   /**
    * 排序编号
    */
-  private Integer orderNo;
+  protected Integer orderNo;
 
   /**
    * 已收货数量
    */
-  private Integer receiveNum;
+  protected Integer receiveNum;
 }

@@ -1,10 +1,10 @@
 package com.lframework.xingyun.sc.impl.stock.warning;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.utils.JsonUtil;
-import com.lframework.xingyun.core.components.notify.SysNotifyRuleEmail;
-import com.lframework.xingyun.core.components.notify.SysNotifyRuleSys;
-import com.lframework.xingyun.core.dto.notify.SysNotifyParamsDto;
+import com.lframework.starter.web.core.utils.JsonUtil;
+import com.lframework.starter.web.core.components.notify.SysNotifyRuleEmail;
+import com.lframework.starter.web.core.components.notify.SysNotifyRuleSys;
+import com.lframework.starter.web.inner.dto.notify.SysNotifyParamsDto;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 

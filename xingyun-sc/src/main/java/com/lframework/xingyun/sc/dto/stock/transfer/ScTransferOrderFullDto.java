@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.dto.stock.transfer;
 
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
 import java.io.Serializable;
 import java.math.BigDecimal;

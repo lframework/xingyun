@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum SettleCheckSheetBizType implements BaseEnum<Integer> {
     RECEIVE_SHEET(1, "采购收货单"), PURCHASE_RETURN(2, "采购退单"), SETTLE_FEE_SHEET(3, "供应商费用单"), SETTLE_PRE_SHEET(4,

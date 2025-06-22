@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum TaxRate implements BaseEnum<Integer> {
   RATE17(17, "17%"), RATE11(11, "11%"), RATE6(6, "6%"), RATE3(3, "3%"), RATE0(0, "0%"), FREE(-1,

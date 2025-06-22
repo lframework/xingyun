@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.settle.entity.SettleOutItem;
 import com.lframework.xingyun.settle.vo.item.out.QuerySettleOutItemVo;
 import com.lframework.xingyun.settle.vo.item.out.SettleOutItemSelectorVo;

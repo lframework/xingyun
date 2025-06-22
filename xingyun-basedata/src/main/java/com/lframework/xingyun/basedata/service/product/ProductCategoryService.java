@@ -1,11 +1,10 @@
 package com.lframework.xingyun.basedata.service.product;
 
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
-import java.util.Collection;
 import java.util.List;
 
 public interface ProductCategoryService extends BaseMpService<ProductCategory> {

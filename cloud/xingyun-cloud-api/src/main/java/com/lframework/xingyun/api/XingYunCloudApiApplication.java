@@ -1,8 +1,8 @@
 package com.lframework.xingyun.api;
 
 import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
-import com.lframework.starter.web.annotations.locker.EnableLock;
-import com.lframework.starter.web.annotations.locker.LockType;
+import com.lframework.starter.web.core.annotations.locker.EnableLock;
+import com.lframework.starter.web.core.annotations.locker.LockType;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

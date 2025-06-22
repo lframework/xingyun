@@ -8,27 +8,27 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.security.SecurityUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.JsonUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.components.security.SecurityUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.JsonUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.comp.entity.OnlineExcel;
 import com.lframework.xingyun.comp.mappers.OnlineExcelMapper;
 import com.lframework.xingyun.comp.service.OnlineExcelService;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.template.inner.entity.SysUser;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.xingyun.comp.enums.SwOpLogType;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.comp.vo.sw.excel.BatchSendOnlineExcelVo;
 import com.lframework.xingyun.comp.vo.sw.excel.CreateOnlineExcelVo;
 import com.lframework.xingyun.comp.vo.sw.excel.QueryOnlineExcelVo;
 import com.lframework.xingyun.comp.vo.sw.excel.SendOnlineExcelVo;
 import com.lframework.xingyun.comp.vo.sw.excel.UpdateOnlineExcelContentVo;
 import com.lframework.xingyun.comp.vo.sw.excel.UpdateOnlineExcelVo;
-import com.lframework.xingyun.template.inner.service.system.SysUserService;
+import com.lframework.starter.web.inner.service.system.SysUserService;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ public class OnlineExcelServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "新增在线Excel，ID：{}", params = {"#id"})
+  @OpLog(type = SwOpLogType.class, name = "新增在线Excel，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateOnlineExcelVo vo) {
@@ -87,7 +87,7 @@ public class OnlineExcelServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "修改在线Excel，ID：{}", params = {"#id"})
+  @OpLog(type = SwOpLogType.class, name = "修改在线Excel，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateOnlineExcelVo vo) {
@@ -109,7 +109,7 @@ public class OnlineExcelServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "修改在线Excel内容，ID：{}", params = {"#id"})
+  @OpLog(type = SwOpLogType.class, name = "修改在线Excel内容，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void updateContent(UpdateOnlineExcelContentVo vo) {
@@ -132,7 +132,7 @@ public class OnlineExcelServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "发送Excel文件，发送方{}, 接收方{}", params = {"#sender",
+  @OpLog(type = SwOpLogType.class, name = "发送Excel文件，发送方{}, 接收方{}", params = {"#sender",
       "#receiver"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -166,7 +166,7 @@ public class OnlineExcelServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = SwOpLogType.SW, name = "批量发送Excel文件，发送方{}, 接收方{}", params = {"#sender",
+  @OpLog(type = SwOpLogType.class, name = "批量发送Excel文件，发送方{}, 接收方{}", params = {"#sender",
       "#receiver"})
   @Transactional(rollbackFor = Exception.class)
   @Override

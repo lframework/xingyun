@@ -5,12 +5,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.enums.AddressEntityType;
 import com.lframework.xingyun.basedata.enums.AddressType;
@@ -21,9 +21,9 @@ import com.lframework.xingyun.basedata.vo.address.AddressSelectorVo;
 import com.lframework.xingyun.basedata.vo.address.CreateAddressVo;
 import com.lframework.xingyun.basedata.vo.address.QueryAddressVo;
 import com.lframework.xingyun.basedata.vo.address.UpdateAddressVo;
-import com.lframework.xingyun.core.dto.dic.city.DicCityDto;
-import com.lframework.xingyun.core.service.DicCityService;
-import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.starter.web.inner.dto.dic.city.DicCityDto;
+import com.lframework.starter.web.inner.service.DicCityService;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +76,7 @@ public class AddressServiceImpl extends BaseMpServiceImpl<AddressMapper, Address
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增地址，ID：{}, 编号：{}", params = {"#_result",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增地址，ID：{}, 编号：{}", params = {"#_result",
       "#vo.code"}, autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -112,7 +112,7 @@ public class AddressServiceImpl extends BaseMpServiceImpl<AddressMapper, Address
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改地址，ID：{}, 编号：{}", params = {"#vo.id",
+  @OpLog(type = BaseDataOpLogType.class, name = "修改地址，ID：{}, 编号：{}", params = {"#vo.id",
       "#vo.code"}, autoSaveParams = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

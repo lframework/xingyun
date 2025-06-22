@@ -9,12 +9,12 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.mappers.MemberMapper;
@@ -23,9 +23,9 @@ import com.lframework.xingyun.basedata.vo.member.CreateMemberVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberSelectorVo;
 import com.lframework.xingyun.basedata.vo.member.QueryMemberVo;
 import com.lframework.xingyun.basedata.vo.member.UpdateMemberVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.enums.Gender;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.inner.enums.system.Gender;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
@@ -62,7 +62,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "停用会员，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "停用会员，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void unable(String id) {
@@ -73,7 +73,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "启用会员，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "启用会员，ID：{}", params = "#id")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void enable(String id) {
@@ -84,7 +84,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     getBaseMapper().update(updateWrapper);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增会员，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增会员，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -140,7 +140,7 @@ public class MemberServiceImpl extends BaseMpServiceImpl<MemberMapper, Member> i
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改会员，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "修改会员，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override

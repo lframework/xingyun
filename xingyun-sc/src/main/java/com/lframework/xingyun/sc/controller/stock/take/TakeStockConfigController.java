@@ -1,10 +1,10 @@
 package com.lframework.xingyun.sc.controller.stock.take;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
-import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.controller.DefaultBaseController;
-import com.lframework.starter.web.resp.InvokeResult;
-import com.lframework.starter.web.resp.InvokeResultBuilder;
+import com.lframework.starter.web.core.annotations.security.HasPermission;
+import com.lframework.starter.web.core.controller.DefaultBaseController;
+import com.lframework.starter.web.core.components.resp.InvokeResult;
+import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
 import com.lframework.xingyun.sc.bo.stock.take.config.GetTakeStockConfigBo;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;

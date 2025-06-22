@@ -3,14 +3,14 @@ package com.lframework.xingyun.sc.controller.purchase;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.annotations.security.HasPermission;
-import com.lframework.starter.web.controller.DefaultBaseController;
-import com.lframework.starter.web.resp.InvokeResult;
-import com.lframework.starter.web.resp.InvokeResultBuilder;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.ExcelUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.utils.ExportTaskUtil;
+import com.lframework.starter.web.core.annotations.security.HasPermission;
+import com.lframework.starter.web.core.controller.DefaultBaseController;
+import com.lframework.starter.web.core.components.resp.InvokeResult;
+import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.ExcelUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.mq.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.GetPurchaseOrderBo;
 import com.lframework.xingyun.sc.bo.purchase.PrintPurchaseOrderBo;
 import com.lframework.xingyun.sc.bo.purchase.PurchaseOrderWithReceiveBo;
@@ -79,7 +79,7 @@ public class PurchaseOrderController extends DefaultBaseController {
   public InvokeResult<PrintPurchaseOrderBo> print(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
-    PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
+    PurchaseOrderFullDto data = purchaseOrderService.getDetail(id, false);
     if (data == null) {
       throw new DefaultClientException("订单不存在！");
     }
@@ -128,13 +128,16 @@ public class PurchaseOrderController extends DefaultBaseController {
    * 根据ID查询
    */
   @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @ApiImplicitParams({
+      @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true),
+      @ApiImplicitParam(value = "isForm", name = "是否为表单数据", paramType = "query", defaultValue = "false")
+  })
   @HasPermission({"purchase:order:query"})
   @GetMapping
   public InvokeResult<GetPurchaseOrderBo> findById(
-      @NotBlank(message = "订单ID不能为空！") String id) {
+      @NotBlank(message = "订单ID不能为空！") String id, Boolean isForm) {
 
-    PurchaseOrderFullDto data = purchaseOrderService.getDetail(id);
+    PurchaseOrderFullDto data = purchaseOrderService.getDetail(id, isForm);
 
     GetPurchaseOrderBo result = new GetPurchaseOrderBo(data);
 

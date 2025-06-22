@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.vo.purchase.receive;
 
-import com.lframework.starter.web.vo.PageVo;
+import com.lframework.starter.web.core.vo.PageVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;

@@ -2,7 +2,7 @@ package com.lframework.xingyun.settle.bo.item.in;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.settle.entity.SettleInItem;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;

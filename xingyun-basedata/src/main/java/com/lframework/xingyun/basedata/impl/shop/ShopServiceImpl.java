@@ -9,14 +9,14 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.utils.OpLogUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.mappers.ShopMapper;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
@@ -58,7 +58,7 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "新增门店，ID：{}", params = {"#id"})
+  @OpLog(type = BaseDataOpLogType.class, name = "新增门店，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateShopVo vo) {
@@ -93,7 +93,7 @@ public class ShopServiceImpl extends BaseMpServiceImpl<ShopMapper, Shop> impleme
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "修改门店，ID：{}", params = {"#id"})
+  @OpLog(type = BaseDataOpLogType.class, name = "修改门店，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateShopVo vo) {

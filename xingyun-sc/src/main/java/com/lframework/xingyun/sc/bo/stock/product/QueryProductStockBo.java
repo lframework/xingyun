@@ -1,8 +1,8 @@
 package com.lframework.xingyun.sc.bo.stock.product;
 
 import com.lframework.starter.common.utils.NumberUtil;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;

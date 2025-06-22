@@ -2,10 +2,10 @@ package com.lframework.xingyun.basedata.impl.product;
 
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.utils.IdUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.mappers.ProductPurchaseMapper;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
@@ -19,7 +19,7 @@ public class ProductPurchaseServiceImpl extends
     BaseMpServiceImpl<ProductPurchaseMapper, ProductPurchase>
     implements ProductPurchaseService {
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
+  @OpLog(type = BaseDataOpLogType.class, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateProductPurchaseVo vo) {
@@ -37,7 +37,7 @@ public class ProductPurchaseServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.BASE_DATA, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
+  @OpLog(type = BaseDataOpLogType.class, name = "设置商品采购价，ID：{}, 采购价：{}", params = {"#vo.id", "#vo.price"})
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductPurchaseVo vo) {

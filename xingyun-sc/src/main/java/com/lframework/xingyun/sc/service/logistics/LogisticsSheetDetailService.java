@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.service.logistics;
 
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.LogisticsSheetDetail;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
 

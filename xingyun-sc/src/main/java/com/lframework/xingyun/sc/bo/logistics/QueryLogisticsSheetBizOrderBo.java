@@ -1,9 +1,9 @@
 package com.lframework.xingyun.sc.bo.logistics;
 
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.annotations.convert.EnumConvert;
-import com.lframework.starter.web.bo.BaseBo;
-import com.lframework.starter.web.utils.ApplicationUtil;
+import com.lframework.starter.web.core.annotations.convert.EnumConvert;
+import com.lframework.starter.web.core.bo.BaseBo;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.StoreCenter;

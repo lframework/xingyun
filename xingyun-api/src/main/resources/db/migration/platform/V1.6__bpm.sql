@@ -1,0 +1,2 @@
+INSERT INTO `sys_module` (`id`, `name`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES (16, '审批流程', '管理审批流程。', '系统管理员', '1', '2023-06-06 10:26:30', '系统管理员', '1', '2023-06-06 10:26:41');
+INSERT INTO `sys_module_tenant` (`id`, `module_id`, `tenant_id`, `expire_time`) VALUES ('1748649349774184463', 16, 1000, '2099-01-01 00:00:00');

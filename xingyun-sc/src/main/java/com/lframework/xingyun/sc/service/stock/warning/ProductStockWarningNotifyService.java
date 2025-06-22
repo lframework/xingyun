@@ -1,9 +1,8 @@
 package com.lframework.xingyun.sc.service.stock.warning;
 
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.ProductStockWarningNotify;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface ProductStockWarningNotifyService extends BaseMpService<ProductStockWarningNotify> {
 

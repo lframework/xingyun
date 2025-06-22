@@ -1,7 +1,7 @@
 package com.lframework.xingyun.basedata.service.shop;
 
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.service.BaseMpService;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.vo.shop.CreateShopVo;
 import com.lframework.xingyun.basedata.vo.shop.QueryShopVo;

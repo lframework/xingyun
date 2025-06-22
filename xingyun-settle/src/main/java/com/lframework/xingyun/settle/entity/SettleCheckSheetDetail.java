@@ -1,8 +1,8 @@
 package com.lframework.xingyun.settle.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.lframework.starter.web.entity.BaseEntity;
-import com.lframework.starter.web.dto.BaseDto;
+import com.lframework.starter.web.core.entity.BaseEntity;
+import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetBizType;
 import com.lframework.xingyun.settle.enums.SettleCheckSheetCalcType;
 import java.math.BigDecimal;

@@ -9,17 +9,20 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.security.AbstractUserDetails;
-import com.lframework.starter.web.components.security.SecurityUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.xingyun.core.service.GenerateCodeService;
-import com.lframework.starter.web.utils.EnumUtil;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
-import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
-import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
+import com.lframework.starter.web.core.components.security.AbstractUserDetails;
+import com.lframework.starter.web.core.components.security.SecurityUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.inner.service.GenerateCodeService;
+import com.lframework.starter.web.core.utils.EnumUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
+import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
 import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.settle.dto.fee.customer.CustomerSettleFeeSheetFullDto;
@@ -41,8 +44,8 @@ import com.lframework.xingyun.settle.vo.fee.customer.CreateCustomerSettleFeeShee
 import com.lframework.xingyun.settle.vo.fee.customer.CustomerSettleFeeSheetItemVo;
 import com.lframework.xingyun.settle.vo.fee.customer.QueryCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.UpdateCustomerSettleFeeSheetVo;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -93,8 +96,8 @@ public class CustomerSettleFeeSheetServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = SettleOpLogType.SETTLE, name = "创建客户费用单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建费用单")
+  @OpLog(type = SettleOpLogType.class, name = "创建客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = CreateOrderTimeLineBizType.class, orderId = "#_result", name = "创建费用单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateCustomerSettleFeeSheetVo vo) {
@@ -116,8 +119,8 @@ public class CustomerSettleFeeSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = SettleOpLogType.SETTLE, name = "修改客户费用单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改费用单")
+  @OpLog(type = SettleOpLogType.class, name = "修改客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = UpdateOrderTimeLineBizType.class, orderId = "#vo.id", name = "修改费用单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateCustomerSettleFeeSheetVo vo) {
@@ -165,8 +168,8 @@ public class CustomerSettleFeeSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = SettleOpLogType.SETTLE, name = "审核通过客户费用单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
+  @OpLog(type = SettleOpLogType.class, name = "审核通过客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassCustomerSettleFeeSheetVo vo) {
@@ -207,7 +210,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateCustomerSettleFeeSheetVo vo) {
@@ -224,8 +227,8 @@ public class CustomerSettleFeeSheetServiceImpl extends
     return id;
   }
 
-  @OpLog(type = SettleOpLogType.SETTLE, name = "审核拒绝客户费用单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
+  @OpLog(type = SettleOpLogType.class, name = "审核拒绝客户费用单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseCustomerSettleFeeSheetVo vo) {
@@ -266,7 +269,7 @@ public class CustomerSettleFeeSheetServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = SettleOpLogType.SETTLE, name = "删除客户费用单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.class, name = "删除客户费用单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override

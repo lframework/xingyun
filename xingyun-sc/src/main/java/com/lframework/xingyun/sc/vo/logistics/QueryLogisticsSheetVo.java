@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.vo.logistics;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.SortPageVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.SortPageVo;
 import com.lframework.xingyun.sc.enums.LogisticsSheetStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;

@@ -3,11 +3,11 @@ package com.lframework.xingyun.sc.impl.stock.warning;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.xingyun.core.annotations.OpLog;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.sc.entity.ProductStockWarningNotify;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
+import com.lframework.xingyun.sc.enums.StockWarningOpLogType;
 import com.lframework.xingyun.sc.mappers.ProductStockWarningNotifyMapper;
 import com.lframework.xingyun.sc.service.stock.warning.ProductStockWarningNotifyService;
 import java.time.LocalDateTime;
@@ -34,7 +34,7 @@ public class ProductStockWarningNotifyServiceImpl extends
     return LocalDateTime.now();
   }
 
-  @OpLog(type = ScOpLogType.STOCK_WARNING, name = "新增消息通知组，ID：{}", params = "#groupId")
+  @OpLog(type = StockWarningOpLogType.class, name = "新增消息通知组，ID：{}", params = "#groupId")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void createSetting(String groupId) {
@@ -53,7 +53,7 @@ public class ProductStockWarningNotifyServiceImpl extends
     save(record);
   }
 
-  @OpLog(type = ScOpLogType.STOCK_WARNING, name = "删除消息通知组，ID：{}", params = "#groupId")
+  @OpLog(type = StockWarningOpLogType.class, name = "删除消息通知组，ID：{}", params = "#groupId")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void deleteSetting(String groupId) {

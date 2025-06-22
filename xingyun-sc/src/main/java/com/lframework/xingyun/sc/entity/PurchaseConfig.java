@@ -1,8 +1,8 @@
 package com.lframework.xingyun.sc.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.lframework.starter.web.dto.BaseDto;
-import com.lframework.starter.web.entity.BaseEntity;
+import com.lframework.starter.web.core.dto.BaseDto;
+import com.lframework.starter.web.core.entity.BaseEntity;
 import lombok.Data;
 
 /**
@@ -43,4 +43,19 @@ public class PurchaseConfig extends BaseEntity implements BaseDto {
    * 采购退货单是否多次关联采购收货单
    */
   private Boolean purchaseReturnMultipleRelateReceive;
+
+  /**
+   * 采购订单是否开启审批流程
+   */
+  private Boolean purchaseRequireBpm;
+
+  /**
+   * 采购订单关联的审批流程ID
+   */
+  private Long purchaseBpmProcessId;
+
+  /**
+   * 采购订单关联的审批流程编号
+   */
+  private String purchaseBpmProcessCode;
 }

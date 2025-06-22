@@ -1,6 +1,6 @@
 package com.lframework.xingyun.sc.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
 import org.apache.ibatis.annotations.Param;

@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.lframework.starter.web.enums.BaseEnum;
+import com.lframework.starter.web.core.enums.BaseEnum;
 
 public enum SettleStatus implements BaseEnum<Integer> {
   UN_SETTLE(0, "未结算"), PART_SETTLE(1, "结算中"), SETTLED(3, "已结算"), UN_REQUIRE(6, "无需结算");

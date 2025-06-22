@@ -1,6 +1,6 @@
 package com.lframework.xingyun.settle.mappers;
 
-import com.lframework.starter.web.mapper.BaseMapper;
+import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.settle.entity.SettleCheckSheetDetail;
 
 /**

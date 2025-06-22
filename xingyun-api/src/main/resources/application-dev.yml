@@ -5,6 +5,7 @@ logging:
   level:
     com.lframework: DEBUG
     io.lettuce.core.protocol: OFF
+    org.dromara.warm.flow: DEBUG
 
 spring:
   servlet:

@@ -1,13 +1,8 @@
 package com.lframework.xingyun.basedata.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.lframework.starter.web.dto.BaseDto;
-import com.lframework.starter.web.entity.BaseEntity;
-import java.time.LocalDateTime;
+import com.lframework.starter.web.core.dto.BaseDto;
+import com.lframework.starter.web.core.entity.BaseEntity;
 import lombok.Data;
 
 /**

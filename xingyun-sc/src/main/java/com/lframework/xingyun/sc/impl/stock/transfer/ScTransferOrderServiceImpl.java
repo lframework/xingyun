@@ -9,20 +9,24 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.components.security.SecurityUtil;
-import com.lframework.starter.web.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.resp.PageResult;
-import com.lframework.starter.web.utils.IdUtil;
-import com.lframework.starter.web.utils.PageHelperUtil;
-import com.lframework.starter.web.utils.PageResultUtil;
+import com.lframework.starter.web.core.annotations.oplog.OpLog;
+import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.components.security.SecurityUtil;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
+import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.PageHelperUtil;
+import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
+import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
+import com.lframework.starter.web.inner.service.GenerateCodeService;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.core.annotations.OpLog;
-import com.lframework.xingyun.core.annotations.OrderTimeLineLog;
-import com.lframework.xingyun.core.dto.stock.ProductStockChangeDto;
-import com.lframework.xingyun.core.enums.OrderTimeLineBizType;
-import com.lframework.xingyun.core.service.GenerateCodeService;
-import com.lframework.xingyun.core.utils.OpLogUtil;
+import com.lframework.xingyun.core.components.timeline.ReceiveOrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto;
@@ -30,7 +34,7 @@ import com.lframework.xingyun.sc.entity.ScTransferOrder;
 import com.lframework.xingyun.sc.entity.ScTransferOrderDetail;
 import com.lframework.xingyun.sc.entity.ScTransferOrderDetailReceive;
 import com.lframework.xingyun.sc.enums.ProductStockBizType;
-import com.lframework.xingyun.sc.enums.ScOpLogType;
+import com.lframework.xingyun.sc.enums.ScTransferOpLogType;
 import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
 import com.lframework.xingyun.sc.mappers.ScTransferOrderMapper;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
@@ -102,8 +106,8 @@ public class ScTransferOrderServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "新增仓库调拨单，ID：{}", params = {"#id"})
-  @OrderTimeLineLog(type = OrderTimeLineBizType.CREATE, orderId = "#_result", name = "创建调拨单")
+  @OpLog(type = ScTransferOpLogType.class, name = "新增仓库调拨单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = CreateOrderTimeLineBizType.class, orderId = "#_result", name = "创建调拨单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateScTransferOrderVo vo) {
@@ -122,8 +126,8 @@ public class ScTransferOrderServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "修改仓库调拨单，ID：{}", params = {"#id"})
-  @OrderTimeLineLog(type = OrderTimeLineBizType.UPDATE, orderId = "#vo.id", name = "修改调拨单")
+  @OpLog(type = ScTransferOpLogType.class, name = "修改仓库调拨单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = UpdateOrderTimeLineBizType.class, orderId = "#vo.id", name = "修改调拨单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateScTransferOrderVo vo) {
@@ -172,7 +176,7 @@ public class ScTransferOrderServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "删除仓库调拨单，ID：{}", params = {"#id"})
+  @OpLog(type = ScTransferOpLogType.class, name = "删除仓库调拨单，ID：{}", params = {"#id"})
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -207,8 +211,8 @@ public class ScTransferOrderServiceImpl extends
     scTransferOrderDetailReceiveService.remove(deleteDetailReceiveWrapper);
   }
 
-  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "审核通过仓库调拨单，ID：{}", params = {"#vo.id"})
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#vo.id", name = "审核通过")
+  @OpLog(type = ScTransferOpLogType.class, name = "审核通过仓库调拨单，ID：{}", params = {"#vo.id"})
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approvePass(ApprovePassScTransferOrderVo vo) {
@@ -279,7 +283,7 @@ public class ScTransferOrderServiceImpl extends
     this.update(updateWrapper);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_PASS, orderId = "#_result", name = "直接审核通过")
+  @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String directApprovePass(CreateScTransferOrderVo vo) {
@@ -297,8 +301,8 @@ public class ScTransferOrderServiceImpl extends
     return id;
   }
 
-  @OpLog(type = ScOpLogType.SC_TRANSFER, name = "审核拒绝仓库调拨单，ID：{}", params = {"#id"})
-  @OrderTimeLineLog(type = OrderTimeLineBizType.APPROVE_RETURN, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
+  @OpLog(type = ScTransferOpLogType.class, name = "审核拒绝仓库调拨单，ID：{}", params = {"#id"})
+  @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void approveRefuse(ApproveRefuseScTransferOrderVo vo) {
@@ -334,7 +338,7 @@ public class ScTransferOrderServiceImpl extends
     OpLogUtil.setExtra(vo);
   }
 
-  @OrderTimeLineLog(type = OrderTimeLineBizType.RECEIVE, orderId = "#vo.id", name = "仓库调拨单收货")
+  @OrderTimeLineLog(type = ReceiveOrderTimeLineBizType.class, orderId = "#vo.id", name = "仓库调拨单收货")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void receive(ReceiveScTransferOrderVo vo) {

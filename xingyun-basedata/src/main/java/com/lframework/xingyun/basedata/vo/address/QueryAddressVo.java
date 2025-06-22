@@ -1,8 +1,8 @@
 package com.lframework.xingyun.basedata.vo.address;
 
-import com.lframework.starter.web.components.validation.IsEnum;
-import com.lframework.starter.web.vo.BaseVo;
-import com.lframework.starter.web.vo.SortPageVo;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.vo.BaseVo;
+import com.lframework.starter.web.core.vo.SortPageVo;
 import com.lframework.xingyun.basedata.enums.AddressEntityType;
 import com.lframework.xingyun.basedata.enums.AddressType;
 import io.swagger.annotations.ApiModelProperty;

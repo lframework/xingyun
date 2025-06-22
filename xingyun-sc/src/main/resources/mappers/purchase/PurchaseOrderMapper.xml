@@ -42,6 +42,7 @@
         <result column="approve_time" property="approveTime"/>
         <result column="status" property="status"/>
         <result column="refuse_reason" property="refuseReason"/>
+        <result column="flow_instance_id" property="flowInstanceId" />
         <collection property="details" javaType="java.util.ArrayList" ofType="com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto$OrderDetailDto">
             <id column="detail_id" property="id"/>
             <result column="detail_product_id" property="productId"/>
@@ -100,6 +101,7 @@
             o.total_num,
             o.total_gift_num,
             o.total_amount,
+            o.flow_instance_id,
             o.description,
             o.create_by,
             o.create_time,
@@ -132,6 +134,7 @@
             o.approve_time,
             o.status,
             o.refuse_reason,
+            o.flow_instance_id,
             d.id AS detail_id,
             d.product_id AS detail_product_id,
             d.order_num AS detail_order_num,
@@ -140,8 +143,8 @@
             d.tax_rate AS detail_tax_rate,
             d.description AS detail_description,
             d.order_no AS detail_order_no
-        FROM tbl_purchase_order AS o
-        LEFT JOIN tbl_purchase_order_detail AS d ON d.order_id = o.id
+        FROM tbl_purchase_order${isForm ? "_form" : ""} AS o
+        LEFT JOIN tbl_purchase_order_detail${isForm ? "_form" : ""} AS d ON d.order_id = o.id
     </sql>
 
     <sql id="PurchaseProductDto_sql">

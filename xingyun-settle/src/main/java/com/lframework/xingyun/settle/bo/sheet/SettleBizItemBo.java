@@ -2,7 +2,7 @@ package com.lframework.xingyun.settle.bo.sheet;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.web.bo.BaseBo;
+import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.settle.dto.sheet.SettleBizItemDto;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;

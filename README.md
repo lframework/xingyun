@@ -89,11 +89,7 @@ QQ交流群号： **717574596（已满员）** **562654879**
 
 ### 集成第三方库
 
-<a href="https://gitee.com/agile-bpm/agile-bpm-basic" target="_blank">AgileBPM</a> 工作流管理平台
-
 <a href="https://gitee.com/dromara/sa-token" target="_blank">Sa-Token</a> 统一用户鉴权
-
-<a href="https://gitee.com/ld/J2Cache" target="_blank">J2Cache</a> 基于内存和Redis的两级Java缓存框架
 
 <a href="https://gitee.com/xiaoym/knife4j" target="_blank">knife4j</a> knife4j是为Java MVC框架集成Swagger生成Api文档的工具
 

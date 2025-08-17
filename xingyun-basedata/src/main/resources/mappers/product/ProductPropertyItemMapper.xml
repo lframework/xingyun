@@ -50,6 +50,7 @@
     </select>
     <select id="getByPropertyId" resultMap="ProductPropertyItem">
         <include refid="ProductPropertyItemDto_sql"/>
+        WHERE property_id = #{propertyId}
         ORDER BY code
     </select>
 </mapper>

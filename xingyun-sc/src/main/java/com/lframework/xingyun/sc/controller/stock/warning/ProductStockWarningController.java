@@ -4,16 +4,19 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.core.annotations.security.HasPermission;
-import com.lframework.starter.web.core.controller.DefaultBaseController;
 import com.lframework.starter.web.core.components.resp.InvokeResult;
 import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
 import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.controller.DefaultBaseController;
+import com.lframework.starter.web.core.utils.ExcelUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.sc.bo.stock.warning.GetProductStockWarningBo;
 import com.lframework.xingyun.sc.bo.stock.warning.GetProductStockWarningNotifyBo;
 import com.lframework.xingyun.sc.bo.stock.warning.QueryProductStockWarningBo;
 import com.lframework.xingyun.sc.entity.ProductStockWarning;
 import com.lframework.xingyun.sc.entity.ProductStockWarningNotify;
+import com.lframework.xingyun.sc.excel.stock.warning.StockWarningImportListener;
+import com.lframework.xingyun.sc.excel.stock.warning.StockWarningImportModel;
 import com.lframework.xingyun.sc.service.stock.warning.ProductStockWarningNotifyService;
 import com.lframework.xingyun.sc.service.stock.warning.ProductStockWarningService;
 import com.lframework.xingyun.sc.vo.stock.warning.CreateProductStockWarningVo;
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,6 +41,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 库存预警 Controller
@@ -192,6 +197,26 @@ public class ProductStockWarningController extends DefaultBaseController {
       @ApiParam(value = "消息通知组ID", required = true) @NotBlank(message = "消息通知组ID不能为空！") String id) {
 
     productStockWarningNotifyService.deleteSetting(id);
+
+    return InvokeResultBuilder.success();
+  }
+
+  @ApiOperation("下载导入模板")
+  @HasPermission({"stock:warning:import"})
+  @GetMapping("/import/template")
+  public void downloadImportTemplate() {
+    ExcelUtil.exportXls("库存预警导入模板", StockWarningImportModel.class);
+  }
+
+  @ApiOperation("导入")
+  @HasPermission({"stock:warning:import"})
+  @PostMapping("/import")
+  public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,
+      @NotNull(message = "请上传文件") MultipartFile file) {
+
+    StockWarningImportListener listener = new StockWarningImportListener();
+    listener.setTaskId(id);
+    ExcelUtil.read(file, StockWarningImportModel.class, listener).sheet().doRead();
 
     return InvokeResultBuilder.success();
   }

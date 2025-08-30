@@ -4166,7 +4166,7 @@ CREATE TABLE `flow_cu_approve_his`  (
   INDEX `instance_id`(`instance_id`) USING BTREE,
   INDEX `task_id`(`task_id`) USING BTREE,
   INDEX `node_code`(`node_code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程审核历史' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程审核历史' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_cu_approve_his
@@ -4200,7 +4200,7 @@ CREATE TABLE `flow_cu_instance`  (
   `start_time` datetime NOT NULL COMMENT '发起时间',
   `end_time` datetime NULL DEFAULT NULL COMMENT '结束时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程实例扩展表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程实例扩展表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_cu_instance
@@ -4228,7 +4228,7 @@ CREATE TABLE `flow_definition`  (
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '删除标志',
   `tenant_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '租户id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程定义表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程定义表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_definition
@@ -4263,7 +4263,7 @@ CREATE TABLE `flow_his_task`  (
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '删除标志',
   `tenant_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '租户id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '历史任务记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '历史任务记录表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_his_task
@@ -4291,7 +4291,7 @@ CREATE TABLE `flow_instance`  (
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '删除标志',
   `tenant_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '租户id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程实例表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程实例表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_instance
@@ -4324,7 +4324,7 @@ CREATE TABLE `flow_node`  (
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '删除标志',
   `tenant_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '租户id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程节点表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程节点表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_node
@@ -4350,7 +4350,7 @@ CREATE TABLE `flow_skip`  (
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '删除标志',
   `tenant_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '租户id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '节点跳转关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '节点跳转关联表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_skip
@@ -4375,7 +4375,7 @@ CREATE TABLE `flow_task`  (
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '删除标志',
   `tenant_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '租户id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '待办任务表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '待办任务表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_task
@@ -4398,7 +4398,7 @@ CREATE TABLE `flow_user`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `user_processed_type`(`processed_by`, `type`) USING BTREE,
   INDEX `user_associated`(`associated`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程用户表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '流程用户表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flow_user
@@ -5564,7 +5564,7 @@ CREATE TABLE `sys_generate_code`  (
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `config_str` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '配置信息（JSONArray）',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '编号规则' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_generate_code
@@ -5885,6 +5885,7 @@ INSERT INTO `sys_menu` VALUES ('3000007001', '3000007001', '', '新增库存预�
 INSERT INTO `sys_menu` VALUES ('3000007002', '3000007002', '', '修改库存预警', NULL, 0, '', NULL, '3000007', '8', '', 0, 2, 0, 'stock:warning:modify', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('3000007003', '3000007003', '', '删除库存预警', NULL, 0, '', NULL, '3000007', '8', '', 0, 2, 0, 'stock:warning:delete', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('3000007004', '3000007004', '', '设置消息通知组', NULL, 0, '', NULL, '3000007', '8', '', 0, 2, 0, 'stock:warning:notify', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('3000007005', '3000007005', '', '导入库存预警', NULL, 0, '', NULL, '3000007', '8', '', 0, 2, 0, 'stock:warning:import', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('4000', '4000', 'SettleManage', '结算管理', 'ant-design:credit-card-outlined', NULL, '', NULL, NULL, '11', '/settle', 0, 0, 0, '', 1, 1, '', '系统管理员', '1', '2021-07-05 01:21:35', '系统管理员', '1', '2021-07-05 01:21:39');
 INSERT INTO `sys_menu` VALUES ('4000001', '4000001', 'SettleInItem', '收入项目', NULL, 0, '/settle/in-item/index', NULL, '4000', '11', '/in-item', 0, 1, 0, 'settle:in-item:query', 1, 1, '', '系统管理员', '1', '2021-07-05 21:59:35', '系统管理员', '1', '2021-07-05 21:59:36');
 INSERT INTO `sys_menu` VALUES ('4000001001', '4000001001', '', '新增收入项目', NULL, 0, '', NULL, '4000001', '11', '', 0, 2, 0, 'settle:in-item:add', 1, 1, '', '系统管理员', '1', '2021-05-12 10:53:45', '系统管理员', '1', '2021-07-04 00:34:23');

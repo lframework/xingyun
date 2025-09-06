@@ -229,6 +229,13 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         throw new DefaultClientException("单品数据不能为空！");
       }
 
+      BigDecimal purchasePrice = vo.getProductBundles().stream().map(
+          productBundleVo -> NumberUtil.mul(productBundleVo.getBundleNum(),
+              productBundleVo.getPurchasePrice())).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
+      if (!NumberUtil.equal(vo.getPurchasePrice(), purchasePrice)) {
+        throw new DefaultClientException("单品的采购价设置错误！");
+      }
+
       BigDecimal salePrice = vo.getProductBundles().stream().map(
           productBundleVo -> NumberUtil.mul(productBundleVo.getBundleNum(),
               productBundleVo.getSalePrice())).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
@@ -249,6 +256,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         productBundle.setMainProductId(data.getId());
         productBundle.setProductId(productBundleVo.getProductId());
         productBundle.setBundleNum(productBundleVo.getBundleNum());
+        productBundle.setPurchasePrice(productBundleVo.getPurchasePrice());
         productBundle.setSalePrice(productBundleVo.getSalePrice());
         productBundle.setRetailPrice(productBundleVo.getRetailPrice());
 
@@ -262,7 +270,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       throw new DefaultClientException("采购价不能为空！");
     }
 
-    if (vo.getPurchasePrice().doubleValue() < 0D) {
+    if (NumberUtil.lt(vo.getPurchasePrice(), 0)) {
       throw new DefaultClientException("采购价不允许小于0！");
     }
 
@@ -276,7 +284,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       throw new DefaultClientException("销售价不能为空！");
     }
 
-    if (vo.getSalePrice().doubleValue() < 0D) {
+    if (NumberUtil.lt(vo.getSalePrice(), 0)) {
       throw new DefaultClientException("销售价不允许小于0！");
     }
 
@@ -290,7 +298,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       throw new DefaultClientException("零售价不能为空！");
     }
 
-    if (vo.getRetailPrice().doubleValue() < 0D) {
+    if (NumberUtil.lt(vo.getRetailPrice(), 0D)) {
       throw new DefaultClientException("零售价不允许小于0！");
     }
 
@@ -396,6 +404,13 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         throw new DefaultClientException("单品数据不能为空！");
       }
 
+      BigDecimal purchasePrice = vo.getProductBundles().stream().map(
+          productBundleVo -> NumberUtil.mul(productBundleVo.getBundleNum(),
+              productBundleVo.getPurchasePrice())).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
+      if (!NumberUtil.equal(vo.getPurchasePrice(), purchasePrice)) {
+        throw new DefaultClientException("单品的采购价设置错误！");
+      }
+
       BigDecimal salePrice = vo.getProductBundles().stream().map(
           productBundleVo -> NumberUtil.mul(productBundleVo.getBundleNum(),
               productBundleVo.getSalePrice())).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
@@ -420,6 +435,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         productBundle.setMainProductId(data.getId());
         productBundle.setProductId(productBundleVo.getProductId());
         productBundle.setBundleNum(productBundleVo.getBundleNum());
+        productBundle.setPurchasePrice(productBundleVo.getPurchasePrice());
         productBundle.setSalePrice(productBundleVo.getSalePrice());
         productBundle.setRetailPrice(productBundleVo.getRetailPrice());
 

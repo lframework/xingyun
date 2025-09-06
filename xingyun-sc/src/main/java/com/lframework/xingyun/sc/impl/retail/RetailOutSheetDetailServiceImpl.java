@@ -40,14 +40,14 @@ public class RetailOutSheetDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void addReturnNum(String id, Integer num) {
+  public void addReturnNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
     RetailOutSheetDetail detail = getBaseMapper().selectById(id);
 
-    Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
+    BigDecimal remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum());
     if (NumberUtil.lt(remainNum, num)) {
       Product product = productService.findById(detail.getProductId());
 
@@ -66,7 +66,7 @@ public class RetailOutSheetDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void subReturnNum(String id, Integer num) {
+  public void subReturnNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
@@ -114,14 +114,14 @@ public class RetailOutSheetDetailServiceImpl extends
                     + "尚未设置重量，请检查！");
           }
 
-          return NumberUtil.mul(targetProduct.getWeight(), b.getProductOrderNum());
+          return NumberUtil.getNumber(NumberUtil.mul(targetProduct.getWeight(), b.getProductOrderNum()), 2);
         }).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
       } else {
         if (product.getWeight() == null) {
           throw new DefaultClientException(
               "商品（" + product.getCode() + "）" + product.getName() + "尚未设置重量，请检查！");
         }
-        return NumberUtil.mul(t.getOrderNum(), product.getWeight());
+        return NumberUtil.getNumber(NumberUtil.mul(t.getOrderNum(), product.getWeight()), 2);
       }
     }).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
 
@@ -153,14 +153,14 @@ public class RetailOutSheetDetailServiceImpl extends
                     + "尚未设置体积，请检查！");
           }
 
-          return NumberUtil.mul(targetProduct.getVolume(), b.getProductOrderNum());
+          return NumberUtil.getNumber(NumberUtil.mul(targetProduct.getVolume(), b.getProductOrderNum()), 2);
         }).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
       } else {
         if (product.getVolume() == null) {
           throw new DefaultClientException(
               "商品（" + product.getCode() + "）" + product.getName() + "尚未设置体积，请检查！");
         }
-        return NumberUtil.mul(t.getOrderNum(), product.getVolume());
+        return NumberUtil.getNumber(NumberUtil.mul(t.getOrderNum(), product.getVolume()), 2);
       }
     }).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
 

@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.dto.stock.take.plan;
 
 import com.lframework.starter.web.core.dto.BaseDto;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import lombok.Data;
 
 /**
@@ -25,5 +26,5 @@ public class GetTakeStockPlanDetailProductDto implements BaseDto, Serializable {
   /**
    * 库存数量
    */
-  private Integer stockNum;
+  private BigDecimal stockNum;
 }

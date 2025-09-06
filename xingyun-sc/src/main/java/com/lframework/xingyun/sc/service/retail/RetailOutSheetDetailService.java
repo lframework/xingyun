@@ -21,7 +21,7 @@ public interface RetailOutSheetDetailService extends BaseMpService<RetailOutShee
    * @param id
    * @param num
    */
-  void addReturnNum(String id, Integer num);
+  void addReturnNum(String id, BigDecimal num);
 
   /**
    * 减少退货数量
@@ -29,7 +29,7 @@ public interface RetailOutSheetDetailService extends BaseMpService<RetailOutShee
    * @param id
    * @param num
    */
-  void subReturnNum(String id, Integer num);
+  void subReturnNum(String id, BigDecimal num);
 
   /**
    * 根据出库单ID查询商品总重量

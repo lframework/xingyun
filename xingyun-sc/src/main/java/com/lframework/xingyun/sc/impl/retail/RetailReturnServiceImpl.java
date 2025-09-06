@@ -18,6 +18,7 @@ import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
@@ -28,7 +29,6 @@ import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
@@ -77,8 +77,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMapper, RetailReturn>
-    implements RetailReturnService {
+public class RetailReturnServiceImpl extends
+    BaseMpServiceImpl<RetailReturnMapper, RetailReturn> implements RetailReturnService {
 
   @Autowired
   private RetailReturnDetailService retailReturnDetailService;
@@ -194,8 +194,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     if (requireOut) {
       //查询零售退货单明细
       Wrapper<RetailReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-              RetailReturnDetail.class)
-          .eq(RetailReturnDetail::getReturnId, retailReturn.getId());
+          RetailReturnDetail.class).eq(RetailReturnDetail::getReturnId, retailReturn.getId());
       List<RetailReturnDetail> details = retailReturnDetailService.list(queryDetailWrapper);
       for (RetailReturnDetail detail : details) {
         if (!StringUtil.isBlank(detail.getOutSheetDetailId())) {
@@ -223,8 +222,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
         .set(RetailReturn::getApproveBy, null).set(RetailReturn::getApproveTime, null)
         .set(RetailReturn::getRefuseReason, StringPool.EMPTY_STR)
         .set(RetailReturn::getMemberId, retailReturn.getMemberId())
-        .eq(RetailReturn::getId, retailReturn.getId())
-        .in(RetailReturn::getStatus, statusList);
+        .eq(RetailReturn::getId, retailReturn.getId()).in(RetailReturn::getStatus, statusList);
     if (getBaseMapper().updateAllColumn(retailReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("零售退货单信息已过期，请刷新重试！");
     }
@@ -262,9 +260,8 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
           .ne(RetailReturn::getId, retailReturn.getId());
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         RetailOutSheet retailOutSheet = retailOutSheetService.getById(retailReturn.getOutSheetId());
-        throw new DefaultClientException(
-            "零售出库单号：" + retailOutSheet.getCode()
-                + "，已关联其他零售退货单，不允许关联多个零售退货单！");
+        throw new DefaultClientException("零售出库单号：" + retailOutSheet.getCode()
+            + "，已关联其他零售退货单，不允许关联多个零售退货单！");
       }
     }
 
@@ -277,8 +274,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     LambdaUpdateWrapper<RetailReturn> updateOrderWrapper = Wrappers.lambdaUpdate(RetailReturn.class)
         .set(RetailReturn::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(RetailReturn::getApproveTime, LocalDateTime.now())
-        .eq(RetailReturn::getId, retailReturn.getId())
-        .in(RetailReturn::getStatus, statusList);
+        .eq(RetailReturn::getId, retailReturn.getId()).in(RetailReturn::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(RetailReturn::getDescription, vo.getDescription());
     }
@@ -303,7 +299,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(retailReturn.getScId());
       addProductStockVo.setStockNum(detail.getReturnNum());
-      addProductStockVo.setDefaultTaxPrice(productPurchase.getPrice());
+      addProductStockVo.setDefaultTaxAmount(
+          NumberUtil.getNumber(NumberUtil.mul(productPurchase.getPrice(), detail.getReturnNum()),
+              2));
       addProductStockVo.setBizId(retailReturn.getId());
       addProductStockVo.setBizDetailId(detail.getId());
       addProductStockVo.setBizCode(retailReturn.getCode());
@@ -403,8 +401,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
     if (!StringUtil.isBlank(retailReturn.getOutSheetId())) {
       //查询零售退货单明细
       Wrapper<RetailReturnDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-              RetailReturnDetail.class)
-          .eq(RetailReturnDetail::getReturnId, retailReturn.getId());
+          RetailReturnDetail.class).eq(RetailReturnDetail::getReturnId, retailReturn.getId());
       List<RetailReturnDetail> details = retailReturnDetailService.list(queryDetailWrapper);
       for (RetailReturnDetail detail : details) {
         if (!StringUtil.isBlank(detail.getOutSheetDetailId())) {
@@ -487,15 +484,14 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
             .eq(RetailReturn::getOutSheetId, retailOutSheet.getId())
             .ne(RetailReturn::getId, retailReturn.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
-          throw new DefaultClientException(
-              "零售出库单号：" + retailOutSheet.getCode()
-                  + "，已关联其他零售退货单，不允许关联多个零售退货单！");
+          throw new DefaultClientException("零售出库单号：" + retailOutSheet.getCode()
+              + "，已关联其他零售退货单，不允许关联多个零售退货单！");
         }
       }
     }
 
-    int returnNum = 0;
-    int giftNum = 0;
+    BigDecimal returnNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (RetailReturnProductVo productVo : vo.getProducts()) {
@@ -514,7 +510,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
         }
       }
 
-      boolean isGift = productVo.getTaxPrice().doubleValue() == 0D;
+      boolean isGift = NumberUtil.equal(productVo.getTaxPrice(), 0D);
 
       if (requireOut) {
         if (StringUtil.isBlank(productVo.getOutSheetDetailId())) {
@@ -525,13 +521,14 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       }
 
       if (isGift) {
-        giftNum += productVo.getReturnNum();
+        giftNum = NumberUtil.add(giftNum, productVo.getReturnNum());
       } else {
-        returnNum += productVo.getReturnNum();
+        returnNum = NumberUtil.add(returnNum, productVo.getReturnNum());
       }
 
       totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(productVo.getTaxPrice(), productVo.getReturnNum()));
+          NumberUtil.getNumber(NumberUtil.mul(productVo.getTaxPrice(), productVo.getReturnNum()),
+              2));
 
       RetailReturnDetail detail = new RetailReturnDetail();
       detail.setId(IdUtil.getId());
@@ -542,10 +539,6 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
 
-      if (!NumberUtil.isNumberPrecision(productVo.getTaxPrice(), 2)) {
-        throw new InputErrorException("第" + orderNo + "行商品价格最多允许2位小数！");
-      }
-
       detail.setProductId(productVo.getProductId());
       detail.setReturnNum(productVo.getReturnNum());
       detail.setOriPrice(productVo.getOriPrice());
@@ -553,11 +546,12 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getSaleTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       detail.setSettleStatus(this.getInitSettleStatus(member));
+      detail.setTaxAmount(
+          NumberUtil.getNumber(NumberUtil.mul(detail.getTaxPrice(), detail.getReturnNum()), 2));
       if (requireOut && !StringUtil.isBlank(productVo.getOutSheetDetailId())) {
         detail.setOutSheetDetailId(productVo.getOutSheetDetailId());
         retailOutSheetDetailLotService.addReturnNum(productVo.getOutSheetDetailId(),

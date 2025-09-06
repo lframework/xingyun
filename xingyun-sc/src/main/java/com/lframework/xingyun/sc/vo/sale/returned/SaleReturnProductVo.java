@@ -39,7 +39,7 @@ public class SaleReturnProductVo implements BaseVo, Serializable {
    * 退货数量
    */
   @ApiModelProperty("退货数量")
-  private Integer returnNum;
+  private BigDecimal returnNum;
 
   /**
    * 备注

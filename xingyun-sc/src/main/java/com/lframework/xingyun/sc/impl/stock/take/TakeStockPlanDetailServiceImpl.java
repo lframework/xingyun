@@ -13,6 +13,7 @@ import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanDetailService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class TakeStockPlanDetailServiceImpl extends
 
       ProductStock productStock = productStockService.getByProductIdAndScId(productId,
           takeStockPlan.getScId());
-      detail.setStockNum(productStock == null ? 0 : productStock.getStockNum());
+      detail.setStockNum(productStock == null ? BigDecimal.ZERO : productStock.getStockNum());
 
       detail.setDescription(StringPool.EMPTY_STR);
       detail.setOrderNo(orderNo++);
@@ -75,8 +76,14 @@ public class TakeStockPlanDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void updateOriTakeNum(String planId, String productId, Integer num) {
+  public void updateOriTakeNum(String planId, String productId, BigDecimal num) {
 
     getBaseMapper().updateOriTakeNum(planId, productId, num);
+  }
+
+  @Transactional(rollbackFor = Exception.class)
+  @Override
+  public void adjustStockNum(String planId) {
+    getBaseMapper().adjustStockNum(planId);
   }
 }

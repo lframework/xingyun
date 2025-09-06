@@ -5,6 +5,7 @@ import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.constants.StringPool;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.components.excel.ExcelModel;
@@ -15,6 +16,7 @@ import com.lframework.xingyun.sc.entity.StockAdjustSheet;
 import com.lframework.xingyun.sc.entity.StockAdjustSheetDetail;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustSheetDetailService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import lombok.Data;
@@ -50,7 +52,7 @@ public class StockAdjustSheetExportModel extends BaseBo<StockAdjustSheet> implem
    * 库存调整数量
    */
   @ExcelProperty("库存调整数量")
-  private Integer diffStockNum;
+  private BigDecimal diffStockNum;
 
   /**
    * 修改时间
@@ -123,6 +125,6 @@ public class StockAdjustSheetExportModel extends BaseBo<StockAdjustSheet> implem
         .orderByAsc(StockAdjustSheetDetail::getOrderNo);
     List<StockAdjustSheetDetail> details = stockAdjustSheetDetailService.list(queryWrapper);
     this.productNum = details.size();
-    this.diffStockNum = details.stream().mapToInt(StockAdjustSheetDetail::getStockNum).sum();
+    this.diffStockNum = details.stream().map(StockAdjustSheetDetail::getStockNum).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
   }
 }

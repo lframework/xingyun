@@ -34,4 +34,10 @@ public class QueryPurchaseProductVo extends PageVo {
    */
   @ApiModelProperty("品牌ID")
   private String brandId;
+
+  /**
+   * 是否退货
+   */
+  @ApiModelProperty("是否退货")
+  private Boolean isReturn = Boolean.FALSE;
 }

@@ -7,6 +7,7 @@ import com.lframework.starter.web.core.components.resp.InvokeResult;
 import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
 import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.starter.web.core.utils.ExcelUtil;
 import com.lframework.starter.mq.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.purchase.returned.GetPurchaseReturnBo;
 import com.lframework.xingyun.sc.bo.purchase.returned.PrintPurchaseReturnBo;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,6 +39,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 采购退单管理
@@ -171,6 +174,8 @@ public class PurchaseReturnController extends DefaultBaseController {
   @HasPermission({"purchase:return:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreatePurchaseReturnVo vo) {
+
+    vo.validate();
 
     purchaseReturnService.directApprovePass(vo);
 

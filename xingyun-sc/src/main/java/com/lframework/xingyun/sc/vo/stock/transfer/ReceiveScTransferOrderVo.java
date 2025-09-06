@@ -4,6 +4,7 @@ import com.lframework.starter.web.core.components.validation.TypeMismatch;
 import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -49,6 +50,6 @@ public class ReceiveScTransferOrderVo implements BaseVo, Serializable {
     @ApiModelProperty(value = "收货数量", required = true)
     @NotNull(message = "收货数量不能为空！")
     @TypeMismatch(message = "收货数量格式有误！")
-    private Integer receiveNum;
+    private BigDecimal receiveNum;
   }
 }

@@ -39,7 +39,7 @@ public class SaleProductVo implements BaseVo, Serializable {
    * 销售数量
    */
   @ApiModelProperty("销售数量")
-  private Integer orderNum;
+  private BigDecimal orderNum;
 
   /**
    * 备注

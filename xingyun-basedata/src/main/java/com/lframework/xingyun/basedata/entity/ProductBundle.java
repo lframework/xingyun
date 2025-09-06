@@ -46,6 +46,11 @@ public class ProductBundle extends BaseEntity implements BaseDto {
   private Integer bundleNum;
 
   /**
+   * 采购价
+   */
+  private BigDecimal purchasePrice;
+
+  /**
    * 销售价
    */
   private BigDecimal salePrice;

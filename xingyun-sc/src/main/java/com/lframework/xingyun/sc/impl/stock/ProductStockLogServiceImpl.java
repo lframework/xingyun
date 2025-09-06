@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.impl.stock;
 
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.components.resp.PageResult;
@@ -48,6 +49,8 @@ public class ProductStockLogServiceImpl extends
   @Override
   public void addLogWithAddStock(AddLogWithAddStockVo vo) {
 
+    Assert.greaterThanZero(vo.getStockNum());
+
     ProductStockLog record = new ProductStockLog();
     record.setId(IdUtil.getId());
     record.setScId(vo.getScId());
@@ -82,6 +85,7 @@ public class ProductStockLogServiceImpl extends
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void addLogWithSubStock(AddLogWithSubStockVo vo) {
+    Assert.greaterThanZero(vo.getStockNum());
 
     ProductStockLog record = new ProductStockLog();
     record.setId(IdUtil.getId());
@@ -91,8 +95,8 @@ public class ProductStockLogServiceImpl extends
     record.setCurStockNum(vo.getCurStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());
     record.setCurTaxPrice(vo.getCurTaxPrice());
-    record.setStockNum(-Math.abs(vo.getStockNum()));
-    record.setTaxAmount(vo.getTaxAmount().abs().negate());
+    record.setStockNum(NumberUtil.abs(vo.getStockNum()).negate());
+    record.setTaxAmount(NumberUtil.abs(vo.getTaxAmount()).negate());
     if (!StringUtil.isBlank(vo.getCreateBy())) {
       record.setCreateBy(vo.getCreateBy());
     }

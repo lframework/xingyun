@@ -12,6 +12,7 @@ import com.lframework.xingyun.sc.entity.SaleOutSheetDetailLot;
 import com.lframework.xingyun.sc.mappers.SaleOutSheetDetailLotMapper;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailService;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,14 +36,14 @@ public class SaleOutSheetDetailLotServiceImpl
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void addReturnNum(String id, Integer num) {
+  public void addReturnNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
     SaleOutSheetDetailLot detail = getBaseMapper().selectById(id);
 
-    Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
+    BigDecimal remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum());
     if (NumberUtil.lt(remainNum, num)) {
       SaleOutSheetDetail sheetDetail = saleOutSheetDetailService.getById(detail.getDetailId());
 
@@ -68,7 +69,7 @@ public class SaleOutSheetDetailLotServiceImpl
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void subReturnNum(String id, Integer num) {
+  public void subReturnNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);

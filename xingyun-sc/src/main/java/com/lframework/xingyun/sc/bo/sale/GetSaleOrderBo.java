@@ -82,13 +82,13 @@ public class GetSaleOrderBo extends BaseBo<SaleOrderFullDto> {
    * 销售数量
    */
   @ApiModelProperty("销售数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
   @ApiModelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 销售金额
@@ -280,7 +280,7 @@ public class GetSaleOrderBo extends BaseBo<SaleOrderFullDto> {
      * 销售数量
      */
     @ApiModelProperty("销售数量")
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 原价
@@ -329,7 +329,7 @@ public class GetSaleOrderBo extends BaseBo<SaleOrderFullDto> {
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     public OrderDetailBo(String scId, SaleOrderFullDto.OrderDetailDto dto) {
 
@@ -367,7 +367,7 @@ public class GetSaleOrderBo extends BaseBo<SaleOrderFullDto> {
           ProductStockService.class);
       ProductStock productStock = productStockService.getByProductIdAndScId(
           this.getProductId(), this.getScId());
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
 
       if (StringUtil.isNotBlank(dto.getMainProductId())) {
         ProductService productService = ApplicationUtil.getBean(ProductService.class);

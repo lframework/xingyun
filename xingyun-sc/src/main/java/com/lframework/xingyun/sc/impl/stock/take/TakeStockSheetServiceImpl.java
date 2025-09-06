@@ -362,7 +362,7 @@ public class TakeStockSheetServiceImpl extends
     List<TakeStockSheetDetail> details = takeStockSheetDetailService.list(queryDetailWrapper);
     for (TakeStockSheetDetail detail : details) {
       takeStockPlanDetailService.updateOriTakeNum(data.getPlanId(), detail.getProductId(),
-          -detail.getTakeNum());
+          detail.getTakeNum().negate());
     }
 
     OpLogUtil.setVariable("id", data.getId());

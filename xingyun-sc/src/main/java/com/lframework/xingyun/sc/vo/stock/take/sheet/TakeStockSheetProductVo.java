@@ -4,6 +4,7 @@ import com.lframework.starter.web.core.components.validation.TypeMismatch;
 import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class TakeStockSheetProductVo implements BaseVo, Serializable {
   @ApiModelProperty(value = "盘点数量", required = true)
   @NotNull(message = "盘点数量不能为空！")
   @TypeMismatch(message = "盘点数量格式有误！")
-  private Integer takeNum;
+  private BigDecimal takeNum;
 
   /**
    * 备注

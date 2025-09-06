@@ -77,7 +77,7 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
    * 调拨数量
    */
   @ApiModelProperty("调拨数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 调拨成本金额
@@ -234,19 +234,19 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
      * 调拨数量
      */
     @ApiModelProperty("调拨数量")
-    private Integer transferNum;
+    private BigDecimal transferNum;
 
     /**
      * 当前库存数量
      */
     @ApiModelProperty("当前库存数量")
-    private Integer curStockNum;
+    private BigDecimal curStockNum;
 
     /**
      * 已收货数量
      */
     @ApiModelProperty("已收货数量")
-    private Integer receiveNum;
+    private BigDecimal receiveNum;
 
     /**
      * 备注
@@ -312,7 +312,7 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
             ProductStockService.class);
         ProductStock productStock = productStockService.getByProductIdAndScId(dto.getProductId(),
             this.scId);
-        this.curStockNum = productStock == null ? 0 : productStock.getStockNum();
+        this.curStockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
       }
     }
   }

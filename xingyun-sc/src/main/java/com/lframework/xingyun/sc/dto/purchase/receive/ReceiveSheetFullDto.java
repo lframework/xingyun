@@ -58,12 +58,12 @@ public class ReceiveSheetFullDto implements BaseDto, Serializable {
   /**
    * 采购数量
    */
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
-  private Integer totalGiftNum;
+  private BigDecimal totalGiftNum;
 
   /**
    * 采购金额
@@ -143,12 +143,17 @@ public class ReceiveSheetFullDto implements BaseDto, Serializable {
     /**
      * 收货数量
      */
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 采购价
      */
     private BigDecimal taxPrice;
+
+    /**
+     * 采购总金额
+     */
+    private BigDecimal taxAmount;
 
     /**
      * 是否赠品

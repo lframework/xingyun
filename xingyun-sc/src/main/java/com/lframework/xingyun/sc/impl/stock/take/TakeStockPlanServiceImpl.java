@@ -18,10 +18,10 @@ import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.enums.ProductType;
@@ -56,6 +56,7 @@ import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -195,9 +196,9 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
         detail.setPlanId(data.getId());
         detail.setProductId(product.getId());
 
-        detail.setStockNum(productStock == null ? 0 : productStock.getStockNum());
-        detail.setTotalOutNum(0);
-        detail.setTotalInNum(0);
+        detail.setStockNum(productStock == null ? BigDecimal.ZERO : productStock.getStockNum());
+        detail.setTotalOutNum(BigDecimal.ZERO);
+        detail.setTotalInNum(BigDecimal.ZERO);
         detail.setOrderNo(orderNo++);
 
         takeStockPlanDetailService.save(detail);
@@ -278,6 +279,11 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
 
       takeStockPlanDetailService.update(updateDetailWrapper);
     }
+
+    TakeStockConfig config = takeStockConfigService.get();
+    if (config.getAutoChangeStock()) {
+      takeStockPlanDetailService.adjustStockNum(data.getId());
+    }
   }
 
   @OpLog(type = TakeStockOpLogType.class, name = "差异处理，盘点任务ID：{}", params = {"#id"})
@@ -323,10 +329,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
         // 如果允许修改盘点数量
         detail.setTakeNum(productVo.getTakeNum());
       } else {
-        // 如果允许自动调整，那么盘点数量=盘点单的盘点数量 - 进项数量 + 出项数量，否则就等于盘点单的盘点数量
-        detail.setTakeNum(config.getAutoChangeStock() ?
-            detail.getOriTakeNum() - detail.getTotalInNum() + detail.getTotalOutNum() :
-            detail.getOriTakeNum());
+        detail.setTakeNum(detail.getOriTakeNum());
       }
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
@@ -340,9 +343,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     }
 
     // 进行出入库操作
-    int orderNo = 0;
     for (TakeStockPlanDetail detail : details) {
-      orderNo++;
       if (!NumberUtil.equal(detail.getStockNum(), detail.getTakeNum())) {
         if (NumberUtil.lt(detail.getStockNum(), detail.getTakeNum())) {
           Product product = productService.findById(detail.getProductId());
@@ -351,8 +352,9 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
           AddProductStockVo addProductStockVo = new AddProductStockVo();
           addProductStockVo.setProductId(detail.getProductId());
           addProductStockVo.setScId(data.getScId());
-          addProductStockVo.setStockNum(detail.getTakeNum() - detail.getStockNum());
-          addProductStockVo.setDefaultTaxPrice(purchase.getPrice());
+          addProductStockVo.setStockNum(NumberUtil.sub(detail.getTakeNum(), detail.getStockNum()));
+          addProductStockVo.setDefaultTaxAmount(NumberUtil.getNumber(
+              NumberUtil.mul(purchase.getPrice(), addProductStockVo.getStockNum()), 2));
           addProductStockVo.setBizId(data.getId());
           addProductStockVo.setBizDetailId(detail.getId());
           addProductStockVo.setBizCode(data.getCode());
@@ -364,7 +366,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(detail.getProductId());
           subProductStockVo.setScId(data.getScId());
-          subProductStockVo.setStockNum(detail.getStockNum() - detail.getTakeNum());
+          subProductStockVo.setStockNum(NumberUtil.sub(detail.getStockNum(), detail.getTakeNum()));
           subProductStockVo.setBizId(data.getId());
           subProductStockVo.setBizDetailId(detail.getId());
           subProductStockVo.setBizCode(data.getCode());

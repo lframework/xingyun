@@ -81,13 +81,13 @@ public class RetailOutSheetExportModel extends BaseBo<RetailOutSheet> implements
    * 商品数量
    */
   @ExcelProperty("商品数量")
-  private Integer receiveNum;
+  private BigDecimal receiveNum;
 
   /**
    * 赠品数量
    */
   @ExcelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 操作时间
@@ -171,7 +171,7 @@ public class RetailOutSheetExportModel extends BaseBo<RetailOutSheet> implements
     this.setScCode(sc.getCode());
     this.setScName(sc.getName());
     this.setMemberCode(member == null ? null : member.getCode());
-    this.setMemberName(member.getName());
+    this.setMemberName(member == null ? null : member.getName());
     this.setSalerName(saler == null ? null : saler.getName());
     this.setTotalAmount(dto.getTotalAmount());
     this.setReceiveNum(dto.getTotalNum());

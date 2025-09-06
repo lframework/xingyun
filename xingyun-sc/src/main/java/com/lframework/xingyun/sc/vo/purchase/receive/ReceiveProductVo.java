@@ -27,7 +27,7 @@ public class ReceiveProductVo implements BaseVo, Serializable {
    * 收货数量
    */
   @ApiModelProperty("收货数量")
-  private Integer receiveNum;
+  private BigDecimal receiveNum;
 
   /**
    * 备注

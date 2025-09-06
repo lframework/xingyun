@@ -15,19 +15,19 @@ import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
-import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.components.timeline.ReceiveOrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferProductDto;
 import com.lframework.xingyun.sc.entity.ScTransferOrder;
@@ -43,23 +43,17 @@ import com.lframework.xingyun.sc.service.stock.transfer.ScTransferOrderDetailSer
 import com.lframework.xingyun.sc.service.stock.transfer.ScTransferOrderService;
 import com.lframework.xingyun.sc.vo.stock.AddProductStockVo;
 import com.lframework.xingyun.sc.vo.stock.SubProductStockVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.ApprovePassScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.ApproveRefuseScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.CreateScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferOrderVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferProductVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.ReceiveScTransferOrderVo;
+import com.lframework.xingyun.sc.vo.stock.transfer.*;
 import com.lframework.xingyun.sc.vo.stock.transfer.ReceiveScTransferOrderVo.ReceiveScTransferProductVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.ScTransferProductVo;
-import com.lframework.xingyun.sc.vo.stock.transfer.UpdateScTransferOrderVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ScTransferOrderServiceImpl extends
@@ -269,10 +263,11 @@ public class ScTransferOrderServiceImpl extends
       ProductStockChangeDto changeDto = productStockService.subStock(subProductStockVo);
 
       detail.setTaxPrice(changeDto.getCurTaxPrice());
+      detail.setTransferAmount(NumberUtil.abs(changeDto.getTaxAmount()));
 
       Wrapper<ScTransferOrderDetail> updateDetailWrapper = Wrappers.lambdaUpdate(
               ScTransferOrderDetail.class).eq(ScTransferOrderDetail::getId, detail.getId())
-          .set(ScTransferOrderDetail::getTaxPrice, detail.getTaxPrice());
+          .set(ScTransferOrderDetail::getTaxPrice, detail.getTaxPrice()).set(ScTransferOrderDetail::getTransferAmount, detail.getTransferAmount());
       scTransferOrderDetailService.update(updateDetailWrapper);
       totalAmount = NumberUtil.add(totalAmount,
           NumberUtil.mul(detail.getTaxPrice(), detail.getTransferNum()));
@@ -353,26 +348,6 @@ public class ScTransferOrderServiceImpl extends
       throw new DefaultClientException("仓库调拨单信息已过期，请刷新重试！");
     }
 
-    for (ReceiveScTransferProductVo productVo : vo.getProducts()) {
-      if (scTransferOrderDetailService.receive(data.getId(), productVo.getProductId(),
-          productVo.getReceiveNum()) != 1) {
-        Product product = productService.findById(productVo.getProductId());
-        throw new DefaultClientException(
-            "商品（" + product.getCode() + "）" + product.getName() + "待收货数量不足，请检查！");
-      }
-    }
-
-    Wrapper<ScTransferOrder> updateWrapper = Wrappers.lambdaUpdate(ScTransferOrder.class)
-        .set(ScTransferOrder::getStatus,
-            scTransferOrderDetailService.countUnReceive(data.getId()) > 0
-                ? ScTransferOrderStatus.PART_RECEIVED : ScTransferOrderStatus.RECEIVED)
-        .eq(ScTransferOrder::getId, data.getId())
-        .in(ScTransferOrder::getStatus, ScTransferOrderStatus.APPROVE_PASS,
-            ScTransferOrderStatus.PART_RECEIVED);
-    if (!this.update(updateWrapper)) {
-      throw new DefaultClientException("仓库调拨单信息已过期，请刷新重试！");
-    }
-
     LocalDateTime now = LocalDateTime.now();
     for (ReceiveScTransferProductVo productVo : vo.getProducts()) {
       Wrapper<ScTransferOrderDetail> queryWrapper = Wrappers.lambdaQuery(
@@ -384,7 +359,13 @@ public class ScTransferOrderServiceImpl extends
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(data.getTargetScId());
       addProductStockVo.setStockNum(productVo.getReceiveNum());
-      addProductStockVo.setTaxPrice(detail.getTaxPrice());
+      if (NumberUtil.equal(productVo.getReceiveNum(), NumberUtil.sub(detail.getTransferNum(), detail.getReceiveNum()))) {
+        // 本次是全部收货
+        addProductStockVo.setTaxAmount(NumberUtil.sub(detail.getTransferAmount(), detail.getReceiveAmount()));
+      } else {
+        // 按比例分配
+        addProductStockVo.setTaxAmount(NumberUtil.getNumber(NumberUtil.mul(NumberUtil.div(detail.getTransferAmount(), detail.getTransferNum()), productVo.getReceiveNum()), 2));
+      }
       addProductStockVo.setCreateTime(now);
       addProductStockVo.setBizId(data.getId());
       addProductStockVo.setBizDetailId(detail.getId());
@@ -398,7 +379,26 @@ public class ScTransferOrderServiceImpl extends
       detailReceive.setOrderId(data.getId());
       detailReceive.setDetailId(detail.getId());
       detailReceive.setReceiveNum(productVo.getReceiveNum());
+      detailReceive.setReceiveAmount(addProductStockVo.getTaxAmount());
       scTransferOrderDetailReceiveService.save(detailReceive);
+
+        if (scTransferOrderDetailService.receive(data.getId(), productVo.getProductId(),
+                productVo.getReceiveNum(), addProductStockVo.getTaxAmount()) != 1) {
+            Product product = productService.findById(productVo.getProductId());
+            throw new DefaultClientException(
+                    "商品（" + product.getCode() + "）" + product.getName() + "待收货数量不足，请检查！");
+        }
+    }
+
+    Wrapper<ScTransferOrder> updateWrapper = Wrappers.lambdaUpdate(ScTransferOrder.class)
+            .set(ScTransferOrder::getStatus,
+                    scTransferOrderDetailService.countUnReceive(data.getId()) > 0
+                            ? ScTransferOrderStatus.PART_RECEIVED : ScTransferOrderStatus.RECEIVED)
+            .eq(ScTransferOrder::getId, data.getId())
+            .in(ScTransferOrder::getStatus, ScTransferOrderStatus.APPROVE_PASS,
+                    ScTransferOrderStatus.PART_RECEIVED);
+    if (!this.update(updateWrapper)) {
+      throw new DefaultClientException("仓库调拨单信息已过期，请刷新重试！");
     }
   }
 
@@ -452,20 +452,23 @@ public class ScTransferOrderServiceImpl extends
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    int totalNum = 0;
+    BigDecimal totalNum = BigDecimal.ZERO;
     int orderNo = 1;
     for (ScTransferProductVo product : vo.getProducts()) {
       ScTransferOrderDetail detail = new ScTransferOrderDetail();
       detail.setId(IdUtil.getId());
       detail.setOrderId(data.getId());
       detail.setProductId(product.getProductId());
+      if (!NumberUtil.isNumberPrecision(product.getTransferNum(), 8)) {
+        throw new DefaultClientException("第" + orderNo + "行商品的调拨数量最多允许8位小数！");
+      }
       detail.setTransferNum(product.getTransferNum());
       detail.setDescription(
           StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
               : product.getDescription());
       detail.setOrderNo(orderNo++);
 
-      totalNum += detail.getTransferNum();
+      totalNum = NumberUtil.add(detail.getTransferNum(), totalNum);
 
       scTransferOrderDetailService.save(detail);
     }

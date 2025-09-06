@@ -129,9 +129,9 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
           "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”不允许小于0");
     }
 
-    if (!NumberUtil.isNumberPrecision(data.getTaxRate(), 0)) {
+    if (!NumberUtil.isNumberPrecision(data.getTaxRate(), 2)) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”必须为整数");
+          "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”最多允许2位小数");
     }
 
     if (data.getSaleTaxRate() == null) {
@@ -144,9 +144,9 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
           "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”不允许小于0");
     }
 
-    if (!NumberUtil.isNumberPrecision(data.getSaleTaxRate(), 0)) {
+    if (!NumberUtil.isNumberPrecision(data.getSaleTaxRate(), 2)) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”必须为整数");
+          "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”最多允许2位小数");
     }
 
     if (data.getPurchasePrice() == null) {
@@ -154,9 +154,9 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
           "第" + context.readRowHolder().getRowIndex() + "行“采购价（元）”不能为空");
     }
 
-    if (!NumberUtil.isNumberPrecision(data.getPurchasePrice(), 2)) {
+    if (!NumberUtil.isNumberPrecision(data.getPurchasePrice(), 6)) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“采购价（元）”最多允许2位小数");
+          "第" + context.readRowHolder().getRowIndex() + "行“采购价（元）”最多允许6位小数");
     }
     if (NumberUtil.lt(data.getPurchasePrice(), 0)) {
       throw new DefaultClientException(
@@ -168,9 +168,9 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
           "第" + context.readRowHolder().getRowIndex() + "行“销售价（元）”不能为空");
     }
 
-    if (!NumberUtil.isNumberPrecision(data.getSalePrice(), 2)) {
+    if (!NumberUtil.isNumberPrecision(data.getSalePrice(), 6)) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“销售价（元）”最多允许2位小数");
+          "第" + context.readRowHolder().getRowIndex() + "行“销售价（元）”最多允许6位小数");
     }
     if (NumberUtil.lt(data.getSalePrice(), 0)) {
       throw new DefaultClientException(
@@ -182,9 +182,9 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
           "第" + context.readRowHolder().getRowIndex() + "行“零售价（元）”不能为空");
     }
 
-    if (!NumberUtil.isNumberPrecision(data.getRetailPrice(), 2)) {
+    if (!NumberUtil.isNumberPrecision(data.getRetailPrice(), 6)) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“零售价（元）”最多允许2位小数");
+          "第" + context.readRowHolder().getRowIndex() + "行“零售价（元）”最多允许6位小数");
     }
     if (NumberUtil.lt(data.getRetailPrice(), 0)) {
       throw new DefaultClientException(

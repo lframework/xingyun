@@ -73,13 +73,13 @@ public class QueryPurchaseOrderBo extends BaseBo<PurchaseOrder> {
    * 采购数量
    */
   @ApiModelProperty("采购数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
   @ApiModelProperty("赠品数量")
-  private Integer totalGiftNum;
+  private BigDecimal totalGiftNum;
 
   /**
    * 采购金额

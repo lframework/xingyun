@@ -52,6 +52,7 @@
             <result column="detail_is_gift" property="isGift"/>
             <result column="detail_tax_rate" property="taxRate"/>
             <result column="detail_description" property="description"/>
+            <result column="detail_tax_amount" property="taxAmount"/>
             <result column="detail_order_no" property="orderNo"/>
             <result column="detail_receive_sheet_detail_id" property="receiveSheetDetailId"/>
         </collection>
@@ -108,6 +109,7 @@
             d.tax_price AS detail_tax_price,
             d.is_gift AS detail_is_gift,
             d.tax_rate AS detail_tax_rate,
+            d.tax_amount AS detail_tax_amount,
             d.description AS detail_description,
             d.order_no AS detail_order_no,
             d.receive_sheet_detail_id AS detail_receive_sheet_detail_id

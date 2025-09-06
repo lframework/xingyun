@@ -105,13 +105,13 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
    * 采购数量
    */
   @ApiModelProperty("采购数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
   @ApiModelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 采购金额
@@ -301,19 +301,19 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
      * 收货数量
      */
     @ApiModelProperty("收货数量")
-    private Integer receiveNum;
+    private BigDecimal receiveNum;
 
     /**
      * 剩余退货数量
      */
     @ApiModelProperty("剩余退货数量")
-    private Integer remainNum;
+    private BigDecimal remainNum;
 
     /**
      * 退货数量
      */
     @ApiModelProperty("退货数量")
-    private Integer returnNum;
+    private BigDecimal returnNum;
 
     /**
      * 退货价
@@ -331,7 +331,7 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 是否赠品
@@ -403,7 +403,7 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
             dto.getReceiveSheetDetailId());
         this.receiveNum = receiveSheetDetailDto.getOrderNum();
         this.remainNum = NumberUtil.sub(receiveSheetDetailDto.getOrderNum(),
-            receiveSheetDetailDto.getReturnNum()).intValue();
+            receiveSheetDetailDto.getReturnNum());
       }
 
       ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
@@ -411,8 +411,8 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
           this.getScId());
       this.taxCostPrice =
           productStock == null ? BigDecimal.ZERO
-              : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+              : NumberUtil.getNumber(productStock.getTaxPrice(), 6);
+      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
     }
   }
 }

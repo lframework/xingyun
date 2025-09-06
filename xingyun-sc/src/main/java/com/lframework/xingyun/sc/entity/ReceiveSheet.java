@@ -69,12 +69,12 @@ public class ReceiveSheet extends BaseEntity implements BaseDto {
   /**
    * 商品数量
    */
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
-  private Integer totalGiftNum;
+  private BigDecimal totalGiftNum;
 
   /**
    * 收货金额

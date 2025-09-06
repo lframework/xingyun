@@ -45,12 +45,6 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
   private String brandName;
 
   /**
-   * 是否多销售属性
-   */
-  @ApiModelProperty("是否多销售属性")
-  private Boolean multiSaleProp;
-
-  /**
    * SKU
    */
   @ApiModelProperty("SKU")
@@ -90,7 +84,7 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
    * 库存数量
    */
   @ApiModelProperty("库存数量")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 税率（%）
@@ -125,7 +119,7 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
         this.getScId());
     this.taxCostPrice =
         productStock == null ? BigDecimal.ZERO
-            : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
-    this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+            : NumberUtil.getNumber(productStock.getTaxPrice(), 6);
+    this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
   }
 }

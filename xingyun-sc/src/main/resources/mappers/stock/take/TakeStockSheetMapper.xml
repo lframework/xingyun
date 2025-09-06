@@ -123,8 +123,8 @@
             <if test="vo.code != null and vo.code != ''">
                 AND tb.code = #{vo.code}
             </if>
-            <if test="vo.planId != null and vo.planId != ''">
-                AND tb.plan_id = #{vo.planId}
+            <if test="vo.planCode != null and vo.planCode != ''">
+                AND plan.code = #{vo.planCode}
             </if>
             <if test="vo.preSheetId != null and vo.preSheetId != ''">
                 AND tb.pre_sheet_id = #{vo.preSheetId}

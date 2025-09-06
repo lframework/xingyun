@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.sc.entity.ScTransferOrderDetail;
+import java.math.BigDecimal;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -21,7 +22,7 @@ public interface ScTransferOrderDetailMapper extends BaseMapper<ScTransferOrderD
    * @return
    */
   int receive(@Param("orderId") String orderId, @Param("productId") String productId,
-      @Param("receiveNum") Integer receiveNum);
+      @Param("receiveNum") BigDecimal receiveNum, @Param("receiveAmount") BigDecimal receiveAmount);
 
   /**
    * 统计未收货的商品

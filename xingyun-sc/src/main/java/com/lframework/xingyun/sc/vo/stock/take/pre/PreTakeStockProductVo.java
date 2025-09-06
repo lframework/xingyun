@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.vo.stock.take.pre;
 import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -22,17 +23,17 @@ public class PreTakeStockProductVo implements BaseVo, Serializable {
    * 初盘数量
    */
   @ApiModelProperty("初盘数量")
-  private Integer firstNum;
+  private BigDecimal firstNum;
 
   /**
    * 复盘数量
    */
   @ApiModelProperty("复盘数量")
-  private Integer secondNum;
+  private BigDecimal secondNum;
 
   /**
    * 抽盘数量
    */
   @ApiModelProperty("抽盘数量")
-  private Integer randNum;
+  private BigDecimal randNum;
 }

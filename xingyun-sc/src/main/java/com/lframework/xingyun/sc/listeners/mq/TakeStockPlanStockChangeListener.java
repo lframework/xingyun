@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.listeners.mq;
 
-import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.queue.MqStringPool;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;

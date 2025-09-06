@@ -64,19 +64,19 @@ public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implemen
    * 原库存数量
    */
   @ExcelProperty("变动前库存数量")
-  private Integer oriStockNum;
+  private BigDecimal oriStockNum;
 
   /**
    * 现库存数量
    */
   @ExcelProperty("变动后库存数量")
-  private Integer curStockNum;
+  private BigDecimal curStockNum;
 
   /**
    * 库存数量
    */
   @ExcelProperty("变动库存数量")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 原含税成本价
@@ -133,7 +133,7 @@ public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implemen
   @Override
   public <A> BaseBo<ProductStockLog> convert(ProductStockLog dto) {
 
-    return this;
+    return super.convert(dto);
   }
 
   @Override
@@ -157,13 +157,6 @@ public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implemen
     this.productName = product.getName();
     this.categoryName = productCategory.getName();
     this.brandName = productBrand.getName();
-
-    this.setOriStockNum(dto.getOriStockNum());
-    this.setCurStockNum(dto.getCurStockNum());
-    this.setStockNum(dto.getStockNum());
-    this.setOriTaxPrice(NumberUtil.getNumber(dto.getOriTaxPrice(), 2));
-    this.setCurTaxPrice(NumberUtil.getNumber(dto.getCurTaxPrice(), 2));
-    this.setTaxAmount(NumberUtil.getNumber(dto.getTaxAmount(), 2));
 
     this.setCreateTime(DateUtil.toDate(dto.getCreateTime()));
     this.setBizCode(dto.getBizCode());

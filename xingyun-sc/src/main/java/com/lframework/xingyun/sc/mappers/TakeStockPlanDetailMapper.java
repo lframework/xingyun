@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.mappers;
 import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
+import java.math.BigDecimal;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -41,7 +42,7 @@ public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetai
    * @param num
    */
   void updateOriTakeNum(@Param("planId") String planId, @Param("productId") String productId,
-      @Param("num") Integer num);
+      @Param("num") BigDecimal num);
 
   /**
    * 增加进项数量
@@ -51,7 +52,7 @@ public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetai
    * @param num
    */
   void addTotalInNum(@Param("scId") String scId, @Param("productId") String productId,
-      @Param("num") Integer num);
+      @Param("num") BigDecimal num);
 
   /**
    * 增加出项数量
@@ -61,5 +62,11 @@ public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetai
    * @param num
    */
   void addTotalOutNum(@Param("scId") String scId, @Param("productId") String productId,
-      @Param("num") Integer num);
+      @Param("num") BigDecimal num);
+
+  /**
+   * 根据盘点任务ID调整库存数量
+   * @param planId
+   */
+  void adjustStockNum(@Param("planId") String planId);
 }

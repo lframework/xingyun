@@ -111,13 +111,13 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
    * 采购数量
    */
   @ApiModelProperty("采购数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
   @ApiModelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 采购金额
@@ -311,25 +311,31 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
      * 采购数量
      */
     @ApiModelProperty("采购数量")
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 剩余收货数量
      */
     @ApiModelProperty("剩余收货数量")
-    private Integer remainNum;
+    private BigDecimal remainNum;
 
     /**
      * 收货数量
      */
     @ApiModelProperty("收货数量")
-    private Integer receiveNum;
+    private BigDecimal receiveNum;
 
     /**
      * 采购价
      */
     @ApiModelProperty("采购价")
     private BigDecimal purchasePrice;
+
+    /**
+     * 采购总金额
+     */
+    @ApiModelProperty("采购总金额")
+    private BigDecimal taxAmount;
 
     /**
      * 含税成本价
@@ -341,7 +347,7 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 是否赠品
@@ -413,8 +419,7 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
             dto.getPurchaseOrderDetailId());
         this.orderNum = purchaseOrderDetail.getOrderNum();
         this.remainNum = NumberUtil.sub(purchaseOrderDetail.getOrderNum(),
-                purchaseOrderDetail.getReceiveNum())
-            .intValue();
+                purchaseOrderDetail.getReceiveNum());
       }
 
       ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
@@ -422,8 +427,8 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
           this.getScId());
       this.taxCostPrice =
           productStock == null ? BigDecimal.ZERO
-              : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+              : NumberUtil.getNumber(productStock.getTaxPrice(), 6);
+      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
     }
   }
 }

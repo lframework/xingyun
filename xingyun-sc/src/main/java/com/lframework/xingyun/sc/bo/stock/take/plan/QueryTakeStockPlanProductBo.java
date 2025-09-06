@@ -12,6 +12,7 @@ import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDt
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
@@ -75,7 +76,7 @@ public class QueryTakeStockPlanProductBo extends BaseBo<QueryTakeStockPlanProduc
    * 初始库存
    */
   @ApiModelProperty("初始库存")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   public QueryTakeStockPlanProductBo(QueryTakeStockPlanProductDto dto) {
 

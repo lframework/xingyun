@@ -239,6 +239,8 @@ public class SaleOrderController extends DefaultBaseController {
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSaleOrderVo vo) {
 
+    vo.validate();
+
     saleOrderService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

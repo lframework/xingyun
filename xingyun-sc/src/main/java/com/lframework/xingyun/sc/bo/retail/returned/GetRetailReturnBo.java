@@ -102,13 +102,13 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
    * 退货数量
    */
   @ApiModelProperty("退货数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
   @ApiModelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 退货金额
@@ -301,19 +301,19 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
      * 出库数量
      */
     @ApiModelProperty("出库数量")
-    private Integer outNum;
+    private BigDecimal outNum;
 
     /**
      * 剩余退货数量
      */
     @ApiModelProperty("剩余退货数量")
-    private Integer remainNum;
+    private BigDecimal remainNum;
 
     /**
      * 退货数量
      */
     @ApiModelProperty("退货数量")
-    private Integer returnNum;
+    private BigDecimal returnNum;
 
     /**
      * 原价
@@ -405,7 +405,7 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
             dto.getOutSheetDetailId());
         this.outNum = outSheetDetail.getOrderNum();
         this.remainNum = NumberUtil.sub(outSheetDetail.getOrderNum(),
-            outSheetDetail.getReturnNum()).intValue();
+            outSheetDetail.getReturnNum());
       }
     }
   }

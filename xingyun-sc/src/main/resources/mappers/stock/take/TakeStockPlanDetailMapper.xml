@@ -51,6 +51,11 @@
         UPDATE tbl_take_stock_plan_detail set ori_take_num = IFNULL(ori_take_num, 0) + #{num}
         WHERE plan_id = #{planId} AND product_id = #{productId}
     </update>
+    <update id="adjustStockNum">
+        UPDATE tbl_take_stock_plan_detail
+        SET stock_num = stock_num + total_in_num - total_out_num
+        WHERE plan_id = #{planId}
+    </update>
     <select id="getByPlanIdAndProductId" resultMap="GetTakeStockPlanDetailProductDto">
         <include refid="GetTakeStockPlanDetailProductDto_sql"/>
         WHERE tb.plan_id = #{planId}

@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ReceiveSheetDetailService extends BaseMpService<ReceiveSheetDetail> {
@@ -20,7 +21,7 @@ public interface ReceiveSheetDetailService extends BaseMpService<ReceiveSheetDet
    * @param id
    * @param num
    */
-  void addReturnNum(String id, Integer num);
+  void addReturnNum(String id, BigDecimal num);
 
   /**
    * 减少退货数量
@@ -28,5 +29,5 @@ public interface ReceiveSheetDetailService extends BaseMpService<ReceiveSheetDet
    * @param id
    * @param num
    */
-  void subReturnNum(String id, Integer num);
+  void subReturnNum(String id, BigDecimal num);
 }

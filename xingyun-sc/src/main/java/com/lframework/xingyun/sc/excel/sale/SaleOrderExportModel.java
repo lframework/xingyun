@@ -81,13 +81,13 @@ public class SaleOrderExportModel extends BaseBo<SaleOrder> implements ExcelMode
    * 商品数量
    */
   @ExcelProperty("商品数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
   @ExcelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 操作时间

@@ -183,7 +183,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
      * 采购数量
      */
     @ApiModelProperty("采购数量")
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 采购价
@@ -195,7 +195,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
      * 剩余收货数量
      */
     @ApiModelProperty("剩余收货数量")
-    private Integer remainNum;
+    private BigDecimal remainNum;
 
     /**
      * 是否赠品
@@ -219,7 +219,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 备注
@@ -279,7 +279,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
 
       this.orderNum = dto.getOrderNum();
       this.purchasePrice = dto.getTaxPrice();
-      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReceiveNum()).intValue();
+      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReceiveNum());
       this.isGift = dto.getIsGift();
       this.taxRate = dto.getTaxRate();
       this.description = dto.getDescription();
@@ -291,7 +291,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
       this.taxCostPrice =
           productStock == null ? BigDecimal.ZERO
               : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
     }
   }
 }

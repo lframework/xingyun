@@ -89,8 +89,8 @@ public class CustomerSettlePreSheetServiceImpl extends
     return getBaseMapper().getDetail(id);
   }
 
-  @OpLog(type = SettleOpLogType.class, name = "创建客户预付款单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = CreateOrderTimeLineBizType.class, orderId = "#_result", name = "创建预付款单")
+  @OpLog(type = SettleOpLogType.class, name = "创建客户预收款单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = CreateOrderTimeLineBizType.class, orderId = "#_result", name = "创建预收款单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(CreateCustomerSettlePreSheetVo vo) {
@@ -112,23 +112,23 @@ public class CustomerSettlePreSheetServiceImpl extends
     return sheet.getId();
   }
 
-  @OpLog(type = SettleOpLogType.class, name = "修改客户预付款单，单号：{}", params = "#code")
-  @OrderTimeLineLog(type = UpdateOrderTimeLineBizType.class, orderId = "#vo.id", name = "修改预付款单")
+  @OpLog(type = SettleOpLogType.class, name = "修改客户预收款单，单号：{}", params = "#code")
+  @OrderTimeLineLog(type = UpdateOrderTimeLineBizType.class, orderId = "#vo.id", name = "修改预收款单")
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateCustomerSettlePreSheetVo vo) {
 
     CustomerSettlePreSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
-      throw new DefaultClientException("客户预付款单不存在！");
+      throw new DefaultClientException("客户预收款单不存在！");
     }
 
     if (sheet.getStatus() != CustomerSettlePreSheetStatus.CREATED
         && sheet.getStatus() != CustomerSettlePreSheetStatus.APPROVE_REFUSE) {
       if (sheet.getStatus() == CustomerSettlePreSheetStatus.APPROVE_PASS) {
-        throw new DefaultClientException("客户预付款单已审核通过，无法修改！");
+        throw new DefaultClientException("客户预收款单已审核通过，无法修改！");
       } else {
-        throw new DefaultClientException("客户预付款单无法修改！");
+        throw new DefaultClientException("客户预收款单无法修改！");
       }
     }
 
@@ -154,14 +154,14 @@ public class CustomerSettlePreSheetServiceImpl extends
         .eq(CustomerSettlePreSheet::getId, sheet.getId())
         .in(CustomerSettlePreSheet::getStatus, statusList);
     if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
-      throw new DefaultClientException("客户预付款单信息已过期，请刷新重试！");
+      throw new DefaultClientException("客户预收款单信息已过期，请刷新重试！");
     }
 
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = SettleOpLogType.class, name = "审核通过客户预付款单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.class, name = "审核通过客户预收款单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -169,15 +169,15 @@ public class CustomerSettlePreSheetServiceImpl extends
 
     CustomerSettlePreSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
-      throw new DefaultClientException("客户预付款单不存在！");
+      throw new DefaultClientException("客户预收款单不存在！");
     }
 
     if (sheet.getStatus() != CustomerSettlePreSheetStatus.CREATED
         && sheet.getStatus() != CustomerSettlePreSheetStatus.APPROVE_REFUSE) {
       if (sheet.getStatus() == CustomerSettlePreSheetStatus.APPROVE_PASS) {
-        throw new DefaultClientException("客户预付款单已审核通过，不允许继续执行审核！");
+        throw new DefaultClientException("客户预收款单已审核通过，不允许继续执行审核！");
       }
-      throw new DefaultClientException("客户预付款单无法审核通过！");
+      throw new DefaultClientException("客户预收款单无法审核通过！");
     }
 
     sheet.setStatus(CustomerSettlePreSheetStatus.APPROVE_PASS);
@@ -196,7 +196,7 @@ public class CustomerSettlePreSheetServiceImpl extends
         .eq(CustomerSettlePreSheet::getId, sheet.getId())
         .in(CustomerSettlePreSheet::getStatus, statusList);
     if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
-      throw new DefaultClientException("客户预付款单信息已过期，请刷新重试！");
+      throw new DefaultClientException("客户预收款单信息已过期，请刷新重试！");
     }
 
     OpLogUtil.setVariable("code", sheet.getCode());
@@ -220,7 +220,7 @@ public class CustomerSettlePreSheetServiceImpl extends
     return id;
   }
 
-  @OpLog(type = SettleOpLogType.class, name = "审核拒绝客户预付款单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.class, name = "审核拒绝客户预收款单，单号：{}", params = "#code")
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -228,17 +228,17 @@ public class CustomerSettlePreSheetServiceImpl extends
 
     CustomerSettlePreSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
-      throw new DefaultClientException("客户预付款单不存在！");
+      throw new DefaultClientException("客户预收款单不存在！");
     }
 
     if (sheet.getStatus() != CustomerSettlePreSheetStatus.CREATED) {
       if (sheet.getStatus() == CustomerSettlePreSheetStatus.APPROVE_PASS) {
-        throw new DefaultClientException("客户预付款单已审核通过，不允许继续执行审核！");
+        throw new DefaultClientException("客户预收款单已审核通过，不允许继续执行审核！");
       }
       if (sheet.getStatus() == CustomerSettlePreSheetStatus.APPROVE_REFUSE) {
-        throw new DefaultClientException("客户预付款单已审核拒绝，不允许继续执行审核！");
+        throw new DefaultClientException("客户预收款单已审核拒绝，不允许继续执行审核！");
       }
-      throw new DefaultClientException("客户预付款单无法审核拒绝！");
+      throw new DefaultClientException("客户预收款单无法审核拒绝！");
     }
 
     sheet.setStatus(CustomerSettlePreSheetStatus.APPROVE_REFUSE);
@@ -255,14 +255,14 @@ public class CustomerSettlePreSheetServiceImpl extends
         .eq(CustomerSettlePreSheet::getId, sheet.getId())
         .in(CustomerSettlePreSheet::getStatus, statusList);
     if (getBaseMapper().updateAllColumn(sheet, updateWrapper) != 1) {
-      throw new DefaultClientException("客户预付款单信息已过期，请刷新重试！");
+      throw new DefaultClientException("客户预收款单信息已过期，请刷新重试！");
     }
 
     OpLogUtil.setVariable("code", sheet.getCode());
     OpLogUtil.setExtra(vo);
   }
 
-  @OpLog(type = SettleOpLogType.class, name = "删除客户预付款单，单号：{}", params = "#code")
+  @OpLog(type = SettleOpLogType.class, name = "删除客户预收款单，单号：{}", params = "#code")
   @OrderTimeLineLog(orderId = "#id", delete = true)
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -271,17 +271,17 @@ public class CustomerSettlePreSheetServiceImpl extends
     Assert.notBlank(id);
     CustomerSettlePreSheet sheet = getBaseMapper().selectById(id);
     if (sheet == null) {
-      throw new InputErrorException("客户预付款单不存在！");
+      throw new InputErrorException("客户预收款单不存在！");
     }
 
     if (sheet.getStatus() != CustomerSettlePreSheetStatus.CREATED
         && sheet.getStatus() != CustomerSettlePreSheetStatus.APPROVE_REFUSE) {
 
       if (sheet.getStatus() == CustomerSettlePreSheetStatus.APPROVE_PASS) {
-        throw new DefaultClientException("“审核通过”的客户预付款单不允许执行删除操作！");
+        throw new DefaultClientException("“审核通过”的客户预收款单不允许执行删除操作！");
       }
 
-      throw new DefaultClientException("客户预付款单无法删除！");
+      throw new DefaultClientException("客户预收款单无法删除！");
     }
 
     // 删除明细

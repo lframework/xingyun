@@ -25,6 +25,7 @@ import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanDetailService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -285,13 +286,13 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 盘点数量
      */
     @ApiModelProperty("盘点数量")
-    private Integer takeNum;
+    private BigDecimal takeNum;
 
     /**
      * 备注

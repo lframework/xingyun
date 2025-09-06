@@ -4,6 +4,7 @@ import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.sc.entity.ScTransferOrderDetail;
 import com.lframework.xingyun.sc.mappers.ScTransferOrderDetailMapper;
 import com.lframework.xingyun.sc.service.stock.transfer.ScTransferOrderDetailService;
+import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +15,8 @@ public class ScTransferOrderDetailServiceImpl
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public int receive(String orderId, String productId, Integer receiveNum) {
-    return getBaseMapper().receive(orderId, productId, receiveNum);
+  public int receive(String orderId, String productId, BigDecimal receiveNum, BigDecimal receiveAmount) {
+    return getBaseMapper().receive(orderId, productId, receiveNum, receiveAmount);
   }
 
   @Override

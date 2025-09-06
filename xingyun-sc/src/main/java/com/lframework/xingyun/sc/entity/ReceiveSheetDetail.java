@@ -38,7 +38,7 @@ public class ReceiveSheetDetail extends BaseEntity implements BaseDto {
   /**
    * 采购数量
    */
-  private Integer orderNum;
+  private BigDecimal orderNum;
 
   /**
    * 采购价
@@ -73,7 +73,11 @@ public class ReceiveSheetDetail extends BaseEntity implements BaseDto {
   /**
    * 已退货数量
    */
-  private Integer returnNum;
+  private BigDecimal returnNum;
 
+  /**
+   * 采购总金额
+   */
+  private BigDecimal taxAmount;
 
 }

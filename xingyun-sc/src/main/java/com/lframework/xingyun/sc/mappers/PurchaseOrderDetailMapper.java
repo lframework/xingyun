@@ -30,7 +30,7 @@ public interface PurchaseOrderDetailMapper extends BaseMapper<PurchaseOrderDetai
    * @param num
    * @return
    */
-  int addReceiveNum(@Param("id") String id, @Param("num") Integer num);
+  int addReceiveNum(@Param("id") String id, @Param("num") java.math.BigDecimal num);
 
   /**
    * 减少收货数量
@@ -39,5 +39,5 @@ public interface PurchaseOrderDetailMapper extends BaseMapper<PurchaseOrderDetai
    * @param num
    * @return
    */
-  int subReceiveNum(@Param("id") String id, @Param("num") Integer num);
+  int subReceiveNum(@Param("id") String id, @Param("num") java.math.BigDecimal num);
 }

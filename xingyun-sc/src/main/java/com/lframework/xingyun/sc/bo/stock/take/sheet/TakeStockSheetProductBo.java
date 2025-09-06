@@ -12,6 +12,7 @@ import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanDetailService;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
@@ -75,7 +76,7 @@ public class TakeStockSheetProductBo extends BaseBo<TakeStockSheetProductDto> {
    * 库存数量
    */
   @ApiModelProperty("库存数量")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 盘点任务ID
@@ -121,7 +122,7 @@ public class TakeStockSheetProductBo extends BaseBo<TakeStockSheetProductDto> {
             ProductStockService.class);
         ProductStock productStock = productStockService.getByProductIdAndScId(this.productId,
             this.scId);
-        this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+        this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
       }
     }
   }

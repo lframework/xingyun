@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.dto.stock.take.sheet;
 import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.TakeStockSheetStatus;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Data;
@@ -113,7 +114,7 @@ public class TakeStockSheetFullDto implements BaseDto, Serializable {
     /**
      * 盘点数量
      */
-    private Integer takeNum;
+    private BigDecimal takeNum;
 
     /**
      * 备注

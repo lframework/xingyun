@@ -1,8 +1,14 @@
 package com.lframework.xingyun.sc.vo.stock.take.plan;
 
+import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
+import com.lframework.xingyun.sc.entity.TakeStockConfig;
+import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -63,12 +69,37 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
      * 修改后盘点数量
      */
     @ApiModelProperty(value = "修改后盘点数量")
-    private Integer takeNum;
+    private BigDecimal takeNum;
 
     /**
      * 备注
      */
     @ApiModelProperty(value = "备注")
     private String description;
+  }
+
+  public void validate() {
+    TakeStockConfigService takeStockConfigService = ApplicationUtil.getBean(
+        TakeStockConfigService.class);
+    TakeStockConfig config = takeStockConfigService.get();
+
+    if (config.getAllowChangeNum()) {
+      int orderNo = 1;
+      for (ProductVo product : this.products) {
+        if (product.getTakeNum() == null) {
+          throw new DefaultClientException("第" + orderNo + "行商品修改后盘点数量不能为空！");
+        }
+
+        if (NumberUtil.lt(product.getTakeNum(), BigDecimal.ZERO)) {
+          throw new DefaultClientException("第" + orderNo + "行商品修改后盘点数量不能小于0！");
+        }
+
+        if (!NumberUtil.isNumberPrecision(product.getTakeNum(), 8)) {
+          throw new DefaultClientException("第" + orderNo + "行商品修改后盘点数量最多允许8位小数！");
+        }
+
+        orderNo++;
+      }
+    }
   }
 }

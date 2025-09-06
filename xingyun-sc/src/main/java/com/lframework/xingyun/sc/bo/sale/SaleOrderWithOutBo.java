@@ -196,7 +196,7 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
      * 销售数量
      */
     @ApiModelProperty("销售数量")
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 销售价
@@ -220,13 +220,13 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
      * 剩余出库数量
      */
     @ApiModelProperty("剩余出库数量")
-    private Integer remainNum;
+    private BigDecimal remainNum;
 
     /**
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 是否赠品
@@ -297,7 +297,7 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
       this.salePrice = dto.getOriPrice();
       this.taxPrice = dto.getTaxPrice();
       this.discountRate = dto.getDiscountRate();
-      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getOutNum()).intValue();
+      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getOutNum());
       this.isGift = dto.getIsGift();
       this.taxRate = dto.getTaxRate();
       this.description = dto.getDescription();
@@ -305,7 +305,7 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
       ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
       ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
           this.getScId());
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
 
       if (StringUtil.isNotBlank(dto.getMainProductId())) {
         ProductService productService = ApplicationUtil.getBean(ProductService.class);

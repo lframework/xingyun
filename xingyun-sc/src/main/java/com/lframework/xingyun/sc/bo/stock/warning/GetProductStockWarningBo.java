@@ -10,6 +10,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.ProductStockWarning;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -69,13 +70,13 @@ public class GetProductStockWarningBo extends BaseBo<ProductStockWarning> {
    * 预警上限
    */
   @ApiModelProperty("预警上限")
-  private Integer maxLimit;
+  private BigDecimal maxLimit;
 
   /**
    * 预警下限
    */
   @ApiModelProperty("预警下限")
-  private Integer minLimit;
+  private BigDecimal minLimit;
 
   /**
    * 操作人

@@ -7,6 +7,7 @@ import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
@@ -70,7 +71,7 @@ public class StockAdjustProductBo extends BaseBo<StockAdjustProductDto> {
    * 当前库存数量
    */
   @ApiModelProperty("当前库存数量")
-  private Integer curStockNum;
+  private BigDecimal curStockNum;
 
   /**
    * 仓库ID
@@ -100,6 +101,6 @@ public class StockAdjustProductBo extends BaseBo<StockAdjustProductDto> {
         ProductStockService.class);
     ProductStock productStock = productStockService.getByProductIdAndScId(dto.getId(),
         this.scId);
-    this.curStockNum = productStock == null ? 0 : productStock.getStockNum();
+    this.curStockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
   }
 }

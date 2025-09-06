@@ -77,7 +77,7 @@ public class QueryProductStockBo extends BaseBo<ProductStock> {
    * 库存数量
    */
   @ApiModelProperty("库存数量")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 含税价格
@@ -122,8 +122,5 @@ public class QueryProductStockBo extends BaseBo<ProductStock> {
     this.productName = product.getName();
     this.categoryName = productCategory.getName();
     this.brandName = productBrand.getName();
-
-    this.taxPrice = NumberUtil.getNumber(dto.getTaxPrice(), 2);
-    this.taxAmount = NumberUtil.getNumber(dto.getTaxAmount(), 2);
   }
 }

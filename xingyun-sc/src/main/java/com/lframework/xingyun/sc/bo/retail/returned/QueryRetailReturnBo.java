@@ -79,13 +79,13 @@ public class QueryRetailReturnBo extends BaseBo<RetailReturn> {
    * 退货数量
    */
   @ApiModelProperty("退货数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
   @ApiModelProperty("赠品数量")
-  private Integer totalGiftNum;
+  private BigDecimal totalGiftNum;
 
   /**
    * 退货金额

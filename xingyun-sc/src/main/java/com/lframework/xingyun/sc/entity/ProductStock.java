@@ -38,7 +38,7 @@ public class ProductStock extends BaseEntity implements BaseDto {
   /**
    * 库存数量
    */
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 含税价格

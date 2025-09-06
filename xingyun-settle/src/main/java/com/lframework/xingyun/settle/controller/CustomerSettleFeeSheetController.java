@@ -156,6 +156,8 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   public InvokeResult<Void> directApprovePass(
       @RequestBody @Valid CreateCustomerSettleFeeSheetVo vo) {
 
+    vo.validate();
+
     customerSettleFeeSheetService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

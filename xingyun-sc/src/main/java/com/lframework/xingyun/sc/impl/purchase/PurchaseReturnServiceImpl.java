@@ -284,7 +284,7 @@ public class PurchaseReturnServiceImpl extends
       subproductStockVo.setProductId(detail.getProductId());
       subproductStockVo.setScId(purchaseReturn.getScId());
       subproductStockVo.setStockNum(detail.getReturnNum());
-      subproductStockVo.setTaxAmount(NumberUtil.mul(detail.getTaxPrice(), detail.getReturnNum()));
+      subproductStockVo.setTaxAmount(NumberUtil.getNumber(NumberUtil.mul(detail.getTaxPrice(), detail.getReturnNum()), 2));
       subproductStockVo.setBizId(purchaseReturn.getId());
       subproductStockVo.setBizDetailId(detail.getId());
       subproductStockVo.setBizCode(purchaseReturn.getCode());
@@ -512,8 +512,8 @@ public class PurchaseReturnServiceImpl extends
       }
     }
 
-    int returnNum = 0;
-    int giftNum = 0;
+    BigDecimal returnNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (ReturnProductVo productVo : vo.getProducts()) {
@@ -527,7 +527,7 @@ public class PurchaseReturnServiceImpl extends
         }
       }
 
-      boolean isGift = productVo.getPurchasePrice().doubleValue() == 0D;
+      boolean isGift = NumberUtil.equal(productVo.getPurchasePrice(), BigDecimal.ZERO);
 
       if (requireReceive) {
         if (StringUtil.isBlank(productVo.getReceiveSheetDetailId())) {
@@ -538,13 +538,13 @@ public class PurchaseReturnServiceImpl extends
       }
 
       if (isGift) {
-        giftNum += productVo.getReturnNum();
+        giftNum = NumberUtil.add(giftNum, productVo.getReturnNum());
       } else {
-        returnNum += productVo.getReturnNum();
+        returnNum = NumberUtil.add(returnNum, productVo.getReturnNum());
       }
 
-      totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReturnNum()));
+      BigDecimal taxAmount = NumberUtil.getNumber(NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReturnNum()), 2);
+      totalAmount = NumberUtil.add(totalAmount, taxAmount);
 
       PurchaseReturnDetail detail = new PurchaseReturnDetail();
       detail.setId(IdUtil.getId());
@@ -555,8 +555,12 @@ public class PurchaseReturnServiceImpl extends
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
 
-      if (!NumberUtil.isNumberPrecision(productVo.getPurchasePrice(), 2)) {
-        throw new InputErrorException("第" + orderNo + "行商品采购价最多允许2位小数！");
+      if (!NumberUtil.isNumberPrecision(productVo.getPurchasePrice(), 6)) {
+        throw new InputErrorException("第" + orderNo + "行商品采购价最多允许6位小数！");
+      }
+
+      if (!NumberUtil.isNumberPrecision(productVo.getReturnNum(), 8)) {
+        throw new InputErrorException("第" + orderNo + "行商品退货数量最多允许8位小数！");
       }
 
       detail.setProductId(productVo.getProductId());
@@ -567,6 +571,7 @@ public class PurchaseReturnServiceImpl extends
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());
+      detail.setTaxAmount(taxAmount);
       detail.setOrderNo(orderNo);
       if (requireReceive && !StringUtil.isBlank(productVo.getReceiveSheetDetailId())) {
         detail.setReceiveSheetDetailId(productVo.getReceiveSheetDetailId());

@@ -178,7 +178,7 @@ public class PrintSaleOrderBo extends BaseBo<SaleOrderFullDto> {
      * 销售数量
      */
     @ApiModelProperty("销售数量")
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 现价
@@ -208,7 +208,7 @@ public class PrintSaleOrderBo extends BaseBo<SaleOrderFullDto> {
 
       this.orderNum = dto.getOrderNum();
       this.taxPrice = dto.getTaxPrice();
-      this.orderAmount = NumberUtil.mul(dto.getOrderNum(), dto.getTaxPrice());
+      this.orderAmount = dto.getTaxAmount();
 
       SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
       SaleProductDto product = saleOrderService.getSaleById(dto.getProductId());

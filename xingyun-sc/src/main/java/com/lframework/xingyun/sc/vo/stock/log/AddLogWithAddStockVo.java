@@ -36,8 +36,7 @@ public class AddLogWithAddStockVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "入库数量", required = true)
   @NotNull(message = "入库数量不能为空！")
-  @Min(message = "入库数量必须大于0！", value = 1)
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 含税成本总金额
@@ -52,14 +51,14 @@ public class AddLogWithAddStockVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "原库存数量", required = true)
   @NotNull(message = "原库存数量不能为空！")
-  private Integer oriStockNum;
+  private BigDecimal oriStockNum;
 
   /**
    * 现库存数量
    */
   @ApiModelProperty(value = "现库存数量", required = true)
   @NotNull(message = "现库存数量不能为空！")
-  private Integer curStockNum;
+  private BigDecimal curStockNum;
 
   /**
    * 原含税成本价

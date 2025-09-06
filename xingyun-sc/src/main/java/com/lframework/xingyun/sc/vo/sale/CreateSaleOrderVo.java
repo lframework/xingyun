@@ -74,8 +74,12 @@ public class CreateSaleOrderVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + orderNo + "行商品销售数量不能为空！");
       }
 
-      if (product.getOrderNum() <= 0) {
+      if (NumberUtil.le(product.getOrderNum(), BigDecimal.ZERO)) {
         throw new InputErrorException("第" + orderNo + "行商品销售数量必须大于0！");
+      }
+
+      if (!NumberUtil.isNumberPrecision(product.getOrderNum(), 8)) {
+        throw new InputErrorException("第" + orderNo + "行商品销售数量最多允许8位小数！");
       }
 
       if (product.getOriPrice() == null) {
@@ -86,8 +90,12 @@ public class CreateSaleOrderVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + orderNo + "行商品价格不能为空！");
       }
 
-      if (product.getTaxPrice().doubleValue() < 0D) {
+      if (NumberUtil.lt(product.getTaxPrice(), BigDecimal.ZERO)) {
         throw new InputErrorException("第" + orderNo + "行商品价格不允许小于0！");
+      }
+
+      if (!NumberUtil.isNumberPrecision(product.getTaxPrice(), 6)) {
+        throw new InputErrorException("第" + orderNo + "行商品价格最多允许6位小数！");
       }
 
       if (!NumberUtil.equal(product.getOriPrice(), 0D)) {
@@ -104,7 +112,8 @@ public class CreateSaleOrderVo implements BaseVo, Serializable {
     }
 
     BigDecimal totalAmount = this.products.stream()
-        .map(t -> NumberUtil.mul(t.getOrderNum(), t.getTaxPrice())).reduce(NumberUtil::add)
+        .map(t -> NumberUtil.getNumber(NumberUtil.mul(t.getOrderNum(), t.getTaxPrice()), 2))
+        .reduce(NumberUtil::add)
         .orElse(BigDecimal.ZERO);
     BigDecimal payTypeAmount = CollectionUtil.isEmpty(this.payTypes) ? BigDecimal.ZERO
         : this.payTypes.stream().map(OrderPayTypeVo::getPayAmount).reduce(NumberUtil::add)

@@ -50,6 +50,7 @@
             <result column="detail_product_id" property="productId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_tax_price" property="taxPrice"/>
+            <result column="detail_tax_amount" property="taxAmount"/>
             <result column="detail_is_gift" property="isGift"/>
             <result column="detail_tax_rate" property="taxRate"/>
             <result column="detail_description" property="description"/>
@@ -71,6 +72,7 @@
             <result column="detail_product_id" property="productId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_tax_price" property="taxPrice"/>
+            <result column="detail_tax_amount" property="taxAmount"/>
             <result column="detail_is_gift" property="isGift"/>
             <result column="detail_tax_rate" property="taxRate"/>
             <result column="detail_description" property="description"/>
@@ -130,6 +132,7 @@
             d.product_id AS detail_product_id,
             d.order_num AS detail_order_num,
             d.tax_price AS detail_tax_price,
+            d.tax_amount AS detail_tax_amount,
             d.is_gift AS detail_is_gift,
             d.tax_rate AS detail_tax_rate,
             d.description AS detail_description,
@@ -149,6 +152,7 @@
             d.product_id AS detail_product_id,
             d.order_num AS detail_order_num,
             d.tax_price AS detail_tax_price,
+            d.tax_amount AS detail_tax_amount,
             d.is_gift AS detail_is_gift,
             d.tax_rate AS detail_tax_rate,
             d.description AS detail_description,
@@ -248,9 +252,9 @@
     <select id="getWithReturn" resultMap="ReceiveSheetWithReturnDto">
         SELECT
         s.id, s.sc_id, s.supplier_id, s.purchaser_id, d.id AS detail_id, d.product_id AS detail_product_id,
-        d.order_num AS detail_order_num, d.tax_price AS detail_tax_price, d.is_gift AS detail_is_gift,
-        d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
-        d.return_num AS detail_return_num
+        d.order_num AS detail_order_num, d.tax_price AS detail_tax_price, d.tax_amount AS detail_tax_amount,
+        d.is_gift AS detail_is_gift, d.tax_rate AS detail_tax_rate, d.description AS detail_description, 
+        d.order_no AS detail_order_no, d.return_num AS detail_return_num
         FROM tbl_receive_sheet AS s
         LEFT JOIN tbl_receive_sheet_detail AS d ON d.sheet_id = s.id
         <if test="requireReceive">AND d.order_num > d.return_num</if>

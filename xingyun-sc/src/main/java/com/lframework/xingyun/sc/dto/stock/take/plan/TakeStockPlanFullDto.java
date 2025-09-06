@@ -87,27 +87,27 @@ public class TakeStockPlanFullDto implements BaseDto, Serializable {
     /**
      * 库存数量
      */
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 盘点数量
      */
-    private Integer oriTakeNum;
+    private BigDecimal oriTakeNum;
 
     /**
      * 修改后的盘点数量
      */
-    private Integer takeNum;
+    private BigDecimal takeNum;
 
     /**
      * 出项数量
      */
-    private Integer totalOutNum;
+    private BigDecimal totalOutNum;
 
     /**
      * 进项数量
      */
-    private Integer totalInNum;
+    private BigDecimal totalInNum;
 
     /**
      * 成本价

@@ -263,6 +263,8 @@ public class ReceiveSheetController extends DefaultBaseController {
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateReceiveSheetVo vo) {
 
+    vo.validate();
+
     receiveSheetService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

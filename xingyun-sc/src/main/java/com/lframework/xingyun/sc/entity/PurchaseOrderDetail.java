@@ -38,7 +38,7 @@ public class PurchaseOrderDetail extends BaseEntity implements BaseDto {
   /**
    * 采购数量
    */
-  protected Integer orderNum;
+  protected BigDecimal orderNum;
 
   /**
    * 采购价
@@ -68,5 +68,10 @@ public class PurchaseOrderDetail extends BaseEntity implements BaseDto {
   /**
    * 已收货数量
    */
-  protected Integer receiveNum;
+  protected BigDecimal receiveNum;
+
+  /**
+   * 含税总金额
+   */
+  protected BigDecimal taxAmount;
 }

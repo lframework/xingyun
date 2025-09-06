@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
@@ -16,6 +17,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -186,31 +188,31 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 原盘点数量（通过盘点单统计）
      */
     @ApiModelProperty("原盘点数量（通过盘点单统计）")
-    private Integer oriTakeNum;
+    private BigDecimal oriTakeNum;
 
     /**
      * 修改后的盘点数量
      */
     @ApiModelProperty("修改后的盘点数量")
-    private Integer takeNum;
+    private BigDecimal takeNum;
 
     /**
      * 出项数量
      */
     @ApiModelProperty("出项数量")
-    private Integer totalOutNum;
+    private BigDecimal totalOutNum;
 
     /**
      * 进项数量
      */
     @ApiModelProperty("进项数量")
-    private Integer totalInNum;
+    private BigDecimal totalInNum;
 
     /**
      * 备注
@@ -222,7 +224,7 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
      * 差异数量
      */
     @ApiModelProperty("差异数量")
-    private Integer diffNum;
+    private BigDecimal diffNum;
 
     /**
      * 盘点任务ID
@@ -269,9 +271,9 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
       if (this.oriTakeNum != null || this.takeNum != null) {
 
         if (this.takeNum != null) {
-          this.diffNum = this.takeNum - this.stockNum;
+          this.diffNum = NumberUtil.sub(this.takeNum, this.stockNum);
         } else {
-          this.diffNum = this.oriTakeNum - this.stockNum;
+          this.diffNum = NumberUtil.sub(this.oriTakeNum, this.stockNum);
         }
       }
     }

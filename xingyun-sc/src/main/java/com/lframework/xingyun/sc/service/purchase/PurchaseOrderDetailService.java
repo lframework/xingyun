@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.service.purchase;
 
 import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface PurchaseOrderDetailService extends BaseMpService<PurchaseOrderDetail> {
@@ -20,7 +21,7 @@ public interface PurchaseOrderDetailService extends BaseMpService<PurchaseOrderD
    * @param id
    * @param num
    */
-  void addReceiveNum(String id, Integer num);
+  void addReceiveNum(String id, BigDecimal num);
 
   /**
    * 减少收货数量
@@ -28,5 +29,5 @@ public interface PurchaseOrderDetailService extends BaseMpService<PurchaseOrderD
    * @param id
    * @param num
    */
-  void subReceiveNum(String id, Integer num);
+  void subReceiveNum(String id, BigDecimal num);
 }

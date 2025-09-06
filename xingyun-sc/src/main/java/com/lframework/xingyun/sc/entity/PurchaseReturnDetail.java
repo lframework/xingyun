@@ -38,7 +38,7 @@ public class PurchaseReturnDetail extends BaseEntity implements BaseDto {
   /**
    * 退货数量
    */
-  private Integer returnNum;
+  private BigDecimal returnNum;
 
   /**
    * 采购价
@@ -69,6 +69,11 @@ public class PurchaseReturnDetail extends BaseEntity implements BaseDto {
    * 收货单明细ID
    */
   private String receiveSheetDetailId;
+
+  /**
+   * 退货总金额
+   */
+  private BigDecimal taxAmount;
 
 
 }

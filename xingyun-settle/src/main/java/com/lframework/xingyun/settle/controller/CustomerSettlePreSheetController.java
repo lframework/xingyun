@@ -156,6 +156,8 @@ public class CustomerSettlePreSheetController extends DefaultBaseController {
   public InvokeResult<Void> directApprovePass(
       @RequestBody @Valid CreateCustomerSettlePreSheetVo vo) {
 
+    vo.validate();
+
     settlePreSheetService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

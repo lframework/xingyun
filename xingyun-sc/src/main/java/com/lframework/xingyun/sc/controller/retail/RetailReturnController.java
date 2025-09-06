@@ -175,6 +175,8 @@ public class RetailReturnController extends DefaultBaseController {
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateRetailReturnVo vo) {
 
+    vo.validate();
+
     retailReturnService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

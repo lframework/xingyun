@@ -213,7 +213,7 @@ public class PrintPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
      * 退货数量
      */
     @ApiModelProperty("退货数量")
-    private Integer returnNum;
+    private BigDecimal returnNum;
 
     /**
      * 退货价
@@ -244,7 +244,7 @@ public class PrintPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
 
       this.returnNum = dto.getReturnNum();
       this.purchasePrice = dto.getTaxPrice();
-      this.returnAmount = NumberUtil.mul(dto.getReturnNum(), dto.getTaxPrice());
+      this.returnAmount = dto.getTaxAmount();
 
       PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
           PurchaseOrderService.class);

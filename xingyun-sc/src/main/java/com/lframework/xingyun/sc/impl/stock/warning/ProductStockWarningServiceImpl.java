@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
@@ -55,7 +56,7 @@ public class ProductStockWarningServiceImpl extends
   @Override
   public String create(CreateProductStockWarningVo vo) {
 
-    if (vo.getMaxLimit() < vo.getMinLimit()) {
+    if (NumberUtil.lt(vo.getMaxLimit(), vo.getMinLimit())) {
       throw new DefaultClientException("预警上限必须大于预警下限！");
     }
 
@@ -82,7 +83,7 @@ public class ProductStockWarningServiceImpl extends
   @Transactional(rollbackFor = Exception.class)
   @Override
   public void update(UpdateProductStockWarningVo vo) {
-    if (vo.getMaxLimit() < vo.getMinLimit()) {
+    if (NumberUtil.lt(vo.getMaxLimit(), vo.getMinLimit())) {
       throw new DefaultClientException("预警上限必须大于预警下限！");
     }
 

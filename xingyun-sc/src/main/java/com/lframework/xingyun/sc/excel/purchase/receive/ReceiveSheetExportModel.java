@@ -70,13 +70,13 @@ public class ReceiveSheetExportModel extends BaseBo<ReceiveSheet> implements Exc
    * 商品数量
    */
   @ExcelProperty("商品数量")
-  private Integer receiveNum;
+  private BigDecimal receiveNum;
 
   /**
    * 赠品数量
    */
   @ExcelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 实际到货日期

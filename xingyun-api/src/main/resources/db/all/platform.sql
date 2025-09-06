@@ -373,6 +373,7 @@ DROP TABLE IF EXISTS `tenant`;
 CREATE TABLE `tenant`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
+  `server_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '域名',
   `jdbc_url` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'JDBC连接地址',
   `jdbc_username` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'JDBC用户名',
   `jdbc_password` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'JDBC密码',
@@ -385,6 +386,6 @@ CREATE TABLE `tenant`  (
 -- ----------------------------
 -- Records of tenant
 -- ----------------------------
-INSERT INTO `tenant` VALUES (1000, '测试租户', 'jdbc:mysql://127.0.0.1:3306/xingyun', 'root', '24590d72bfb4d71ccbc533570aa9627b', 1, '2022-12-31 22:59:21', '2023-03-13 22:14:07');
+INSERT INTO `tenant` VALUES (1000, '测试租户', NULL, 'jdbc:mysql://127.0.0.1:3306/xingyun', 'root', '24590d72bfb4d71ccbc533570aa9627b', 1, '2022-12-31 22:59:21', '2023-03-13 22:14:07');
 
 SET FOREIGN_KEY_CHECKS = 1;

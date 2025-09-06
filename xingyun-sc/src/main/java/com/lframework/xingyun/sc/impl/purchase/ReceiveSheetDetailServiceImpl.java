@@ -9,6 +9,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import com.lframework.xingyun.sc.mappers.ReceiveSheetDetailMapper;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetDetailService;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,14 +31,14 @@ public class ReceiveSheetDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void addReturnNum(String id, Integer num) {
+  public void addReturnNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
     ReceiveSheetDetail detail = getBaseMapper().selectById(id);
 
-    Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
+    BigDecimal remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum());
     if (NumberUtil.lt(remainNum, num)) {
       Product product = productService.findById(detail.getProductId());
 
@@ -57,7 +58,7 @@ public class ReceiveSheetDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void subReturnNum(String id, Integer num) {
+  public void subReturnNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);

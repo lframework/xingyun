@@ -38,7 +38,12 @@ public class ScTransferOrderDetail extends BaseEntity implements BaseDto {
   /**
    * 调拨数量
    */
-  private Integer transferNum;
+  private BigDecimal transferNum;
+
+  /**
+   * 调拨总金额
+   */
+  private BigDecimal transferAmount;
 
   /**
    * 成本价
@@ -58,6 +63,11 @@ public class ScTransferOrderDetail extends BaseEntity implements BaseDto {
   /**
    * 已收货数量
    */
-  private Integer receiveNum;
+  private BigDecimal receiveNum;
+
+  /**
+   * 已收货金额
+   */
+  private BigDecimal receiveAmount;
 
 }

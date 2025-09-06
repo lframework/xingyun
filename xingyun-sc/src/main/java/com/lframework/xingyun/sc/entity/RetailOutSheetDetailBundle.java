@@ -44,7 +44,7 @@ public class RetailOutSheetDetailBundle extends BaseEntity implements BaseDto {
   /**
    * 组合商品数量
    */
-  private Integer orderNum;
+  private BigDecimal orderNum;
 
   /**
    * 单品ID
@@ -54,7 +54,7 @@ public class RetailOutSheetDetailBundle extends BaseEntity implements BaseDto {
   /**
    * 单品数量
    */
-  private Integer productOrderNum;
+  private BigDecimal productOrderNum;
 
   /**
    * 单品原价
@@ -75,4 +75,9 @@ public class RetailOutSheetDetailBundle extends BaseEntity implements BaseDto {
    * 单品明细ID
    */
   private String productDetailId;
+
+  /**
+   * 总金额
+   */
+  private BigDecimal productTaxAmount;
 }

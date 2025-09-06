@@ -102,13 +102,13 @@ public class PurchaseOrderImportListener extends ExcelImportListener<PurchaseOrd
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“采购价”不能为空");
       }
-      if (NumberUtil.le(data.getPurchasePrice(), 0)) {
+      if (NumberUtil.le(data.getPurchasePrice(), BigDecimal.ZERO)) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex() + "行“采购价”必须大于0");
       }
-      if (!NumberUtil.isNumberPrecision(data.getPurchasePrice(), 2)) {
+      if (!NumberUtil.isNumberPrecision(data.getPurchasePrice(), 6)) {
         throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“采购价”最多允许2位小数");
+            "第" + context.readRowHolder().getRowIndex() + "行“采购价”最多允许6位小数");
       }
     } else {
       // 赠品
@@ -118,9 +118,13 @@ public class PurchaseOrderImportListener extends ExcelImportListener<PurchaseOrd
       throw new DefaultClientException(
           "第" + context.readRowHolder().getRowIndex() + "行“采购数量”不能为空");
     }
-    if (data.getPurchaseNum() <= 0) {
+    if (NumberUtil.le(data.getPurchaseNum(), BigDecimal.ZERO)) {
       throw new DefaultClientException(
           "第" + context.readRowHolder().getRowIndex() + "行“采购数量”必须大于0");
+    }
+    if (!NumberUtil.isNumberPrecision(data.getPurchaseNum(), 8)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“采购数量”最多允许8位小数");
     }
   }
 

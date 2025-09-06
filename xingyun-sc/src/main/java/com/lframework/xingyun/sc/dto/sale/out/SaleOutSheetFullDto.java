@@ -48,12 +48,12 @@ public class SaleOutSheetFullDto implements BaseDto, Serializable {
   /**
    * 商品数量
    */
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
-  private Integer totalGiftNum;
+  private BigDecimal totalGiftNum;
 
   /**
    * 出库总金额
@@ -143,7 +143,7 @@ public class SaleOutSheetFullDto implements BaseDto, Serializable {
     /**
      * 出库数量
      */
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 原价
@@ -189,5 +189,10 @@ public class SaleOutSheetFullDto implements BaseDto, Serializable {
      * 销售订单明细ID
      */
     private String saleOrderDetailId;
+
+    /**
+     * 总金额
+     */
+    private BigDecimal taxAmount;
   }
 }

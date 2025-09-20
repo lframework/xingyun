@@ -64,13 +64,13 @@ public class PurchaseOrderExportModel extends BaseBo<PurchaseOrder> implements E
    * 采购数量
    */
   @ExcelProperty("采购数量")
-  private Integer purchaseNum;
+  private BigDecimal purchaseNum;
 
   /**
    * 赠品数量
    */
   @ExcelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 采购金额

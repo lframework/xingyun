@@ -72,9 +72,9 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @return
    */
   int addStock(@Param("productId") String productId, @Param("scId") String scId,
-      @Param("stockNum") Integer stockNum,
+      @Param("stockNum") BigDecimal stockNum,
       @Param("taxAmount") BigDecimal taxAmount,
-      @Param("oriStockNum") Integer oriStockNum, @Param("oriTaxAmount") BigDecimal oriTaxAmount,
+      @Param("oriStockNum") BigDecimal oriStockNum, @Param("oriTaxAmount") BigDecimal oriTaxAmount,
       @Param("reCalcCostPrice") boolean reCalcCostPrice);
 
   /**
@@ -89,8 +89,8 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @return
    */
   int subStock(@Param("productId") String productId, @Param("scId") String scId,
-      @Param("stockNum") Integer stockNum,
+      @Param("stockNum") BigDecimal stockNum,
       @Param("taxAmount") BigDecimal taxAmount,
-      @Param("oriStockNum") Integer oriStockNum, @Param("oriTaxAmount") BigDecimal oriTaxAmount,
+      @Param("oriStockNum") BigDecimal oriStockNum, @Param("oriTaxAmount") BigDecimal oriTaxAmount,
       @Param("reCalcCostPrice") boolean reCalcCostPrice);
 }

@@ -1,7 +1,7 @@
 package com.lframework.xingyun.sc.listeners.mq;
 
-import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.core.queue.MqStringPool;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.mappers.TakeStockPlanDetailMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -30,7 +30,7 @@ public class TakeStockPlanStockChangeListener {
     log.info("增加库存，统计进项数量 scId = {}, productId = {}, num = {}", change.getScId(),
         change.getProductId(), change.getNum());
     takeStockPlanDetailMapper.addTotalInNum(change.getScId(), change.getProductId(),
-        change.getNum());
+        change.getNum().intValue());
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -42,6 +42,6 @@ public class TakeStockPlanStockChangeListener {
     log.info("扣减库存，统计出项数量 scId = {}, productId = {}, num = {}", change.getScId(),
         change.getProductId(), change.getNum());
     takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getProductId(),
-        change.getNum());
+        change.getNum().intValue());
   }
 }

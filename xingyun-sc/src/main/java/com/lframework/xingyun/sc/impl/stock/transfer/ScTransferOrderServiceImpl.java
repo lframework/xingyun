@@ -21,7 +21,7 @@ import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTime
 import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
-import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
@@ -259,7 +259,7 @@ public class ScTransferOrderServiceImpl extends
       SubProductStockVo subProductStockVo = new SubProductStockVo();
       subProductStockVo.setProductId(product.getId());
       subProductStockVo.setScId(data.getSourceScId());
-      subProductStockVo.setStockNum(detail.getTransferNum());
+      subProductStockVo.setStockNum(BigDecimal.valueOf(detail.getTransferNum()));
       subProductStockVo.setCreateTime(now);
       subProductStockVo.setBizId(data.getId());
       subProductStockVo.setBizDetailId(detail.getId());
@@ -383,7 +383,7 @@ public class ScTransferOrderServiceImpl extends
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(data.getTargetScId());
-      addProductStockVo.setStockNum(productVo.getReceiveNum());
+      addProductStockVo.setStockNum(BigDecimal.valueOf(productVo.getReceiveNum()));
       addProductStockVo.setTaxPrice(detail.getTaxPrice());
       addProductStockVo.setCreateTime(now);
       addProductStockVo.setBizId(data.getId());

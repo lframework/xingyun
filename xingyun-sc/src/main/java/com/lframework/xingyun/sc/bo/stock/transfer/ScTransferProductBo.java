@@ -100,6 +100,6 @@ public class ScTransferProductBo extends BaseBo<ScTransferProductDto> {
         ProductStockService.class);
     ProductStock productStock = productStockService.getByProductIdAndScId(dto.getId(),
         this.scId);
-    this.curStockNum = productStock == null ? 0 : productStock.getStockNum();
+    this.curStockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
   }
 }

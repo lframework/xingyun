@@ -158,9 +158,9 @@ public class ProductStockLogExportModel extends BaseBo<ProductStockLog> implemen
     this.categoryName = productCategory.getName();
     this.brandName = productBrand.getName();
 
-    this.setOriStockNum(dto.getOriStockNum());
-    this.setCurStockNum(dto.getCurStockNum());
-    this.setStockNum(dto.getStockNum());
+    this.setOriStockNum(dto.getOriStockNum().intValue());
+    this.setCurStockNum(dto.getCurStockNum().intValue());
+    this.setStockNum(dto.getStockNum().intValue());
     this.setOriTaxPrice(NumberUtil.getNumber(dto.getOriTaxPrice(), 2));
     this.setCurTaxPrice(NumberUtil.getNumber(dto.getCurTaxPrice(), 2));
     this.setTaxAmount(NumberUtil.getNumber(dto.getTaxAmount(), 2));

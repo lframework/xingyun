@@ -137,7 +137,7 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
         if (config.getShowStock()) {
             ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
             ProductStock productStock = productStockService.getByProductIdAndScId(this.productId, this.scId);
-            this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+            this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
         }
     }
 }

@@ -189,7 +189,7 @@ public class PrintPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
      * 采购数量
      */
     @ApiModelProperty("采购数量")
-    private Integer purchaseNum;
+    private BigDecimal purchaseNum;
 
     /**
      * 采购价
@@ -220,7 +220,7 @@ public class PrintPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
 
       this.purchaseNum = dto.getOrderNum();
       this.purchasePrice = dto.getTaxPrice();
-      this.purchaseAmount = NumberUtil.mul(dto.getOrderNum(), dto.getTaxPrice());
+      this.purchaseAmount = dto.getTaxAmount();
 
       PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
           PurchaseOrderService.class);

@@ -286,7 +286,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(saleReturn.getScId());
-      addProductStockVo.setStockNum(detail.getReturnNum());
+      addProductStockVo.setStockNum(BigDecimal.valueOf(detail.getReturnNum()));
       addProductStockVo.setDefaultTaxPrice(productPurchase.getPrice());
       addProductStockVo.setBizId(saleReturn.getId());
       addProductStockVo.setBizDetailId(detail.getId());

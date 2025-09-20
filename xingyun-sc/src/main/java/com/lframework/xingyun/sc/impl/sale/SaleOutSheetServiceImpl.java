@@ -22,7 +22,7 @@ import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTime
 import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
-import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
@@ -400,7 +400,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         SubProductStockVo subProductStockVo = new SubProductStockVo();
         subProductStockVo.setProductId(detail.getProductId());
         subProductStockVo.setScId(sheet.getScId());
-        subProductStockVo.setStockNum(detail.getOrderNum());
+        subProductStockVo.setStockNum(BigDecimal.valueOf(detail.getOrderNum()));
         subProductStockVo.setBizId(sheet.getId());
         subProductStockVo.setBizDetailId(detail.getId());
         subProductStockVo.setBizCode(sheet.getCode());
@@ -451,7 +451,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(newDetail.getProductId());
           subProductStockVo.setScId(sheet.getScId());
-          subProductStockVo.setStockNum(newDetail.getOrderNum());
+          subProductStockVo.setStockNum(BigDecimal.valueOf(newDetail.getOrderNum()));
           subProductStockVo.setBizId(sheet.getId());
           subProductStockVo.setBizDetailId(newDetail.getId());
           subProductStockVo.setBizCode(sheet.getCode());

@@ -27,7 +27,7 @@ public class PurchaseProductVo implements BaseVo, Serializable {
    * 采购数量
    */
   @ApiModelProperty("采购数量")
-  private Integer purchaseNum;
+  private BigDecimal purchaseNum;
 
   /**
    * 备注

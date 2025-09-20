@@ -7,7 +7,7 @@ import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.mq.core.service.MqProducerService;
 import com.lframework.starter.web.core.utils.JsonUtil;
 import com.lframework.starter.web.inner.dto.notify.SysNotifyDto;
-import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.core.queue.MqStringPool;
@@ -69,7 +69,7 @@ public class ProductStockWarningStockChangeListener {
       return;
     }
 
-    Integer currentStock = dto.getCurStockNum();
+    Integer currentStock = dto.getCurStockNum().intValue();
     if ((isAdd && productStockWarning.getMaxLimit() <= currentStock) || (!isAdd
         && productStockWarning.getMinLimit() >= currentStock)) {
       log.info("scId = {}, productId = {}, 预警{}限 = {}, 当前库存 = {}, 开始预警",

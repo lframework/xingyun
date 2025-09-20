@@ -305,7 +305,7 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
       ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
       ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
           this.getScId());
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+      this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
 
       if (StringUtil.isNotBlank(dto.getMainProductId())) {
         ProductService productService = ApplicationUtil.getBean(ProductService.class);

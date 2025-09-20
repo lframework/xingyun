@@ -195,7 +195,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
         detail.setPlanId(data.getId());
         detail.setProductId(product.getId());
 
-        detail.setStockNum(productStock == null ? 0 : productStock.getStockNum());
+        detail.setStockNum(productStock == null ? 0 : productStock.getStockNum().intValue());
         detail.setTotalOutNum(0);
         detail.setTotalInNum(0);
         detail.setOrderNo(orderNo++);
@@ -351,7 +351,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
           AddProductStockVo addProductStockVo = new AddProductStockVo();
           addProductStockVo.setProductId(detail.getProductId());
           addProductStockVo.setScId(data.getScId());
-          addProductStockVo.setStockNum(detail.getTakeNum() - detail.getStockNum());
+          addProductStockVo.setStockNum(NumberUtil.sub(detail.getTakeNum(), detail.getStockNum()));
           addProductStockVo.setDefaultTaxPrice(purchase.getPrice());
           addProductStockVo.setBizId(data.getId());
           addProductStockVo.setBizDetailId(detail.getId());
@@ -364,7 +364,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(detail.getProductId());
           subProductStockVo.setScId(data.getScId());
-          subProductStockVo.setStockNum(detail.getStockNum() - detail.getTakeNum());
+          subProductStockVo.setStockNum(NumberUtil.sub(detail.getStockNum(), detail.getTakeNum()));
           subProductStockVo.setBizId(data.getId());
           subProductStockVo.setBizDetailId(detail.getId());
           subProductStockVo.setBizCode(data.getCode());

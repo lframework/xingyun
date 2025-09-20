@@ -59,7 +59,7 @@ public class TakeStockPlanDetailServiceImpl extends
 
       ProductStock productStock = productStockService.getByProductIdAndScId(productId,
           takeStockPlan.getScId());
-      detail.setStockNum(productStock == null ? 0 : productStock.getStockNum());
+      detail.setStockNum(productStock == null ? 0 : productStock.getStockNum().intValue());
 
       detail.setDescription(StringPool.EMPTY_STR);
       detail.setOrderNo(orderNo++);

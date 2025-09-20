@@ -38,7 +38,7 @@ public class PurchaseReturnDetail extends BaseEntity implements BaseDto {
   /**
    * 退货数量
    */
-  private Integer returnNum;
+  private BigDecimal returnNum;
 
   /**
    * 采购价

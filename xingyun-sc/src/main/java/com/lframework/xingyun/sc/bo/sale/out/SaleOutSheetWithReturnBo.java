@@ -290,7 +290,7 @@ public class SaleOutSheetWithReturnBo extends BaseBo<SaleOutSheetWithReturnDto> 
       ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
       ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
           this.getScId());
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+      this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
     }
   }
 }

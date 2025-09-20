@@ -121,7 +121,7 @@ public class TakeStockSheetProductBo extends BaseBo<TakeStockSheetProductDto> {
             ProductStockService.class);
         ProductStock productStock = productStockService.getByProductIdAndScId(this.productId,
             this.scId);
-        this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+        this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
       }
     }
   }

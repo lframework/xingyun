@@ -530,8 +530,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     order.setExpectArriveDate(vo.getExpectArriveDate());
 
-    int purchaseNum = 0;
-    int giftNum = 0;
+    BigDecimal purchaseNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (PurchaseProductVo productVo : vo.getProducts()) {
@@ -539,13 +539,14 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       boolean isGift = productVo.getPurchasePrice().doubleValue() == 0D;
 
       if (isGift) {
-        giftNum += productVo.getPurchaseNum();
+        giftNum = NumberUtil.add(giftNum, productVo.getPurchaseNum());
       } else {
-        purchaseNum += productVo.getPurchaseNum();
+        purchaseNum = NumberUtil.add(purchaseNum, productVo.getPurchaseNum());
       }
 
-      totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(productVo.getPurchasePrice(), productVo.getPurchaseNum()));
+      // 计算含税总金额：采购数量 × 采购价（采购价本身就是含税价）
+      BigDecimal taxAmount = NumberUtil.getNumber(NumberUtil.mul(productVo.getPurchasePrice(), productVo.getPurchaseNum()), 2);
+      totalAmount = NumberUtil.add(totalAmount, taxAmount);
 
       PurchaseOrderDetail orderDetail = newOrderDetail(isForm);
       orderDetail.setId(IdUtil.getId());
@@ -556,8 +557,12 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
 
-      if (!NumberUtil.isNumberPrecision(productVo.getPurchasePrice(), 2)) {
-        throw new InputErrorException("第" + orderNo + "行商品采购价最多允许2位小数！");
+      if (!NumberUtil.isNumberPrecision(productVo.getPurchasePrice(), 6)) {
+        throw new InputErrorException("第" + orderNo + "行商品采购价最多允许6位小数！");
+      }
+
+      if (!NumberUtil.isNumberPrecision(productVo.getPurchaseNum(), 8)) {
+        throw new InputErrorException("第" + orderNo + "行商品采购数量最多允许8位小数！");
       }
 
       orderDetail.setProductId(productVo.getProductId());
@@ -569,6 +574,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());
       orderDetail.setOrderNo(orderNo);
+      orderDetail.setTaxAmount(taxAmount);
 
       if (isForm) {
         purchaseOrderDetailFormMapper.insert((PurchaseOrderDetailForm) orderDetail);

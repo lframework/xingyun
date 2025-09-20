@@ -115,6 +115,6 @@ public class SaleProductBo extends BaseBo<SaleProductDto> {
             ProductStockService.class);
         ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
             this.getScId());
-        this.stockNum = productStock == null ? 0 : productStock.getStockNum();
+        this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
     }
 }

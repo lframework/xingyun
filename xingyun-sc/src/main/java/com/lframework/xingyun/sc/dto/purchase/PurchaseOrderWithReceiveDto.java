@@ -57,7 +57,7 @@ public class PurchaseOrderWithReceiveDto implements BaseDto, Serializable {
     /**
      * 采购数量
      */
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 采购价
@@ -87,6 +87,6 @@ public class PurchaseOrderWithReceiveDto implements BaseDto, Serializable {
     /**
      * 已收货数量
      */
-    private Integer receiveNum;
+    private BigDecimal receiveNum;
   }
 }

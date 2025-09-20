@@ -113,7 +113,7 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
     this.categoryName = productCategory.getName();
     this.brandName = productBrand.getName();
 
-    this.setStockNum(dto.getStockNum());
+    this.setStockNum(dto.getStockNum().intValue());
     this.setTaxPrice(NumberUtil.getNumber(dto.getTaxPrice(), 2));
     this.setTaxAmount(NumberUtil.getNumber(dto.getTaxAmount(), 2));
   }

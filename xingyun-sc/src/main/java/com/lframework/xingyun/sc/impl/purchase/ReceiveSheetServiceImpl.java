@@ -572,8 +572,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       }
     }
 
-    int purchaseNum = 0;
-    int giftNum = 0;
+    BigDecimal purchaseNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (ReceiveProductVo productVo : vo.getProducts()) {
@@ -587,7 +587,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         }
       }
 
-      boolean isGift = productVo.getPurchasePrice().doubleValue() == 0D;
+      boolean isGift = NumberUtil.equal(productVo.getPurchasePrice(), BigDecimal.ZERO);
 
       if (receiveRequirePurchase) {
         if (StringUtil.isBlank(productVo.getPurchaseOrderDetailId())) {
@@ -598,13 +598,13 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       }
 
       if (isGift) {
-        giftNum += productVo.getReceiveNum();
+        giftNum = NumberUtil.add(giftNum, productVo.getReceiveNum());
       } else {
-        purchaseNum += productVo.getReceiveNum();
+        purchaseNum = NumberUtil.add(purchaseNum, productVo.getReceiveNum());
       }
 
-      totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReceiveNum()));
+      BigDecimal taxAmount = NumberUtil.getNumber(NumberUtil.mul(productVo.getReceiveNum(), productVo.getPurchasePrice()), 2);
+      totalAmount = NumberUtil.add(totalAmount, taxAmount);
 
       ReceiveSheetDetail detail = new ReceiveSheetDetail();
       detail.setId(IdUtil.getId());
@@ -615,13 +615,18 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
 
-      if (!NumberUtil.isNumberPrecision(productVo.getPurchasePrice(), 2)) {
-        throw new InputErrorException("第" + orderNo + "行商品采购价最多允许2位小数！");
+      if (!NumberUtil.isNumberPrecision(productVo.getPurchasePrice(), 6)) {
+        throw new InputErrorException("第" + orderNo + "行商品采购价最多允许6位小数！");
+      }
+
+      if (!NumberUtil.isNumberPrecision(productVo.getReceiveNum(), 8)) {
+        throw new InputErrorException("第" + orderNo + "行商品收货数量最多允许8位小数！");
       }
 
       detail.setProductId(productVo.getProductId());
       detail.setOrderNum(productVo.getReceiveNum());
       detail.setTaxPrice(productVo.getPurchasePrice());
+      detail.setTaxAmount(taxAmount);
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getTaxRate());
       detail.setDescription(

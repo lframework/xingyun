@@ -57,12 +57,17 @@ public class ReceiveSheetWithReturnDto implements BaseDto, Serializable {
     /**
      * 收货数量
      */
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 采购价
      */
     private BigDecimal taxPrice;
+
+    /**
+     * 采购总金额
+     */
+    private BigDecimal taxAmount;
 
     /**
      * 是否赠品
@@ -87,6 +92,6 @@ public class ReceiveSheetWithReturnDto implements BaseDto, Serializable {
     /**
      * 已退货数量
      */
-    private Integer returnNum;
+    private BigDecimal returnNum;
   }
 }

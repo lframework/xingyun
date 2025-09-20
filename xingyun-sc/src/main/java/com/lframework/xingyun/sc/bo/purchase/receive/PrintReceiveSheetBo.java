@@ -214,7 +214,7 @@ public class PrintReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
      * 收货数量
      */
     @ApiModelProperty("收货数量")
-    private Integer receiveNum;
+    private BigDecimal receiveNum;
 
     /**
      * 采购价
@@ -245,7 +245,7 @@ public class PrintReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
 
       this.receiveNum = dto.getOrderNum();
       this.purchasePrice = dto.getTaxPrice();
-      this.receiveAmount = NumberUtil.mul(dto.getOrderNum(), dto.getTaxPrice());
+      this.receiveAmount = dto.getTaxAmount();
 
       PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
           PurchaseOrderService.class);

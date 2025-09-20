@@ -47,12 +47,12 @@ public class PurchaseOrderFullDto implements BaseDto, Serializable {
   /**
    * 采购数量
    */
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
-  private Integer totalGiftNum;
+  private BigDecimal totalGiftNum;
 
   /**
    * 采购金额
@@ -132,7 +132,7 @@ public class PurchaseOrderFullDto implements BaseDto, Serializable {
     /**
      * 采购数量
      */
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 采购价
@@ -158,5 +158,10 @@ public class PurchaseOrderFullDto implements BaseDto, Serializable {
      * 排序编号
      */
     private Integer orderNo;
+
+    /**
+     * 含税总金额
+     */
+    private BigDecimal taxAmount;
   }
 }

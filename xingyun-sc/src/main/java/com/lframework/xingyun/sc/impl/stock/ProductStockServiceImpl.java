@@ -19,7 +19,7 @@ import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.starter.web.inner.dto.stock.ProductStockChangeDto;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.events.stock.AddStockEvent;
 import com.lframework.xingyun.sc.events.stock.SubStockEvent;
@@ -91,17 +91,17 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
       List<ProductStock> productStocks = this.getByProductIdsAndScId(productIds, scId,
           ProductType.NORMAL.getCode());
 
-      int stockNum = Integer.MAX_VALUE;
+      BigDecimal stockNum = BigDecimal.valueOf(Integer.MAX_VALUE);
       for (ProductBundle productBundle : productBundles) {
         String id = productBundle.getProductId();
         ProductStock productStock = productStocks.stream().filter(t -> t.getProductId().equals(id))
             .findFirst().orElse(null);
-        if (productStock == null || productStock.getStockNum() <= 0) {
+        if (productStock == null || NumberUtil.le(productStock.getStockNum(), 0)) {
           // 此处说明有单品没有库存
           return null;
         }
 
-        stockNum = Math.min(productStock.getStockNum() / productBundle.getBundleNum(), stockNum);
+        stockNum = NumberUtil.min(NumberUtil.div(productStock.getStockNum(), productBundle.getBundleNum()), stockNum);
       }
 
       ProductStock productStock = new ProductStock();
@@ -131,6 +131,8 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   @Override
   public ProductStockChangeDto addStock(AddProductStockVo vo) {
 
+    Assert.greaterThanZero(vo.getStockNum());
+
     Product product = productService.findById(vo.getProductId());
     if (product.getProductType() != ProductType.NORMAL) {
       throw new DefaultClientException(
@@ -149,7 +151,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
       productStock.setId(IdUtil.getId());
       productStock.setScId(vo.getScId());
       productStock.setProductId(vo.getProductId());
-      productStock.setStockNum(0);
+      productStock.setStockNum(BigDecimal.ZERO);
       productStock.setTaxPrice(BigDecimal.ZERO);
       productStock.setTaxAmount(BigDecimal.ZERO);
 
@@ -177,7 +179,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
       reCalcCostPrice = true;
     }
 
-    vo.setTaxPrice(NumberUtil.getNumber(vo.getTaxPrice(), 2));
+    vo.setTaxPrice(NumberUtil.getNumber(vo.getTaxPrice(), 6));
     int count = getBaseMapper().addStock(vo.getProductId(), vo.getScId(), vo.getStockNum(),
         NumberUtil.mul(vo.getTaxPrice(), vo.getStockNum()), productStock.getStockNum(),
         productStock.getTaxAmount(), reCalcCostPrice);
@@ -193,11 +195,11 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     addLogWithAddStockVo.setTaxAmount(NumberUtil.mul(vo.getTaxPrice(), vo.getStockNum()));
     addLogWithAddStockVo.setOriStockNum(productStock.getStockNum());
     addLogWithAddStockVo.setCurStockNum(
-        NumberUtil.add(productStock.getStockNum(), vo.getStockNum()).intValue());
+        NumberUtil.add(productStock.getStockNum(), vo.getStockNum()));
     addLogWithAddStockVo.setOriTaxPrice(productStock.getTaxPrice());
     addLogWithAddStockVo.setCurTaxPrice(!reCalcCostPrice ?
         productStock.getTaxPrice() :
-        addLogWithAddStockVo.getCurStockNum() == 0 ?
+        NumberUtil.equal(addLogWithAddStockVo.getCurStockNum(), BigDecimal.ZERO) ?
             BigDecimal.ZERO :
             NumberUtil.getNumber(
                 NumberUtil.div(NumberUtil.add(productStock.getTaxAmount(),
@@ -228,6 +230,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   @Transactional(rollbackFor = Exception.class)
   @Override
   public ProductStockChangeDto subStock(SubProductStockVo vo) {
+    Assert.greaterThanZero(vo.getStockNum());
 
     Product product = productService.findById(vo.getProductId());
     if (product.getProductType() != ProductType.NORMAL) {
@@ -276,11 +279,11 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     addLogWithAddStockVo.setTaxAmount(subTaxAmount);
     addLogWithAddStockVo.setOriStockNum(productStock.getStockNum());
     addLogWithAddStockVo.setCurStockNum(
-        NumberUtil.sub(productStock.getStockNum(), vo.getStockNum()).intValue());
+        NumberUtil.sub(productStock.getStockNum(), vo.getStockNum()));
     addLogWithAddStockVo.setOriTaxPrice(productStock.getTaxPrice());
     addLogWithAddStockVo.setCurTaxPrice(!reCalcCostPrice ?
         productStock.getTaxPrice() :
-        addLogWithAddStockVo.getCurStockNum() == 0 ?
+        NumberUtil.equal(addLogWithAddStockVo.getCurStockNum(), BigDecimal.ZERO) ?
             BigDecimal.ZERO :
             NumberUtil.getNumber(
                 NumberUtil.div(NumberUtil.sub(productStock.getTaxAmount(), subTaxAmount),

@@ -312,7 +312,7 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
             ProductStockService.class);
         ProductStock productStock = productStockService.getByProductIdAndScId(dto.getProductId(),
             this.scId);
-        this.curStockNum = productStock == null ? 0 : productStock.getStockNum();
+        this.curStockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
       }
     }
   }

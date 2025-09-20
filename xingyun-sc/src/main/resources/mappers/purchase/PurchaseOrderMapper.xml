@@ -52,6 +52,7 @@
             <result column="detail_tax_rate" property="taxRate"/>
             <result column="detail_description" property="description"/>
             <result column="detail_order_no" property="orderNo"/>
+            <result column="detail_tax_amount" property="taxAmount"/>
         </collection>
     </resultMap>
 
@@ -142,7 +143,8 @@
             d.is_gift AS detail_is_gift,
             d.tax_rate AS detail_tax_rate,
             d.description AS detail_description,
-            d.order_no AS detail_order_no
+            d.order_no AS detail_order_no,
+            d.tax_amount AS detail_tax_amount
         FROM tbl_purchase_order${isForm ? "_form" : ""} AS o
         LEFT JOIN tbl_purchase_order_detail${isForm ? "_form" : ""} AS d ON d.order_id = o.id
     </sql>

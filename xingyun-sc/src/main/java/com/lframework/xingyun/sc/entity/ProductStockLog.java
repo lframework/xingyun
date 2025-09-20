@@ -42,12 +42,12 @@ public class ProductStockLog extends BaseEntity implements BaseDto {
   /**
    * 原库存数量
    */
-  private Integer oriStockNum;
+  private BigDecimal oriStockNum;
 
   /**
    * 现库存数量
    */
-  private Integer curStockNum;
+  private BigDecimal curStockNum;
 
   /**
    * 原含税成本价
@@ -62,7 +62,7 @@ public class ProductStockLog extends BaseEntity implements BaseDto {
   /**
    * 变动库存数量
    */
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 变动含税金额

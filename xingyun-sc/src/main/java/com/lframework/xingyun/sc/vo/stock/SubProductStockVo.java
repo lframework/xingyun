@@ -36,8 +36,7 @@ public class SubProductStockVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "出库数量", required = true)
   @NotNull(message = "出库数量不能为空！")
-  @Min(message = "出库数量必须大于0！", value = 1)
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 含税成本总金额

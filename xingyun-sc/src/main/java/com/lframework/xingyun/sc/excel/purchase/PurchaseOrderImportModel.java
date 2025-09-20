@@ -80,7 +80,7 @@ public class PurchaseOrderImportModel implements ExcelModel {
    */
   @ExcelRequired
   @ExcelProperty("采购数量")
-  private Integer purchaseNum;
+  private BigDecimal purchaseNum;
 
   /**
    * 是否赠品

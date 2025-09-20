@@ -58,12 +58,12 @@ public class PurchaseOrder extends BaseEntity implements BaseDto {
   /**
    * 采购数量
    */
-  protected Integer totalNum;
+  protected BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
-  protected Integer totalGiftNum;
+  protected BigDecimal totalGiftNum;
 
   /**
    * 采购金额

@@ -36,8 +36,7 @@ public class AddProductStockVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "入库数量", required = true)
   @NotNull(message = "入库数量不能为空！")
-  @Min(message = "入库数量必须大于0！", value = 1)
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 含税成本总金额，如果为null则代表不计算均价入库

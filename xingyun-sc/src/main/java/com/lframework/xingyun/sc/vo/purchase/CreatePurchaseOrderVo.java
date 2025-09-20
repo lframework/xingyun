@@ -83,7 +83,7 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + orderNo + "行商品采购数量不能为空！");
       }
 
-      if (product.getPurchaseNum() <= 0) {
+      if (NumberUtil.le(product.getPurchaseNum(), BigDecimal.ZERO)) {
         throw new InputErrorException("第" + orderNo + "行商品采购数量必须大于0！");
       }
 
@@ -91,7 +91,7 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + orderNo + "行商品采购价不能为空！");
       }
 
-      if (product.getPurchasePrice().doubleValue() < 0D) {
+      if (NumberUtil.lt(product.getPurchasePrice(), BigDecimal.ZERO)) {
         throw new InputErrorException("第" + orderNo + "行商品采购价不允许小于0！");
       }
 
@@ -99,7 +99,8 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
     }
 
     BigDecimal totalAmount = this.products.stream()
-        .map(t -> NumberUtil.mul(t.getPurchaseNum(), t.getPurchasePrice())).reduce(NumberUtil::add)
+        .map(t -> NumberUtil.getNumber(NumberUtil.mul(t.getPurchaseNum(), t.getPurchasePrice()), 2))
+        .reduce(NumberUtil::add)
         .orElse(BigDecimal.ZERO);
     BigDecimal payTypeAmount = CollectionUtil.isEmpty(this.payTypes) ? BigDecimal.ZERO
         : this.payTypes.stream().map(OrderPayTypeVo::getPayAmount).reduce(NumberUtil::add)

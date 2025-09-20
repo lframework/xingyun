@@ -9,6 +9,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.mappers.PurchaseOrderDetailMapper;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,22 +31,21 @@ public class PurchaseOrderDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void addReceiveNum(String id, Integer num) {
+  public void addReceiveNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
     PurchaseOrderDetail orderDetail = getBaseMapper().selectById(id);
 
-    Integer remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getReceiveNum())
-        .intValue();
+    BigDecimal remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getReceiveNum());
     if (NumberUtil.lt(remainNum, num)) {
       Product product = productService.findById(orderDetail.getProductId());
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "剩余收货数量为" + remainNum
-              + "个，本次收货数量不允许大于"
-              + remainNum + "个！");
+              + "，本次收货数量不允许大于"
+              + remainNum + "！");
     }
 
     if (getBaseMapper().addReceiveNum(orderDetail.getId(), num) != 1) {
@@ -58,7 +58,7 @@ public class PurchaseOrderDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void subReceiveNum(String id, Integer num) {
+  public void subReceiveNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
@@ -70,7 +70,7 @@ public class PurchaseOrderDetailServiceImpl extends
 
       throw new DefaultClientException(
           "（" + product.getCode() + "）" + product.getName() + "已收货数量为" + orderDetail.getReceiveNum()
-              + "个，本次取消收货数量不允许大于" + orderDetail.getReceiveNum() + "个！");
+              + "，本次取消收货数量不允许大于" + orderDetail.getReceiveNum() + "！");
     }
 
     if (getBaseMapper().subReceiveNum(orderDetail.getId(), num) != 1) {

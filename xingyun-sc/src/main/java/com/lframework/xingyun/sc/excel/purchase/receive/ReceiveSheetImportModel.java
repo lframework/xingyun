@@ -88,7 +88,7 @@ public class ReceiveSheetImportModel implements ExcelModel {
    */
   @ExcelRequired
   @ExcelProperty("收货数量")
-  private Integer receiveNum;
+  private BigDecimal receiveNum;
 
   /**
    * 是否赠品

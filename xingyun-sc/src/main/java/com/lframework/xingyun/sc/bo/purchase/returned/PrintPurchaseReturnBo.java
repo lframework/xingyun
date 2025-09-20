@@ -244,7 +244,7 @@ public class PrintPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
 
       this.returnNum = dto.getReturnNum();
       this.purchasePrice = dto.getTaxPrice();
-      this.returnAmount = NumberUtil.getNumber(NumberUtil.mul(dto.getReturnNum(), dto.getTaxPrice()), 2);
+      this.returnAmount = dto.getTaxAmount();
 
       PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
           PurchaseOrderService.class);

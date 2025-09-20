@@ -70,5 +70,10 @@ public class PurchaseReturnDetail extends BaseEntity implements BaseDto {
    */
   private String receiveSheetDetailId;
 
+  /**
+   * 退货总金额
+   */
+  private BigDecimal taxAmount;
+
 
 }

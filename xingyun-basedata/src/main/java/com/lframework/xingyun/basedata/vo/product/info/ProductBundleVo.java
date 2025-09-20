@@ -4,11 +4,8 @@ import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
+
 import lombok.Data;
 
 @Data
@@ -36,8 +33,8 @@ public class ProductBundleVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "销售价", required = true)
   @NotNull(message = "销售价不能为空！")
-  @Digits(integer = 10, fraction = 2, message = "销售价最多允许2位小数！")
-  @DecimalMin(value = "0.01", message = "销售价必须大于0！")
+  @Digits(integer = 10, fraction = 6, message = "销售价最多允许6位小数！")
+  @Positive(message = "销售价必须大于0！")
   private BigDecimal salePrice;
 
   /**
@@ -45,7 +42,7 @@ public class ProductBundleVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "零售价", required = true)
   @NotNull(message = "零售价不能为空！")
-  @Digits(integer = 10, fraction = 2, message = "零售价最多允许2位小数！")
-  @DecimalMin(value = "0.01", message = "零售价必须大于0！")
+  @Digits(integer = 10, fraction = 6, message = "零售价最多允许6位小数！")
+  @Positive(message = "零售价必须大于0！")
   private BigDecimal retailPrice;
 }

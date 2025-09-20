@@ -28,6 +28,6 @@ public class UpdateProductSaleVo implements BaseVo, Serializable {
   @ApiModelProperty(value = "销售价", required = true)
   @NotNull(message = "请输入销售价！")
   @Positive(message = "销售价必须大于0！")
-  @Digits(integer = 20, fraction = 2, message = "销售价最多允许2位小数！")
+  @Digits(integer = 20, fraction = 6, message = "销售价最多允许6位小数！")
   private BigDecimal price;
 }

@@ -156,6 +156,11 @@ public class PurchaseReturnFullDto implements BaseDto, Serializable {
     private BigDecimal taxRate;
 
     /**
+     * 退货总金额
+     */
+    private BigDecimal taxAmount;
+
+    /**
      * 备注
      */
     private String description;

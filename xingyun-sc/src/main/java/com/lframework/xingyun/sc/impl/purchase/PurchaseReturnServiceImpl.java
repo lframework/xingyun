@@ -543,8 +543,8 @@ public class PurchaseReturnServiceImpl extends
         returnNum = NumberUtil.add(returnNum, productVo.getReturnNum());
       }
 
-      totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReturnNum()));
+      BigDecimal taxAmount = NumberUtil.getNumber(NumberUtil.mul(productVo.getPurchasePrice(), productVo.getReturnNum()), 2);
+      totalAmount = NumberUtil.add(totalAmount, taxAmount);
 
       PurchaseReturnDetail detail = new PurchaseReturnDetail();
       detail.setId(IdUtil.getId());
@@ -571,6 +571,7 @@ public class PurchaseReturnServiceImpl extends
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());
+      detail.setTaxAmount(taxAmount);
       detail.setOrderNo(orderNo);
       if (requireReceive && !StringUtil.isBlank(productVo.getReceiveSheetDetailId())) {
         detail.setReceiveSheetDetailId(productVo.getReceiveSheetDetailId());

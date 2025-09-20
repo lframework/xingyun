@@ -32,3 +32,5 @@ build/
 
 logs
 *.log
+
+bin

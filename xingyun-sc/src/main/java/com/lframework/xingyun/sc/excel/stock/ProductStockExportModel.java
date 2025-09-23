@@ -60,7 +60,7 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
    * 库存数量
    */
   @ExcelProperty("库存数量")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 含税价格
@@ -86,7 +86,7 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
   @Override
   public <A> BaseBo<ProductStock> convert(ProductStock dto) {
 
-    return this;
+    return super.convert(dto);
   }
 
   @Override
@@ -112,9 +112,5 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
     this.productName = product.getName();
     this.categoryName = productCategory.getName();
     this.brandName = productBrand.getName();
-
-    this.setStockNum(dto.getStockNum().intValue());
-    this.setTaxPrice(NumberUtil.getNumber(dto.getTaxPrice(), 2));
-    this.setTaxAmount(NumberUtil.getNumber(dto.getTaxAmount(), 2));
   }
 }

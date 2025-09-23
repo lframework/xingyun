@@ -80,19 +80,19 @@ public class QueryProductStockLogBo extends BaseBo<ProductStockLog> {
    * 库存数量
    */
   @ApiModelProperty("库存数量")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 原库存数量
    */
   @ApiModelProperty("原库存数量")
-  private Integer oriStockNum;
+  private BigDecimal oriStockNum;
 
   /**
    * 现库存数量
    */
   @ApiModelProperty("现库存数量")
-  private Integer curStockNum;
+  private BigDecimal curStockNum;
 
   /**
    * 原含税成本价
@@ -180,10 +180,6 @@ public class QueryProductStockLogBo extends BaseBo<ProductStockLog> {
     this.productName = product.getName();
     this.categoryName = productCategory.getName();
     this.brandName = productBrand.getName();
-
-    this.oriTaxPrice = NumberUtil.getNumber(dto.getOriTaxPrice(), 2);
-    this.curTaxPrice = NumberUtil.getNumber(dto.getCurTaxPrice(), 2);
-    this.taxAmount = NumberUtil.getNumber(dto.getTaxAmount(), 2);
 
     this.bizType = dto.getBizType().getCode();
   }

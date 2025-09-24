@@ -64,7 +64,7 @@ public class QueryScTransferOrderBo extends BaseBo<ScTransferOrder> {
    * 调拨数量
    */
   @ApiModelProperty("调拨数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 调拨成本金额

@@ -259,7 +259,7 @@ public class ScTransferOrderServiceImpl extends
       SubProductStockVo subProductStockVo = new SubProductStockVo();
       subProductStockVo.setProductId(product.getId());
       subProductStockVo.setScId(data.getSourceScId());
-      subProductStockVo.setStockNum(BigDecimal.valueOf(detail.getTransferNum()));
+      subProductStockVo.setStockNum(detail.getTransferNum());
       subProductStockVo.setCreateTime(now);
       subProductStockVo.setBizId(data.getId());
       subProductStockVo.setBizDetailId(detail.getId());
@@ -383,7 +383,7 @@ public class ScTransferOrderServiceImpl extends
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(data.getTargetScId());
-      addProductStockVo.setStockNum(BigDecimal.valueOf(productVo.getReceiveNum()));
+      addProductStockVo.setStockNum(productVo.getReceiveNum());
       addProductStockVo.setTaxPrice(detail.getTaxPrice());
       addProductStockVo.setCreateTime(now);
       addProductStockVo.setBizId(data.getId());
@@ -452,7 +452,7 @@ public class ScTransferOrderServiceImpl extends
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
-    int totalNum = 0;
+    BigDecimal totalNum = BigDecimal.ZERO;
     int orderNo = 1;
     for (ScTransferProductVo product : vo.getProducts()) {
       ScTransferOrderDetail detail = new ScTransferOrderDetail();
@@ -465,7 +465,7 @@ public class ScTransferOrderServiceImpl extends
               : product.getDescription());
       detail.setOrderNo(orderNo++);
 
-      totalNum += detail.getTransferNum();
+      totalNum = NumberUtil.add(detail.getTransferNum(), totalNum);
 
       scTransferOrderDetailService.save(detail);
     }

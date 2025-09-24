@@ -43,7 +43,7 @@ public class ScTransferOrderFullDto implements BaseDto, Serializable {
   /**
    * 调拨数量
    */
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 调拨成本金额
@@ -108,12 +108,12 @@ public class ScTransferOrderFullDto implements BaseDto, Serializable {
     /**
      * 调拨数量
      */
-    private Integer transferNum;
+    private BigDecimal transferNum;
 
     /**
      * 已收货数量
      */
-    private Integer receiveNum;
+    private BigDecimal receiveNum;
 
     /**
      * 备注

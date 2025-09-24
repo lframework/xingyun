@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.starter.web.core.entity.BaseEntity;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -40,7 +41,7 @@ public class ScTransferOrderDetailReceive extends BaseEntity implements BaseDto 
   /**
    * 收货数量
    */
-  private Integer receiveNum;
+  private BigDecimal receiveNum;
 
   /**
    * 创建人ID 新增时赋值

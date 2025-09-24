@@ -52,6 +52,10 @@ public class CreateScTransferOrderVo implements BaseVo, Serializable {
       if (NumberUtil.le(product.getTransferNum(), BigDecimal.ZERO)) {
         throw new DefaultClientException("第" + orderNo + "行商品的调拨数量必须大于0！");
       }
+
+      if (!NumberUtil.isNumberPrecision(product.getTransferNum(), 8)) {
+        throw new DefaultClientException("第" + orderNo + "行商品的调拨数量最多允许8位小数！");
+      }
     }
   }
 }

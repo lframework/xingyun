@@ -53,7 +53,7 @@ public class ScTransferOrderExportModel extends BaseBo<ScTransferOrder> implemen
    * 调拨数量
    */
   @ExcelProperty("调拨数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 调拨成本金额

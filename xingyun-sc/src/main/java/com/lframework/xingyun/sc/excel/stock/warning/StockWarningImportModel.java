@@ -4,6 +4,7 @@ import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.lframework.starter.web.core.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.core.components.excel.ExcelModel;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
@@ -40,12 +41,12 @@ public class StockWarningImportModel implements ExcelModel {
    */
   @ExcelRequired
   @ExcelProperty("预警上限")
-  private Integer maxLimit;
+  private BigDecimal maxLimit;
 
   /**
    * 预警下限
    */
   @ExcelRequired
   @ExcelProperty("预警下限")
-  private Integer minLimit;
+  private BigDecimal minLimit;
 }

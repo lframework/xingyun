@@ -94,3 +94,7 @@ update tbl_sc_transfer_order_detail_receive r
     join tbl_sc_transfer_order_detail d on d.id = r.detail_id
     set r.receive_amount = r.receive_num * d.transfer_amount / d.transfer_num
 where d.tax_price is not null;
+
+ALTER TABLE `tbl_product_stock_warning`
+    MODIFY COLUMN `max_limit` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '预警上限' AFTER `product_id`,
+    MODIFY COLUMN `min_limit` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '预警下限' AFTER `max_limit`;

@@ -459,6 +459,9 @@ public class ScTransferOrderServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setOrderId(data.getId());
       detail.setProductId(product.getProductId());
+      if (!NumberUtil.isNumberPrecision(product.getTransferNum(), 8)) {
+        throw new DefaultClientException("第" + orderNo + "行商品的调拨数量最多允许8位小数！");
+      }
       detail.setTransferNum(product.getTransferNum());
       detail.setDescription(
           StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR

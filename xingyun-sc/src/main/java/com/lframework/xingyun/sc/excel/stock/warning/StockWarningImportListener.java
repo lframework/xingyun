@@ -4,6 +4,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.core.components.excel.ExcelImportListener;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
@@ -42,19 +43,29 @@ public class StockWarningImportListener extends ExcelImportListener<StockWarning
     }
     data.setProductId(product.getId());
 
-    if (data.getMinLimit() <= 0) {
+    if (NumberUtil.le(data.getMinLimit(), 0)) {
       throw new DefaultClientException(
           "第" + context.readRowHolder().getRowIndex() + "行“预警下限”不能小于0");
     }
 
-    if (data.getMaxLimit() <= 0) {
+    if (NumberUtil.le(data.getMaxLimit(), 0)) {
       throw new DefaultClientException(
           "第" + context.readRowHolder().getRowIndex() + "行“预警上限”不能小于0");
     }
 
-    if (data.getMaxLimit() < data.getMinLimit()) {
+    if (NumberUtil.lt(data.getMaxLimit(), data.getMinLimit())) {
       throw new DefaultClientException(
           "第" + context.readRowHolder().getRowIndex() + "行“预警上限”不能小于“预警下限”");
+    }
+
+    if (!NumberUtil.isNumberPrecision(data.getMinLimit(), 8)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“预警下限”最多允许8位小数");
+    }
+
+    if (!NumberUtil.isNumberPrecision(data.getMaxLimit(), 8)) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“预警上限”最多允许8位小数");
     }
   }
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.starter.web.core.entity.BaseEntity;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -39,12 +40,12 @@ public class ProductStockWarning extends BaseEntity implements BaseDto {
   /**
    * 预警上限
    */
-  private Integer maxLimit;
+  private BigDecimal maxLimit;
 
   /**
    * 预警下限
    */
-  private Integer minLimit;
+  private BigDecimal minLimit;
 
   /**
    * 状态

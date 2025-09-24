@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.locker.LockBuilder;
 import com.lframework.starter.common.locker.Locker;
 import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.mq.core.service.MqProducerService;
 import com.lframework.starter.web.core.utils.JsonUtil;
 import com.lframework.starter.web.inner.dto.notify.SysNotifyDto;
@@ -16,6 +17,7 @@ import com.lframework.xingyun.sc.entity.ProductStockWarningNotify;
 import com.lframework.xingyun.sc.impl.stock.warning.ProductStockWarningSysNotifyRule;
 import com.lframework.xingyun.sc.service.stock.warning.ProductStockWarningNotifyService;
 import com.lframework.xingyun.sc.service.stock.warning.ProductStockWarningService;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -69,9 +71,9 @@ public class ProductStockWarningStockChangeListener {
       return;
     }
 
-    Integer currentStock = dto.getCurStockNum().intValue();
-    if ((isAdd && productStockWarning.getMaxLimit() <= currentStock) || (!isAdd
-        && productStockWarning.getMinLimit() >= currentStock)) {
+    BigDecimal currentStock = dto.getCurStockNum();
+    if ((isAdd && NumberUtil.le(productStockWarning.getMaxLimit(), currentStock)) || (!isAdd
+        && NumberUtil.ge(productStockWarning.getMinLimit(), currentStock))) {
       log.info("scId = {}, productId = {}, 预警{}限 = {}, 当前库存 = {}, 开始预警",
           dto.getScId(), dto.getProductId(), isAdd ? "上" : "下",
           isAdd ? productStockWarning.getMaxLimit() : productStockWarning.getMinLimit(),
@@ -108,7 +110,7 @@ public class ProductStockWarningStockChangeListener {
   }
 
   private void sendNotifications(List<ProductStockWarningNotify> notifyList, Product product,
-      ProductStockWarning productStockWarning, Integer currentStock, boolean isAdd) {
+      ProductStockWarning productStockWarning, BigDecimal currentStock, boolean isAdd) {
     for (ProductStockWarningNotify notify : notifyList) {
       // 预警增加时效，不能一直预警
       LocalDateTime lastNotifyTime = productStockWarningNotifyService.getLastNotifyTime(

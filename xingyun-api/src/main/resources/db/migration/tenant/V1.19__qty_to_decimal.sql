@@ -67,3 +67,12 @@ ALTER TABLE `tbl_purchase_return_detail`
     ADD COLUMN `tax_amount` decimal(24, 2) NOT NULL DEFAULT 0 COMMENT '退货总金额' AFTER `receive_sheet_detail_id`;
 
 update tbl_purchase_return_detail set tax_amount = return_num * tax_price;
+
+ALTER TABLE `tbl_sc_transfer_order`
+    MODIFY COLUMN `total_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '调拨数量' AFTER `target_sc_id`;
+ALTER TABLE `tbl_sc_transfer_order_detail`
+    MODIFY COLUMN `transfer_num` decimal(24, 8) NOT NULL COMMENT '调拨数量' AFTER `product_id`,
+    MODIFY COLUMN `receive_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '已收货数量' AFTER `order_no`;
+
+ALTER TABLE `tbl_sc_transfer_order_detail_receive`
+    MODIFY COLUMN `receive_num` decimal(24, 8) NOT NULL COMMENT '收货数量' AFTER `detail_id`;

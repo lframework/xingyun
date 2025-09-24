@@ -253,7 +253,7 @@ public class StockAdjustSheetServiceImpl extends
         addProductStockVo.setProductId(product.getId());
         addProductStockVo.setScId(data.getScId());
         addProductStockVo.setStockNum(BigDecimal.valueOf(detail.getStockNum()));
-        addProductStockVo.setDefaultTaxPrice(productPurchase.getPrice());
+        addProductStockVo.setDefaultTaxAmount(productPurchase.getPrice());
         addProductStockVo.setCreateTime(now);
         addProductStockVo.setBizId(data.getId());
         addProductStockVo.setBizDetailId(detail.getId());

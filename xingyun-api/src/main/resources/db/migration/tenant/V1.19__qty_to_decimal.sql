@@ -76,3 +76,21 @@ ALTER TABLE `tbl_sc_transfer_order_detail`
 
 ALTER TABLE `tbl_sc_transfer_order_detail_receive`
     MODIFY COLUMN `receive_num` decimal(24, 8) NOT NULL COMMENT '收货数量' AFTER `detail_id`;
+
+ALTER TABLE `tbl_sc_transfer_order_detail`
+    MODIFY COLUMN `tax_price` decimal(16, 6) NULL DEFAULT NULL COMMENT '成本价' AFTER `transfer_num`;
+
+ALTER TABLE `tbl_sc_transfer_order_detail`
+    ADD COLUMN `transfer_amount` decimal(24, 2) NOT NULL DEFAULT 0 COMMENT '调拨金额' AFTER `transfer_num`,
+ADD COLUMN `receive_amount` decimal(24, 2) NOT NULL DEFAULT 0 COMMENT '已收货金额' AFTER `receive_num`;
+ALTER TABLE `tbl_sc_transfer_order_detail`
+    MODIFY COLUMN `tax_price` decimal(16, 6) NULL COMMENT '成本价' AFTER `transfer_amount`;
+UPDATE tbl_sc_transfer_order_detail SET transfer_amount =transfer_num * tax_price, receive_amount = receive_num * tax_price WHERE tax_price IS NOT NULL;
+
+ALTER TABLE `tbl_sc_transfer_order_detail_receive`
+    ADD COLUMN `receive_amount` decimal(24, 2) NOT NULL DEFAULT 0 COMMENT '收货金额' AFTER `receive_num`;
+
+update tbl_sc_transfer_order_detail_receive r
+    join tbl_sc_transfer_order_detail d on d.id = r.detail_id
+    set r.receive_amount = r.receive_num * d.transfer_amount / d.transfer_num
+where d.tax_price is not null;

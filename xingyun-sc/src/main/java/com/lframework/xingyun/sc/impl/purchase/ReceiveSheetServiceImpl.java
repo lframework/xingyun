@@ -348,7 +348,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(sheet.getScId());
       addProductStockVo.setStockNum(detail.getOrderNum());
-      addProductStockVo.setTaxPrice(detail.getTaxPrice());
+      addProductStockVo.setTaxAmount(detail.getTaxAmount());
       addProductStockVo.setBizId(sheet.getId());
       addProductStockVo.setBizDetailId(detail.getId());
       addProductStockVo.setBizCode(sheet.getCode());

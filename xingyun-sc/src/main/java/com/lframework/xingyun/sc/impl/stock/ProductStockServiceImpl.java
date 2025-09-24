@@ -161,17 +161,17 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     }
 
     // 如果taxAmount为null，代表不重算均价，即：按当前均价直接入库
-    boolean reCalcCostPrice = vo.getTaxPrice() != null;
+    boolean reCalcCostPrice = vo.getTaxAmount() != null;
 
-    if (vo.getTaxPrice() == null) {
-      vo.setTaxPrice(isStockEmpty ?
-          vo.getDefaultTaxPrice() :
-          productStock.getTaxPrice());
+    if (vo.getTaxAmount() == null) {
+      vo.setTaxAmount(isStockEmpty ?
+          vo.getDefaultTaxAmount() :
+          productStock.getTaxAmount());
     }
-    if (vo.getTaxPrice() == null) {
+    if (vo.getTaxAmount() == null) {
       // 如果此时taxPrice还是null，则代表taxPrice和defaultTaxPrice均为null
       throw new DefaultSysException(
-          "商品ID：" + vo.getProductId() + "，没有库存，taxPrice和defaultTaxPrice不能同时为null！");
+          "商品ID：" + vo.getProductId() + "，没有库存，taxAmount和defaultTaxAmount不能同时为null！");
     }
 
     if (isStockEmpty) {
@@ -179,9 +179,9 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
       reCalcCostPrice = true;
     }
 
-    vo.setTaxPrice(NumberUtil.getNumber(vo.getTaxPrice(), 6));
+    vo.setTaxAmount(NumberUtil.getNumber(vo.getTaxAmount(), 2));
     int count = getBaseMapper().addStock(vo.getProductId(), vo.getScId(), vo.getStockNum(),
-        NumberUtil.mul(vo.getTaxPrice(), vo.getStockNum()), productStock.getStockNum(),
+        NumberUtil.mul(vo.getTaxAmount(), vo.getStockNum()), productStock.getStockNum(),
         productStock.getTaxAmount(), reCalcCostPrice);
     if (count != 1) {
       throw new DefaultClientException(
@@ -192,7 +192,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     addLogWithAddStockVo.setProductId(vo.getProductId());
     addLogWithAddStockVo.setScId(vo.getScId());
     addLogWithAddStockVo.setStockNum(vo.getStockNum());
-    addLogWithAddStockVo.setTaxAmount(NumberUtil.mul(vo.getTaxPrice(), vo.getStockNum()));
+    addLogWithAddStockVo.setTaxAmount(vo.getTaxAmount());
     addLogWithAddStockVo.setOriStockNum(productStock.getStockNum());
     addLogWithAddStockVo.setCurStockNum(
         NumberUtil.add(productStock.getStockNum(), vo.getStockNum()));
@@ -202,8 +202,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
         NumberUtil.equal(addLogWithAddStockVo.getCurStockNum(), BigDecimal.ZERO) ?
             BigDecimal.ZERO :
             NumberUtil.getNumber(
-                NumberUtil.div(NumberUtil.add(productStock.getTaxAmount(),
-                        NumberUtil.mul(vo.getTaxPrice(), vo.getStockNum())),
+                NumberUtil.div(NumberUtil.add(productStock.getTaxAmount(), vo.getTaxAmount()),
                     addLogWithAddStockVo.getCurStockNum()), 6));
     addLogWithAddStockVo.setCreateTime(vo.getCreateTime());
     addLogWithAddStockVo.setBizId(vo.getBizId());

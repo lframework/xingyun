@@ -44,6 +44,11 @@ public class ScTransferOrderDetailReceive extends BaseEntity implements BaseDto 
   private BigDecimal receiveNum;
 
   /**
+   * 收货金额
+   */
+  private BigDecimal receiveAmount;
+
+  /**
    * 创建人ID 新增时赋值
    */
   @TableField(fill = FieldFill.INSERT)

@@ -303,7 +303,7 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(retailReturn.getScId());
       addProductStockVo.setStockNum(BigDecimal.valueOf(detail.getReturnNum()));
-      addProductStockVo.setDefaultTaxPrice(productPurchase.getPrice());
+      addProductStockVo.setDefaultTaxAmount(productPurchase.getPrice());
       addProductStockVo.setBizId(retailReturn.getId());
       addProductStockVo.setBizDetailId(detail.getId());
       addProductStockVo.setBizCode(retailReturn.getCode());

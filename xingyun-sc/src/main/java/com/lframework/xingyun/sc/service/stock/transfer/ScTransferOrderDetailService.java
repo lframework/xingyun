@@ -13,7 +13,7 @@ public interface ScTransferOrderDetailService extends BaseMpService<ScTransferOr
    * @param receiveNum
    * @return
    */
-  int receive(String orderId, String productId, BigDecimal receiveNum);
+  int receive(String orderId, String productId, BigDecimal receiveNum, BigDecimal receiveAmount);
 
   /**
    * 统计未收货的商品

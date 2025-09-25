@@ -18,10 +18,10 @@ import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.enums.ProductType;
@@ -352,7 +352,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
           addProductStockVo.setProductId(detail.getProductId());
           addProductStockVo.setScId(data.getScId());
           addProductStockVo.setStockNum(NumberUtil.sub(detail.getTakeNum(), detail.getStockNum()));
-          addProductStockVo.setDefaultTaxAmount(purchase.getPrice());
+          addProductStockVo.setDefaultTaxAmount(NumberUtil.getNumber(
+              NumberUtil.mul(purchase.getPrice(), addProductStockVo.getStockNum()), 2));
           addProductStockVo.setBizId(data.getId());
           addProductStockVo.setBizDetailId(detail.getId());
           addProductStockVo.setBizCode(data.getCode());

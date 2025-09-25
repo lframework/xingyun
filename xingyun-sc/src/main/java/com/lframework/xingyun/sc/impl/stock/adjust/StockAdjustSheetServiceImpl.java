@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
@@ -15,6 +16,7 @@ import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
@@ -22,7 +24,6 @@ import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTi
 import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
@@ -50,7 +51,6 @@ import com.lframework.xingyun.sc.vo.stock.adjust.stock.QueryStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.StockAdjustProductVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.UpdateStockAdjustSheetVo;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -252,8 +252,10 @@ public class StockAdjustSheetServiceImpl extends
         AddProductStockVo addProductStockVo = new AddProductStockVo();
         addProductStockVo.setProductId(product.getId());
         addProductStockVo.setScId(data.getScId());
-        addProductStockVo.setStockNum(BigDecimal.valueOf(detail.getStockNum()));
-        addProductStockVo.setDefaultTaxAmount(productPurchase.getPrice());
+        addProductStockVo.setStockNum(detail.getStockNum());
+        addProductStockVo.setDefaultTaxAmount(
+            NumberUtil.getNumber(NumberUtil.mul(productPurchase.getPrice(), detail.getStockNum()),
+                2));
         addProductStockVo.setCreateTime(now);
         addProductStockVo.setBizId(data.getId());
         addProductStockVo.setBizDetailId(detail.getId());
@@ -265,7 +267,7 @@ public class StockAdjustSheetServiceImpl extends
         SubProductStockVo subProductStockVo = new SubProductStockVo();
         subProductStockVo.setProductId(product.getId());
         subProductStockVo.setScId(data.getScId());
-        subProductStockVo.setStockNum(BigDecimal.valueOf(detail.getStockNum()));
+        subProductStockVo.setStockNum(detail.getStockNum());
         subProductStockVo.setCreateTime(now);
         subProductStockVo.setBizId(data.getId());
         subProductStockVo.setBizDetailId(detail.getId());
@@ -379,8 +381,6 @@ public class StockAdjustSheetServiceImpl extends
     data.setBizType(EnumUtil.getByCode(StockAdjustSheetBizType.class, vo.getBizType()));
     data.setReasonId(vo.getReasonId());
 
-    int productNum = 0;
-    BigDecimal diffAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (StockAdjustProductVo product : vo.getProducts()) {
       StockAdjustSheetDetail detail = new StockAdjustSheetDetail();
@@ -392,7 +392,6 @@ public class StockAdjustSheetServiceImpl extends
           StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
               : product.getDescription());
       detail.setOrderNo(orderNo++);
-      productNum++;
 
       stockAdjustSheetDetailService.save(detail);
     }

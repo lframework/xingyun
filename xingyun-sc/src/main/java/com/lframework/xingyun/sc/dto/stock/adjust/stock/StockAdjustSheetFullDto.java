@@ -4,6 +4,7 @@ import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Data;
@@ -103,7 +104,7 @@ public class StockAdjustSheetFullDto implements BaseDto, Serializable {
     /**
      * 调整库存数量
      */
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 备注

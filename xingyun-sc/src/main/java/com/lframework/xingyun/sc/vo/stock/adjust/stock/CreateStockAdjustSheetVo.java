@@ -63,6 +63,9 @@ public class CreateStockAdjustSheetVo implements BaseVo, Serializable {
       if (NumberUtil.le(product.getStockNum(), BigDecimal.ZERO)) {
         throw new DefaultClientException("第" + orderNo + "行商品的调整库存数量必须大于0！");
       }
+      if (!NumberUtil.isNumberPrecision(product.getStockNum(), 8)) {
+        throw new DefaultClientException("第" + orderNo + "行商品的调整库存数量最多允许8位小数！");
+      }
     }
   }
 }

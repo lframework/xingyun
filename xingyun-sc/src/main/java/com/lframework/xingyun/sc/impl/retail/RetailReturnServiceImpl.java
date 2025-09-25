@@ -18,6 +18,7 @@ import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
@@ -28,7 +29,6 @@ import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
@@ -303,7 +303,9 @@ public class RetailReturnServiceImpl extends BaseMpServiceImpl<RetailReturnMappe
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(retailReturn.getScId());
       addProductStockVo.setStockNum(BigDecimal.valueOf(detail.getReturnNum()));
-      addProductStockVo.setDefaultTaxAmount(productPurchase.getPrice());
+      addProductStockVo.setDefaultTaxAmount(
+          NumberUtil.getNumber(NumberUtil.mul(productPurchase.getPrice(), detail.getReturnNum()),
+              2));
       addProductStockVo.setBizId(retailReturn.getId());
       addProductStockVo.setBizDetailId(detail.getId());
       addProductStockVo.setBizCode(retailReturn.getCode());

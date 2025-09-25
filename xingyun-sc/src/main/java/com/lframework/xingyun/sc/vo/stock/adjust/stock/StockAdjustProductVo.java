@@ -4,6 +4,7 @@ import com.lframework.starter.web.core.components.validation.TypeMismatch;
 import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class StockAdjustProductVo implements BaseVo, Serializable {
   @ApiModelProperty(value = "调整库存数量", required = true)
   @NotNull(message = "调整库存数量不能为空！")
   @TypeMismatch(message = "调整库存数量格式有误！")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 备注

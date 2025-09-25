@@ -98,3 +98,6 @@ where d.tax_price is not null;
 ALTER TABLE `tbl_product_stock_warning`
     MODIFY COLUMN `max_limit` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '预警上限' AFTER `product_id`,
     MODIFY COLUMN `min_limit` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '预警下限' AFTER `max_limit`;
+
+ALTER TABLE `tbl_stock_adjust_sheet_detail`
+    MODIFY COLUMN `stock_num` decimal(24, 8) NOT NULL COMMENT '调整库存数量' AFTER `product_id`;

@@ -24,6 +24,7 @@ import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -232,13 +233,13 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
      * 调整库存数量
      */
     @ApiModelProperty("调整库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 当前库存数量
      */
     @ApiModelProperty("当前库存数量")
-    private Integer curStockNum;
+    private BigDecimal curStockNum;
 
     /**
      * 备注
@@ -304,7 +305,7 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
             ProductStockService.class);
         ProductStock productStock = productStockService.getByProductIdAndScId(dto.getProductId(),
             this.scId);
-        this.curStockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
+        this.curStockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
       }
     }
   }

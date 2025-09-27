@@ -48,12 +48,12 @@ public class SaleReturnFullDto implements BaseDto, Serializable {
   /**
    * 商品数量
    */
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
-  private Integer totalGiftNum;
+  private BigDecimal totalGiftNum;
 
   /**
    * 退货总金额
@@ -138,7 +138,7 @@ public class SaleReturnFullDto implements BaseDto, Serializable {
     /**
      * 退货数量
      */
-    private Integer returnNum;
+    private BigDecimal returnNum;
 
     /**
      * 原价

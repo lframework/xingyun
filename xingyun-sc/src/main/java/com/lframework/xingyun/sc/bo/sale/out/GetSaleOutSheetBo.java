@@ -106,13 +106,13 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
    * 销售数量
    */
   @ApiModelProperty("销售数量")
-  private Integer totalNum;
+  private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
   @ApiModelProperty("赠品数量")
-  private Integer giftNum;
+  private BigDecimal giftNum;
 
   /**
    * 销售金额
@@ -318,19 +318,19 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
      * 销售数量
      */
     @ApiModelProperty("销售数量")
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 剩余出库数量
      */
     @ApiModelProperty("剩余出库数量")
-    private Integer remainNum;
+    private BigDecimal remainNum;
 
     /**
      * 出库数量
      */
     @ApiModelProperty("出库数量")
-    private Integer outNum;
+    private BigDecimal outNum;
 
     /**
      * 原价
@@ -354,7 +354,7 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 是否赠品
@@ -425,15 +425,14 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
         SaleOrderDetail saleOrderDetail = saleOrderDetailService.getById(
             dto.getSaleOrderDetailId());
         this.orderNum = saleOrderDetail.getOrderNum();
-        this.remainNum = NumberUtil.sub(saleOrderDetail.getOrderNum(), saleOrderDetail.getOutNum())
-            .intValue();
+        this.remainNum = NumberUtil.sub(saleOrderDetail.getOrderNum(), saleOrderDetail.getOutNum());
       }
 
       ProductStockService productStockService = ApplicationUtil.getBean(
           ProductStockService.class);
       ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
           this.getScId());
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
+      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
 
       if (StringUtil.isNotBlank(dto.getMainProductId())) {
         ProductService productService = ApplicationUtil.getBean(ProductService.class);

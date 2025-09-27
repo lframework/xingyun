@@ -286,7 +286,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
       addProductStockVo.setScId(saleReturn.getScId());
-      addProductStockVo.setStockNum(BigDecimal.valueOf(detail.getReturnNum()));
+      addProductStockVo.setStockNum(detail.getReturnNum());
       addProductStockVo.setDefaultTaxAmount(
           NumberUtil.getNumber(NumberUtil.mul(productPurchase.getPrice(), detail.getReturnNum()),
               2));
@@ -512,8 +512,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
       }
     }
 
-    int returnNum = 0;
-    int giftNum = 0;
+    BigDecimal returnNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (SaleReturnProductVo productVo : vo.getProducts()) {
@@ -542,13 +542,13 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
       }
 
       if (isGift) {
-        giftNum += productVo.getReturnNum();
+        giftNum = NumberUtil.add(giftNum, productVo.getReturnNum());
       } else {
-        returnNum += productVo.getReturnNum();
+        returnNum = NumberUtil.add(returnNum, productVo.getReturnNum());
       }
 
       totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(productVo.getTaxPrice(), productVo.getReturnNum()));
+          NumberUtil.getNumber(NumberUtil.mul(productVo.getTaxPrice(), productVo.getReturnNum()), 2));
 
       SaleReturnDetail detail = new SaleReturnDetail();
       detail.setId(IdUtil.getId());
@@ -557,10 +557,6 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
       Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
-      }
-
-      if (!NumberUtil.isNumberPrecision(productVo.getTaxPrice(), 2)) {
-        throw new InputErrorException("第" + orderNo + "行商品价格最多允许2位小数！");
       }
 
       detail.setProductId(productVo.getProductId());

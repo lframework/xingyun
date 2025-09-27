@@ -62,7 +62,7 @@ public class SaleOrderWithOutDto implements BaseDto, Serializable {
     /**
      * 销售数量
      */
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 原价
@@ -102,6 +102,6 @@ public class SaleOrderWithOutDto implements BaseDto, Serializable {
     /**
      * 已出库数量
      */
-    private Integer outNum;
+    private BigDecimal outNum;
   }
 }

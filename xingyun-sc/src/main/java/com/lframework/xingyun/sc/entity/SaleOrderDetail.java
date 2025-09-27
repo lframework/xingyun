@@ -38,7 +38,7 @@ public class SaleOrderDetail extends BaseEntity implements BaseDto {
   /**
    * 销售数量
    */
-  private Integer orderNum;
+  private BigDecimal orderNum;
 
   /**
    * 原价
@@ -78,7 +78,7 @@ public class SaleOrderDetail extends BaseEntity implements BaseDto {
   /**
    * 已出库数量
    */
-  private Integer outNum;
+  private BigDecimal outNum;
 
   /**
    * 组合商品原始明细ID

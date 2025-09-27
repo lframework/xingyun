@@ -183,7 +183,7 @@ public class SaleOutSheetWithReturnBo extends BaseBo<SaleOutSheetWithReturnDto> 
      * 出库数量
      */
     @ApiModelProperty("出库数量")
-    private Integer outNum;
+    private BigDecimal outNum;
 
     /**
      * 原价
@@ -207,13 +207,13 @@ public class SaleOutSheetWithReturnBo extends BaseBo<SaleOutSheetWithReturnDto> 
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 剩余退货数量
      */
     @ApiModelProperty("剩余退货数量")
-    private Integer remainNum;
+    private BigDecimal remainNum;
 
     /**
      * 是否赠品
@@ -282,7 +282,7 @@ public class SaleOutSheetWithReturnBo extends BaseBo<SaleOutSheetWithReturnDto> 
       this.salePrice = dto.getOriPrice();
       this.taxPrice = dto.getTaxPrice();
       this.discountRate = dto.getDiscountRate();
-      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReturnNum()).intValue();
+      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReturnNum());
       this.isGift = dto.getIsGift();
       this.taxRate = dto.getTaxRate();
       this.description = dto.getDescription();
@@ -290,7 +290,7 @@ public class SaleOutSheetWithReturnBo extends BaseBo<SaleOutSheetWithReturnDto> 
       ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
       ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
           this.getScId());
-      this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
+      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
     }
   }
 }

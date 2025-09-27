@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.mappers;
 
 import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
+import java.math.BigDecimal;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,7 +31,7 @@ public interface SaleOrderDetailMapper extends BaseMapper<SaleOrderDetail> {
    * @param num
    * @return
    */
-  int addOutNum(@Param("id") String id, @Param("num") Integer num);
+  int addOutNum(@Param("id") String id, @Param("num") BigDecimal num);
 
   /**
    * 减少出库数量
@@ -39,5 +40,5 @@ public interface SaleOrderDetailMapper extends BaseMapper<SaleOrderDetail> {
    * @param num
    * @return
    */
-  int subOutNum(@Param("id") String id, @Param("num") Integer num);
+  int subOutNum(@Param("id") String id, @Param("num") BigDecimal num);
 }

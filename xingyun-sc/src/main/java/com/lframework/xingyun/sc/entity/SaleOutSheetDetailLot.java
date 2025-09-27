@@ -34,12 +34,12 @@ public class SaleOutSheetDetailLot extends BaseEntity implements BaseDto {
   /**
    * 出库数量
    */
-  private Integer orderNum;
+  private BigDecimal orderNum;
 
   /**
    * 已退货数量
    */
-  private Integer returnNum;
+  private BigDecimal returnNum;
 
   /**
    * 含税成本金额

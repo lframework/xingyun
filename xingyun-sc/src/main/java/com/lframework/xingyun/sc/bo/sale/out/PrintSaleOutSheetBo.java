@@ -203,7 +203,7 @@ public class PrintSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
      * 出库数量
      */
     @ApiModelProperty("出库数量")
-    private Integer outNum;
+    private BigDecimal outNum;
 
     /**
      * 价格
@@ -234,7 +234,7 @@ public class PrintSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
 
       this.outNum = dto.getOrderNum();
       this.taxPrice = dto.getTaxPrice();
-      this.outAmount = NumberUtil.mul(dto.getTaxPrice(), dto.getOrderNum());
+      this.outAmount = NumberUtil.getNumber(NumberUtil.mul(dto.getTaxPrice(), dto.getOrderNum()), 2);
 
       SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
       SaleProductDto product = saleOrderService.getSaleById(dto.getProductId());

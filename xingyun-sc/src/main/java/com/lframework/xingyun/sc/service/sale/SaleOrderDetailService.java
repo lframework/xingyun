@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.service.sale;
 
 import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface SaleOrderDetailService extends BaseMpService<SaleOrderDetail> {
@@ -20,7 +21,7 @@ public interface SaleOrderDetailService extends BaseMpService<SaleOrderDetail> {
    * @param id
    * @param num
    */
-  void addOutNum(String id, Integer num);
+  void addOutNum(String id, BigDecimal num);
 
   /**
    * 减少出库数量
@@ -28,5 +29,5 @@ public interface SaleOrderDetailService extends BaseMpService<SaleOrderDetail> {
    * @param id
    * @param num
    */
-  void subOutNum(String id, Integer num);
+  void subOutNum(String id, BigDecimal num);
 }

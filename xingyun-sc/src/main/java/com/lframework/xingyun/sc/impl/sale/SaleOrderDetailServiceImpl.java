@@ -9,6 +9,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.mappers.SaleOrderDetailMapper;
 import com.lframework.xingyun.sc.service.sale.SaleOrderDetailService;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,15 +31,14 @@ public class SaleOrderDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void addOutNum(String id, Integer num) {
+  public void addOutNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
     SaleOrderDetail orderDetail = getBaseMapper().selectById(id);
 
-    Integer remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getOutNum())
-        .intValue();
+    BigDecimal remainNum = NumberUtil.sub(orderDetail.getOrderNum(), orderDetail.getOutNum());
     if (NumberUtil.lt(remainNum, num)) {
       Product product = productService.findById(orderDetail.getProductId());
 
@@ -58,7 +58,7 @@ public class SaleOrderDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void subOutNum(String id, Integer num) {
+  public void subOutNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);

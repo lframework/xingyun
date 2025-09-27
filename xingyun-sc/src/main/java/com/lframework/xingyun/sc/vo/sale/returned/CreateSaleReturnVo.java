@@ -125,8 +125,12 @@ public class CreateSaleReturnVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + orderNo + "行商品退货数量不能为空！");
       }
 
-      if (product.getReturnNum() <= 0) {
+      if (NumberUtil.le(product.getReturnNum(), BigDecimal.ZERO)) {
         throw new InputErrorException("第" + orderNo + "行商品退货数量必须大于0！");
+      }
+
+      if (!NumberUtil.isNumberPrecision(product.getReturnNum(), 8)) {
+        throw new InputErrorException("第" + orderNo + "行商品退货数量最多允许8位小数！");
       }
 
       if (!requireOut) {
@@ -138,8 +142,12 @@ public class CreateSaleReturnVo implements BaseVo, Serializable {
           throw new InputErrorException("第" + orderNo + "行商品价格不能为空！");
         }
 
-        if (product.getTaxPrice().doubleValue() < 0D) {
+        if (NumberUtil.lt(product.getTaxPrice(), 0D)) {
           throw new InputErrorException("第" + orderNo + "行商品价格不允许小于0！");
+        }
+
+        if (!NumberUtil.isNumberPrecision(product.getTaxPrice(), 6)) {
+          throw new InputErrorException("第" + orderNo + "行商品价格最多允许6位小数！");
         }
 
         if (!NumberUtil.equal(product.getOriPrice(), 0D)) {

@@ -8,8 +8,8 @@ import com.lframework.starter.common.exceptions.impl.DefaultSysException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
-import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
@@ -101,7 +101,9 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
           return null;
         }
 
-        stockNum = NumberUtil.min(NumberUtil.div(productStock.getStockNum(), productBundle.getBundleNum()), stockNum);
+        stockNum = BigDecimal.valueOf(
+            NumberUtil.min(NumberUtil.div(productStock.getStockNum(), productBundle.getBundleNum()),
+                stockNum).intValue());
       }
 
       ProductStock productStock = new ProductStock();

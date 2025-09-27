@@ -79,13 +79,13 @@ public class QuerySaleOutSheetBo extends BaseBo<SaleOutSheet> {
      * 销售数量
      */
     @ApiModelProperty("销售数量")
-    private Integer totalNum;
+    private BigDecimal totalNum;
 
     /**
      * 赠品数量
      */
     @ApiModelProperty("赠品数量")
-    private Integer totalGiftNum;
+    private BigDecimal totalGiftNum;
 
     /**
      * 销售金额

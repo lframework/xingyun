@@ -385,8 +385,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         .orderByAsc(SaleOutSheetDetail::getOrderNo);
     List<SaleOutSheetDetail> details = saleOutSheetDetailService.list(queryDetailWrapper);
 
-    int totalNum = 0;
-    int giftNum = 0;
+    BigDecimal totalNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
 
     int orderNo = 1;
@@ -400,7 +400,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         SubProductStockVo subProductStockVo = new SubProductStockVo();
         subProductStockVo.setProductId(detail.getProductId());
         subProductStockVo.setScId(sheet.getScId());
-        subProductStockVo.setStockNum(BigDecimal.valueOf(detail.getOrderNum()));
+        subProductStockVo.setStockNum(detail.getOrderNum());
         subProductStockVo.setBizId(sheet.getId());
         subProductStockVo.setBizDetailId(detail.getId());
         subProductStockVo.setBizCode(sheet.getCode());
@@ -419,9 +419,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
         saleOutSheetDetailLotService.save(detailLot);
 
         if (isGift) {
-          giftNum += detail.getOrderNum();
+          giftNum = NumberUtil.add(giftNum, detail.getOrderNum());
         } else {
-          totalNum += detail.getOrderNum();
+          totalNum = NumberUtil.add(totalNum, detail.getOrderNum());
         }
       } else {
         Wrapper<SaleOutSheetDetailBundle> queryBundleWrapper = Wrappers.lambdaQuery(
@@ -451,7 +451,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(newDetail.getProductId());
           subProductStockVo.setScId(sheet.getScId());
-          subProductStockVo.setStockNum(BigDecimal.valueOf(newDetail.getOrderNum()));
+          subProductStockVo.setStockNum(newDetail.getOrderNum());
           subProductStockVo.setBizId(sheet.getId());
           subProductStockVo.setBizDetailId(newDetail.getId());
           subProductStockVo.setBizCode(sheet.getCode());
@@ -476,9 +476,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
           saleOutSheetDetailBundleService.updateById(saleOutSheetDetailBundle);
 
           if (isGift) {
-            giftNum += newDetail.getOrderNum();
+            giftNum = NumberUtil.add(giftNum, newDetail.getOrderNum());
           } else {
-            totalNum += newDetail.getOrderNum();
+            totalNum = NumberUtil.add(totalNum, newDetail.getOrderNum());
           }
         }
       }
@@ -721,8 +721,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       }
     }
 
-    int purchaseNum = 0;
-    int giftNum = 0;
+    BigDecimal purchaseNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (SaleOutProductVo productVo : vo.getProducts()) {
@@ -750,13 +750,13 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       }
 
       if (isGift) {
-        giftNum += productVo.getOrderNum();
+        giftNum = NumberUtil.add(giftNum, productVo.getOrderNum());
       } else {
-        purchaseNum += productVo.getOrderNum();
+        purchaseNum = NumberUtil.add(purchaseNum, productVo.getOrderNum());
       }
 
       totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()));
+          NumberUtil.getNumber(NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()), 2));
 
       SaleOutSheetDetail detail = new SaleOutSheetDetail();
       detail.setId(IdUtil.getId());
@@ -765,10 +765,6 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
-      }
-
-      if (!NumberUtil.isNumberPrecision(productVo.getTaxPrice(), 2)) {
-        throw new InputErrorException("第" + orderNo + "行商品价格最多允许2位小数！");
       }
 
       detail.setProductId(productVo.getProductId());
@@ -813,7 +809,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
               saleOutSheetDetailBundle.setOrderNum(detail.getOrderNum());
               saleOutSheetDetailBundle.setProductId(productBundle.getProductId());
               saleOutSheetDetailBundle.setProductOrderNum(
-                  NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()).intValue());
+                  NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()));
               saleOutSheetDetailBundle.setProductOriPrice(productBundle.getSalePrice());
               // 这里会有尾差
               saleOutSheetDetailBundle.setProductTaxPrice(

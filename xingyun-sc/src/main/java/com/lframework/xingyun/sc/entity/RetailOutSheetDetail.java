@@ -39,7 +39,7 @@ public class RetailOutSheetDetail extends BaseEntity implements BaseDto {
   /**
    * 出库数量
    */
-  private Integer orderNum;
+  private BigDecimal orderNum;
 
   /**
    * 原价
@@ -84,7 +84,7 @@ public class RetailOutSheetDetail extends BaseEntity implements BaseDto {
   /**
    * 已退货数量
    */
-  private Integer returnNum;
+  private BigDecimal returnNum;
 
   /**
    * 组合商品原始明细ID

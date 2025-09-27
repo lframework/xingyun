@@ -815,7 +815,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
               saleOutSheetDetailBundle.setProductTaxPrice(
                   NumberUtil.getNumber(NumberUtil.div(BigDecimal.valueOf(
                           splitPriceMap.get(productBundle.getProductId()).doubleValue()),
-                      productBundle.getBundleNum()), 2));
+                      productBundle.getBundleNum()), 6));
               saleOutSheetDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 
               return saleOutSheetDetailBundle;

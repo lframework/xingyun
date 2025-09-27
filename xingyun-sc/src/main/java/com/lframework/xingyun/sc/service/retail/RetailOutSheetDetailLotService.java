@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.service.retail;
 import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
+import java.math.BigDecimal;
 
 public interface RetailOutSheetDetailLotService extends BaseMpService<RetailOutSheetDetailLot> {
 
@@ -20,7 +21,7 @@ public interface RetailOutSheetDetailLotService extends BaseMpService<RetailOutS
    * @param id
    * @param num
    */
-  void addReturnNum(String id, Integer num);
+  void addReturnNum(String id, BigDecimal num);
 
   /**
    * 减少退货数量
@@ -28,5 +29,5 @@ public interface RetailOutSheetDetailLotService extends BaseMpService<RetailOutS
    * @param id
    * @param num
    */
-  void subReturnNum(String id, Integer num);
+  void subReturnNum(String id, BigDecimal num);
 }

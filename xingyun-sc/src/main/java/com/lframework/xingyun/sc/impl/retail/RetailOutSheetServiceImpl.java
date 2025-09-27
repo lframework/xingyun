@@ -18,6 +18,7 @@ import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
@@ -25,11 +26,9 @@ import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTi
 import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
-import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
@@ -45,6 +44,7 @@ import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.entity.LogisticsSheetDetail;
 import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.RetailConfig;
@@ -350,22 +350,22 @@ public class RetailOutSheetServiceImpl extends
         .orderByAsc(RetailOutSheetDetail::getOrderNo);
     List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
 
-    int totalNum = 0;
-    int giftNum = 0;
+    BigDecimal totalNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
 
     int orderNo = 1;
     for (RetailOutSheetDetail detail : details) {
       boolean isGift = detail.getIsGift();
       totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(detail.getTaxPrice(), detail.getOrderNum()));
+          NumberUtil.getNumber(NumberUtil.mul(detail.getTaxPrice(), detail.getOrderNum()), 2));
 
       Product product = productService.findById(detail.getProductId());
       if (product.getProductType() == ProductType.NORMAL) {
         SubProductStockVo subProductStockVo = new SubProductStockVo();
         subProductStockVo.setProductId(detail.getProductId());
         subProductStockVo.setScId(sheet.getScId());
-        subProductStockVo.setStockNum(BigDecimal.valueOf(detail.getOrderNum()));
+        subProductStockVo.setStockNum(detail.getOrderNum());
         subProductStockVo.setBizId(sheet.getId());
         subProductStockVo.setBizDetailId(detail.getId());
         subProductStockVo.setBizCode(sheet.getCode());
@@ -384,9 +384,9 @@ public class RetailOutSheetServiceImpl extends
         retailOutSheetDetailLotService.save(detailLot);
 
         if (isGift) {
-          giftNum += detail.getOrderNum();
+          giftNum = NumberUtil.add(giftNum, detail.getOrderNum());
         } else {
-          totalNum += detail.getOrderNum();
+          totalNum = NumberUtil.add(totalNum, detail.getOrderNum());
         }
       } else {
         Wrapper<RetailOutSheetDetailBundle> queryBundleWrapper = Wrappers.lambdaQuery(
@@ -416,7 +416,7 @@ public class RetailOutSheetServiceImpl extends
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(newDetail.getProductId());
           subProductStockVo.setScId(sheet.getScId());
-          subProductStockVo.setStockNum(BigDecimal.valueOf(newDetail.getOrderNum()));
+          subProductStockVo.setStockNum(newDetail.getOrderNum());
           subProductStockVo.setBizId(sheet.getId());
           subProductStockVo.setBizDetailId(newDetail.getId());
           subProductStockVo.setBizCode(sheet.getCode());
@@ -441,9 +441,9 @@ public class RetailOutSheetServiceImpl extends
           retailOutSheetDetailBundleService.updateById(retailOutSheetDetailBundle);
 
           if (isGift) {
-            giftNum += newDetail.getOrderNum();
+            giftNum = NumberUtil.add(giftNum, newDetail.getOrderNum());
           } else {
-            totalNum += newDetail.getOrderNum();
+            totalNum = NumberUtil.add(totalNum, newDetail.getOrderNum());
           }
         }
       }
@@ -651,21 +651,22 @@ public class RetailOutSheetServiceImpl extends
         vo.getAllowModifyPaymentDate() || paymentDate.getAllowModify() ? vo.getPaymentDate()
             : paymentDate.getPaymentDate());
 
-    int purchaseNum = 0;
-    int giftNum = 0;
+    BigDecimal purchaseNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (RetailOutProductVo productVo : vo.getProducts()) {
       boolean isGift = productVo.getTaxPrice().doubleValue() == 0D;
 
       if (isGift) {
-        giftNum += productVo.getOrderNum();
+        giftNum = NumberUtil.add(giftNum, productVo.getOrderNum());
       } else {
-        purchaseNum += productVo.getOrderNum();
+        purchaseNum = NumberUtil.add(purchaseNum, productVo.getOrderNum());
       }
 
       totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()));
+          NumberUtil.getNumber(NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()),
+              2));
 
       RetailOutSheetDetail detail = new RetailOutSheetDetail();
       detail.setId(IdUtil.getId());
@@ -674,10 +675,6 @@ public class RetailOutSheetServiceImpl extends
       Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
-      }
-
-      if (!NumberUtil.isNumberPrecision(productVo.getTaxPrice(), 2)) {
-        throw new InputErrorException("第" + orderNo + "行商品价格最多允许2位小数！");
       }
 
       detail.setProductId(productVo.getProductId());
@@ -718,13 +715,13 @@ public class RetailOutSheetServiceImpl extends
               retailOutSheetDetailBundle.setOrderNum(detail.getOrderNum());
               retailOutSheetDetailBundle.setProductId(productBundle.getProductId());
               retailOutSheetDetailBundle.setProductOrderNum(
-                  NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()).intValue());
+                  NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()));
               retailOutSheetDetailBundle.setProductOriPrice(productBundle.getRetailPrice());
               // 这里会有尾差
               retailOutSheetDetailBundle.setProductTaxPrice(
                   NumberUtil.getNumber(NumberUtil.div(BigDecimal.valueOf(
                           splitPriceMap.get(productBundle.getProductId()).doubleValue()),
-                      productBundle.getBundleNum()), 2));
+                      productBundle.getBundleNum()), 6));
               retailOutSheetDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 
               return retailOutSheetDetailBundle;

@@ -83,7 +83,7 @@ public class RetailProductBo extends BaseBo<RetailProductDto> {
    * 库存数量
    */
   @ApiModelProperty("库存数量")
-  private Integer stockNum;
+  private BigDecimal stockNum;
 
   /**
    * 税率（%）
@@ -115,6 +115,6 @@ public class RetailProductBo extends BaseBo<RetailProductDto> {
     ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
     ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
         this.getScId());
-    this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
+    this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
   }
 }

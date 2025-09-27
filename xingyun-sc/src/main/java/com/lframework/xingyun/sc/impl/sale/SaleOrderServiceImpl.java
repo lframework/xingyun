@@ -605,7 +605,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
               saleOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
                   BigDecimal.valueOf(
                       splitPriceMap.get(productBundle.getProductId()).doubleValue()),
-                  productBundle.getBundleNum()), 2));
+                  productBundle.getBundleNum()), 6));
               saleOrderDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 
               return saleOrderDetailBundle;

@@ -150,3 +150,33 @@ ALTER TABLE `tbl_sale_return_detail`
     MODIFY COLUMN `return_num` decimal(24, 8) NOT NULL COMMENT '退货数量' AFTER `product_id`,
     MODIFY COLUMN `ori_price` decimal(24, 6) NOT NULL COMMENT '原价' AFTER `return_num`,
     MODIFY COLUMN `tax_price` decimal(24, 6) NOT NULL COMMENT '现价' AFTER `ori_price`;
+
+ALTER TABLE `tbl_retail_out_sheet`
+    MODIFY COLUMN `total_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '商品数量' AFTER `payment_date`,
+    MODIFY COLUMN `total_gift_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '赠品数量' AFTER `total_num`;
+
+ALTER TABLE `tbl_retail_out_sheet_detail`
+    MODIFY COLUMN `order_num` decimal(24, 8) NOT NULL COMMENT '出库数量' AFTER `product_id`,
+    MODIFY COLUMN `return_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '已退货数量' AFTER `settle_status`;
+
+ALTER TABLE `tbl_retail_out_sheet_detail`
+    MODIFY COLUMN `ori_price` decimal(24, 6) NOT NULL COMMENT '原价' AFTER `order_num`,
+    MODIFY COLUMN `tax_price` decimal(24, 6) NOT NULL COMMENT '现价' AFTER `ori_price`;
+
+ALTER TABLE `tbl_retail_out_sheet_detail_bundle`
+    MODIFY COLUMN `order_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '组合商品数量' AFTER `main_product_id`,
+    MODIFY COLUMN `product_ori_price` decimal(16, 6) NOT NULL COMMENT '单品原价' AFTER `product_order_num`,
+    MODIFY COLUMN `product_tax_price` decimal(16, 6) NOT NULL COMMENT '单品含税价格' AFTER `product_ori_price`;
+
+ALTER TABLE `tbl_retail_out_sheet_detail_lot`
+    MODIFY COLUMN `order_num` decimal(24, 8) NOT NULL COMMENT '出库数量' AFTER `detail_id`,
+    MODIFY COLUMN `return_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '已退货数量' AFTER `order_num`;
+
+ALTER TABLE `tbl_retail_return`
+    MODIFY COLUMN `total_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '商品数量' AFTER `out_sheet_id`,
+    MODIFY COLUMN `total_gift_num` decimal(24, 8) NOT NULL DEFAULT 0 COMMENT '赠品数量' AFTER `total_num`;
+
+ALTER TABLE `tbl_retail_return_detail`
+    MODIFY COLUMN `return_num` decimal(24, 8) NOT NULL COMMENT '退货数量' AFTER `product_id`,
+    MODIFY COLUMN `ori_price` decimal(24, 6) NOT NULL COMMENT '原价' AFTER `return_num`,
+    MODIFY COLUMN `tax_price` decimal(24, 6) NOT NULL COMMENT '现价' AFTER `ori_price`;

@@ -203,7 +203,7 @@ public class PrintRetailReturnBo extends BaseBo<RetailReturnFullDto> {
      * 退货数量
      */
     @ApiModelProperty("退货数量")
-    private Integer returnNum;
+    private BigDecimal returnNum;
 
     /**
      * 价格
@@ -234,7 +234,7 @@ public class PrintRetailReturnBo extends BaseBo<RetailReturnFullDto> {
 
       this.returnNum = dto.getReturnNum();
       this.taxPrice = dto.getTaxPrice();
-      this.returnAmount = NumberUtil.mul(dto.getTaxPrice(), dto.getReturnNum());
+      this.returnAmount = NumberUtil.getNumber(NumberUtil.mul(dto.getTaxPrice(), dto.getReturnNum()), 2);
 
       RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
           RetailOutSheetService.class);

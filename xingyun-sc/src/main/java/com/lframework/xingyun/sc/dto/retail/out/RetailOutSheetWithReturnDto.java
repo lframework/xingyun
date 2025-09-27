@@ -54,7 +54,7 @@ public class RetailOutSheetWithReturnDto implements BaseDto, Serializable {
     /**
      * 出库数量
      */
-    private Integer orderNum;
+    private BigDecimal orderNum;
 
     /**
      * 原价
@@ -94,6 +94,6 @@ public class RetailOutSheetWithReturnDto implements BaseDto, Serializable {
     /**
      * 已退货数量
      */
-    private Integer returnNum;
+    private BigDecimal returnNum;
   }
 }

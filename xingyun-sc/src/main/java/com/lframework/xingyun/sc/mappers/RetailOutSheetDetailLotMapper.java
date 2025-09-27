@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.mappers;
 import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheetDetailLot;
+import java.math.BigDecimal;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -30,7 +31,7 @@ public interface RetailOutSheetDetailLotMapper extends BaseMapper<RetailOutSheet
    * @param num
    * @return
    */
-  int addReturnNum(@Param("id") String id, @Param("num") Integer num);
+  int addReturnNum(@Param("id") String id, @Param("num") BigDecimal num);
 
   /**
    * 减少退货数量
@@ -39,5 +40,5 @@ public interface RetailOutSheetDetailLotMapper extends BaseMapper<RetailOutSheet
    * @param num
    * @return
    */
-  int subReturnNum(@Param("id") String id, @Param("num") Integer num);
+  int subReturnNum(@Param("id") String id, @Param("num") BigDecimal num);
 }

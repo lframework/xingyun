@@ -40,14 +40,14 @@ public class RetailOutSheetDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void addReturnNum(String id, Integer num) {
+  public void addReturnNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);
 
     RetailOutSheetDetail detail = getBaseMapper().selectById(id);
 
-    Integer remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum()).intValue();
+    BigDecimal remainNum = NumberUtil.sub(detail.getOrderNum(), detail.getReturnNum());
     if (NumberUtil.lt(remainNum, num)) {
       Product product = productService.findById(detail.getProductId());
 
@@ -66,7 +66,7 @@ public class RetailOutSheetDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void subReturnNum(String id, Integer num) {
+  public void subReturnNum(String id, BigDecimal num) {
 
     Assert.notBlank(id);
     Assert.greaterThanZero(num);

@@ -56,6 +56,7 @@ import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -195,9 +196,9 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
         detail.setPlanId(data.getId());
         detail.setProductId(product.getId());
 
-        detail.setStockNum(productStock == null ? 0 : productStock.getStockNum().intValue());
-        detail.setTotalOutNum(0);
-        detail.setTotalInNum(0);
+        detail.setStockNum(productStock == null ? BigDecimal.ZERO : productStock.getStockNum());
+        detail.setTotalOutNum(BigDecimal.ZERO);
+        detail.setTotalInNum(BigDecimal.ZERO);
         detail.setOrderNo(orderNo++);
 
         takeStockPlanDetailService.save(detail);
@@ -325,7 +326,8 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
       } else {
         // 如果允许自动调整，那么盘点数量=盘点单的盘点数量 - 进项数量 + 出项数量，否则就等于盘点单的盘点数量
         detail.setTakeNum(config.getAutoChangeStock() ?
-            detail.getOriTakeNum() - detail.getTotalInNum() + detail.getTotalOutNum() :
+            NumberUtil.add(NumberUtil.sub(detail.getOriTakeNum(), detail.getTotalInNum()),
+                detail.getTotalOutNum()) :
             detail.getOriTakeNum());
       }
       detail.setDescription(
@@ -340,9 +342,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     }
 
     // 进行出入库操作
-    int orderNo = 0;
     for (TakeStockPlanDetail detail : details) {
-      orderNo++;
       if (!NumberUtil.equal(detail.getStockNum(), detail.getTakeNum())) {
         if (NumberUtil.lt(detail.getStockNum(), detail.getTakeNum())) {
           Product product = productService.findById(detail.getProductId());

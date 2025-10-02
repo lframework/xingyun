@@ -14,6 +14,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -151,19 +152,19 @@ public class GetPreTakeStockSheetBo extends BaseBo<PreTakeStockSheetFullDto> {
      * 初盘数量
      */
     @ApiModelProperty("初盘数量")
-    private Integer firstNum;
+    private BigDecimal firstNum;
 
     /**
      * 复盘数量
      */
     @ApiModelProperty("复盘数量")
-    private Integer secondNum;
+    private BigDecimal secondNum;
 
     /**
      * 抽盘数量
      */
     @ApiModelProperty("抽盘数量")
-    private Integer randNum;
+    private BigDecimal randNum;
 
     public SheetDetailBo(PreTakeStockSheetFullDto.SheetDetailDto dto) {
 

@@ -175,6 +175,8 @@ public class PurchaseReturnController extends DefaultBaseController {
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreatePurchaseReturnVo vo) {
 
+    vo.validate();
+
     purchaseReturnService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

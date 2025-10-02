@@ -231,6 +231,8 @@ public class TakeStockPlanController extends DefaultBaseController {
   @PatchMapping("/handle")
   public InvokeResult<Void> handleDiff(@Valid @RequestBody HandleTakeStockPlanVo vo) {
 
+    vo.validate();
+
     takeStockPlanService.handleDiff(vo);
 
     return InvokeResultBuilder.success();

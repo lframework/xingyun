@@ -261,6 +261,8 @@ public class RetailOutSheetController extends DefaultBaseController {
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateRetailOutSheetVo vo) {
 
+    vo.validate();
+
     retailOutSheetService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

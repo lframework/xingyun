@@ -189,6 +189,8 @@ public class TakeStockSheetController extends DefaultBaseController {
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreateTakeStockSheetVo vo) {
 
+    vo.validate();
+
     takeStockSheetService.create(vo);
 
     return InvokeResultBuilder.success();
@@ -202,6 +204,8 @@ public class TakeStockSheetController extends DefaultBaseController {
   @PutMapping
   public InvokeResult<Void> update(@Valid @RequestBody UpdateTakeStockSheetVo vo) {
 
+    vo.validate();
+
     takeStockSheetService.update(vo);
 
     return InvokeResultBuilder.success();
@@ -214,6 +218,8 @@ public class TakeStockSheetController extends DefaultBaseController {
   @HasPermission({"stock:take:sheet:approve"})
   @PostMapping("/approve/direct")
   public InvokeResult<Void> directApprovePass(@Valid @RequestBody CreateTakeStockSheetVo vo) {
+
+    vo.validate();
 
     takeStockSheetService.directApprovePass(vo);
 

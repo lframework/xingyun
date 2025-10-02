@@ -153,6 +153,8 @@ public class SettleFeeSheetController extends DefaultBaseController {
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSettleFeeSheetVo vo) {
 
+    vo.validate();
+
     settleFeeSheetService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

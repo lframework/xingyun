@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.service.stock.take;
 import com.lframework.starter.web.core.service.BaseMpService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlanDetail;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface TakeStockPlanDetailService extends BaseMpService<TakeStockPlanDetail> {
@@ -39,5 +40,5 @@ public interface TakeStockPlanDetailService extends BaseMpService<TakeStockPlanD
    * @param productId
    * @param num
    */
-  void updateOriTakeNum(String planId, String productId, Integer num);
+  void updateOriTakeNum(String planId, String productId, BigDecimal num);
 }

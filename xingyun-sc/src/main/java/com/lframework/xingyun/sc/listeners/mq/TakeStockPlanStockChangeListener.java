@@ -30,7 +30,7 @@ public class TakeStockPlanStockChangeListener {
     log.info("增加库存，统计进项数量 scId = {}, productId = {}, num = {}", change.getScId(),
         change.getProductId(), change.getNum());
     takeStockPlanDetailMapper.addTotalInNum(change.getScId(), change.getProductId(),
-        change.getNum().intValue());
+        change.getNum());
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -42,6 +42,6 @@ public class TakeStockPlanStockChangeListener {
     log.info("扣减库存，统计出项数量 scId = {}, productId = {}, num = {}", change.getScId(),
         change.getProductId(), change.getNum());
     takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getProductId(),
-        change.getNum().intValue());
+        change.getNum());
   }
 }

@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.dto.stock.take.pre;
 import com.lframework.starter.web.core.dto.BaseDto;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
@@ -18,17 +19,17 @@ public class QueryPreTakeStockSheetProductDto implements BaseDto, Serializable {
   /**
    * 初盘数量
    */
-  private Integer firstNum;
+  private BigDecimal firstNum;
 
   /**
    * 复盘数量
    */
-  private Integer secondNum;
+  private BigDecimal secondNum;
 
   /**
    * 抽盘数量
    */
-  private Integer randNum;
+  private BigDecimal randNum;
 
   /**
    * 预先盘点单状态

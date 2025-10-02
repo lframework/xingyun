@@ -160,6 +160,8 @@ public class CustomerSettleCheckSheetController extends DefaultBaseController {
   public InvokeResult<Void> directApprovePass(
       @RequestBody @Valid CreateCustomerSettleCheckSheetVo vo) {
 
+    vo.validate();
+
     customerSettleCheckSheetService.directApprovePass(vo);
 
     return InvokeResultBuilder.success();

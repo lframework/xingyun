@@ -1,6 +1,7 @@
 package com.lframework.xingyun.sc.vo.stock.take.pre;
 
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
+import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.core.components.validation.IsEnum;
 import com.lframework.starter.web.core.components.validation.TypeMismatch;
 import com.lframework.starter.web.core.utils.EnumUtil;
@@ -69,13 +70,37 @@ public class CreatePreTakeStockSheetVo implements BaseVo, Serializable {
         if (product.getFirstNum() == null) {
           throw new InputErrorException("第" + (i + 1) + "行商品的初盘数量不允许为空！");
         }
+
+        if (NumberUtil.lt(product.getFirstNum(), 0)) {
+          throw new InputErrorException("第" + (i + 1) + "行商品的初盘数量不允许小于0！");
+        }
+
+        if (!NumberUtil.isNumberPrecision(product.getFirstNum(), 8)) {
+          throw new InputErrorException("第" + (i + 1) + "行商品的初盘数量最多允许8位小数！");
+        }
       } else if (takeStatus == PreTakeStockSheetStatus.SECOND_TAKE) {
         if (product.getSecondNum() == null) {
           throw new InputErrorException("第" + (i + 1) + "行商品的复盘数量不允许为空！");
         }
+
+        if (NumberUtil.lt(product.getSecondNum(), 0)) {
+          throw new InputErrorException("第" + (i + 1) + "行商品的复盘数量不允许小于0！");
+        }
+
+        if (!NumberUtil.isNumberPrecision(product.getSecondNum(), 8)) {
+          throw new InputErrorException("第" + (i + 1) + "行商品的复盘数量最多允许8位小数！");
+        }
       } else if (takeStatus == PreTakeStockSheetStatus.RAND_TAKE) {
         if (product.getRandNum() == null) {
           throw new InputErrorException("第" + (i + 1) + "行商品的抽盘数量不允许为空！");
+        }
+
+        if (NumberUtil.lt(product.getRandNum(), 0)) {
+          throw new InputErrorException("第" + (i + 1) + "行商品的抽盘数量不允许小于0！");
+        }
+
+        if (!NumberUtil.isNumberPrecision(product.getRandNum(), 8)) {
+          throw new InputErrorException("第" + (i + 1) + "行商品的抽盘数量最多允许8位小数！");
         }
       } else {
         throw new InputErrorException("预先盘点状态格式错误！");

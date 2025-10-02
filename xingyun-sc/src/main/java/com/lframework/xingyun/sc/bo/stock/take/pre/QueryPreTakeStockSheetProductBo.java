@@ -16,6 +16,7 @@ import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
@@ -86,13 +87,13 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
      * 库存数量
      */
     @ApiModelProperty("库存数量")
-    private Integer stockNum;
+    private BigDecimal stockNum;
 
     /**
      * 盘点数量
      */
     @ApiModelProperty("盘点数量")
-    private Integer takeNum;
+    private BigDecimal takeNum;
 
     public QueryPreTakeStockSheetProductBo(QueryPreTakeStockSheetProductDto dto, String scId) {
 
@@ -137,7 +138,7 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
         if (config.getShowStock()) {
             ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
             ProductStock productStock = productStockService.getByProductIdAndScId(this.productId, this.scId);
-            this.stockNum = productStock == null ? 0 : productStock.getStockNum().intValue();
+            this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
         }
     }
 }

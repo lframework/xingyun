@@ -788,6 +788,9 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
 
       // 这里处理组合商品
       if (product.getProductType() == ProductType.BUNDLE) {
+        if (!NumberUtil.isInteger(productVo.getOrderNum())) {
+          throw new InputErrorException("第" + orderNo + "行商品出库数量必须是整数！");
+        }
         List<ProductBundle> productBundles = productBundleService.getByMainProductId(
             product.getId());
         // 构建指标项

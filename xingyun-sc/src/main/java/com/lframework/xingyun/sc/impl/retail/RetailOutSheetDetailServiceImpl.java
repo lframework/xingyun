@@ -114,14 +114,14 @@ public class RetailOutSheetDetailServiceImpl extends
                     + "尚未设置重量，请检查！");
           }
 
-          return NumberUtil.mul(targetProduct.getWeight(), b.getProductOrderNum());
+          return NumberUtil.getNumber(NumberUtil.mul(targetProduct.getWeight(), b.getProductOrderNum()), 2);
         }).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
       } else {
         if (product.getWeight() == null) {
           throw new DefaultClientException(
               "商品（" + product.getCode() + "）" + product.getName() + "尚未设置重量，请检查！");
         }
-        return NumberUtil.mul(t.getOrderNum(), product.getWeight());
+        return NumberUtil.getNumber(NumberUtil.mul(t.getOrderNum(), product.getWeight()), 2);
       }
     }).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
 
@@ -153,14 +153,14 @@ public class RetailOutSheetDetailServiceImpl extends
                     + "尚未设置体积，请检查！");
           }
 
-          return NumberUtil.mul(targetProduct.getVolume(), b.getProductOrderNum());
+          return NumberUtil.getNumber(NumberUtil.mul(targetProduct.getVolume(), b.getProductOrderNum()), 2);
         }).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
       } else {
         if (product.getVolume() == null) {
           throw new DefaultClientException(
               "商品（" + product.getCode() + "）" + product.getName() + "尚未设置体积，请检查！");
         }
-        return NumberUtil.mul(t.getOrderNum(), product.getVolume());
+        return NumberUtil.getNumber(NumberUtil.mul(t.getOrderNum(), product.getVolume()), 2);
       }
     }).reduce(NumberUtil::add).orElse(BigDecimal.ZERO);
 

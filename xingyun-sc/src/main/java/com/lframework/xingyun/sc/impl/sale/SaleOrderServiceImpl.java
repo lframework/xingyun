@@ -300,8 +300,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     }
 
     Wrapper<SaleOrderDetail> queryDetailWrapper = Wrappers.lambdaQuery(SaleOrderDetail.class)
-        .eq(SaleOrderDetail::getOrderId, order.getId())
-        .orderByAsc(SaleOrderDetail::getOrderNo);
+        .eq(SaleOrderDetail::getOrderId, order.getId()).orderByAsc(SaleOrderDetail::getOrderNo);
     List<SaleOrderDetail> details = saleOrderDetailService.list(queryDetailWrapper);
 
     BigDecimal totalNum = BigDecimal.ZERO;
@@ -342,6 +341,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
           newDetail.setDescription(detail.getDescription());
           newDetail.setOrderNo(detail.getOrderNo());
           newDetail.setOriBundleDetailId(detail.getId());
+          newDetail.setTaxAmount(saleOrderDetailBundle.getProductTaxAmount());
 
           saleOrderDetailService.save(newDetail);
           saleOrderDetailService.removeById(detail.getId());
@@ -481,8 +481,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition,
-        isReturn);
+    List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition, isReturn);
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -573,6 +572,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());
       orderDetail.setOrderNo(orderNo);
+      orderDetail.setTaxAmount(
+          NumberUtil.getNumber(NumberUtil.mul(orderDetail.getTaxPrice(), orderDetail.getOrderNum()),
+              2));
 
       saleOrderDetailService.save(orderDetail);
 
@@ -589,8 +591,8 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
           bundleWeight.put(productBundle.getProductId(),
               NumberUtil.mul(productBundle.getSalePrice(), productBundle.getBundleNum()));
         }
-        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(orderDetail.getTaxPrice(),
-            bundleWeight, 6);
+        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(orderDetail.getTaxAmount(),
+            bundleWeight, 2);
         List<SaleOrderDetailBundle> saleOrderDetailBundles = productBundles.stream()
             .map(productBundle -> {
               Product bundle = productService.findById(productBundle.getProductId());
@@ -604,10 +606,11 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
               saleOrderDetailBundle.setProductOrderNum(
                   NumberUtil.mul(orderDetail.getOrderNum(), productBundle.getBundleNum()));
               saleOrderDetailBundle.setProductOriPrice(productBundle.getSalePrice());
+              saleOrderDetailBundle.setProductTaxAmount(BigDecimal.valueOf(
+                  splitPriceMap.get(productBundle.getProductId()).doubleValue()));
               // 这里会有尾差
               saleOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
-                  BigDecimal.valueOf(
-                      splitPriceMap.get(productBundle.getProductId()).doubleValue()),
+                  saleOrderDetailBundle.getProductTaxAmount(),
                   productBundle.getBundleNum()), 6));
               saleOrderDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 

@@ -232,7 +232,7 @@ public class PrintSaleReturnBo extends BaseBo<SaleReturnFullDto> {
 
       this.returnNum = dto.getReturnNum();
       this.taxPrice = dto.getTaxPrice();
-      this.returnAmount = NumberUtil.getNumber(NumberUtil.mul(dto.getTaxPrice(), dto.getReturnNum()), 2);
+      this.returnAmount = dto.getTaxAmount();
 
       SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
       SaleProductDto product = saleOrderService.getSaleById(dto.getProductId());

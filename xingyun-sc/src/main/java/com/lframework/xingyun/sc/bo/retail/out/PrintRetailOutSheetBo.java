@@ -222,7 +222,7 @@ public class PrintRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
 
       this.outNum = dto.getOrderNum();
       this.taxPrice = dto.getTaxPrice();
-      this.outAmount = NumberUtil.getNumber(NumberUtil.mul(dto.getTaxPrice(), dto.getOrderNum()), 2);
+      this.outAmount = dto.getTaxAmount();
 
       RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
           RetailOutSheetService.class);

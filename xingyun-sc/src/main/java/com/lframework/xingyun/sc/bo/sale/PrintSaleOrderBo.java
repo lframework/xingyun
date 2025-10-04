@@ -208,7 +208,7 @@ public class PrintSaleOrderBo extends BaseBo<SaleOrderFullDto> {
 
       this.orderNum = dto.getOrderNum();
       this.taxPrice = dto.getTaxPrice();
-      this.orderAmount = NumberUtil.getNumber(NumberUtil.mul(dto.getOrderNum(), dto.getTaxPrice()), 2);
+      this.orderAmount = dto.getTaxAmount();
 
       SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
       SaleProductDto product = saleOrderService.getSaleById(dto.getProductId());

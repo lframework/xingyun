@@ -95,4 +95,9 @@ public class SaleOutSheetDetail extends BaseEntity implements BaseDto {
    * 组合商品原始明细ID
    */
   private String oriBundleDetailId;
+
+  /**
+   * 总金额
+   */
+  private BigDecimal taxAmount;
 }

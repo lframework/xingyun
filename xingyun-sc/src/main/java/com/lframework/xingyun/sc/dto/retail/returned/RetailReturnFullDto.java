@@ -184,5 +184,10 @@ public class RetailReturnFullDto implements BaseDto, Serializable {
      * 零售出库单明细ID
      */
     private String outSheetDetailId;
+
+    /**
+     * 总金额
+     */
+    private BigDecimal taxAmount;
   }
 }

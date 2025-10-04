@@ -74,8 +74,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, SaleReturn>
-    implements SaleReturnService {
+public class SaleReturnServiceImpl extends
+    BaseMpServiceImpl<SaleReturnMapper, SaleReturn> implements SaleReturnService {
 
   @Autowired
   private SaleReturnDetailService saleReturnDetailService;
@@ -214,8 +214,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     Wrapper<SaleReturn> updateOrderWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
         .set(SaleReturn::getApproveBy, null).set(SaleReturn::getApproveTime, null)
         .set(SaleReturn::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(SaleReturn::getId, saleReturn.getId())
-        .in(SaleReturn::getStatus, statusList);
+        .eq(SaleReturn::getId, saleReturn.getId()).in(SaleReturn::getStatus, statusList);
     if (getBaseMapper().updateAllColumn(saleReturn, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售退货单信息已过期，请刷新重试！");
     }
@@ -253,9 +252,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
           .ne(SaleReturn::getId, saleReturn.getId());
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         SaleOutSheet saleOutSheet = saleOutSheetService.getById(saleReturn.getOutSheetId());
-        throw new DefaultClientException(
-            "销售出库单号：" + saleOutSheet.getCode()
-                + "，已关联其他销售退货单，不允许关联多个销售退货单！");
+        throw new DefaultClientException("销售出库单号：" + saleOutSheet.getCode()
+            + "，已关联其他销售退货单，不允许关联多个销售退货单！");
       }
     }
 
@@ -268,8 +266,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
     LambdaUpdateWrapper<SaleReturn> updateOrderWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
         .set(SaleReturn::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(SaleReturn::getApproveTime, LocalDateTime.now())
-        .eq(SaleReturn::getId, saleReturn.getId())
-        .in(SaleReturn::getStatus, statusList);
+        .eq(SaleReturn::getId, saleReturn.getId()).in(SaleReturn::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(SaleReturn::getDescription, vo.getDescription());
     }
@@ -452,8 +449,7 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
 
   @Override
   public List<SaleReturn> getApprovedList(String customerId, LocalDateTime startTime,
-      LocalDateTime endTime,
-      SettleStatus settleStatus) {
+      LocalDateTime endTime, SettleStatus settleStatus) {
 
     return getBaseMapper().getApprovedList(customerId, startTime, endTime, settleStatus);
   }
@@ -505,9 +501,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
             .eq(SaleReturn::getOutSheetId, saleOutSheet.getId())
             .ne(SaleReturn::getId, saleReturn.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
-          throw new DefaultClientException(
-              "销售出库单号：" + saleOutSheet.getCode()
-                  + "，已关联其他销售退货单，不允许关联多个销售退货单！");
+          throw new DefaultClientException("销售出库单号：" + saleOutSheet.getCode()
+              + "，已关联其他销售退货单，不允许关联多个销售退货单！");
         }
       }
     }
@@ -548,7 +543,8 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
       }
 
       totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.getNumber(NumberUtil.mul(productVo.getTaxPrice(), productVo.getReturnNum()), 2));
+          NumberUtil.getNumber(NumberUtil.mul(productVo.getTaxPrice(), productVo.getReturnNum()),
+              2));
 
       SaleReturnDetail detail = new SaleReturnDetail();
       detail.setId(IdUtil.getId());
@@ -566,11 +562,12 @@ public class SaleReturnServiceImpl extends BaseMpServiceImpl<SaleReturnMapper, S
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getSaleTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       detail.setSettleStatus(this.getInitSettleStatus(customer));
+      detail.setTaxAmount(
+          NumberUtil.getNumber(NumberUtil.mul(detail.getTaxPrice(), detail.getReturnNum()), 2));
       if (requireOut && !StringUtil.isBlank(productVo.getOutSheetDetailId())) {
         detail.setOutSheetDetailId(productVo.getOutSheetDetailId());
         saleOutSheetDetailLotService.addReturnNum(productVo.getOutSheetDetailId(),

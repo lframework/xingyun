@@ -75,4 +75,9 @@ public class SaleOutSheetDetailBundle extends BaseEntity implements BaseDto {
    * 单品明细ID
    */
   private String productDetailId;
+
+  /**
+   * 单品含税金额
+   */
+  private BigDecimal productTaxAmount;
 }

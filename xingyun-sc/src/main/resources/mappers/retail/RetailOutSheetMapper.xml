@@ -54,6 +54,7 @@
             <result column="detail_description" property="description"/>
             <result column="detail_order_no" property="orderNo"/>
             <result column="detail_settle_status" property="settleStatus"/>
+            <result column="detail_tax_amount" property="taxAmount"/>
         </collection>
     </resultMap>
 
@@ -147,7 +148,8 @@
             d.tax_rate AS detail_tax_rate,
             d.description AS detail_description,
             d.order_no AS detail_order_no,
-            d.settle_status AS detail_settle_status
+            d.settle_status AS detail_settle_status,
+            d.tax_amount AS detail_tax_amount
         FROM tbl_retail_out_sheet AS s
         LEFT JOIN tbl_retail_out_sheet_detail AS d ON d.sheet_id = s.id
         LEFT JOIN tbl_retail_out_sheet_detail_bundle AS b ON b.sheet_id = s.id AND b.product_detail_id = d.id

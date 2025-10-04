@@ -99,8 +99,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMapper, PurchaseOrder>
-    implements PurchaseOrderService {
+public class PurchaseOrderServiceImpl extends
+    BaseMpServiceImpl<PurchaseOrderMapper, PurchaseOrder> implements PurchaseOrderService {
 
   private static final String BPM_FLAG = "PurchaseOrder";
 
@@ -279,13 +279,11 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     // 删除订单明细
     if (vo.getIsForm()) {
       Wrapper<PurchaseOrderDetailForm> deleteDetailWrapper = Wrappers.lambdaQuery(
-              PurchaseOrderDetailForm.class)
-          .eq(PurchaseOrderDetailForm::getOrderId, order.getId());
+          PurchaseOrderDetailForm.class).eq(PurchaseOrderDetailForm::getOrderId, order.getId());
       purchaseOrderDetailFormService.remove(deleteDetailWrapper);
     } else {
       Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-              PurchaseOrderDetail.class)
-          .eq(PurchaseOrderDetail::getOrderId, order.getId());
+          PurchaseOrderDetail.class).eq(PurchaseOrderDetail::getOrderId, order.getId());
       purchaseOrderDetailService.remove(deleteDetailWrapper);
     }
 
@@ -306,29 +304,26 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         throw new DefaultClientException("订单不允许重新发起！");
       }
       LambdaUpdateWrapper<PurchaseOrderForm> updateOrderWrapper = Wrappers.lambdaUpdate(
-              PurchaseOrderForm.class)
-          .set(PurchaseOrderForm::getApproveBy, null).set(PurchaseOrderForm::getApproveTime, null)
+              PurchaseOrderForm.class).set(PurchaseOrderForm::getApproveBy, null)
+          .set(PurchaseOrderForm::getApproveTime, null)
           .set(PurchaseOrderForm::getRefuseReason, StringPool.EMPTY_STR)
-          .eq(PurchaseOrderForm::getId, order.getId())
-          .in(PurchaseOrderForm::getStatus, statusList);
+          .eq(PurchaseOrderForm::getId, order.getId()).in(PurchaseOrderForm::getStatus, statusList);
 
       if (purchaseOrderFormService.updateAllColumn((PurchaseOrderForm) order, updateOrderWrapper)) {
         throw new DefaultClientException("订单信息已过期，请刷新重试！");
       }
 
       Instance instance = this.startBpmInstance(config.getPurchaseBpmProcessCode(), order.getId());
-      updateOrderWrapper = Wrappers.lambdaUpdate(
-              PurchaseOrderForm.class)
+      updateOrderWrapper = Wrappers.lambdaUpdate(PurchaseOrderForm.class)
           .set(PurchaseOrderForm::getFlowInstanceId, instance.getId())
           .eq(PurchaseOrderForm::getId, order.getId());
       purchaseOrderFormService.update(updateOrderWrapper);
     } else {
       LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
-              PurchaseOrder.class)
-          .set(PurchaseOrder::getApproveBy, null).set(PurchaseOrder::getApproveTime, null)
+              PurchaseOrder.class).set(PurchaseOrder::getApproveBy, null)
+          .set(PurchaseOrder::getApproveTime, null)
           .set(PurchaseOrder::getRefuseReason, StringPool.EMPTY_STR)
-          .eq(PurchaseOrder::getId, order.getId())
-          .in(PurchaseOrder::getStatus, statusList);
+          .eq(PurchaseOrder::getId, order.getId()).in(PurchaseOrder::getStatus, statusList);
 
       if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
         throw new DefaultClientException("订单信息已过期，请刷新重试！");
@@ -367,11 +362,9 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     statusList.add(PurchaseOrderStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
-            PurchaseOrder.class)
-        .set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
+            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
-        .eq(PurchaseOrder::getId, order.getId())
-        .in(PurchaseOrder::getStatus, statusList);
+        .eq(PurchaseOrder::getId, order.getId()).in(PurchaseOrder::getStatus, statusList);
 
     if (getBaseMapper().updateAllColumn(order, updateOrderWrapper) != 1) {
       throw new DefaultClientException("订单信息已过期，请刷新重试！");
@@ -385,8 +378,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     }
 
     Wrapper<PurchaseOrderDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            PurchaseOrderDetail.class)
-        .eq(PurchaseOrderDetail::getOrderId, order.getId())
+            PurchaseOrderDetail.class).eq(PurchaseOrderDetail::getOrderId, order.getId())
         .orderByAsc(PurchaseOrderDetail::getOrderNo);
     List<PurchaseOrderDetail> details = purchaseOrderDetailService.list(queryDetailWrapper);
 
@@ -426,9 +418,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
           newDetail.setTaxRate(purchaseOrderDetailBundle.getProductTaxRate());
           newDetail.setDescription(detail.getDescription());
           newDetail.setOrderNo(detail.getOrderNo());
-          newDetail.setTaxAmount(
-              NumberUtil.getNumber(NumberUtil.mul(newDetail.getTaxPrice(), newDetail.getOrderNum()),
-                  2));
+          newDetail.setTaxAmount(purchaseOrderDetailBundle.getProductTaxAmount());
 
           purchaseOrderDetailService.save(newDetail);
           purchaseOrderDetailService.removeById(detail.getId());
@@ -501,8 +491,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     order.setStatus(PurchaseOrderStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
-            PurchaseOrder.class)
-        .set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
+            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
         .set(PurchaseOrder::getRefuseReason, vo.getRefuseReason())
         .eq(PurchaseOrder::getId, order.getId())
@@ -539,14 +528,12 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
     // 删除订单明细
     Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-            PurchaseOrderDetail.class)
-        .eq(PurchaseOrderDetail::getOrderId, order.getId());
+        PurchaseOrderDetail.class).eq(PurchaseOrderDetail::getOrderId, order.getId());
     purchaseOrderDetailService.remove(deleteDetailWrapper);
 
     // 删除组合商品明细
     Wrapper<PurchaseOrderDetailBundle> deleteBundleWrapper = Wrappers.lambdaQuery(
-            PurchaseOrderDetailBundle.class)
-        .eq(PurchaseOrderDetailBundle::getOrderId, order.getId());
+        PurchaseOrderDetailBundle.class).eq(PurchaseOrderDetailBundle::getOrderId, order.getId());
     purchaseOrderDetailBundleService.remove(deleteBundleWrapper);
 
     // 删除订单
@@ -679,8 +666,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
           bundleWeight.put(productBundle.getProductId(),
               NumberUtil.mul(productBundle.getPurchasePrice(), productBundle.getBundleNum()));
         }
-        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(orderDetail.getTaxPrice(),
-            bundleWeight, 6);
+        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(orderDetail.getTaxAmount(),
+            bundleWeight, 2);
         List<PurchaseOrderDetailBundle> purchaseOrderDetailBundles = productBundles.stream()
             .map(productBundle -> {
               Product bundle = productService.findById(productBundle.getProductId());
@@ -694,11 +681,12 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
               purchaseOrderDetailBundle.setProductOrderNum(
                   NumberUtil.mul(orderDetail.getOrderNum(), productBundle.getBundleNum()));
               purchaseOrderDetailBundle.setProductOriPrice(productBundle.getPurchasePrice());
+              purchaseOrderDetailBundle.setProductTaxAmount(BigDecimal.valueOf(
+                  splitPriceMap.get(productBundle.getProductId()).doubleValue()));
               // 这里会有尾差
-              purchaseOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
-                  BigDecimal.valueOf(
-                      splitPriceMap.get(productBundle.getProductId()).doubleValue()),
-                  productBundle.getBundleNum()), 6));
+              purchaseOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(
+                  NumberUtil.div(purchaseOrderDetailBundle.getProductTaxAmount(),
+                      productBundle.getBundleNum()), 6));
               purchaseOrderDetailBundle.setProductTaxRate(bundle.getTaxRate());
 
               return purchaseOrderDetailBundle;
@@ -833,8 +821,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       log.info("接收到业务完成事件");
       PurchaseOrderForm orderForm = purchaseOrderFormService.getById(businessId);
       Wrapper<PurchaseOrderDetailForm> queryWrapper = Wrappers.lambdaQuery(
-              PurchaseOrderDetailForm.class)
-          .eq(PurchaseOrderDetailForm::getOrderId, orderForm.getId());
+          PurchaseOrderDetailForm.class).eq(PurchaseOrderDetailForm::getOrderId, orderForm.getId());
       List<PurchaseOrderDetailForm> detailFormList = purchaseOrderDetailFormService.list(
           queryWrapper);
 

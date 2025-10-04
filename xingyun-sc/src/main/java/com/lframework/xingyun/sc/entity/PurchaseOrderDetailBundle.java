@@ -59,6 +59,11 @@ public class PurchaseOrderDetailBundle extends BaseEntity implements BaseDto {
   private BigDecimal productTaxPrice;
 
   /**
+   * 单品含税金额
+   */
+  private BigDecimal productTaxAmount;
+
+  /**
    * 单品税率
    */
   private BigDecimal productTaxRate;

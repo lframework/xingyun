@@ -249,3 +249,66 @@ CREATE TABLE `tbl_receive_sheet_detail_bundle` (
     UNIQUE KEY `sheet_id` (`sheet_id`,`product_detail_id`) USING BTREE,
     KEY `detail_id` (`detail_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='采购收货单组合商品明细';
+
+ALTER TABLE `tbl_sale_order_detail`
+    ADD COLUMN `tax_amount` decimal(24, 2) NOT NULL COMMENT '总金额' AFTER `ori_bundle_detail_id`;
+
+UPDATE tbl_sale_order_detail
+SET tax_amount = tax_price * order_num;
+
+ALTER TABLE `tbl_sale_out_sheet_detail`
+    ADD COLUMN `tax_amount` decimal(24, 2) NOT NULL COMMENT '总金额' AFTER `return_num`;
+
+UPDATE tbl_sale_out_sheet_detail
+SET tax_amount = tax_price * order_num;
+ALTER TABLE `tbl_sale_return_detail`
+    ADD COLUMN `tax_amount` decimal(24, 2) NOT NULL COMMENT '总金额' AFTER `out_sheet_detail_id`;
+UPDATE tbl_sale_return_detail
+SET tax_amount = tax_price * return_num;
+
+ALTER TABLE `tbl_retail_out_sheet_detail`
+    ADD COLUMN `tax_amount` decimal(24, 2) NOT NULL COMMENT '总金额' AFTER `ori_bundle_detail_id`;
+
+UPDATE tbl_retail_out_sheet_detail
+SET tax_amount = tax_price * order_num;
+
+ALTER TABLE `tbl_retail_return_detail`
+    ADD COLUMN `tax_amount` decimal(24, 2) NOT NULL COMMENT '总金额' AFTER `out_sheet_detail_id`;
+
+UPDATE tbl_retail_return_detail
+SET tax_amount = tax_price * return_num;
+
+ALTER TABLE `tbl_purchase_order_detail_bundle`
+    ADD COLUMN `product_tax_amount` decimal(24, 2) NOT NULL COMMENT '单品含税金额' AFTER `product_detail_id`;
+
+UPDATE tbl_purchase_order_detail_bundle
+SET product_tax_amount = product_tax_price * order_num;
+
+ALTER TABLE `tbl_purchase_order_detail_bundle_form`
+    ADD COLUMN `product_tax_amount` decimal(24, 2) NOT NULL COMMENT '单品含税金额' AFTER `product_detail_id`;
+
+UPDATE tbl_purchase_order_detail_bundle_form
+SET product_tax_amount = product_tax_price * order_num;
+
+ALTER TABLE `tbl_receive_sheet_detail_bundle`
+    ADD COLUMN `product_tax_amount` decimal(24, 2) NOT NULL COMMENT '单品含税金额' AFTER `product_detail_id`;
+
+UPDATE tbl_receive_sheet_detail_bundle
+SET product_tax_amount = product_tax_price * order_num;
+
+ALTER TABLE `tbl_retail_out_sheet_detail_bundle`
+    ADD COLUMN `product_tax_amount` decimal(24, 2) NOT NULL COMMENT '单品含税金额' AFTER `product_detail_id`;
+
+UPDATE tbl_retail_out_sheet_detail_bundle
+SET product_tax_amount = product_tax_price * order_num;
+
+ALTER TABLE `tbl_sale_order_detail_bundle`
+    ADD COLUMN `product_tax_amount` decimal(24, 2) NOT NULL COMMENT '单品含税金额' AFTER `product_detail_id`;
+
+UPDATE tbl_sale_order_detail_bundle
+SET product_tax_amount = product_tax_price * order_num;
+ALTER TABLE `tbl_sale_out_sheet_detail_bundle`
+    ADD COLUMN `product_tax_amount` decimal(24, 2) NOT NULL COMMENT '单品含税金额' AFTER `product_detail_id`;
+
+UPDATE tbl_sale_out_sheet_detail_bundle
+SET product_tax_amount = product_tax_price * order_num;

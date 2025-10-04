@@ -86,5 +86,8 @@ public class RetailReturnDetail extends BaseEntity implements BaseDto {
    */
   private String outSheetDetailId;
 
-
+  /**
+   * 总金额
+   */
+  private BigDecimal taxAmount;
 }

@@ -91,8 +91,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RetailOutSheetServiceImpl extends
-    BaseMpServiceImpl<RetailOutSheetMapper, RetailOutSheet>
-    implements RetailOutSheetService {
+    BaseMpServiceImpl<RetailOutSheetMapper, RetailOutSheet> implements RetailOutSheetService {
 
   @Autowired
   private RetailOutSheetDetailService retailOutSheetDetailService;
@@ -256,8 +255,7 @@ public class RetailOutSheetServiceImpl extends
 
     // 删除出库单明细
     Wrapper<RetailOutSheetDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
-            RetailOutSheetDetail.class)
-        .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
+        RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId());
     retailOutSheetDetailService.remove(deleteDetailWrapper);
 
     // 删除组合商品信息
@@ -277,8 +275,7 @@ public class RetailOutSheetServiceImpl extends
         .set(RetailOutSheet::getApproveBy, null).set(RetailOutSheet::getApproveTime, null)
         .set(RetailOutSheet::getRefuseReason, StringPool.EMPTY_STR)
         .set(RetailOutSheet::getMemberId, sheet.getMemberId())
-        .eq(RetailOutSheet::getId, sheet.getId())
-        .in(RetailOutSheet::getStatus, statusList);
+        .eq(RetailOutSheet::getId, sheet.getId()).in(RetailOutSheet::getStatus, statusList);
     if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("零售出库单信息已过期，请刷新重试！");
     }
@@ -328,8 +325,7 @@ public class RetailOutSheetServiceImpl extends
             RetailOutSheet.class)
         .set(RetailOutSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(RetailOutSheet::getApproveTime, LocalDateTime.now())
-        .eq(RetailOutSheet::getId, sheet.getId())
-        .in(RetailOutSheet::getStatus, statusList);
+        .eq(RetailOutSheet::getId, sheet.getId()).in(RetailOutSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(RetailOutSheet::getDescription, vo.getDescription());
     }
@@ -345,8 +341,7 @@ public class RetailOutSheetServiceImpl extends
     }
 
     Wrapper<RetailOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            RetailOutSheetDetail.class)
-        .eq(RetailOutSheetDetail::getSheetId, sheet.getId())
+            RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(RetailOutSheetDetail::getOrderNo);
     List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
 
@@ -412,6 +407,7 @@ public class RetailOutSheetServiceImpl extends
           newDetail.setOrderNo(orderNo++);
           newDetail.setSettleStatus(detail.getSettleStatus());
           newDetail.setOriBundleDetailId(detail.getId());
+          newDetail.setTaxAmount(retailOutSheetDetailBundle.getProductTaxAmount());
 
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(newDetail.getProductId());
@@ -550,8 +546,7 @@ public class RetailOutSheetServiceImpl extends
 
     // 删除订单明细
     Wrapper<RetailOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            RetailOutSheetDetail.class)
-        .eq(RetailOutSheetDetail::getSheetId, sheet.getId());
+        RetailOutSheetDetail.class).eq(RetailOutSheetDetail::getSheetId, sheet.getId());
     List<RetailOutSheetDetail> details = retailOutSheetDetailService.list(queryDetailWrapper);
     retailOutSheetDetailService.remove(queryDetailWrapper);
 
@@ -562,8 +557,7 @@ public class RetailOutSheetServiceImpl extends
 
     Wrapper<RetailOutSheetDetailLot> deleteDetailLotWrapper = Wrappers.lambdaQuery(
         RetailOutSheetDetailLot.class).in(RetailOutSheetDetailLot::getDetailId,
-        details.stream().map(RetailOutSheetDetail::getId).collect(
-            Collectors.toList()));
+        details.stream().map(RetailOutSheetDetail::getId).collect(Collectors.toList()));
     retailOutSheetDetailLotService.remove(deleteDetailLotWrapper);
 
     // 删除订单
@@ -684,11 +678,12 @@ public class RetailOutSheetServiceImpl extends
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getSaleTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       detail.setSettleStatus(this.getInitSettleStatus(member));
+      detail.setTaxAmount(
+          NumberUtil.getNumber(NumberUtil.mul(detail.getTaxPrice(), detail.getOrderNum()), 2));
 
       retailOutSheetDetailService.save(detail);
 
@@ -705,8 +700,8 @@ public class RetailOutSheetServiceImpl extends
           bundleWeight.put(productBundle.getProductId(),
               NumberUtil.mul(productBundle.getRetailPrice(), productBundle.getBundleNum()));
         }
-        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxPrice(),
-            bundleWeight, 6);
+        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxAmount(),
+            bundleWeight, 2);
         List<RetailOutSheetDetailBundle> retailOutSheetDetailBundles = productBundles.stream()
             .map(productBundle -> {
               Product bundle = productService.findById(productBundle.getProductId());
@@ -720,10 +715,11 @@ public class RetailOutSheetServiceImpl extends
               retailOutSheetDetailBundle.setProductOrderNum(
                   NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()));
               retailOutSheetDetailBundle.setProductOriPrice(productBundle.getRetailPrice());
+              retailOutSheetDetailBundle.setProductTaxAmount(BigDecimal.valueOf(
+                  splitPriceMap.get(productBundle.getProductId()).doubleValue()));
               // 这里会有尾差
-              retailOutSheetDetailBundle.setProductTaxPrice(
-                  NumberUtil.getNumber(NumberUtil.div(BigDecimal.valueOf(
-                          splitPriceMap.get(productBundle.getProductId()).doubleValue()),
+              retailOutSheetDetailBundle.setProductTaxPrice(NumberUtil.getNumber(
+                  NumberUtil.div(retailOutSheetDetailBundle.getProductTaxAmount(),
                       productBundle.getBundleNum()), 6));
               retailOutSheetDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 

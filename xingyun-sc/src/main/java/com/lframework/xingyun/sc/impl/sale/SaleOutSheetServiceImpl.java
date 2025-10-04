@@ -16,17 +16,16 @@ import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.ApproveReturnOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
-import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
@@ -42,6 +41,7 @@ import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
+import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.entity.LogisticsSheetDetail;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.entity.SaleOrder;
@@ -89,8 +89,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMapper, SaleOutSheet>
-    implements SaleOutSheetService {
+public class SaleOutSheetServiceImpl extends
+    BaseMpServiceImpl<SaleOutSheetMapper, SaleOutSheet> implements SaleOutSheetService {
 
   @Autowired
   private SaleOutSheetDetailService saleOutSheetDetailService;
@@ -276,8 +276,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     if (requireSale) {
       //查询出库单明细
       Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-              SaleOutSheetDetail.class)
-          .eq(SaleOutSheetDetail::getSheetId, sheet.getId());
+          SaleOutSheetDetail.class).eq(SaleOutSheetDetail::getSheetId, sheet.getId());
       List<SaleOutSheetDetail> details = saleOutSheetDetailService.list(queryDetailWrapper);
       for (SaleOutSheetDetail detail : details) {
         if (!StringUtil.isBlank(detail.getSaleOrderDetailId())) {
@@ -308,8 +307,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     Wrapper<SaleOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(SaleOutSheet.class)
         .set(SaleOutSheet::getApproveBy, null).set(SaleOutSheet::getApproveTime, null)
         .set(SaleOutSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(SaleOutSheet::getId, sheet.getId())
-        .in(SaleOutSheet::getStatus, statusList);
+        .eq(SaleOutSheet::getId, sheet.getId()).in(SaleOutSheet::getStatus, statusList);
     if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
@@ -347,9 +345,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
           .ne(SaleOutSheet::getId, sheet.getId());
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         SaleOrder purchaseOrder = saleOrderService.getById(sheet.getSaleOrderId());
-        throw new DefaultClientException(
-            "销售订单号：" + purchaseOrder.getCode()
-                + "，已关联其他销售出库单，不允许关联多个销售出库单！");
+        throw new DefaultClientException("销售订单号：" + purchaseOrder.getCode()
+            + "，已关联其他销售出库单，不允许关联多个销售出库单！");
       }
     }
 
@@ -371,8 +368,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     LambdaUpdateWrapper<SaleOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(SaleOutSheet.class)
         .set(SaleOutSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(SaleOutSheet::getApproveTime, LocalDateTime.now())
-        .eq(SaleOutSheet::getId, sheet.getId())
-        .in(SaleOutSheet::getStatus, statusList);
+        .eq(SaleOutSheet::getId, sheet.getId()).in(SaleOutSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(SaleOutSheet::getDescription, vo.getDescription());
     }
@@ -447,6 +443,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
           newDetail.setSettleStatus(detail.getSettleStatus());
           newDetail.setSaleOrderDetailId(detail.getSaleOrderDetailId());
           newDetail.setOriBundleDetailId(detail.getId());
+          newDetail.setTaxAmount(saleOutSheetDetailBundle.getProductTaxAmount());
 
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(newDetail.getProductId());
@@ -581,8 +578,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     }
 
     //查询销售出库单明细
-    Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            SaleOutSheetDetail.class)
+    Wrapper<SaleOutSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(SaleOutSheetDetail.class)
         .eq(SaleOutSheetDetail::getSheetId, sheet.getId());
     List<SaleOutSheetDetail> details = saleOutSheetDetailService.list(queryDetailWrapper);
 
@@ -606,15 +602,14 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
     saleOutSheetDetailBundleService.remove(deleteDetailBundleWrapper);
 
     Wrapper<SaleOutSheetDetailLot> deleteDetailLotWrapper = Wrappers.lambdaQuery(
-            SaleOutSheetDetailLot.class)
-        .in(SaleOutSheetDetailLot::getDetailId,
-            details.stream().map(SaleOutSheetDetail::getId).collect(
-                Collectors.toList()));
+        SaleOutSheetDetailLot.class).in(SaleOutSheetDetailLot::getDetailId,
+        details.stream().map(SaleOutSheetDetail::getId).collect(Collectors.toList()));
     saleOutSheetDetailLotService.remove(deleteDetailLotWrapper);
 
     // 删除订单
     Wrapper<SaleOutSheet> deleteWrapper = Wrappers.lambdaQuery(SaleOutSheet.class)
-        .in(SaleOutSheet::getId, id).in(SaleOutSheet::getStatus, SaleOutSheetStatus.CREATED, SaleOutSheetStatus.APPROVE_REFUSE);
+        .in(SaleOutSheet::getId, id)
+        .in(SaleOutSheet::getStatus, SaleOutSheetStatus.CREATED, SaleOutSheetStatus.APPROVE_REFUSE);
     if (!remove(deleteWrapper)) {
       throw new DefaultClientException("销售出库单信息已过期，请刷新重试！");
     }
@@ -660,8 +655,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
 
   @Override
   public List<SaleOutSheet> getApprovedList(String customerId, LocalDateTime startTime,
-      LocalDateTime endTime,
-      SettleStatus settleStatus) {
+      LocalDateTime endTime, SettleStatus settleStatus) {
 
     return getBaseMapper().getApprovedList(customerId, startTime, endTime, settleStatus);
   }
@@ -714,9 +708,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
             .eq(SaleOutSheet::getSaleOrderId, saleOrder.getId())
             .ne(SaleOutSheet::getId, sheet.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
-          throw new DefaultClientException(
-              "销售订单号：" + saleOrder.getCode()
-                  + "，已关联其他销售出库单，不允许关联多个销售出库单！");
+          throw new DefaultClientException("销售订单号：" + saleOrder.getCode()
+              + "，已关联其他销售出库单，不允许关联多个销售出库单！");
         }
       }
     }
@@ -756,7 +749,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       }
 
       totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.getNumber(NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()), 2));
+          NumberUtil.getNumber(NumberUtil.mul(productVo.getTaxPrice(), productVo.getOrderNum()),
+              2));
 
       SaleOutSheetDetail detail = new SaleOutSheetDetail();
       detail.setId(IdUtil.getId());
@@ -774,11 +768,12 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
       detail.setDiscountRate(productVo.getDiscountRate());
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getSaleTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       detail.setSettleStatus(this.getInitSettleStatus(customer));
+      detail.setTaxAmount(
+          NumberUtil.getNumber(NumberUtil.mul(detail.getTaxPrice(), detail.getOrderNum()), 2));
       if (requireSale && !StringUtil.isBlank(productVo.getSaleOrderDetailId())) {
         detail.setSaleOrderDetailId(productVo.getSaleOrderDetailId());
         saleOrderDetailService.addOutNum(productVo.getSaleOrderDetailId(), detail.getOrderNum());
@@ -799,8 +794,8 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
           bundleWeight.put(productBundle.getProductId(),
               NumberUtil.mul(productBundle.getSalePrice(), productBundle.getBundleNum()));
         }
-        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxPrice(),
-            bundleWeight, 6);
+        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxAmount(),
+            bundleWeight, 2);
         List<SaleOutSheetDetailBundle> saleOutSheetDetailBundles = productBundles.stream()
             .map(productBundle -> {
               Product bundle = productService.findById(productBundle.getProductId());
@@ -814,18 +809,21 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
               saleOutSheetDetailBundle.setProductOrderNum(
                   NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()));
               saleOutSheetDetailBundle.setProductOriPrice(productBundle.getSalePrice());
+              saleOutSheetDetailBundle.setProductTaxAmount(BigDecimal.valueOf(
+                  splitPriceMap.get(productBundle.getProductId()).doubleValue()));
               // 这里会有尾差
-              saleOutSheetDetailBundle.setProductTaxPrice(
-                  NumberUtil.getNumber(NumberUtil.div(BigDecimal.valueOf(
-                          splitPriceMap.get(productBundle.getProductId()).doubleValue()),
-                      productBundle.getBundleNum()), 6));
+              saleOutSheetDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
+                  saleOutSheetDetailBundle.getProductTaxAmount(),
+                  productBundle.getBundleNum()), 6));
               saleOutSheetDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 
               return saleOutSheetDetailBundle;
             }).collect(Collectors.toList());
 
         saleOutSheetDetailBundleService.saveBatch(saleOutSheetDetailBundles);
-      } else {
+      }
+      // 这里记录没有什么意义，因为销售单审核通过后就已经成单品了
+      /* else {
         if (requireSale && !StringUtil.isBlank(detail.getSaleOrderDetailId())) {
           // 这里如果是关联销售单的话，需要把组合商品信息拿过来，价格不用重新算，因为关联销售单的话，价格不允许修改
           Wrapper<SaleOrderDetailBundle> querySaleOrderDetailBundleWrapper = Wrappers.lambdaQuery(
@@ -850,7 +848,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
             saleOutSheetDetailBundleService.save(saleOutSheetDetailBundle);
           }
         }
-      }
+      }*/
       orderNo++;
     }
     sheet.setTotalNum(purchaseNum);

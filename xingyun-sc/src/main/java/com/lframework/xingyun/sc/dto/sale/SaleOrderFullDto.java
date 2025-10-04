@@ -162,5 +162,10 @@ public class SaleOrderFullDto implements BaseDto, Serializable {
      * 排序编号
      */
     private Integer orderNo;
+
+    /**
+     * 总金额
+     */
+    private BigDecimal taxAmount;
   }
 }

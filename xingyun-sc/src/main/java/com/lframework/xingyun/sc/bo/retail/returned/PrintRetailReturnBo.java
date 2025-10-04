@@ -3,10 +3,10 @@ package com.lframework.xingyun.sc.bo.retail.returned;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.DateUtil;
-import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
+import com.lframework.starter.web.inner.service.system.SysUserService;
 import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.member.MemberService;
@@ -16,7 +16,6 @@ import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.enums.RetailReturnStatus;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
-import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.List;
@@ -234,7 +233,7 @@ public class PrintRetailReturnBo extends BaseBo<RetailReturnFullDto> {
 
       this.returnNum = dto.getReturnNum();
       this.taxPrice = dto.getTaxPrice();
-      this.returnAmount = NumberUtil.getNumber(NumberUtil.mul(dto.getTaxPrice(), dto.getReturnNum()), 2);
+      this.returnAmount = dto.getTaxAmount();
 
       RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
           RetailOutSheetService.class);

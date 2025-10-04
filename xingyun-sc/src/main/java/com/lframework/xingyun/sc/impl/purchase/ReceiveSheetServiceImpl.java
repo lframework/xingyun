@@ -82,8 +82,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMapper, ReceiveSheet>
-    implements ReceiveSheetService {
+public class ReceiveSheetServiceImpl extends
+    BaseMpServiceImpl<ReceiveSheetMapper, ReceiveSheet> implements ReceiveSheetService {
 
   @Autowired
   private ReceiveSheetDetailService receiveSheetDetailService;
@@ -263,8 +263,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     if (requirePurchase) {
       //查询采购收货单明细
       Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-              ReceiveSheetDetail.class)
-          .eq(ReceiveSheetDetail::getSheetId, sheet.getId());
+          ReceiveSheetDetail.class).eq(ReceiveSheetDetail::getSheetId, sheet.getId());
       List<ReceiveSheetDetail> details = receiveSheetDetailService.list(queryDetailWrapper);
       for (ReceiveSheetDetail detail : details) {
         if (!StringUtil.isBlank(detail.getPurchaseOrderDetailId())) {
@@ -291,8 +290,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     Wrapper<ReceiveSheet> updateOrderWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getApproveBy, null).set(ReceiveSheet::getApproveTime, null)
         .set(ReceiveSheet::getRefuseReason, StringPool.EMPTY_STR)
-        .eq(ReceiveSheet::getId, sheet.getId())
-        .in(ReceiveSheet::getStatus, statusList);
+        .eq(ReceiveSheet::getId, sheet.getId()).in(ReceiveSheet::getStatus, statusList);
     if (getBaseMapper().updateAllColumn(sheet, updateOrderWrapper) != 1) {
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
@@ -330,9 +328,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
           .ne(ReceiveSheet::getId, sheet.getId());
       if (getBaseMapper().selectCount(checkWrapper) > 0) {
         PurchaseOrder purchaseOrder = purchaseOrderService.getById(sheet.getPurchaseOrderId());
-        throw new DefaultClientException(
-            "采购订单号：" + purchaseOrder.getCode()
-                + "，已关联其他采购收货单，不允许关联多个采购收货单！");
+        throw new DefaultClientException("采购订单号：" + purchaseOrder.getCode()
+            + "，已关联其他采购收货单，不允许关联多个采购收货单！");
       }
     }
 
@@ -345,8 +342,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     LambdaUpdateWrapper<ReceiveSheet> updateOrderWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
         .set(ReceiveSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
         .set(ReceiveSheet::getApproveTime, LocalDateTime.now())
-        .eq(ReceiveSheet::getId, sheet.getId())
-        .in(ReceiveSheet::getStatus, statusList);
+        .eq(ReceiveSheet::getId, sheet.getId()).in(ReceiveSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
       updateOrderWrapper.set(ReceiveSheet::getDescription, vo.getDescription());
     }
@@ -354,8 +350,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       throw new DefaultClientException("采购收货单信息已过期，请刷新重试！");
     }
 
-    Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-            ReceiveSheetDetail.class)
+    Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(ReceiveSheetDetail.class)
         .eq(ReceiveSheetDetail::getSheetId, sheet.getId())
         .orderByAsc(ReceiveSheetDetail::getOrderNo);
     List<ReceiveSheetDetail> details = receiveSheetDetailService.list(queryDetailWrapper);
@@ -378,8 +373,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
         }
       } else {
         Wrapper<ReceiveSheetDetailBundle> queryBundleWrapper = Wrappers.lambdaQuery(
-                ReceiveSheetDetailBundle.class)
-            .eq(ReceiveSheetDetailBundle::getSheetId, sheet.getId())
+                ReceiveSheetDetailBundle.class).eq(ReceiveSheetDetailBundle::getSheetId, sheet.getId())
             .eq(ReceiveSheetDetailBundle::getDetailId, detail.getId());
         List<ReceiveSheetDetailBundle> receiveSheetDetailBundles = receiveSheetDetailBundleService.list(
             queryBundleWrapper);
@@ -396,9 +390,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
           newDetail.setTaxRate(receiveSheetDetailBundle.getProductTaxRate());
           newDetail.setDescription(detail.getDescription());
           newDetail.setOrderNo(detail.getOrderNo());
-          newDetail.setTaxAmount(
-              NumberUtil.getNumber(NumberUtil.mul(newDetail.getTaxPrice(), newDetail.getOrderNum()),
-                  2));
+          newDetail.setTaxAmount(receiveSheetDetailBundle.getProductTaxAmount());
 
           receiveSheetDetailService.save(newDetail);
           receiveSheetDetailService.removeById(detail.getId());
@@ -523,8 +515,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
     if (!StringUtil.isBlank(sheet.getPurchaseOrderId())) {
       //查询采购收货单明细
       Wrapper<ReceiveSheetDetail> queryDetailWrapper = Wrappers.lambdaQuery(
-              ReceiveSheetDetail.class)
-          .eq(ReceiveSheetDetail::getSheetId, sheet.getId());
+          ReceiveSheetDetail.class).eq(ReceiveSheetDetail::getSheetId, sheet.getId());
       List<ReceiveSheetDetail> details = receiveSheetDetailService.list(queryDetailWrapper);
       for (ReceiveSheetDetail detail : details) {
         if (!StringUtil.isBlank(detail.getPurchaseOrderDetailId())) {
@@ -542,8 +533,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
 
     // 删除组合商品明细
     Wrapper<ReceiveSheetDetailBundle> deleteBundleWrapper = Wrappers.lambdaQuery(
-            ReceiveSheetDetailBundle.class)
-        .eq(ReceiveSheetDetailBundle::getSheetId, sheet.getId());
+        ReceiveSheetDetailBundle.class).eq(ReceiveSheetDetailBundle::getSheetId, sheet.getId());
     receiveSheetDetailBundleService.remove(deleteBundleWrapper);
 
     // 删除订单
@@ -595,8 +585,7 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
 
   @Override
   public List<ReceiveSheet> getApprovedList(String supplierId, LocalDateTime startTime,
-      LocalDateTime endTime,
-      SettleStatus settleStatus) {
+      LocalDateTime endTime, SettleStatus settleStatus) {
 
     return getBaseMapper().getApprovedList(supplierId, startTime, endTime, settleStatus);
   }
@@ -650,9 +639,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
             .eq(ReceiveSheet::getPurchaseOrderId, purchaseOrder.getId())
             .ne(ReceiveSheet::getId, sheet.getId());
         if (getBaseMapper().selectCount(checkWrapper) > 0) {
-          throw new DefaultClientException(
-              "采购订单号：" + purchaseOrder.getCode()
-                  + "，已关联其他采购收货单，不允许关联多个采购收货单！");
+          throw new DefaultClientException("采购订单号：" + purchaseOrder.getCode()
+              + "，已关联其他采购收货单，不允许关联多个采购收货单！");
         }
       }
     }
@@ -715,9 +703,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
       detail.setTaxAmount(taxAmount);
       detail.setIsGift(isGift);
       detail.setTaxRate(product.getTaxRate());
-      detail.setDescription(
-          StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
-              : productVo.getDescription());
+      detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
+          : productVo.getDescription());
       detail.setOrderNo(orderNo);
       if (receiveRequirePurchase && !StringUtil.isBlank(productVo.getPurchaseOrderDetailId())) {
         detail.setPurchaseOrderDetailId(productVo.getPurchaseOrderDetailId());
@@ -740,8 +727,8 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
           bundleWeight.put(productBundle.getProductId(),
               NumberUtil.mul(productBundle.getPurchasePrice(), productBundle.getBundleNum()));
         }
-        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxPrice(),
-            bundleWeight, 6);
+        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxAmount(),
+            bundleWeight, 2);
         List<ReceiveSheetDetailBundle> receiveSheetDetailBundles = productBundles.stream()
             .map(productBundle -> {
               Product bundle = productService.findById(productBundle.getProductId());
@@ -755,11 +742,12 @@ public class ReceiveSheetServiceImpl extends BaseMpServiceImpl<ReceiveSheetMappe
               receiveSheetDetailBundle.setProductOrderNum(
                   NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()));
               receiveSheetDetailBundle.setProductOriPrice(productBundle.getPurchasePrice());
+              receiveSheetDetailBundle.setProductTaxAmount(BigDecimal.valueOf(
+                  splitPriceMap.get(productBundle.getProductId()).doubleValue()));
               // 这里会有尾差
-              receiveSheetDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
-                  BigDecimal.valueOf(
-                      splitPriceMap.get(productBundle.getProductId()).doubleValue()),
-                  productBundle.getBundleNum()), 6));
+              receiveSheetDetailBundle.setProductTaxPrice(NumberUtil.getNumber(
+                  NumberUtil.div(receiveSheetDetailBundle.getProductTaxAmount(),
+                      productBundle.getBundleNum()), 6));
               receiveSheetDetailBundle.setProductTaxRate(bundle.getTaxRate());
 
               return receiveSheetDetailBundle;

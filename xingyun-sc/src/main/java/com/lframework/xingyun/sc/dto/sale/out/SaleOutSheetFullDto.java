@@ -189,5 +189,10 @@ public class SaleOutSheetFullDto implements BaseDto, Serializable {
      * 销售订单明细ID
      */
     private String saleOrderDetailId;
+
+    /**
+     * 总金额
+     */
+    private BigDecimal taxAmount;
   }
 }

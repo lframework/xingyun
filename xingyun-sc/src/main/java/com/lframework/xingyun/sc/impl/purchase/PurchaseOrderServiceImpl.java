@@ -25,6 +25,7 @@ import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.utils.JsonUtil;
+import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.components.timeline.ApprovePassOrderTimeLineBizType;
@@ -36,13 +37,16 @@ import com.lframework.starter.web.inner.dto.order.ApprovePassOrderDto;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
+import com.lframework.xingyun.basedata.enums.ProductType;
+import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
+import com.lframework.xingyun.core.utils.SplitNumberUtil;
 import com.lframework.xingyun.sc.bo.purchase.GetPurchaseOrderBo;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
@@ -52,17 +56,21 @@ import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
+import com.lframework.xingyun.sc.entity.PurchaseOrderDetailBundle;
+import com.lframework.xingyun.sc.entity.PurchaseOrderDetailBundleForm;
 import com.lframework.xingyun.sc.entity.PurchaseOrderDetailForm;
 import com.lframework.xingyun.sc.entity.PurchaseOrderForm;
 import com.lframework.xingyun.sc.enums.PurchaseOpLogType;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import com.lframework.xingyun.sc.events.order.impl.ApprovePassPurchaseOrderEvent;
-import com.lframework.xingyun.sc.mappers.PurchaseOrderDetailFormMapper;
-import com.lframework.xingyun.sc.mappers.PurchaseOrderFormMapper;
 import com.lframework.xingyun.sc.mappers.PurchaseOrderMapper;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailBundleFormService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailBundleService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailFormService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
+import com.lframework.xingyun.sc.service.purchase.PurchaseOrderFormService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
@@ -76,7 +84,9 @@ import com.lframework.xingyun.sc.vo.purchase.UpdatePurchaseOrderVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.warm.flow.core.dto.FlowParams;
@@ -122,13 +132,22 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   private InsService insService;
 
   @Autowired
-  private PurchaseOrderFormMapper purchaseOrderFormMapper;
+  private PurchaseOrderFormService purchaseOrderFormService;
 
   @Autowired
-  private PurchaseOrderDetailFormMapper purchaseOrderDetailFormMapper;
+  private PurchaseOrderDetailFormService purchaseOrderDetailFormService;
 
   @Autowired
   private FlowInstanceWrapperService flowInstanceWrapperService;
+
+  @Autowired
+  private ProductBundleService productBundleService;
+
+  @Autowired
+  private PurchaseOrderDetailBundleService purchaseOrderDetailBundleService;
+
+  @Autowired
+  private PurchaseOrderDetailBundleFormService purchaseOrderDetailBundleFormService;
 
   @Override
   public PageResult<PurchaseOrder> query(Integer pageIndex, Integer pageSize,
@@ -222,7 +241,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     order.setStatus(PurchaseOrderStatus.CREATED);
 
     if (config.getPurchaseRequireBpm()) {
-      purchaseOrderFormMapper.insert((PurchaseOrderForm) order);
+      purchaseOrderFormService.save((PurchaseOrderForm) order);
       Instance instance = this.startBpmInstance(config.getPurchaseBpmProcessCode(), order.getId());
       order.setFlowInstanceId(instance.getId());
     } else {
@@ -241,7 +260,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
   @Override
   public void update(UpdatePurchaseOrderVo vo) {
 
-    PurchaseOrder order = vo.getIsForm() ? purchaseOrderFormMapper.selectById(vo.getId())
+    PurchaseOrder order = vo.getIsForm() ? purchaseOrderFormService.getById(vo.getId())
         : getBaseMapper().selectById(vo.getId());
     if (order == null) {
       throw new InputErrorException("订单不存在！");
@@ -262,7 +281,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       Wrapper<PurchaseOrderDetailForm> deleteDetailWrapper = Wrappers.lambdaQuery(
               PurchaseOrderDetailForm.class)
           .eq(PurchaseOrderDetailForm::getOrderId, order.getId());
-      purchaseOrderDetailFormMapper.delete(deleteDetailWrapper);
+      purchaseOrderDetailFormService.remove(deleteDetailWrapper);
     } else {
       Wrapper<PurchaseOrderDetail> deleteDetailWrapper = Wrappers.lambdaQuery(
               PurchaseOrderDetail.class)
@@ -293,8 +312,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
           .eq(PurchaseOrderForm::getId, order.getId())
           .in(PurchaseOrderForm::getStatus, statusList);
 
-      if (purchaseOrderFormMapper.updateAllColumn((PurchaseOrderForm) order, updateOrderWrapper)
-          != 1) {
+      if (purchaseOrderFormService.updateAllColumn((PurchaseOrderForm) order, updateOrderWrapper)) {
         throw new DefaultClientException("订单信息已过期，请刷新重试！");
       }
 
@@ -303,7 +321,7 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
               PurchaseOrderForm.class)
           .set(PurchaseOrderForm::getFlowInstanceId, instance.getId())
           .eq(PurchaseOrderForm::getId, order.getId());
-      purchaseOrderFormMapper.update(updateOrderWrapper);
+      purchaseOrderFormService.update(updateOrderWrapper);
     } else {
       LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
               PurchaseOrder.class)
@@ -365,6 +383,73 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         throw new DefaultClientException("单据没有约定支付，请检查！");
       }
     }
+
+    Wrapper<PurchaseOrderDetail> queryDetailWrapper = Wrappers.lambdaQuery(
+            PurchaseOrderDetail.class)
+        .eq(PurchaseOrderDetail::getOrderId, order.getId())
+        .orderByAsc(PurchaseOrderDetail::getOrderNo);
+    List<PurchaseOrderDetail> details = purchaseOrderDetailService.list(queryDetailWrapper);
+
+    BigDecimal totalNum = BigDecimal.ZERO;
+    BigDecimal giftNum = BigDecimal.ZERO;
+    BigDecimal totalAmount = BigDecimal.ZERO;
+
+    for (PurchaseOrderDetail detail : details) {
+      boolean isGift = detail.getIsGift();
+      totalAmount = NumberUtil.add(totalAmount,
+          NumberUtil.getNumber(NumberUtil.mul(detail.getTaxPrice(), detail.getOrderNum()), 2));
+
+      Product product = productService.findById(detail.getProductId());
+      if (product.getProductType() == ProductType.NORMAL) {
+        if (isGift) {
+          giftNum = NumberUtil.add(giftNum, detail.getOrderNum());
+        } else {
+          totalNum = NumberUtil.add(totalNum, detail.getOrderNum());
+        }
+      } else {
+        Wrapper<PurchaseOrderDetailBundle> queryBundleWrapper = Wrappers.lambdaQuery(
+                PurchaseOrderDetailBundle.class)
+            .eq(PurchaseOrderDetailBundle::getOrderId, order.getId())
+            .eq(PurchaseOrderDetailBundle::getDetailId, detail.getId());
+        List<PurchaseOrderDetailBundle> purchaseOrderDetailBundles = purchaseOrderDetailBundleService.list(
+            queryBundleWrapper);
+        Assert.notEmpty(purchaseOrderDetailBundles);
+
+        for (PurchaseOrderDetailBundle purchaseOrderDetailBundle : purchaseOrderDetailBundles) {
+          PurchaseOrderDetail newDetail = new PurchaseOrderDetail();
+          newDetail.setId(IdUtil.getId());
+          newDetail.setOrderId(order.getId());
+          newDetail.setProductId(purchaseOrderDetailBundle.getProductId());
+          newDetail.setOrderNum(purchaseOrderDetailBundle.getProductOrderNum());
+          newDetail.setTaxPrice(purchaseOrderDetailBundle.getProductTaxPrice());
+          newDetail.setIsGift(detail.getIsGift());
+          newDetail.setTaxRate(purchaseOrderDetailBundle.getProductTaxRate());
+          newDetail.setDescription(detail.getDescription());
+          newDetail.setOrderNo(detail.getOrderNo());
+          newDetail.setTaxAmount(
+              NumberUtil.getNumber(NumberUtil.mul(newDetail.getTaxPrice(), newDetail.getOrderNum()),
+                  2));
+
+          purchaseOrderDetailService.save(newDetail);
+          purchaseOrderDetailService.removeById(detail.getId());
+
+          purchaseOrderDetailBundle.setProductDetailId(newDetail.getId());
+          purchaseOrderDetailBundleService.updateById(purchaseOrderDetailBundle);
+
+          if (isGift) {
+            giftNum = NumberUtil.add(giftNum, newDetail.getOrderNum());
+          } else {
+            totalNum = NumberUtil.add(totalNum, newDetail.getOrderNum());
+          }
+        }
+      }
+    }
+
+    // 这里需要重新统计明细信息，因为明细发生变动了
+    Wrapper<PurchaseOrder> updateWrapper = Wrappers.lambdaUpdate(PurchaseOrder.class)
+        .set(PurchaseOrder::getTotalNum, totalNum).set(PurchaseOrder::getTotalGiftNum, giftNum)
+        .set(PurchaseOrder::getTotalAmount, totalAmount).eq(PurchaseOrder::getId, order.getId());
+    this.update(updateWrapper);
 
     OpLogUtil.setVariable("code", order.getCode());
     OpLogUtil.setExtra(vo);
@@ -458,6 +543,12 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
         .eq(PurchaseOrderDetail::getOrderId, order.getId());
     purchaseOrderDetailService.remove(deleteDetailWrapper);
 
+    // 删除组合商品明细
+    Wrapper<PurchaseOrderDetailBundle> deleteBundleWrapper = Wrappers.lambdaQuery(
+            PurchaseOrderDetailBundle.class)
+        .eq(PurchaseOrderDetailBundle::getOrderId, order.getId());
+    purchaseOrderDetailBundleService.remove(deleteBundleWrapper);
+
     // 删除订单
     Wrapper<PurchaseOrder> deleteWrapper = Wrappers.lambdaQuery(PurchaseOrder.class)
         .eq(PurchaseOrder::getId, order.getId())
@@ -545,7 +636,8 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       }
 
       // 计算含税总金额：采购数量 × 采购价（采购价本身就是含税价）
-      BigDecimal taxAmount = NumberUtil.getNumber(NumberUtil.mul(productVo.getPurchasePrice(), productVo.getPurchaseNum()), 2);
+      BigDecimal taxAmount = NumberUtil.getNumber(
+          NumberUtil.mul(productVo.getPurchasePrice(), productVo.getPurchaseNum()), 2);
       totalAmount = NumberUtil.add(totalAmount, taxAmount);
 
       PurchaseOrderDetail orderDetail = newOrderDetail(isForm);
@@ -555,14 +647,6 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       Product product = productService.findById(productVo.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
-      }
-
-      if (!NumberUtil.isNumberPrecision(productVo.getPurchasePrice(), 6)) {
-        throw new InputErrorException("第" + orderNo + "行商品采购价最多允许6位小数！");
-      }
-
-      if (!NumberUtil.isNumberPrecision(productVo.getPurchaseNum(), 8)) {
-        throw new InputErrorException("第" + orderNo + "行商品采购数量最多允许8位小数！");
       }
 
       orderDetail.setProductId(productVo.getProductId());
@@ -577,11 +661,55 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       orderDetail.setTaxAmount(taxAmount);
 
       if (isForm) {
-        purchaseOrderDetailFormMapper.insert((PurchaseOrderDetailForm) orderDetail);
+        purchaseOrderDetailFormService.save((PurchaseOrderDetailForm) orderDetail);
       } else {
         purchaseOrderDetailService.save(orderDetail);
       }
 
+      // 这里处理组合商品
+      if (product.getProductType() == ProductType.BUNDLE) {
+        if (!NumberUtil.isInteger(productVo.getPurchaseNum())) {
+          throw new InputErrorException("第" + orderNo + "行商品采购数量必须是整数！");
+        }
+        List<ProductBundle> productBundles = productBundleService.getByMainProductId(
+            product.getId());
+        // 构建指标项
+        Map<Object, Number> bundleWeight = new HashMap<>(productBundles.size());
+        for (ProductBundle productBundle : productBundles) {
+          bundleWeight.put(productBundle.getProductId(),
+              NumberUtil.mul(productBundle.getPurchasePrice(), productBundle.getBundleNum()));
+        }
+        Map<Object, Number> splitPriceMap = SplitNumberUtil.split(orderDetail.getTaxPrice(),
+            bundleWeight, 6);
+        List<PurchaseOrderDetailBundle> purchaseOrderDetailBundles = productBundles.stream()
+            .map(productBundle -> {
+              Product bundle = productService.findById(productBundle.getProductId());
+              PurchaseOrderDetailBundle purchaseOrderDetailBundle = newOrderDetailBundle(isForm);
+              purchaseOrderDetailBundle.setId(IdUtil.getId());
+              purchaseOrderDetailBundle.setOrderId(order.getId());
+              purchaseOrderDetailBundle.setDetailId(orderDetail.getId());
+              purchaseOrderDetailBundle.setMainProductId(product.getId());
+              purchaseOrderDetailBundle.setOrderNum(orderDetail.getOrderNum());
+              purchaseOrderDetailBundle.setProductId(productBundle.getProductId());
+              purchaseOrderDetailBundle.setProductOrderNum(
+                  NumberUtil.mul(orderDetail.getOrderNum(), productBundle.getBundleNum()));
+              purchaseOrderDetailBundle.setProductOriPrice(productBundle.getPurchasePrice());
+              // 这里会有尾差
+              purchaseOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
+                  BigDecimal.valueOf(
+                      splitPriceMap.get(productBundle.getProductId()).doubleValue()),
+                  productBundle.getBundleNum()), 6));
+              purchaseOrderDetailBundle.setProductTaxRate(bundle.getTaxRate());
+
+              return purchaseOrderDetailBundle;
+            }).collect(Collectors.toList());
+
+        if (isForm) {
+          purchaseOrderDetailBundleFormService.saveBatch((List) purchaseOrderDetailBundles);
+        } else {
+          purchaseOrderDetailBundleService.saveBatch(purchaseOrderDetailBundles);
+        }
+      }
       orderNo++;
     }
     order.setTotalNum(purchaseNum);
@@ -595,14 +723,14 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
   @Override
   public PageResult<PurchaseProductDto> queryPurchaseByCondition(Integer pageIndex,
-      Integer pageSize, String condition) {
+      Integer pageSize, String condition, Boolean isReturn) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(condition);
+    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(condition, isReturn);
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -683,9 +811,13 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     @Autowired
     private PurchaseOrderService purchaseOrderService;
     @Autowired
-    private PurchaseOrderFormMapper purchaseOrderFormMapper;
+    private PurchaseOrderFormService purchaseOrderFormService;
     @Autowired
-    private PurchaseOrderDetailFormMapper purchaseOrderDetailFormMapper;
+    private PurchaseOrderDetailFormService purchaseOrderDetailFormService;
+    @Autowired
+    private PurchaseOrderDetailBundleFormService purchaseOrderDetailBundleFormService;
+    @Autowired
+    private PurchaseOrderDetailBundleService purchaseOrderDetailBundleService;
     @Autowired
     private PurchaseOrderDetailService purchaseOrderDetailService;
 
@@ -699,11 +831,11 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
     public void businessComplete(ListenerVariable listenerVariable, String businessId,
         String startById) {
       log.info("接收到业务完成事件");
-      PurchaseOrderForm orderForm = purchaseOrderFormMapper.selectById(businessId);
+      PurchaseOrderForm orderForm = purchaseOrderFormService.getById(businessId);
       Wrapper<PurchaseOrderDetailForm> queryWrapper = Wrappers.lambdaQuery(
               PurchaseOrderDetailForm.class)
           .eq(PurchaseOrderDetailForm::getOrderId, orderForm.getId());
-      List<PurchaseOrderDetailForm> detailFormList = purchaseOrderDetailFormMapper.selectList(
+      List<PurchaseOrderDetailForm> detailFormList = purchaseOrderDetailFormService.list(
           queryWrapper);
 
       PurchaseOrder order = new PurchaseOrder();
@@ -719,6 +851,20 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
 
       purchaseOrderDetailService.saveBatch(detailList);
 
+      Wrapper<PurchaseOrderDetailBundleForm> queryDetailBundleWrapper = Wrappers.lambdaQuery(
+              PurchaseOrderDetailBundleForm.class)
+          .eq(PurchaseOrderDetailBundleForm::getOrderId, order.getId());
+      List<PurchaseOrderDetailBundleForm> detailBundleFormList = purchaseOrderDetailBundleFormService.list(
+          queryDetailBundleWrapper);
+      if (!CollectionUtil.isEmpty(detailBundleFormList)) {
+        List<PurchaseOrderDetailBundle> detailBundleList = detailBundleFormList.stream()
+            .map(detailBundleForm -> {
+              PurchaseOrderDetailBundle detailBundle = new PurchaseOrderDetailBundle();
+              BeanUtil.copyProperties(detailBundleForm, detailBundle);
+              return detailBundle;
+            }).collect(Collectors.toList());
+        purchaseOrderDetailBundleService.saveBatch(detailBundleList);
+      }
       // 目前订单是已保存状态
       ApprovePassPurchaseOrderVo approveVo = new ApprovePassPurchaseOrderVo();
       approveVo.setId(order.getId());
@@ -745,6 +891,14 @@ public class PurchaseOrderServiceImpl extends BaseMpServiceImpl<PurchaseOrderMap
       return new PurchaseOrderDetailForm();
     } else {
       return new PurchaseOrderDetail();
+    }
+  }
+
+  private PurchaseOrderDetailBundle newOrderDetailBundle(boolean isForm) {
+    if (isForm) {
+      return new PurchaseOrderDetailBundleForm();
+    } else {
+      return new PurchaseOrderDetailBundle();
     }
   }
 }

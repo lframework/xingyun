@@ -29,6 +29,15 @@ public class ProductBundleVo implements BaseVo, Serializable {
   private Integer bundleNum;
 
   /**
+   * 采购价
+   */
+  @ApiModelProperty(value = "采购价", required = true)
+  @NotNull(message = "采购价不能为空！")
+  @Digits(integer = 10, fraction = 6, message = "采购价最多允许6位小数！")
+  @Positive(message = "采购价必须大于0！")
+  private BigDecimal purchasePrice;
+
+  /**
    * 销售价
    */
   @ApiModelProperty(value = "销售价", required = true)

@@ -141,7 +141,7 @@ public class UpdateProductVo implements BaseVo, Serializable {
    * 采购价
    */
   @ApiModelProperty("采购价")
-  private BigDecimal purchasePrice = BigDecimal.ZERO;
+  private BigDecimal purchasePrice;
 
   /**
    * 销售价

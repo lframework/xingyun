@@ -96,7 +96,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
       @DataPermission(template = "category", alias = "c")
   })
   List<PurchaseProductDto> queryPurchaseByCondition(
-      @Param("condition") String condition);
+      @Param("condition") String condition, @Param("isReturn") Boolean isReturn);
 
   /**
    * 查询可采购商品信息

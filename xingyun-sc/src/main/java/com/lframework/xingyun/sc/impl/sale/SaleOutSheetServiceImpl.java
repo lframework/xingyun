@@ -800,7 +800,7 @@ public class SaleOutSheetServiceImpl extends BaseMpServiceImpl<SaleOutSheetMappe
               NumberUtil.mul(productBundle.getSalePrice(), productBundle.getBundleNum()));
         }
         Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxPrice(),
-            bundleWeight, 2);
+            bundleWeight, 6);
         List<SaleOutSheetDetailBundle> saleOutSheetDetailBundles = productBundles.stream()
             .map(productBundle -> {
               Product bundle = productService.findById(productBundle.getProductId());

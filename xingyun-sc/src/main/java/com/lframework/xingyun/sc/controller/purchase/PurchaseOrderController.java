@@ -352,14 +352,18 @@ public class PurchaseOrderController extends DefaultBaseController {
       "purchase:receive:modify", "purchase:return:add", "purchase:return:modify"})
   @GetMapping("/product/search")
   public InvokeResult<List<PurchaseProductBo>> searchPurchaseProducts(
-      @NotBlank(message = "仓库ID不能为空！") String scId, String condition) {
+      @NotBlank(message = "仓库ID不能为空！") String scId, String condition, Boolean isReturn) {
+
+    if (isReturn == null) {
+      isReturn = false;
+    }
 
     if (StringUtil.isBlank(condition)) {
       return InvokeResultBuilder.success(CollectionUtil.emptyList());
     }
 
     PageResult<PurchaseProductDto> pageResult = purchaseOrderService.queryPurchaseByCondition(
-        getPageIndex(), getPageSize(), condition);
+        getPageIndex(), getPageSize(), condition, isReturn);
     List<PurchaseProductBo> results = CollectionUtil.emptyList();
     List<PurchaseProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {

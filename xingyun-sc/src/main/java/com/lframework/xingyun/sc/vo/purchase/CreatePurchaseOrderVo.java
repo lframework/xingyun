@@ -87,12 +87,20 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + orderNo + "行商品采购数量必须大于0！");
       }
 
+      if (!NumberUtil.isNumberPrecision(product.getPurchaseNum(), 8)) {
+        throw new InputErrorException("第" + orderNo + "行商品采购数量最多允许8位小数！");
+      }
+
       if (product.getPurchasePrice() == null) {
         throw new InputErrorException("第" + orderNo + "行商品采购价不能为空！");
       }
 
       if (NumberUtil.lt(product.getPurchasePrice(), BigDecimal.ZERO)) {
         throw new InputErrorException("第" + orderNo + "行商品采购价不允许小于0！");
+      }
+
+      if (!NumberUtil.isNumberPrecision(product.getPurchasePrice(), 6)) {
+        throw new InputErrorException("第" + orderNo + "行商品采购价最多允许6位小数！");
       }
 
       orderNo++;

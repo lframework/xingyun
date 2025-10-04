@@ -590,7 +590,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
               NumberUtil.mul(productBundle.getSalePrice(), productBundle.getBundleNum()));
         }
         Map<Object, Number> splitPriceMap = SplitNumberUtil.split(orderDetail.getTaxPrice(),
-            bundleWeight, 2);
+            bundleWeight, 6);
         List<SaleOrderDetailBundle> saleOrderDetailBundles = productBundles.stream()
             .map(productBundle -> {
               Product bundle = productService.findById(productBundle.getProductId());

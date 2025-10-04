@@ -706,7 +706,7 @@ public class RetailOutSheetServiceImpl extends
               NumberUtil.mul(productBundle.getRetailPrice(), productBundle.getBundleNum()));
         }
         Map<Object, Number> splitPriceMap = SplitNumberUtil.split(detail.getTaxPrice(),
-            bundleWeight, 2);
+            bundleWeight, 6);
         List<RetailOutSheetDetailBundle> retailOutSheetDetailBundles = productBundles.stream()
             .map(productBundle -> {
               Product bundle = productService.findById(productBundle.getProductId());

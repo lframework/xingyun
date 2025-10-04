@@ -28,6 +28,12 @@ public class ProductBundleBo extends BaseBo<ProductBundle> {
   private Integer bundleNum;
 
   /**
+   * 采购价
+   */
+  @ApiModelProperty("采购价")
+  private BigDecimal purchasePrice;
+
+  /**
    * 销售价
    */
   @ApiModelProperty("销售价")

@@ -195,3 +195,57 @@ ALTER TABLE `tbl_take_stock_plan_detail`
 
 ALTER TABLE `tbl_take_stock_sheet_detail`
     MODIFY COLUMN `take_num` decimal(16, 8) NOT NULL COMMENT '盘点数量' AFTER `product_id`;
+
+ALTER TABLE `base_data_product_bundle`
+    ADD COLUMN `purchase_price` decimal(16, 6) NOT NULL COMMENT '采购价' AFTER `bundle_num`;
+
+CREATE TABLE `tbl_purchase_order_detail_bundle` (
+    `id` varchar(32) NOT NULL COMMENT 'ID',
+    `order_id` varchar(32) NOT NULL COMMENT '采购单ID',
+    `detail_id` varchar(32) NOT NULL COMMENT '明细ID',
+    `main_product_id` varchar(32) NOT NULL COMMENT '组合商品ID',
+    `order_num` decimal(16,8) NOT NULL DEFAULT '0.00000000' COMMENT '组合商品数量',
+    `product_id` varchar(32) NOT NULL COMMENT '单品ID',
+    `product_order_num` decimal(16,8) NOT NULL COMMENT '单品数量',
+    `product_ori_price` decimal(16,6) NOT NULL COMMENT '单品原价',
+    `product_tax_price` decimal(16,6) NOT NULL COMMENT '单品含税价格',
+    `product_tax_rate` varchar(16) NOT NULL COMMENT '单品税率',
+    `product_detail_id` varchar(32) DEFAULT NULL COMMENT '单品明细ID',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE KEY `order_id` (`order_id`,`product_detail_id`) USING BTREE,
+    KEY `detail_id` (`detail_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='采购单组合商品明细';
+
+CREATE TABLE `tbl_purchase_order_detail_bundle_form` (
+    `id` varchar(32) NOT NULL COMMENT 'ID',
+    `order_id` varchar(32) NOT NULL COMMENT '采购单ID',
+    `detail_id` varchar(32) NOT NULL COMMENT '明细ID',
+    `main_product_id` varchar(32) NOT NULL COMMENT '组合商品ID',
+    `order_num` decimal(16,8) NOT NULL DEFAULT '0.00000000' COMMENT '组合商品数量',
+    `product_id` varchar(32) NOT NULL COMMENT '单品ID',
+    `product_order_num` decimal(16,8) NOT NULL COMMENT '单品数量',
+    `product_ori_price` decimal(16,6) NOT NULL COMMENT '单品原价',
+    `product_tax_price` decimal(16,6) NOT NULL COMMENT '单品含税价格',
+    `product_tax_rate` varchar(16) NOT NULL COMMENT '单品税率',
+    `product_detail_id` varchar(32) DEFAULT NULL COMMENT '单品明细ID',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE KEY `order_id` (`order_id`,`product_detail_id`) USING BTREE,
+    KEY `detail_id` (`detail_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='采购单组合商品明细';
+
+CREATE TABLE `tbl_receive_sheet_detail_bundle` (
+    `id` varchar(32) NOT NULL COMMENT 'ID',
+    `sheet_id` varchar(32) NOT NULL COMMENT '收货单ID',
+    `detail_id` varchar(32) NOT NULL COMMENT '明细ID',
+    `main_product_id` varchar(32) NOT NULL COMMENT '组合商品ID',
+    `order_num` decimal(16,8) NOT NULL DEFAULT '0.00000000' COMMENT '组合商品数量',
+    `product_id` varchar(32) NOT NULL COMMENT '单品ID',
+    `product_order_num` decimal(16,8) NOT NULL COMMENT '单品数量',
+    `product_ori_price` decimal(16,6) NOT NULL COMMENT '单品原价',
+    `product_tax_price` decimal(16,6) NOT NULL COMMENT '单品含税价格',
+    `product_tax_rate` varchar(16) NOT NULL COMMENT '单品税率',
+    `product_detail_id` varchar(32) DEFAULT NULL COMMENT '单品明细ID',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE KEY `sheet_id` (`sheet_id`,`product_detail_id`) USING BTREE,
+    KEY `detail_id` (`detail_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='采购收货单组合商品明细';

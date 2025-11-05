@@ -720,7 +720,7 @@ public class RetailOutSheetServiceImpl extends
               // 这里会有尾差
               retailOutSheetDetailBundle.setProductTaxPrice(NumberUtil.getNumber(
                   NumberUtil.div(retailOutSheetDetailBundle.getProductTaxAmount(),
-                      productBundle.getBundleNum()), 6));
+                      retailOutSheetDetailBundle.getProductOrderNum()), 6));
               retailOutSheetDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 
               return retailOutSheetDetailBundle;

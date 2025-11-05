@@ -747,7 +747,7 @@ public class ReceiveSheetServiceImpl extends
               // 这里会有尾差
               receiveSheetDetailBundle.setProductTaxPrice(NumberUtil.getNumber(
                   NumberUtil.div(receiveSheetDetailBundle.getProductTaxAmount(),
-                      productBundle.getBundleNum()), 6));
+                      receiveSheetDetailBundle.getProductOrderNum()), 6));
               receiveSheetDetailBundle.setProductTaxRate(bundle.getTaxRate());
 
               return receiveSheetDetailBundle;

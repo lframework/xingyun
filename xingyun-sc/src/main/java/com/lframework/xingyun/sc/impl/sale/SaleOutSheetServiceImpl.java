@@ -814,7 +814,7 @@ public class SaleOutSheetServiceImpl extends
               // 这里会有尾差
               saleOutSheetDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
                   saleOutSheetDetailBundle.getProductTaxAmount(),
-                  productBundle.getBundleNum()), 6));
+                  saleOutSheetDetailBundle.getProductOrderNum()), 6));
               saleOutSheetDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 
               return saleOutSheetDetailBundle;

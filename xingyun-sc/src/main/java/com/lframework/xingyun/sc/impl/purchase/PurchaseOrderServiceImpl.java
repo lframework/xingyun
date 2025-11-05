@@ -686,7 +686,7 @@ public class PurchaseOrderServiceImpl extends
               // 这里会有尾差
               purchaseOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(
                   NumberUtil.div(purchaseOrderDetailBundle.getProductTaxAmount(),
-                      productBundle.getBundleNum()), 6));
+                      purchaseOrderDetailBundle.getProductOrderNum()), 6));
               purchaseOrderDetailBundle.setProductTaxRate(bundle.getTaxRate());
 
               return purchaseOrderDetailBundle;

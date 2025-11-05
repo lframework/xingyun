@@ -611,7 +611,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
               // 这里会有尾差
               saleOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(NumberUtil.div(
                   saleOrderDetailBundle.getProductTaxAmount(),
-                  productBundle.getBundleNum()), 6));
+                  saleOrderDetailBundle.getProductOrderNum()), 6));
               saleOrderDetailBundle.setProductTaxRate(bundle.getSaleTaxRate());
 
               return saleOrderDetailBundle;

@@ -86,12 +86,11 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
     if (config.getAllowChangeNum()) {
       int orderNo = 1;
       for (ProductVo product : this.products) {
-
         if (product.getTakeNum() == null) {
           throw new DefaultClientException("第" + orderNo + "行商品修改后盘点数量不能为空！");
         }
 
-        if (NumberUtil.le(product.getTakeNum(), BigDecimal.ZERO)) {
+        if (NumberUtil.lt(product.getTakeNum(), BigDecimal.ZERO)) {
           throw new DefaultClientException("第" + orderNo + "行商品修改后盘点数量不能小于0！");
         }
 

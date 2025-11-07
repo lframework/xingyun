@@ -23,10 +23,10 @@ public class QueryTakeStockSheetVo extends SortPageVo implements BaseVo, Seriali
   private String code;
 
   /**
-   * 盘点任务ID
+   * 关联盘点任务号
    */
-  @ApiModelProperty("盘点任务ID")
-  private String planId;
+  @ApiModelProperty("关联盘点任务号")
+  private String planCode;
 
   /**
    * 预先盘点单ID

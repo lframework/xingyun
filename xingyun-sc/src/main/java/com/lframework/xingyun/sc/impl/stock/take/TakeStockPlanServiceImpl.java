@@ -279,6 +279,11 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
 
       takeStockPlanDetailService.update(updateDetailWrapper);
     }
+
+    TakeStockConfig config = takeStockConfigService.get();
+    if (config.getAutoChangeStock()) {
+      takeStockPlanDetailService.adjustStockNum(data.getId());
+    }
   }
 
   @OpLog(type = TakeStockOpLogType.class, name = "差异处理，盘点任务ID：{}", params = {"#id"})
@@ -324,11 +329,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
         // 如果允许修改盘点数量
         detail.setTakeNum(productVo.getTakeNum());
       } else {
-        // 如果允许自动调整，那么盘点数量=盘点单的盘点数量 - 进项数量 + 出项数量，否则就等于盘点单的盘点数量
-        detail.setTakeNum(config.getAutoChangeStock() ?
-            NumberUtil.add(NumberUtil.sub(detail.getOriTakeNum(), detail.getTotalInNum()),
-                detail.getTotalOutNum()) :
-            detail.getOriTakeNum());
+        detail.setTakeNum(detail.getOriTakeNum());
       }
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR

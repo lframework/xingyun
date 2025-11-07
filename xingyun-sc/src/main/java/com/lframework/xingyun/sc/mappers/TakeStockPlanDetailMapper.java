@@ -63,4 +63,10 @@ public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetai
    */
   void addTotalOutNum(@Param("scId") String scId, @Param("productId") String productId,
       @Param("num") BigDecimal num);
+
+  /**
+   * 根据盘点任务ID调整库存数量
+   * @param planId
+   */
+  void adjustStockNum(@Param("planId") String planId);
 }

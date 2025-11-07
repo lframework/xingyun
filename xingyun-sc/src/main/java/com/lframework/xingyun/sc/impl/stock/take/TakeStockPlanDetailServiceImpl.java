@@ -80,4 +80,10 @@ public class TakeStockPlanDetailServiceImpl extends
 
     getBaseMapper().updateOriTakeNum(planId, productId, num);
   }
+
+  @Transactional(rollbackFor = Exception.class)
+  @Override
+  public void adjustStockNum(String planId) {
+    getBaseMapper().adjustStockNum(planId);
+  }
 }

@@ -171,7 +171,7 @@ public class RetailOutSheetExportModel extends BaseBo<RetailOutSheet> implements
     this.setScCode(sc.getCode());
     this.setScName(sc.getName());
     this.setMemberCode(member == null ? null : member.getCode());
-    this.setMemberName(member.getName());
+    this.setMemberName(member == null ? null : member.getName());
     this.setSalerName(saler == null ? null : saler.getName());
     this.setTotalAmount(dto.getTotalAmount());
     this.setReceiveNum(dto.getTotalNum());

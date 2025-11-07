@@ -41,4 +41,10 @@ public interface TakeStockPlanDetailService extends BaseMpService<TakeStockPlanD
    * @param num
    */
   void updateOriTakeNum(String planId, String productId, BigDecimal num);
+
+  /**
+   * 根据盘点任务ID调整库存数量
+   * @param planId
+   */
+  void adjustStockNum(String planId);
 }

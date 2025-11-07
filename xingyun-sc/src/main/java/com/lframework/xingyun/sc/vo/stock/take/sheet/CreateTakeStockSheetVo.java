@@ -51,8 +51,8 @@ public class CreateTakeStockSheetVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + orderNo + "行商品盘点数量不能为空！");
       }
 
-      if (NumberUtil.le(product.getTakeNum(), 0)) {
-        throw new InputErrorException("第" + orderNo + "行商品盘点数量必须大于0！");
+      if (NumberUtil.lt(product.getTakeNum(), 0)) {
+        throw new InputErrorException("第" + orderNo + "行商品盘点数量不允许小于0！");
       }
 
       if (!NumberUtil.isNumberPrecision(product.getTakeNum(), 8)) {

@@ -1,5 +1,6 @@
 package com.lframework.xingyun.basedata.bo.product.info;
 
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.convert.EnumConvert;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
@@ -109,8 +110,10 @@ public class ProductSelectorBo extends BaseBo<Product> {
     ProductCategory productCategory = productCategoryService.findById(dto.getCategoryId());
     this.categoryName = productCategory.getName();
 
-    ProductBrandService productBrandService = ApplicationUtil.getBean(ProductBrandService.class);
-    ProductBrand brand = productBrandService.findById(dto.getBrandId());
-    this.brandName = brand.getName();
+    if (StringUtil.isNotBlank(dto.getBrandId())) {
+      ProductBrandService productBrandService = ApplicationUtil.getBean(ProductBrandService.class);
+      ProductBrand brand = productBrandService.findById(dto.getBrandId());
+      this.brandName = brand.getName();
+    }
   }
 }

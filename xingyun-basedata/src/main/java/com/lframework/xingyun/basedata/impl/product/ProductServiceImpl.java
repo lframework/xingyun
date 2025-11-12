@@ -185,9 +185,11 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode());
-    if (getBaseMapper().selectCount(checkWrapper) > 0) {
-      throw new DefaultClientException("商品SKU编号重复，请重新输入！");
+    if (StringUtil.isNotBlank(vo.getSkuCode())) {
+      checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode());
+      if (getBaseMapper().selectCount(checkWrapper) > 0) {
+        throw new DefaultClientException("商品SKU编号重复，请重新输入！");
+      }
     }
 
     Product data = new Product();
@@ -197,12 +199,16 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     if (StringUtil.isNotBlank(vo.getShortName())) {
       data.setShortName(vo.getShortName());
     }
-    data.setSkuCode(vo.getSkuCode());
+    if (StringUtil.isNotBlank(vo.getSkuCode())) {
+      data.setSkuCode(vo.getSkuCode());
+    }
     if (StringUtil.isNotBlank(vo.getExternalCode())) {
       data.setExternalCode(vo.getExternalCode());
     }
 
-    data.setBrandId(vo.getBrandId());
+    if (StringUtil.isNotBlank(vo.getBrandId())) {
+      data.setBrandId(vo.getBrandId());
+    }
     data.setCategoryId(vo.getCategoryId());
 
     if (StringUtil.isNotBlank(vo.getSpec())) {
@@ -214,8 +220,8 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     }
 
     data.setProductType(EnumUtil.getByCode(ProductType.class, vo.getProductType()));
-    data.setTaxRate(vo.getTaxRate());
-    data.setSaleTaxRate(vo.getSaleTaxRate());
+    data.setTaxRate(vo.getTaxRate() == null ? BigDecimal.ZERO : vo.getTaxRate());
+    data.setSaleTaxRate(vo.getSaleTaxRate() == null ? BigDecimal.ZERO : vo.getSaleTaxRate());
     data.setWeight(vo.getWeight());
     data.setVolume(vo.getVolume());
 
@@ -372,10 +378,12 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode())
-        .ne(Product::getId, vo.getId());
-    if (getBaseMapper().selectCount(checkWrapper) > 0) {
-      throw new DefaultClientException("商品SKU编号重复，请重新输入！");
+    if (StringUtil.isNotBlank(vo.getSkuCode())) {
+      checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode())
+          .ne(Product::getId, vo.getId());
+      if (getBaseMapper().selectCount(checkWrapper) > 0) {
+        throw new DefaultClientException("商品SKU编号重复，请重新输入！");
+      }
     }
 
     LambdaUpdateWrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class)
@@ -390,8 +398,8 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
         .set(Product::getCategoryId,
             StringUtil.isBlank(vo.getCategoryId()) ? null : vo.getCategoryId())
         .set(Product::getBrandId, StringUtil.isBlank(vo.getBrandId()) ? null : vo.getBrandId())
-        .set(Product::getTaxRate, vo.getTaxRate())
-        .set(Product::getSaleTaxRate, vo.getSaleTaxRate())
+        .set(Product::getTaxRate, vo.getTaxRate() == null ? BigDecimal.ZERO : vo.getTaxRate())
+        .set(Product::getSaleTaxRate, vo.getSaleTaxRate() == null ? BigDecimal.ZERO : vo.getSaleTaxRate())
         .set(Product::getWeight, vo.getWeight())
         .set(Product::getVolume, vo.getVolume())
         .eq(Product::getId, vo.getId());

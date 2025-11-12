@@ -39,7 +39,6 @@ public class ProductImportModel implements ExcelModel {
   /**
    * SKU编号
    */
-  @ExcelRequired
   @ExcelProperty("SKU编号")
   private String skuCode;
 
@@ -71,21 +70,18 @@ public class ProductImportModel implements ExcelModel {
   /**
    * 品牌编号
    */
-  @ExcelRequired
   @ExcelProperty("品牌编号")
   private String brandCode;
 
   /**
    * 进项税率（%）
    */
-  @ExcelRequired
   @ExcelProperty("进项税率（%）")
   private BigDecimal taxRate;
 
   /**
    * 销项税率（%）
    */
-  @ExcelRequired
   @ExcelProperty("销项税率（%）")
   private BigDecimal saleTaxRate;
 

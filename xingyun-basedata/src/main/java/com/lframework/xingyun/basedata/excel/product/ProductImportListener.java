@@ -25,6 +25,7 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.purchase.CreateProductPurchaseVo;
 import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
 import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -66,25 +67,13 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
         .eq(Product::getCode, data.getCode());
     Product product = productService.getOne(queryWrapper);
 
-    if (StringUtil.isBlank(data.getSkuCode())) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”不能为空");
-    }
-
-    LambdaQueryWrapper<Product> checkSkuCodeWrapper = Wrappers.lambdaQuery(Product.class)
-        .eq(Product::getSkuCode, data.getSkuCode());
-    if (product != null) {
-      checkSkuCodeWrapper.ne(Product::getId, product.getId());
-      if (product.getProductType() != ProductType.NORMAL) {
+    if (!StringUtil.isBlank(data.getSkuCode())) {
+      LambdaQueryWrapper<Product> checkSkuCodeWrapper = Wrappers.lambdaQuery(Product.class)
+          .eq(Product::getSkuCode, data.getSkuCode());
+      if (productService.count(checkSkuCodeWrapper) > 0) {
         throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行商品类型必须为"
-                + ProductType.NORMAL.getDesc() + "，请检查");
+            "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”重复，请检查");
       }
-    }
-
-    if (productService.count(checkSkuCodeWrapper) > 0) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”重复，请检查");
     }
 
     if (StringUtil.isBlank(data.getCategoryCode())) {
@@ -102,51 +91,43 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
           "第" + context.readRowHolder().getRowIndex() + "行“分类编号”不存在，请检查");
     }
 
-    if (StringUtil.isBlank(data.getBrandCode())) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“品牌编号”不能为空");
-    }
     data.setCategoryId(productCategory.getId());
 
-    ProductBrandService productBrandService = ApplicationUtil.getBean(
-        ProductBrandService.class);
-    Wrapper<ProductBrand> queryProductBrandWrapper = Wrappers.lambdaQuery(
-        ProductBrand.class).eq(ProductBrand::getCode, data.getBrandCode());
-    ProductBrand productBrand = productBrandService.getOne(queryProductBrandWrapper);
-    if (productBrand == null) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“品牌编号”不存在，请检查");
-    }
-    data.setBrandId(productBrand.getId());
-
-    if (data.getTaxRate() == null) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”不能为空");
+    if (!StringUtil.isBlank(data.getBrandCode())) {
+      ProductBrandService productBrandService = ApplicationUtil.getBean(
+          ProductBrandService.class);
+      Wrapper<ProductBrand> queryProductBrandWrapper = Wrappers.lambdaQuery(
+          ProductBrand.class).eq(ProductBrand::getCode, data.getBrandCode());
+      ProductBrand productBrand = productBrandService.getOne(queryProductBrandWrapper);
+      if (productBrand == null) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“品牌编号”不存在，请检查");
+      }
+      data.setBrandId(productBrand.getId());
     }
 
-    if (NumberUtil.lt(data.getTaxRate(), 0)) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”不允许小于0");
+    if (data.getTaxRate() != null) {
+      if (NumberUtil.lt(data.getTaxRate(), 0)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”不允许小于0");
+      }
+
+      if (!NumberUtil.isNumberPrecision(data.getTaxRate(), 2)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”最多允许2位小数");
+      }
     }
 
-    if (!NumberUtil.isNumberPrecision(data.getTaxRate(), 2)) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“进项税率（%）”最多允许2位小数");
-    }
+    if (data.getSaleTaxRate() != null) {
+      if (NumberUtil.lt(data.getSaleTaxRate(), 0)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”不允许小于0");
+      }
 
-    if (data.getSaleTaxRate() == null) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”不能为空");
-    }
-
-    if (NumberUtil.lt(data.getSaleTaxRate(), 0)) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”不允许小于0");
-    }
-
-    if (!NumberUtil.isNumberPrecision(data.getSaleTaxRate(), 2)) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”最多允许2位小数");
+      if (!NumberUtil.isNumberPrecision(data.getSaleTaxRate(), 2)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“销项税率（%）”最多允许2位小数");
+      }
     }
 
     if (data.getPurchasePrice() == null) {
@@ -201,10 +182,12 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
     for (int i = 0; i < datas.size(); i++) {
       ProductImportModel data = datas.get(i);
 
-      Wrapper<Product> checkSkuCodeWrapper = Wrappers.lambdaQuery(Product.class)
-          .eq(Product::getSkuCode, data.getSkuCode()).ne(Product::getCode, data.getCode());
-      if (productService.count(checkSkuCodeWrapper) > 0) {
-        throw new DefaultClientException("第" + (i + 1) + "行“商品SKU编号”重复，请重新输入");
+      if (StringUtil.isNotBlank(data.getSkuCode())) {
+        Wrapper<Product> checkSkuCodeWrapper = Wrappers.lambdaQuery(Product.class)
+            .eq(Product::getSkuCode, data.getSkuCode());
+        if (productService.count(checkSkuCodeWrapper) > 0) {
+          throw new DefaultClientException("第" + (i + 1) + "行“商品SKU编号”重复，请重新输入");
+        }
       }
 
       Product record = new Product();
@@ -216,16 +199,14 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       if (StringUtil.isNotBlank(data.getShortName())) {
         record.setShortName(data.getShortName());
       }
-      record.setSkuCode(data.getSkuCode());
+      if (StringUtil.isNotBlank(data.getSkuCode())) {
+        record.setSkuCode(data.getSkuCode());
+      }
       record.setExternalCode(data.getExternalCode());
       record.setCategoryId(data.getCategoryId());
       record.setBrandId(data.getBrandId());
-      if (data.getTaxRate() != null) {
-        record.setTaxRate(data.getTaxRate());
-      }
-      if (data.getSaleTaxRate() != null) {
-        record.setSaleTaxRate(data.getSaleTaxRate());
-      }
+      record.setTaxRate(data.getTaxRate() == null ? BigDecimal.ZERO : data.getTaxRate());
+      record.setSaleTaxRate(data.getSaleTaxRate() == null ? BigDecimal.ZERO : data.getSaleTaxRate());
       record.setSpec(data.getSpec());
       record.setUnit(data.getUnit());
       record.setProductType(ProductType.NORMAL);

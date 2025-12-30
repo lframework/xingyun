@@ -37,6 +37,11 @@ public class Product extends BaseEntity implements BaseDto {
   private String code;
 
   /**
+   * 是否一品多码
+   */
+  private Boolean multiCode;
+
+  /**
    * 名称
    */
   private String name;
@@ -45,16 +50,6 @@ public class Product extends BaseEntity implements BaseDto {
    * 简称
    */
   private String shortName;
-
-  /**
-   * SKU
-   */
-  private String skuCode;
-
-  /**
-   * 简码
-   */
-  private String externalCode;
 
   /**
    * 分类ID

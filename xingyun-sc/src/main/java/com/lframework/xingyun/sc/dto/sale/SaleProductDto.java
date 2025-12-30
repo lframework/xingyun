@@ -46,16 +46,6 @@ public class SaleProductDto implements BaseDto, Serializable {
   private String brandName;
 
   /**
-   * SKU
-   */
-  private String skuCode;
-
-  /**
-   * 简码
-   */
-  private String externalCode;
-
-  /**
    * 规格
    */
   private String spec;

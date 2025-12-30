@@ -199,18 +199,6 @@ public class PrintReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
     private String productName;
 
     /**
-     * SKU编号
-     */
-    @ApiModelProperty("SKU编号")
-    private String skuCode;
-
-    /**
-     * 简码
-     */
-    @ApiModelProperty("简码")
-    private String externalCode;
-
-    /**
      * 收货数量
      */
     @ApiModelProperty("收货数量")
@@ -253,8 +241,6 @@ public class PrintReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
 
       this.productCode = product.getCode();
       this.productName = product.getName();
-      this.skuCode = product.getSkuCode();
-      this.externalCode = product.getExternalCode();
     }
   }
 }

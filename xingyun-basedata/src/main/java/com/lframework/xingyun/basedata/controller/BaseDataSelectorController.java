@@ -6,12 +6,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.utils.PageResultUtil;
-import com.lframework.starter.web.core.components.validation.IsEnum;
-import com.lframework.starter.web.core.controller.DefaultBaseController;
 import com.lframework.starter.web.core.components.resp.InvokeResult;
 import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
+import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.components.validation.IsEnum;
+import com.lframework.starter.web.core.controller.DefaultBaseController;
+import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.address.AddressSelectorBo;
 import com.lframework.xingyun.basedata.bo.customer.CustomerSelectorBo;
 import com.lframework.xingyun.basedata.bo.logistics.company.LogisticsCompanySelectorBo;
@@ -21,8 +21,10 @@ import com.lframework.xingyun.basedata.bo.product.brand.ProductBrandSelectorBo;
 import com.lframework.xingyun.basedata.bo.product.brand.ProductCategorySelectorBo;
 import com.lframework.xingyun.basedata.bo.product.info.ProductSelectorBo;
 import com.lframework.xingyun.basedata.bo.shop.ShopSelectorBo;
+import com.lframework.xingyun.basedata.bo.stockcell.StockCellSelectorBo;
 import com.lframework.xingyun.basedata.bo.storecenter.StoreCenterSelectorBo;
 import com.lframework.xingyun.basedata.bo.supplier.SupplierSelectorBo;
+import com.lframework.xingyun.basedata.dto.stockcell.StockCellDto;
 import com.lframework.xingyun.basedata.entity.Address;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.LogisticsCompany;
@@ -45,6 +47,7 @@ import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
+import com.lframework.xingyun.basedata.service.stockcell.StockCellService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.basedata.vo.address.AddressSelectorVo;
@@ -56,6 +59,7 @@ import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandSelecto
 import com.lframework.xingyun.basedata.vo.product.category.QueryProductCategorySelectorVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductSelectorVo;
 import com.lframework.xingyun.basedata.vo.shop.ShopSelectorVo;
+import com.lframework.xingyun.basedata.vo.stockcell.QueryStockCellSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierSelectorVo;
 import io.swagger.annotations.Api;
@@ -96,6 +100,9 @@ public class BaseDataSelectorController extends DefaultBaseController {
 
   @Autowired
   private StoreCenterService storeCenterService;
+
+  @Autowired
+  private StockCellService stockCellService;
 
   @Autowired
   private SupplierService supplierService;
@@ -310,6 +317,46 @@ public class BaseDataSelectorController extends DefaultBaseController {
         .map(t -> storeCenterService.findById(t))
         .filter(Objects::nonNull).collect(Collectors.toList());
     List<StoreCenterSelectorBo> results = datas.stream().map(StoreCenterSelectorBo::new).collect(
+        Collectors.toList());
+    return InvokeResultBuilder.success(results);
+  }
+
+  /**
+   * 仓位
+   */
+  @ApiOperation("仓位")
+  @GetMapping("/stock-cell")
+  public InvokeResult<PageResult<StockCellSelectorBo>> selector(
+      @Valid QueryStockCellSelectorVo vo) {
+
+    PageResult<StockCellDto> pageResult = stockCellService.selector(getPageIndex(vo),
+        getPageSize(vo), vo);
+    List<StockCellDto> datas = pageResult.getDatas();
+    List<StockCellSelectorBo> results = null;
+
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(StockCellSelectorBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 加载仓位
+   */
+  @ApiOperation("加载仓位")
+  @PostMapping("/stock-cell/load")
+  public InvokeResult<List<StockCellSelectorBo>> loadStockCell(
+      @RequestBody(required = false) List<String> ids) {
+
+    if (CollectionUtil.isEmpty(ids)) {
+      return InvokeResultBuilder.success(CollectionUtil.emptyList());
+    }
+
+    List<StockCellDto> datas = ids.stream().filter(StringUtil::isNotBlank)
+        .map(t -> stockCellService.findById(t))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    List<StockCellSelectorBo> results = datas.stream().map(StockCellSelectorBo::new).collect(
         Collectors.toList());
     return InvokeResultBuilder.success(results);
   }

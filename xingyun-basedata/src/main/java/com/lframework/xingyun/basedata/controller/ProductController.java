@@ -14,6 +14,7 @@ import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.excel.product.ProductImportListener;
 import com.lframework.xingyun.basedata.excel.product.ProductImportModel;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
+import com.lframework.xingyun.basedata.service.product.ProductCodeService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
@@ -60,6 +61,9 @@ public class ProductController extends DefaultBaseController {
   @Autowired
   private ProductPropertyRelationService productPropertyRelationService;
 
+  @Autowired
+  private ProductCodeService productCodeService;
+
   /**
    * 商品列表
    */
@@ -80,6 +84,21 @@ public class ProductController extends DefaultBaseController {
     }
 
     return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
+
+  /**
+   * 根据商品编号查询商品ID
+   */
+  @ApiOperation(value = "根据商品编号查询商品ID", notes = "返回商品ID，如果商品不存在则返回null")
+  @ApiImplicitParam(value = "商品编号", name = "code", paramType = "query", required = true)
+  @HasPermission({"base-data:product:info:query"})
+  @GetMapping("/id/code")
+  public InvokeResult<String> getIdByCode(
+      @NotBlank(message = "商品编号不能为空！") String code) {
+
+    Product product = productService.findByCode(code);
+
+    return InvokeResultBuilder.success(product == null ? null : product.getId());
   }
 
   /**
@@ -128,6 +147,8 @@ public class ProductController extends DefaultBaseController {
 
     productBundleService.cleanCacheByKey(vo.getId());
 
+    productCodeService.cleanCacheByKey(vo.getId());
+
     return InvokeResultBuilder.success();
   }
 
@@ -147,6 +168,8 @@ public class ProductController extends DefaultBaseController {
     productPropertyRelationService.cleanCacheByKey(id);
 
     productBundleService.cleanCacheByKey(id);
+
+    productCodeService.cleanCacheByKey(id);
 
     return InvokeResultBuilder.success();
   }

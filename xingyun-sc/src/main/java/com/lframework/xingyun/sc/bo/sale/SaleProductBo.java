@@ -50,18 +50,6 @@ public class SaleProductBo extends BaseBo<SaleProductDto> {
     private Boolean multiSaleProp;
 
     /**
-     * SKU
-     */
-    @ApiModelProperty("SKU")
-    private String skuCode;
-
-    /**
-     * 简码
-     */
-    @ApiModelProperty("简码")
-    private String externalCode;
-
-    /**
      * 规格
      */
     @ApiModelProperty("规格")

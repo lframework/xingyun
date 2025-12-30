@@ -51,7 +51,7 @@
                     AND gsl.sc_id = #{vo.scId}
                 </if>
                 <if test="vo.productCode != null and vo.productCode != ''">
-                    AND g.code = #{vo.productCode}
+                    AND g.id IN (SELECT product_id FROM base_data_product_code WHERE code = #{vo.productCode})
                 </if>
                 <if test="vo.productName != null and vo.productName != ''">
                     AND g.name LIKE CONCAT('%', #{vo.productName}, '%')

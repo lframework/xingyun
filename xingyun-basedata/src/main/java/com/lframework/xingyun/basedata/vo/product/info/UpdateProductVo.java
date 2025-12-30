@@ -36,6 +36,12 @@ public class UpdateProductVo implements BaseVo, Serializable {
   private String code;
 
   /**
+   * 扩展编号
+   */
+  @ApiModelProperty("扩展编号")
+  private List<String> multiCodes;
+
+  /**
    * 名称
    */
   @ApiModelProperty(value = "名称", required = true)
@@ -47,18 +53,6 @@ public class UpdateProductVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "简称")
   private String shortName;
-
-  /**
-   * 商品SKU编号
-   */
-  @ApiModelProperty(value = "商品SKU编号")
-  private String skuCode;
-
-  /**
-   * 简码
-   */
-  @ApiModelProperty("简码")
-  private String externalCode;
 
   /**
    * 分类ID

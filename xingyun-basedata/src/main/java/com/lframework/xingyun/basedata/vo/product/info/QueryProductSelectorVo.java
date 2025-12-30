@@ -27,12 +27,6 @@ public class QueryProductSelectorVo extends PageVo implements BaseVo, Serializab
   private String name;
 
   /**
-   * SKU
-   */
-  @ApiModelProperty("SKU")
-  private String skuCode;
-
-  /**
    * 简称
    */
   @ApiModelProperty("简称")

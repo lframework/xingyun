@@ -5,6 +5,7 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.lframework.starter.web.core.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.core.components.excel.ExcelModel;
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -17,11 +18,23 @@ public class ProductImportModel implements ExcelModel {
   private String id;
 
   /**
+   * 多个扩展编号
+   */
+  @ExcelIgnore
+  private List<String> multiCodes;
+
+  /**
    * 编号
    */
   @ExcelRequired
   @ExcelProperty("编号")
   private String code;
+
+  /**
+   * 扩展编号
+   */
+  @ExcelProperty("扩展编号")
+  private String multiCode;
 
   /**
    * 名称
@@ -35,18 +48,6 @@ public class ProductImportModel implements ExcelModel {
    */
   @ExcelProperty("简称")
   private String shortName;
-
-  /**
-   * SKU编号
-   */
-  @ExcelProperty("SKU编号")
-  private String skuCode;
-
-  /**
-   * 简码
-   */
-  @ExcelProperty("简码")
-  private String externalCode;
 
   /**
    * 分类ID

@@ -3,6 +3,7 @@ package com.lframework.xingyun.sc.excel.purchase.receive;
 import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -10,6 +11,7 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.excel.ExcelImportListener;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductCode;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.product.ProductService;
@@ -84,8 +86,10 @@ public class ReceiveSheetImportListener extends ExcelImportListener<ReceiveSheet
           "第" + context.readRowHolder().getRowIndex() + "行“商品编号”不能为空");
     } else {
       ProductService productService = ApplicationUtil.getBean(ProductService.class);
-      Wrapper<Product> queryWrapper = Wrappers.lambdaQuery(Product.class)
-          .eq(Product::getCode, data.getProductCode());
+      Wrapper<Product> queryWrapper = new MPJLambdaWrapper<Product>().selectAll(Product.class)
+          .leftJoin(ProductCode.class, ProductCode::getProductId, Product::getId)
+          .eq(ProductCode::getCode, data.getProductCode())
+          .eq(Product::getAvailable, true);
       Product product = productService.getOne(queryWrapper);
       if (product == null) {
         throw new DefaultClientException(

@@ -34,18 +34,6 @@ public class ProductSelectorBo extends BaseBo<Product> {
   private String name;
 
   /**
-   * SKU
-   */
-  @ApiModelProperty("SKU")
-  private String skuCode;
-
-  /**
-   * 简码
-   */
-  @ApiModelProperty("简码")
-  private String externalCode;
-
-  /**
    * 分类ID
    */
   @ApiModelProperty("分类ID")

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.StockCellProductMapper">
+
+    <sql id="StockCellProductDto_sql">
+        SELECT
+            tb.id,
+            sc.id AS sc_id,
+            sc.code AS sc_code,
+            sc.name AS sc_name,
+            c.id AS stock_cell_id,
+            c.code AS stock_cell_code,
+            c.name AS stock_cell_name,
+            c.cell_type AS stock_cell_type,
+            p.id AS product_id,
+            p.code AS product_code,
+            p.name AS product_name,
+            p.spec AS spec,
+            p.unit AS unit,
+            pc.id AS category_id,
+            pc.code AS category_code,
+            pc.name AS category_name,
+            pb.id AS brand_id,
+            pb.code AS brand_code,
+            pb.name AS brand_name
+        FROM tbl_stock_cell_product AS tb
+        JOIN base_data_store_center AS sc ON sc.id = tb.sc_id AND sc.available = TRUE
+        JOIN base_data_stock_cell AS c ON c.id = tb.stock_cell_id AND c.available = TRUE
+        JOIN base_data_product AS p ON p.id = tb.product_id AND p.available = TRUE
+        JOIN base_data_product_category AS pc ON pc.id = p.category_id
+        LEFT JOIN base_data_product_brand AS pb ON pb.id = p.brand_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = pc.id and rm.node_type = 2
+    </sql>
+    <select id="query"
+            resultType="com.lframework.xingyun.basedata.dto.stockcell.product.StockCellProductDto">
+        <include refid="StockCellProductDto_sql" />
+        <where>
+            <if test="vo.stockCellId != null and vo.stockCellId != ''">
+                AND c.id = #{vo.stockCellId}
+            </if>
+            <if test="vo.stockCellCode != null and vo.stockCellCode != ''">
+                AND c.code = #{vo.stockCellCode}
+            </if>
+            <if test="vo.stockCellName != null and vo.stockCellName != ''">
+                AND c.name LIKE CONCAT('%', #{vo.stockCellName}, '%')
+            </if>
+            <if test="vo.stockCellType != null">
+                AND c.cell_type = #{vo.stockCellType}
+            </if>
+            <if test="vo.scCode != null and vo.scCode != ''">
+                AND sc.code = #{vo.scCode}
+            </if>
+            <if test="vo.scName != null and vo.scName != ''">
+                AND sc.name LIKE CONCAT('%', #{vo.scName}, '%')
+            </if>
+            <if test="vo.productCode != null and vo.productCode != ''">
+                AND p.id IN (SELECT product_id FROM base_data_product_code WHERE code = #{vo.productCode})
+            </if>
+            <if test="vo.productName != null and vo.productName != ''">
+                AND p.name LIKE CONCAT('%', #{vo.productName}, '%')
+            </if>
+            <if test="vo.categoryId != null and vo.categoryId != ''">
+                AND (pc.id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+            </if>
+            <if test="vo.brandId != null and vo.brandId != ''">
+                AND pb.id = #{vo.brandId}
+            </if>
+        </where>
+        ORDER BY sc.code, c.code, p.code, c.cell_type
+    </select>
+</mapper>

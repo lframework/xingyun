@@ -2,10 +2,11 @@ package com.lframework.xingyun.basedata.excel.product;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.constants.PatternPool;
+import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
@@ -18,6 +19,7 @@ import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductCodeService;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductRetailService;
 import com.lframework.xingyun.basedata.service.product.ProductSaleService;
@@ -48,33 +50,42 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
     }
     if (checkList.contains(data.getCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“编号”与第" + (
-              checkList.indexOf(data.getCode()) + 1) + "行重复");
+          "第" + context.readRowHolder().getRowIndex() + "行“编号”与其他行重复");
     }
     checkList.add(data.getCode());
-    Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class)
-        .eq(Product::getCode, data.getCode()).eq(Product::getAvailable, Boolean.TRUE);
-    ProductService productService = ApplicationUtil.getBean(ProductService.class);
-    if (productService.count(checkWrapper) > 0) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“编号”已存在");
+    String[] multiCodeArr =
+        StringUtil.isBlank(data.getMultiCode()) ? new String[0] : data.getMultiCode()
+            .split(",");
+
+    List<String> multiCodes = new ArrayList<>();
+    for (int i = 0; i < multiCodeArr.length; i++) {
+      String multiCode = multiCodeArr[i];
+      if (StringUtil.isBlank(multiCode)) {
+        continue;
+      }
+
+      if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, multiCode)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex()
+                + "行“扩展编号" + (i + 1) + "”必须由字母、数字、“-_.”组成，长度不能超过20位");
+      }
+
+      if (checkList.contains(multiCode)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“扩展编号" + (i + 1)
+                + "”与其他行重复");
+      }
+
+      checkList.add(multiCode);
+
+      multiCodes.add(multiCode);
     }
+
+    data.setMultiCodes(multiCodes);
+
     if (StringUtil.isBlank(data.getName())) {
       throw new DefaultClientException(
           "第" + context.readRowHolder().getRowIndex() + "行“名称”不能为空");
-    }
-
-    Wrapper<Product> queryWrapper = Wrappers.lambdaQuery(Product.class)
-        .eq(Product::getCode, data.getCode());
-    Product product = productService.getOne(queryWrapper);
-
-    if (!StringUtil.isBlank(data.getSkuCode())) {
-      LambdaQueryWrapper<Product> checkSkuCodeWrapper = Wrappers.lambdaQuery(Product.class)
-          .eq(Product::getSkuCode, data.getSkuCode()).eq(Product::getAvailable, Boolean.TRUE);
-      if (productService.count(checkSkuCodeWrapper) > 0) {
-        throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”重复，请检查");
-      }
     }
 
     if (StringUtil.isBlank(data.getCategoryCode())) {
@@ -185,27 +196,28 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
     for (int i = 0; i < datas.size(); i++) {
       ProductImportModel data = datas.get(i);
 
-      if (StringUtil.isNotBlank(data.getSkuCode())) {
-        Wrapper<Product> checkSkuCodeWrapper = Wrappers.lambdaQuery(Product.class)
-            .eq(Product::getSkuCode, data.getSkuCode()).eq(Product::getAvailable, Boolean.TRUE);
-        if (productService.count(checkSkuCodeWrapper) > 0) {
-          throw new DefaultClientException("第" + (i + 1) + "行“商品SKU编号”重复，请重新输入");
-        }
-      }
-
       Product record = new Product();
 
       record.setId(IdUtil.getId());
 
       record.setCode(data.getCode());
+      record.setMultiCode(CollectionUtil.isNotEmpty(data.getMultiCodes()));
+
+      List<String> multiCodes = new ArrayList<>(data.getMultiCodes());
+      multiCodes.add(data.getCode());
+
+      ProductCodeService productCodeService = ApplicationUtil.getBean(ProductCodeService.class);
+      List<String> conflictCodes = productCodeService.checkMultiCodes(multiCodes, null);
+      if (CollectionUtil.isNotEmpty(conflictCodes)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行编号【" + StringUtil.join(
+                StringPool.STR_SPLIT_CN, conflictCodes) + "】已存在");
+      }
+
       record.setName(data.getName());
       if (StringUtil.isNotBlank(data.getShortName())) {
         record.setShortName(data.getShortName());
       }
-      if (StringUtil.isNotBlank(data.getSkuCode())) {
-        record.setSkuCode(data.getSkuCode());
-      }
-      record.setExternalCode(data.getExternalCode());
       record.setCategoryId(data.getCategoryId());
 
       // 判断分类是否是末级分类
@@ -230,6 +242,9 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       record.setAvailable(Boolean.TRUE);
 
       productService.save(record);
+
+      productService.recordMultiCodes(record.getId(), data.getMultiCodes());
+
       data.setId(record.getId());
 
       if (data.getPurchasePrice() != null) {

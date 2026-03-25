@@ -11,6 +11,7 @@ import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductCode;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.entity.ProductRetail;
 import com.lframework.xingyun.basedata.entity.ProductSale;
@@ -19,6 +20,7 @@ import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductCodeService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductRetailService;
@@ -46,6 +48,24 @@ public class GetProductBo extends BaseBo<Product> {
   private String code;
 
   /**
+   * 是否一品多码
+   */
+  @ApiModelProperty("是否一品多码")
+  private Boolean multiCode;
+
+  /**
+   * 扩展编号
+   */
+  @ApiModelProperty("扩展编号")
+  private List<String> multiCodes;
+
+  /**
+   * 扩展编号 - 字符串
+   */
+  @ApiModelProperty("扩展编号 - 字符串")
+  private String multiCodesStr;
+
+  /**
    * 名称
    */
   @ApiModelProperty("名称")
@@ -56,18 +76,6 @@ public class GetProductBo extends BaseBo<Product> {
    */
   @ApiModelProperty("简称")
   private String shortName;
-
-  /**
-   * SKU
-   */
-  @ApiModelProperty("SKU")
-  private String skuCode;
-
-  /**
-   * 简码
-   */
-  @ApiModelProperty("简码")
-  private String externalCode;
 
   /**
    * 分类ID
@@ -239,6 +247,12 @@ public class GetProductBo extends BaseBo<Product> {
         }
       }
     }
+
+    ProductCodeService productCodeService = ApplicationUtil.getBean(ProductCodeService.class);
+    List<ProductCode> productCodes = productCodeService.findByProductId(dto.getId());
+    this.multiCodes = productCodes.stream().filter(t -> !t.getIsMain()).map(ProductCode::getCode)
+        .collect(Collectors.toList());
+    this.multiCodesStr = StringUtil.join(StringPool.STR_SPLIT_CN, this.multiCodes);
   }
 
   @Data

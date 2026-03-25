@@ -186,18 +186,6 @@ public class PrintSaleReturnBo extends BaseBo<SaleReturnFullDto> {
     private String productName;
 
     /**
-     * SKU编号
-     */
-    @ApiModelProperty("SKU编号")
-    private String skuCode;
-
-    /**
-     * 简码
-     */
-    @ApiModelProperty("简码")
-    private String externalCode;
-
-    /**
      * 退货数量
      */
     @ApiModelProperty("退货数量")
@@ -239,8 +227,6 @@ public class PrintSaleReturnBo extends BaseBo<SaleReturnFullDto> {
 
       this.productCode = product.getCode();
       this.productName = product.getName();
-      this.skuCode = product.getSkuCode();
-      this.externalCode = product.getExternalCode();
     }
   }
 }

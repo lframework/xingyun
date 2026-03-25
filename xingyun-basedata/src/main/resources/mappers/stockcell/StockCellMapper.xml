@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.StockCellMapper">
+
+    <resultMap id="StockCellDto" type="com.lframework.xingyun.basedata.dto.stockcell.StockCellDto">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="sc_id" property="scId"/>
+        <result column="sc_code" property="scCode"/>
+        <result column="sc_name" property="scName"/>
+        <result column="cell_type" property="cellType"/>
+        <result column="available" property="available"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="StockCellDto_sql">
+        SELECT
+            tb.id,
+            tb.code,
+            tb.name,
+            sc.id AS sc_id,
+            sc.code AS sc_code,
+            sc.name AS sc_name,
+            tb.cell_type,
+            tb.available,
+            tb.description,
+            tb.create_by,
+            tb.create_time,
+            tb.update_by,
+            tb.update_time
+        FROM base_data_stock_cell AS tb
+        LEFT JOIN base_data_store_center AS sc ON sc.id = tb.sc_id
+    </sql>
+
+    <select id="query" resultMap="StockCellDto">
+        <include refid="StockCellDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND tb.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.code != null and vo.code != ''">
+                    AND tb.code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.scCode != null and vo.scCode != ''">
+                    AND sc.code = #{vo.scCode}
+                </if>
+                <if test="vo.scName != null and vo.scName != ''">
+                    AND sc.name LIKE CONCAT('%', #{vo.scName}, '%')
+                </if>
+                <if test="vo.cellType != null">
+                    AND tb.cell_type = #{vo.cellType}
+                </if>
+            </if>
+            AND tb.available = TRUE
+        </where>
+        ORDER BY tb.code
+    </select>
+
+    <select id="selector" resultMap="StockCellDto">
+        <include refid="StockCellDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND tb.code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND tb.name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.cellType != null">
+                    AND tb.cell_type = #{vo.cellType}
+                </if>
+            </if>
+            AND tb.available = TRUE
+        </where>
+        ORDER BY tb.code
+    </select>
+    <select id="findById" resultMap="StockCellDto">
+        <include refid="StockCellDto_sql"/>
+        WHERE tb.id = #{id}
+    </select>
+</mapper>

@@ -120,10 +120,6 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
         throw new InputErrorException("第" + (orderNo) + "行商品名称不能为空！");
       }
 
-      if (StringUtil.isBlank(product.getSkuCode())) {
-        throw new InputErrorException("第" + (orderNo) + "行商品SKU编号不能为空！");
-      }
-
       if (product.getPurchasePrice() == null) {
         throw new InputErrorException("第" + (orderNo) + "行商品采购价不能为空！");
       }
@@ -181,16 +177,6 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
      * 商品名称
      */
     private String name;
-
-    /**
-     * 商品SKU编号
-     */
-    private String skuCode;
-
-    /**
-     * 简码
-     */
-    private String externalCode;
 
     /**
      * 规格

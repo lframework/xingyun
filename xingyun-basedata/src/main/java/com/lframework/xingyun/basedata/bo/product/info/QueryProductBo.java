@@ -43,12 +43,6 @@ public class QueryProductBo extends BaseBo<Product> {
   private String shortName;
 
   /**
-   * SKU
-   */
-  @ApiModelProperty("SKU")
-  private String skuCode;
-
-  /**
    * 分类名称
    */
   @ApiModelProperty("分类名称")

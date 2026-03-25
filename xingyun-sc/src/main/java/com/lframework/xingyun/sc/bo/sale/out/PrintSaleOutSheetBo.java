@@ -188,18 +188,6 @@ public class PrintSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
     private String productName;
 
     /**
-     * SKU编号
-     */
-    @ApiModelProperty("SKU编号")
-    private String skuCode;
-
-    /**
-     * 简码
-     */
-    @ApiModelProperty("简码")
-    private String externalCode;
-
-    /**
      * 出库数量
      */
     @ApiModelProperty("出库数量")
@@ -241,8 +229,6 @@ public class PrintSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
 
       this.productCode = product.getCode();
       this.productName = product.getName();
-      this.skuCode = product.getSkuCode();
-      this.externalCode = product.getExternalCode();
     }
   }
 }

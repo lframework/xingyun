@@ -104,4 +104,20 @@ public interface ProductService extends BaseMpService<Product> {
    * @return
    */
   List<Product> getByBrandIds(List<String> brandIds, Integer productType);
+
+  /**
+   * 根据商品编号查询商品
+   *
+   * @param code
+   * @return
+   */
+  Product findByCode(String code);
+
+  /**
+   * 记录扩展编号
+   *
+   * @param productId
+   * @param multiCodes
+   */
+  void recordMultiCodes(String productId, List<String> multiCodes);
 }

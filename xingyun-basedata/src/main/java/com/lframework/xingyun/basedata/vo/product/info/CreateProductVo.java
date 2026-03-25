@@ -5,16 +5,15 @@ import com.lframework.starter.web.core.components.validation.IsEnum;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
+import lombok.Data;
 
 @Data
 public class CreateProductVo implements BaseVo, Serializable {
@@ -30,6 +29,12 @@ public class CreateProductVo implements BaseVo, Serializable {
   private String code;
 
   /**
+   * 扩展编号
+   */
+  @ApiModelProperty("扩展编号")
+  private List<String> multiCodes;
+
+  /**
    * 名称
    */
   @ApiModelProperty(value = "名称", required = true)
@@ -41,18 +46,6 @@ public class CreateProductVo implements BaseVo, Serializable {
    */
   @ApiModelProperty(value = "简称")
   private String shortName;
-
-  /**
-   * 商品SKU编号
-   */
-  @ApiModelProperty(value = "商品SKU编号")
-  private String skuCode;
-
-  /**
-   * 简码
-   */
-  @ApiModelProperty("简码")
-  private String externalCode;
 
   /**
    * 分类ID

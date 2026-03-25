@@ -3,12 +3,14 @@ package com.lframework.xingyun.sc.excel.stock.warning;
 import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.core.components.excel.ExcelImportListener;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductCode;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
@@ -34,8 +36,10 @@ public class StockWarningImportListener extends ExcelImportListener<StockWarning
 
     data.setScId(sc.getId());
     ProductService productService = ApplicationUtil.getBean(ProductService.class);
-    Wrapper<Product> queryProductWrapper = Wrappers.lambdaQuery(Product.class)
-        .eq(Product::getCode, data.getProductCode());
+    Wrapper<Product> queryProductWrapper = new MPJLambdaWrapper<Product>().selectAll(Product.class)
+        .leftJoin(ProductCode.class, ProductCode::getProductId, Product::getId)
+        .eq(ProductCode::getCode, data.getProductCode())
+        .eq(Product::getAvailable, true);
     Product product = productService.getOne(queryProductWrapper);
     if (product == null) {
       throw new DefaultClientException(

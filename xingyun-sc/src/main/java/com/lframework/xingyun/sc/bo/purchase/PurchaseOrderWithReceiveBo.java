@@ -144,18 +144,6 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
     private String productName;
 
     /**
-     * SKU编号
-     */
-    @ApiModelProperty("SKU编号")
-    private String skuCode;
-
-    /**
-     * 简码
-     */
-    @ApiModelProperty("简码")
-    private String externalCode;
-
-    /**
      * 单位
      */
     @ApiModelProperty("单位")
@@ -270,8 +258,6 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
       this.productId = product.getId();
       this.productCode = product.getCode();
       this.productName = product.getName();
-      this.skuCode = product.getSkuCode();
-      this.externalCode = product.getExternalCode();
       this.unit = product.getUnit();
       this.spec = product.getSpec();
       this.categoryName = product.getCategoryName();

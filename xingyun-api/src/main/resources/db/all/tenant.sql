@@ -168,10 +168,9 @@ DROP TABLE IF EXISTS `base_data_product`;
 CREATE TABLE `base_data_product`  (
   `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
   `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编号',
+  `multi_code` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否一品多码',
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `short_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '简称',
-  `sku_code` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'SKU',
-  `external_code` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '简码',
   `category_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '类目ID',
   `brand_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '品牌ID',
   `product_type` tinyint(3) NOT NULL DEFAULT 1 COMMENT '商品类型',
@@ -189,8 +188,7 @@ CREATE TABLE `base_data_product`  (
   `update_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人ID',
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `code`(`code`) USING BTREE,
-  INDEX `sku_code`(`sku_code`) USING BTREE
+  INDEX `code`(`code`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
@@ -291,6 +289,24 @@ CREATE TABLE `base_data_product_category_property`  (
 
 -- ----------------------------
 -- Records of base_data_product_category_property
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for base_data_product_code
+-- ----------------------------
+DROP TABLE IF EXISTS `base_data_product_code`;
+CREATE TABLE `base_data_product_code`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '商品ID',
+  `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编号',
+  `is_main` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否主编号',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `product_id`(`product_id`, `code`) USING BTREE,
+  INDEX `code`(`code`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品编号' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of base_data_product_code
 -- ----------------------------
 
 -- ----------------------------
@@ -407,6 +423,34 @@ CREATE TABLE `base_data_product_sale`  (
 
 -- ----------------------------
 -- Records of base_data_product_sale
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for base_data_stock_cell
+-- ----------------------------
+DROP TABLE IF EXISTS `base_data_stock_cell`;
+CREATE TABLE `base_data_stock_cell`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `sc_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '仓库ID',
+  `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编号',
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
+  `cell_type` tinyint(3) NOT NULL DEFAULT 1 COMMENT '仓位类别',
+  `available` tinyint(1) NOT NULL COMMENT '状态',
+  `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '备注',
+  `create_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人',
+  `create_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人',
+  `update_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改人ID',
+  `update_time` datetime NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `code`(`code`) USING BTREE,
+  INDEX `name`(`name`) USING BTREE,
+  INDEX `sc_id`(`sc_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '仓位' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of base_data_stock_cell
 -- ----------------------------
 
 -- ----------------------------
@@ -5586,6 +5630,7 @@ INSERT INTO `sys_generate_code` VALUES (8, '门店编号', '[{\"type\":6,\"val\"
 INSERT INTO `sys_generate_code` VALUES (9, '品牌编号', '[{\"type\":6,\"val\":\"B\"},{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"331e5e9818194b3096ccbe941f6dedc6\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (10, '商品编号', '[{\"type\":6,\"val\":\"P\"},{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"c9b6e74117f84fe68346201de3554b50\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (11, '用户分组编号', '[{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"4bf9dafec322744f1f08bdf2d2569076a4d7\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
+INSERT INTO `sys_generate_code` VALUES (12, '仓位编号', '[{\"type\":\"6\",\"val\":\"C\"},{\"type\":\"1\",\"pattern\":\"yyMMdd\"},{\"type\":\"3\",\"key\":\"c31d11cdad371340a9985a110f8dad7cb9ea\",\"len\":\"5\",\"step\":1,\"expireType\":0,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (99, '通用编号', '[{\"type\":1,\"pattern\":\"yyMMdd\"},{\"type\":3,\"key\":\"9dfa3174afa0464794e98e19ad7bb121ef24\",\"len\":\"5\",\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (200, '采购订单号', '[{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"37366f903834c842d5e8144bd707bdb77e35\",\"len\":10,\"step\":1,\"expireSeconds\":86400}]');
 INSERT INTO `sys_generate_code` VALUES (201, '采购收货单号', '[{\"type\":1,\"pattern\":\"yyyyMMdd\"},{\"type\":3,\"key\":\"12099be638c90d466b2a4af5465ed632459f\",\"len\":10,\"step\":1,\"expireSeconds\":86400}]');
@@ -5743,6 +5788,11 @@ INSERT INTO `sys_menu` VALUES ('2000002001', '2000002001', '', '新增仓库', N
 INSERT INTO `sys_menu` VALUES ('2000002002', '2000002002', '', '修改仓库', NULL, 0, '', NULL, '2000002', '3', '', 0, 2, 0, 'base-data:store-center:modify', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('2000002003', '2000002003', '', '导入仓库', NULL, 0, '', NULL, '2000002', '3', '', 0, 2, 0, 'base-data:store-center:import', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('2000002004', '2000002004', '', '删除仓库', NULL, 0, '', NULL, '2000002', '3', '', 0, 2, 0, 'base-data:store-center:delete', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2000002005', '2000002005', '', '仓位查询', NULL, 0, '', NULL, '2000002', '3', '', 0, 2, 0, 'base-data:stock-cell:query', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2000002006', '2000002006', '', '新增仓位', NULL, 0, '', NULL, '2000002', '3', '', 0, 2, 0, 'base-data:stock-cell:add', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2000002007', '2000002007', '', '修改仓位', NULL, 0, '', NULL, '2000002', '3', '', 0, 2, 0, 'base-data:stock-cell:modify', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2000002008', '2000002008', '', '删除仓位', NULL, 0, '', NULL, '2000002', '3', '', 0, 2, 0, 'base-data:stock-cell:delete', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2000002009', '2000002009', '', '导入仓位', NULL, 0, '', NULL, '2000002', '3', '', 0, 2, 0, 'base-data:stock-cell:import', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('2000004', '2000004', 'Customer', '客户信息', NULL, 0, '/base-data/customer/index', NULL, '2000', '3', '/customer', 0, 1, 0, 'base-data:customer:query', 1, 1, '', '系统管理员', '1', '2021-07-05 21:59:35', '系统管理员', '1', '2021-07-05 21:59:36');
 INSERT INTO `sys_menu` VALUES ('2000004001', '2000004001', '', '新增客户', NULL, 0, '', NULL, '2000004', '3', '', 0, 2, 0, 'base-data:customer:add', 1, 1, '', '系统管理员', '1', '2021-05-12 22:50:27', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('2000004002', '2000004002', '', '修改客户', NULL, 0, '', NULL, '2000004', '3', '', 0, 2, 0, 'base-data:customer:modify', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
@@ -5804,6 +5854,11 @@ INSERT INTO `sys_menu` VALUES ('2001005001', '2001005001', '', '新增商品', N
 INSERT INTO `sys_menu` VALUES ('2001005002', '2001005002', '', '修改商品', NULL, 0, '', NULL, '2001005', '4', '', 0, 2, 0, 'base-data:product:info:modify', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('2001005003', '2001005003', '', '导入商品', NULL, 0, '', NULL, '2001005', '4', '', 0, 2, 0, 'base-data:product:info:import', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('2001005004', '2001005004', '', '删除商品', NULL, 0, '', NULL, '2001005', '4', '', 0, 2, 0, 'base-data:product:info:delete', 1, 1, '', '系统管理员', '1', '2021-05-12 23:23:33', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2001006', '2001006', 'StockCellProduct', '仓位商品管理', NULL, 0, '/base-data/stock-cell-product/index', NULL, '2001', '4', '/stock-cell-product', 0, 1, 0, 'base-data:stock-cell-product:query', 1, 1, '', '系统管理员', '1', '2021-07-06 17:01:00', '系统管理员', '1', '2021-07-06 17:01:00');
+INSERT INTO `sys_menu` VALUES ('2001006001', '2001006001', '', '新增仓位商品', NULL, 0, '', NULL, '2001006', '4', '', 0, 2, 0, 'base-data:stock-cell-product:add', 1, 1, '', '系统管理员', '1', '2021-05-12 10:53:45', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2001006002', '2001006002', '', '修改仓位商品', NULL, 0, '', NULL, '2001006', '4', '', 0, 2, 0, 'base-data:stock-cell-product:modify', 1, 1, '', '系统管理员', '1', '2021-05-12 10:53:45', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2001006003', '2001006003', '', '删除仓位商品', NULL, 0, '', NULL, '2001006', '4', '', 0, 2, 0, 'base-data:stock-cell-product:delete', 1, 1, '', '系统管理员', '1', '2021-05-12 10:53:45', '系统管理员', '1', '2021-07-04 00:34:23');
+INSERT INTO `sys_menu` VALUES ('2001006004', '2001006004', '', '导入仓位商品', NULL, 0, '', NULL, '2001006', '4', '', 0, 2, 0, 'base-data:stock-cell-product:import', 1, 1, '', '系统管理员', '1', '2021-05-12 10:53:45', '系统管理员', '1', '2021-07-04 00:34:23');
 INSERT INTO `sys_menu` VALUES ('2002', '2002', 'Purchase', '采购管理', 'ant-design:money-collect-outlined', NULL, '', NULL, NULL, '5', '/purchase', 0, 0, 0, '', 1, 1, '', '系统管理员', '1', '2021-07-05 01:21:35', '系统管理员', '1', '2021-07-05 01:21:39');
 INSERT INTO `sys_menu` VALUES ('2002001', '2002001', 'PurchaseConfig', '采购参数设置', NULL, 0, '/sc/purchase/config/index', NULL, '2002', '5', '/config', 1, 1, 0, 'purchase:config:modify', 1, 1, '', '系统管理员', '1', '2021-07-05 21:59:35', '系统管理员', '1', '2021-07-05 21:59:36');
 INSERT INTO `sys_menu` VALUES ('2002002', '2002002', 'PurchaseOrder', '采购订单管理', NULL, 0, '/sc/purchase/order/index', NULL, '2002', '5', '/order', 0, 1, 0, 'purchase:order:query', 1, 1, '', '系统管理员', '1', '2021-07-05 21:59:35', '系统管理员', '1', '2021-07-05 21:59:36');
@@ -7762,6 +7817,28 @@ CREATE TABLE `tbl_stock_adjust_sheet_detail`  (
 
 -- ----------------------------
 -- Records of tbl_stock_adjust_sheet_detail
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for tbl_stock_cell_product
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_stock_cell_product`;
+CREATE TABLE `tbl_stock_cell_product`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `sc_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '仓库ID',
+  `stock_cell_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '仓位ID',
+  `product_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '商品ID',
+  `create_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人',
+  `create_by_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '创建人ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `sc_id`(`sc_id`) USING BTREE,
+  INDEX `stock_cell_id`(`stock_cell_id`) USING BTREE,
+  INDEX `product_id`(`product_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '仓位商品' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tbl_stock_cell_product
 -- ----------------------------
 
 -- ----------------------------

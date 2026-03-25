@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
+import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
@@ -14,7 +16,6 @@ import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.event.DataChangeEventBuilder;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
-import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.utils.JsonUtil;
@@ -25,6 +26,7 @@ import com.lframework.starter.web.inner.service.RecursionMappingService;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductCode;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.entity.ProductPropertyItem;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
@@ -35,6 +37,7 @@ import com.lframework.xingyun.basedata.events.DeleteProductEvent;
 import com.lframework.xingyun.basedata.mappers.ProductMapper;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductCodeService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyItemService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
@@ -96,6 +99,9 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
   @Autowired
   private ProductCategoryService productCategoryService;
 
+  @Autowired
+  private ProductCodeService productCodeService;
+
   @Override
   public PageResult<Product> query(Integer pageIndex, Integer pageSize, QueryProductVo vo) {
 
@@ -141,6 +147,15 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
   }
 
   @Override
+  public Product findByCode(String code) {
+    Wrapper<Product> queryWrapper = new MPJLambdaWrapper<Product>().selectAll(Product.class)
+        .leftJoin(ProductCode.class, ProductCode::getProductId, Product::getId)
+        .eq(ProductCode::getCode, code)
+        .eq(Product::getAvailable, true);
+    return getOne(queryWrapper);
+  }
+
+  @Override
   public List<String> getIdNotInProductProperty(String propertyId) {
 
     return getBaseMapper().getIdNotInProductProperty(propertyId);
@@ -172,32 +187,42 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
   @Override
   public String create(CreateProductVo vo) {
 
+    List<String> allCodes = new ArrayList<>();
+    allCodes.add(vo.getCode());
+    if (CollectionUtil.isNotEmpty(vo.getMultiCodes())) {
+      allCodes.addAll(vo.getMultiCodes());
+    }
+    List<String> conflictCodes = productCodeService.checkMultiCodes(allCodes, null);
+    if (CollectionUtil.isNotEmpty(conflictCodes)) {
+      throw new DefaultClientException(
+          "编号【" + CollectionUtil.join(conflictCodes, StringPool.STR_SPLIT_CN)
+              + "】重复，请重新输入！");
+    }
+
     Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class)
         .eq(Product::getCode, vo.getCode()).eq(Product::getAvailable, Boolean.TRUE);
     if (getBaseMapper().selectCount(checkWrapper) > 0) {
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    if (StringUtil.isNotBlank(vo.getSkuCode())) {
-      checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getSkuCode, vo.getSkuCode())
-          .eq(Product::getAvailable, Boolean.TRUE);
-      if (getBaseMapper().selectCount(checkWrapper) > 0) {
-        throw new DefaultClientException("商品SKU编号重复，请重新输入！");
+    // 校验扩展编号
+    if (CollectionUtil.isNotEmpty(vo.getMultiCodes())) {
+      List<String> checkList = new ArrayList<>(vo.getMultiCodes());
+      checkList.add(vo.getCode());
+      List<String> checkResult = productCodeService.checkMultiCodes(
+          checkList, null);
+      if (CollectionUtil.isNotEmpty(checkResult)) {
+        throw new DefaultClientException(
+            "编号【" + CollectionUtil.join(checkResult, StringPool.STR_SPLIT_CN)
+                + "】重复，请重新输入！");
       }
     }
-
     Product data = new Product();
     data.setId(IdUtil.getId());
     data.setCode(vo.getCode());
     data.setName(vo.getName());
     if (StringUtil.isNotBlank(vo.getShortName())) {
       data.setShortName(vo.getShortName());
-    }
-    if (StringUtil.isNotBlank(vo.getSkuCode())) {
-      data.setSkuCode(vo.getSkuCode());
-    }
-    if (StringUtil.isNotBlank(vo.getExternalCode())) {
-      data.setExternalCode(vo.getExternalCode());
     }
 
     if (StringUtil.isNotBlank(vo.getBrandId())) {
@@ -222,6 +247,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       data.setUnit(vo.getUnit());
     }
 
+    data.setMultiCode(CollectionUtil.isNotEmpty(vo.getMultiCodes())); // 是否一品多码
     data.setProductType(EnumUtil.getByCode(ProductType.class, vo.getProductType()));
     data.setTaxRate(vo.getTaxRate() == null ? BigDecimal.ZERO : vo.getTaxRate());
     data.setSaleTaxRate(vo.getSaleTaxRate() == null ? BigDecimal.ZERO : vo.getSaleTaxRate());
@@ -231,6 +257,8 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     data.setAvailable(Boolean.TRUE);
 
     getBaseMapper().insert(data);
+
+    recordMultiCodes(data.getId(), vo.getMultiCodes());
 
     // 组合商品
     if (data.getProductType() == ProductType.BUNDLE) {
@@ -376,6 +404,18 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       throw new DefaultClientException("商品不存在！");
     }
 
+    List<String> allCodes = new ArrayList<>();
+    allCodes.add(vo.getCode());
+    if (CollectionUtil.isNotEmpty(vo.getMultiCodes())) {
+      allCodes.addAll(vo.getMultiCodes());
+    }
+    List<String> conflictCodes = productCodeService.checkMultiCodes(allCodes, data.getId());
+    if (CollectionUtil.isNotEmpty(conflictCodes)) {
+      throw new DefaultClientException(
+          "编号【" + CollectionUtil.join(conflictCodes, StringPool.STR_SPLIT_CN)
+              + "】重复，请重新输入！");
+    }
+
     Wrapper<Product> checkWrapper = Wrappers.lambdaQuery(Product.class)
         .eq(Product::getCode, vo.getCode()).eq(Product::getAvailable, Boolean.TRUE)
         .ne(Product::getId, vo.getId());
@@ -383,12 +423,16 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    if (StringUtil.isNotBlank(vo.getSkuCode())) {
-      checkWrapper = Wrappers.lambdaQuery(Product.class).eq(Product::getAvailable, Boolean.TRUE)
-          .eq(Product::getSkuCode, vo.getSkuCode())
-          .ne(Product::getId, vo.getId());
-      if (getBaseMapper().selectCount(checkWrapper) > 0) {
-        throw new DefaultClientException("商品SKU编号重复，请重新输入！");
+    // 校验扩展编号
+    if (CollectionUtil.isNotEmpty(vo.getMultiCodes())) {
+      List<String> checkList = new ArrayList<>(vo.getMultiCodes());
+      checkList.add(vo.getCode());
+      List<String> checkResult = productCodeService.checkMultiCodes(
+          checkList, data.getId());
+      if (CollectionUtil.isNotEmpty(checkResult)) {
+        throw new DefaultClientException(
+            "编号【" + CollectionUtil.join(checkResult, StringPool.STR_SPLIT_CN)
+                + "】重复，请重新输入！");
       }
     }
 
@@ -403,9 +447,6 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
 
     LambdaUpdateWrapper<Product> updateWrapper = Wrappers.lambdaUpdate(Product.class)
         .set(Product::getCode, vo.getCode()).set(Product::getName, vo.getName())
-        .set(Product::getSkuCode, vo.getSkuCode())
-        .set(Product::getExternalCode,
-            StringUtil.isBlank(vo.getExternalCode()) ? null : vo.getExternalCode())
         .set(Product::getSpec, StringUtil.isBlank(vo.getSpec()) ? null : vo.getSpec())
         .set(Product::getUnit, StringUtil.isBlank(vo.getUnit()) ? null : vo.getUnit())
         .set(Product::getShortName,
@@ -418,9 +459,12 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
             vo.getSaleTaxRate() == null ? BigDecimal.ZERO : vo.getSaleTaxRate())
         .set(Product::getWeight, vo.getWeight())
         .set(Product::getVolume, vo.getVolume())
+        .set(Product::getMultiCode, CollectionUtil.isNotEmpty(vo.getMultiCodes()))
         .eq(Product::getId, vo.getId());
 
     getBaseMapper().update(updateWrapper);
+
+    recordMultiCodes(data.getId(), vo.getMultiCodes());
 
     // 组合商品
     if (data.getProductType() == ProductType.BUNDLE) {
@@ -581,6 +625,39 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     }
 
     return getBaseMapper().getByBrandIds(brandIds, productType);
+  }
+
+  @Transactional(rollbackFor = Exception.class)
+  @Override
+  public void recordMultiCodes(String productId, List<String> multiCodes) {
+    Product product = this.findById(productId);
+
+    Wrapper<ProductCode> deleteWrapper = Wrappers.lambdaQuery(ProductCode.class)
+        .eq(ProductCode::getProductId, productId);
+    if (productCodeService.count(deleteWrapper) > 0) {
+      productCodeService.remove(deleteWrapper);
+    }
+
+    List<ProductCode> codes = new ArrayList<>();
+    if (CollectionUtil.isNotEmpty(multiCodes)) {
+      if (multiCodes.contains(product.getCode())) {
+        multiCodes.remove(product.getCode());
+      }
+      for (String code : multiCodes) {
+        ProductCode productCode = new ProductCode();
+        productCode.setProductId(productId);
+        productCode.setCode(code);
+        codes.add(productCode);
+      }
+    }
+
+    ProductCode code = new ProductCode();
+    code.setProductId(productId);
+    code.setCode(product.getCode());
+    code.setIsMain(Boolean.TRUE);
+    codes.add(code);
+
+    productCodeService.saveBatch(codes);
   }
 
   @CacheEvict(value = Product.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")

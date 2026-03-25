@@ -61,18 +61,6 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
     private String brandName;
 
     /**
-     * SKU
-     */
-    @ApiModelProperty("SKU")
-    private String skuCode;
-
-    /**
-     * 简码
-     */
-    @ApiModelProperty("简码")
-    private String externalCode;
-
-    /**
      * 规格
      */
     @ApiModelProperty("规格")
@@ -122,8 +110,6 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
         this.productCode = product.getCode();
         this.productName = product.getName();
         this.categoryName = productCategory.getName();
-        this.skuCode = product.getSkuCode();
-        this.externalCode = product.getExternalCode();
         this.spec = product.getSpec();
         this.unit = product.getUnit();
 

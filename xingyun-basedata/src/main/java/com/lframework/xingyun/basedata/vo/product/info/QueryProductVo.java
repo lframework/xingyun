@@ -27,12 +27,6 @@ public class QueryProductVo extends SortPageVo implements BaseVo, Serializable {
   private String name;
 
   /**
-   * SKU
-   */
-  @ApiModelProperty("SKU")
-  private String skuCode;
-
-  /**
    * 简称
    */
   @ApiModelProperty("简称")

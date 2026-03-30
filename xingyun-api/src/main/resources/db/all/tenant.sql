@@ -6368,6 +6368,26 @@ CREATE TABLE `sys_user_group_detail`  (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for sys_user_menu_sort
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user_menu_sort`;
+CREATE TABLE `sys_user_menu_sort`  (
+  `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ID',
+  `user_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户ID',
+  `menu_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单ID',
+  `parent_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '父级菜单ID',
+  `sort_no` int(11) NOT NULL COMMENT '排序',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `user_id`(`user_id`) USING BTREE,
+  INDEX `menu_id`(`menu_id`) USING BTREE,
+  INDEX `parent_id`(`parent_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_user_menu_sort
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for sys_user_position
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_user_position`;

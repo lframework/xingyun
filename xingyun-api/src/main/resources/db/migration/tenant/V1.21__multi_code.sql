@@ -96,3 +96,15 @@ CREATE TABLE `tbl_stock_cell_product` (
     KEY `stock_cell_id` (`stock_cell_id`),
     KEY `product_id` (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='仓位商品';
+
+CREATE TABLE `sys_user_menu_sort` (
+    `id` varchar(32) NOT NULL COMMENT 'ID',
+    `user_id` varchar(32) NOT NULL COMMENT '用户ID',
+    `menu_id` varchar(32) NOT NULL COMMENT '菜单ID',
+    `parent_id` varchar(32) DEFAULT NULL COMMENT '父级菜单ID',
+    `sort_no` int(11) NOT NULL COMMENT '排序',
+    PRIMARY KEY (`id`),
+    KEY `user_id` (`user_id`),
+    KEY `menu_id` (`menu_id`),
+    KEY `parent_id` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

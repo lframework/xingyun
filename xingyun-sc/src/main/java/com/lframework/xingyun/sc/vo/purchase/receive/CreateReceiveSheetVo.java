@@ -12,15 +12,15 @@ import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -31,52 +31,52 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 供应商ID
    */
-  @ApiModelProperty(value = "供应商ID", required = true)
+  @Schema(description = "供应商ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "供应商ID不能为空！")
   private String supplierId;
 
   /**
    * 采购员ID
    */
-  @ApiModelProperty("采购员ID")
+  @Schema(description = "采购员ID")
   private String purchaserId;
 
   /**
    * 付款日期
    */
-  @ApiModelProperty("付款日期")
+  @Schema(description = "付款日期")
   private LocalDate paymentDate;
 
   /**
    * 是否允许修改付款日期
    */
-  @ApiModelProperty("是否允许修改付款日期")
+  @Schema(description = "是否允许修改付款日期")
   private Boolean allowModifyPaymentDate = Boolean.FALSE;
 
   /**
    * 到货日期
    */
-  @ApiModelProperty(value = "到货日期", required = true)
+  @Schema(description = "到货日期", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "到货日期不能为空！")
   private LocalDate receiveDate;
 
   /**
    * 采购订单ID
    */
-  @ApiModelProperty("采购订单ID")
+  @Schema(description = "采购订单ID")
   private String purchaseOrderId;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<ReceiveProductVo> products;
@@ -84,13 +84,13 @@ public class CreateReceiveSheetVo implements BaseVo, Serializable {
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 是否关联采购订单
    */
-  @ApiModelProperty("是否关联采购订单")
+  @Schema(description = "是否关联采购订单")
   private Boolean required;
 
   public void validate() {

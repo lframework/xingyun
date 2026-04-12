@@ -18,7 +18,7 @@ import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,49 +30,49 @@ public class RetailOutSheetWithReturnBo extends BaseBo<RetailOutSheetWithReturnD
   /**
    * 订单ID
    */
-  @ApiModelProperty("订单ID")
+  @Schema(description = "订单ID")
   private String id;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty("仓库ID")
+  @Schema(description = "仓库ID")
   private String scId;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 会员ID
    */
-  @ApiModelProperty("会员ID")
+  @Schema(description = "会员ID")
   private String memberId;
 
   /**
    * 会员名称
    */
-  @ApiModelProperty("会员名称")
+  @Schema(description = "会员名称")
   private String memberName;
 
   /**
    * 销售员ID
    */
-  @ApiModelProperty("销售员ID")
+  @Schema(description = "销售员ID")
   private String salerId;
 
   /**
    * 销售员姓名
    */
-  @ApiModelProperty("销售员姓名")
+  @Schema(description = "销售员姓名")
   private String salerName;
 
   /**
    * 订单明细
    */
-  @ApiModelProperty("订单明细")
+  @Schema(description = "订单明细")
   private List<DetailBo> details;
 
   public RetailOutSheetWithReturnBo() {
@@ -124,109 +124,109 @@ public class RetailOutSheetWithReturnBo extends BaseBo<RetailOutSheetWithReturnD
     /**
      * ID
      */
-    @ApiModelProperty("ID")
+    @Schema(description = "ID")
     private String id;
 
     /**
      * 商品ID
      */
-    @ApiModelProperty("商品ID")
+    @Schema(description = "商品ID")
     private String productId;
 
     /**
      * 商品编号
      */
-    @ApiModelProperty("商品编号")
+    @Schema(description = "商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
-    @ApiModelProperty("商品名称")
+    @Schema(description = "商品名称")
     private String productName;
 
     /**
      * 单位
      */
-    @ApiModelProperty("单位")
+    @Schema(description = "单位")
     private String unit;
 
     /**
      * 规格
      */
-    @ApiModelProperty("规格")
+    @Schema(description = "规格")
     private String spec;
 
     /**
      * 分类名称
      */
-    @ApiModelProperty("分类名称")
+    @Schema(description = "分类名称")
     private String categoryName;
 
     /**
      * 品牌名称
      */
-    @ApiModelProperty("品牌名称")
+    @Schema(description = "品牌名称")
     private String brandName;
 
     /**
      * 出库数量
      */
-    @ApiModelProperty("出库数量")
+    @Schema(description = "出库数量")
     private BigDecimal outNum;
 
     /**
      * 原价
      */
-    @ApiModelProperty("原价")
+    @Schema(description = "原价")
     private BigDecimal retailPrice;
 
     /**
      * 价格
      */
-    @ApiModelProperty("价格")
+    @Schema(description = "价格")
     private BigDecimal taxPrice;
 
     /**
      * 折扣
      */
-    @ApiModelProperty("折扣")
+    @Schema(description = "折扣")
     private BigDecimal discountRate;
 
     /**
      * 库存数量
      */
-    @ApiModelProperty("库存数量")
+    @Schema(description = "库存数量")
     private BigDecimal stockNum;
 
     /**
      * 剩余退货数量
      */
-    @ApiModelProperty("剩余退货数量")
+    @Schema(description = "剩余退货数量")
     private BigDecimal remainNum;
 
     /**
      * 是否赠品
      */
-    @ApiModelProperty("是否赠品")
+    @Schema(description = "是否赠品")
     private Boolean isGift;
 
     /**
      * 税率（%）
      */
-    @ApiModelProperty("税率（%）")
+    @Schema(description = "税率（%）")
     private BigDecimal taxRate;
 
     /**
      * 备注
      */
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     private String description;
 
     /**
      * 仓库ID
      */
-    @ApiModelProperty(value = "仓库ID", hidden = true)
+    @Schema(description = "仓库ID", hidden = true)
     @JsonIgnore
     private String scId;
 

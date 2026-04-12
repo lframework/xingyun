@@ -1,8 +1,8 @@
 package com.lframework.xingyun.sc.vo.logistics;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -13,7 +13,7 @@ public class UpdateLogisticsSheetVo extends CreateLogisticsSheetVo implements Se
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "ID不能为空！")
   private String id;
 }

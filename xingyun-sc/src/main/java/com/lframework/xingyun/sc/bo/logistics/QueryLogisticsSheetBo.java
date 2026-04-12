@@ -9,7 +9,7 @@ import com.lframework.xingyun.basedata.service.logistics.LogisticsCompanyService
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.xingyun.sc.entity.LogisticsSheet;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -20,80 +20,80 @@ public class QueryLogisticsSheetBo extends BaseBo<LogisticsSheet> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 业务单据号
    */
-  @ApiModelProperty("业务单据号")
+  @Schema(description = "业务单据号")
   private String code;
 
   /**
    * 物流单号
    */
-  @ApiModelProperty("物流单号")
+  @Schema(description = "物流单号")
   private String logisticsNo;
 
   /**
    * 物流公司名称
    */
-  @ApiModelProperty("物流公司名称")
+  @Schema(description = "物流公司名称")
   private String logisticsCompanyName;
 
   /**
    * 总重量
    */
-  @ApiModelProperty("总重量")
+  @Schema(description = "总重量")
   private BigDecimal totalWeight;
 
   /**
    * 总体积
    */
-  @ApiModelProperty("总体积")
+  @Schema(description = "总体积")
   private BigDecimal totalVolume;
 
   /**
    * 物流费
    */
-  @ApiModelProperty("物流费")
+  @Schema(description = "物流费")
   private BigDecimal totalAmount;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   @EnumConvert
   private Integer status;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   private LocalDateTime createTime;
 
   /**
    * 发货人
    */
-  @ApiModelProperty("发货人")
+  @Schema(description = "发货人")
   private String deliveryBy;
 
   /**
    * 发货时间
    */
-  @ApiModelProperty("发货时间")
+  @Schema(description = "发货时间")
   private LocalDateTime deliveryTime;
 
   public QueryLogisticsSheetBo(LogisticsSheet dto) {

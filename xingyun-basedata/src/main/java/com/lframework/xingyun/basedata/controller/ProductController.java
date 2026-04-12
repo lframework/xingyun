@@ -20,16 +20,16 @@ import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.UpdateProductVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "商品管理")
+@Tag(name = "商品管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product")
@@ -67,7 +67,7 @@ public class ProductController extends DefaultBaseController {
   /**
    * 商品列表
    */
-  @ApiOperation("商品列表")
+  @Operation(summary = "商品列表")
   @HasPermission({"base-data:product:info:query", "base-data:product:info:add",
       "base-data:product:info:modify"})
   @GetMapping("/query")
@@ -89,8 +89,8 @@ public class ProductController extends DefaultBaseController {
   /**
    * 根据商品编号查询商品ID
    */
-  @ApiOperation(value = "根据商品编号查询商品ID", notes = "返回商品ID，如果商品不存在则返回null")
-  @ApiImplicitParam(value = "商品编号", name = "code", paramType = "query", required = true)
+  @Operation(summary = "根据商品编号查询商品ID", description = "返回商品ID，如果商品不存在则返回null")
+  @Parameter(name = "code", description = "商品编号", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:info:query"})
   @GetMapping("/id/code")
   public InvokeResult<String> getIdByCode(
@@ -104,8 +104,8 @@ public class ProductController extends DefaultBaseController {
   /**
    * 商品详情
    */
-  @ApiOperation("商品详情")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "商品详情")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:info:query", "base-data:product:info:add",
       "base-data:product:info:modify"})
   @GetMapping
@@ -121,7 +121,7 @@ public class ProductController extends DefaultBaseController {
   /**
    * 新增商品
    */
-  @ApiOperation("新增商品")
+  @Operation(summary = "新增商品")
   @HasPermission({"base-data:product:info:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreateProductVo vo) {
@@ -134,7 +134,7 @@ public class ProductController extends DefaultBaseController {
   /**
    * 修改商品
    */
-  @ApiOperation("修改商品")
+  @Operation(summary = "修改商品")
   @HasPermission({"base-data:product:info:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid @RequestBody UpdateProductVo vo) {
@@ -155,11 +155,11 @@ public class ProductController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
+  @Operation(summary = "根据ID删除")
   @HasPermission({"base-data:product:info:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "ID不能为空！") String id) {
 
     productService.deleteById(id);
 
@@ -174,14 +174,14 @@ public class ProductController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:product:info:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("商品导入模板", ProductImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:product:info:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

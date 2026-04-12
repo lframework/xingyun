@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.vo.product.info;
 
 import com.lframework.starter.web.core.vo.BaseVo;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data

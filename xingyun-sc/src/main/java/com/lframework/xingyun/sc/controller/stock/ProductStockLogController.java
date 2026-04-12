@@ -13,11 +13,11 @@ import com.lframework.xingyun.sc.entity.ProductStockLog;
 import com.lframework.xingyun.sc.excel.stock.ProductStockLogExportTaskWorker;
 import com.lframework.xingyun.sc.service.stock.ProductStockLogService;
 import com.lframework.xingyun.sc.vo.stock.log.QueryProductStockLogVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "商品库存变动记录")
+@Tag(name = "商品库存变动记录")
 @Validated
 @RestController
 @RequestMapping("/stock/product/log")
@@ -41,7 +41,7 @@ public class ProductStockLogController extends DefaultBaseController {
   /**
    * 查询商品库存变动记录
    */
-  @ApiOperation("查询商品库存变动记录")
+  @Operation(summary = "查询商品库存变动记录")
   @HasPermission({"stock:product-log:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryProductStockLogBo>> query(@Valid QueryProductStockLogVo vo) {
@@ -61,7 +61,7 @@ public class ProductStockLogController extends DefaultBaseController {
   /**
    * 导出商品库存变动记录
    */
-  @ApiOperation("导出商品库存变动记录")
+  @Operation(summary = "导出商品库存变动记录")
   @HasPermission({"stock:product-log:export"})
   @GetMapping("/export")
   public InvokeResult<Void> export(@Valid QueryProductStockLogVo vo) {

@@ -6,6 +6,7 @@
         <artifactId>xingyun</artifactId>
         <groupId>com.lframework</groupId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -40,6 +41,12 @@
         <dependency>
             <groupId>com.lframework</groupId>
             <artifactId>rabbitmq-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -105,4 +112,17 @@
             </resource>
         </resources>
     </build>
+
+    <profiles>
+        <profile>
+            <id>demo</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.lframework</groupId>
+                    <artifactId>xingyun-demo</artifactId>
+                    <version>1.0.0</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>

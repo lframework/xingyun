@@ -1,10 +1,10 @@
 package com.lframework.xingyun.sc.vo.paytype;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -15,20 +15,20 @@ public class OrderPayTypeVo implements Serializable {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   @NotBlank(message = "ID不能为空！")
   private String id;
 
   /**
    * 支付金额
    */
-  @ApiModelProperty("支付金额")
+  @Schema(description = "支付金额")
   @NotNull(message = "支付金额不能为空！")
   private BigDecimal payAmount;
 
   /**
    * 支付内容
    */
-  @ApiModelProperty("支付内容")
+  @Schema(description = "支付内容")
   private String text;
 }

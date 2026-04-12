@@ -6,13 +6,13 @@ import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
@@ -23,27 +23,27 @@ public class CreateSaleOrderVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 客户ID
    */
-  @ApiModelProperty(value = "客户ID", required = true)
+  @Schema(description = "客户ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "客户ID不能为空！")
   private String customerId;
 
   /**
    * 销售员ID
    */
-  @ApiModelProperty("销售员ID")
+  @Schema(description = "销售员ID")
   private String salerId;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<SaleProductVo> products;
@@ -51,14 +51,14 @@ public class CreateSaleOrderVo implements BaseVo, Serializable {
   /**
    * 支付方式
    */
-  @ApiModelProperty("约定支付")
+  @Schema(description = "约定支付")
   @Valid
   private List<OrderPayTypeVo> payTypes;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   public void validate() {

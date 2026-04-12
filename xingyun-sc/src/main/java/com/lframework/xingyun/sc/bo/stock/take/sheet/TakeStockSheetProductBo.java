@@ -11,7 +11,7 @@ import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanDetailService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -21,62 +21,62 @@ public class TakeStockSheetProductBo extends BaseBo<TakeStockSheetProductDto> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String productId;
 
   /**
    * 编号
    */
-  @ApiModelProperty("编号")
+  @Schema(description = "编号")
   private String productCode;
 
   /**
    * 名称
    */
-  @ApiModelProperty("名称")
+  @Schema(description = "名称")
   private String productName;
 
   /**
    * 分类名称
    */
-  @ApiModelProperty("分类名称")
+  @Schema(description = "分类名称")
   private String categoryName;
 
   /**
    * 品牌名称
    */
-  @ApiModelProperty("品牌名称")
+  @Schema(description = "品牌名称")
   private String brandName;
 
   /**
    * 规格
    */
-  @ApiModelProperty("规格")
+  @Schema(description = "规格")
   private String spec;
 
   /**
    * 单位
    */
-  @ApiModelProperty("单位")
+  @Schema(description = "单位")
   private String unit;
 
   /**
    * 库存数量
    */
-  @ApiModelProperty("库存数量")
+  @Schema(description = "库存数量")
   private BigDecimal stockNum;
 
   /**
    * 盘点任务ID
    */
-  @ApiModelProperty(value = "盘点任务ID", hidden = true)
+  @Schema(description = "盘点任务ID", hidden = true)
   @JsonIgnore
   private String planId;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", hidden = true)
+  @Schema(description = "仓库ID", hidden = true)
   @JsonIgnore
   private String scId;
 

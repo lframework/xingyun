@@ -22,13 +22,14 @@ import com.lframework.xingyun.settle.vo.check.CreateSettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.QuerySettleCheckSheetVo;
 import com.lframework.xingyun.settle.vo.check.QueryUnCheckBizItemVo;
 import com.lframework.xingyun.settle.vo.check.UpdateSettleCheckSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "供应商对账单")
+@Tag(name = "供应商对账单")
 @Validated
 @RestController
 @RequestMapping("/settle/checksheet")
@@ -57,7 +58,7 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 供应商对账单列表
    */
-  @ApiOperation("供应商对账单列表")
+  @Operation(summary = "供应商对账单列表")
   @HasPermission({"settle:check-sheet:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QuerySettleCheckSheetBo>> query(
@@ -79,7 +80,7 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"settle:check-sheet:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QuerySettleCheckSheetVo vo) {
@@ -92,8 +93,8 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"settle:check-sheet:query"})
   @GetMapping
   public InvokeResult<GetSettleCheckSheetBo> findById(
@@ -109,7 +110,7 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 创建供应商对账单
    */
-  @ApiOperation("创建供应商对账单")
+  @Operation(summary = "创建供应商对账单")
   @HasPermission({"settle:check-sheet:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateSettleCheckSheetVo vo) {
@@ -124,7 +125,7 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 修改供应商对账单
    */
-  @ApiOperation("修改供应商对账单")
+  @Operation(summary = "修改供应商对账单")
   @HasPermission({"settle:check-sheet:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateSettleCheckSheetVo vo) {
@@ -139,7 +140,7 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 审核通过供应商对账单
    */
-  @ApiOperation("审核通过供应商对账单")
+  @Operation(summary = "审核通过供应商对账单")
   @HasPermission({"settle:check-sheet:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSettleCheckSheetVo vo) {
@@ -152,7 +153,7 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 直接审核通过供应商对账单
    */
-  @ApiOperation("直接审核通过供应商对账单")
+  @Operation(summary = "直接审核通过供应商对账单")
   @HasPermission({"settle:check-sheet:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSettleCheckSheetVo vo) {
@@ -167,7 +168,7 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 审核拒绝供应商对账单
    */
-  @ApiOperation("审核拒绝供应商对账单")
+  @Operation(summary = "审核拒绝供应商对账单")
   @HasPermission({"settle:check-sheet:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSettleCheckSheetVo vo) {
@@ -180,8 +181,8 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 删除供应商对账单
    */
-  @ApiOperation("删除供应商对账单")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除供应商对账单")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"settle:check-sheet:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "供应商对账单ID不能为空！") String id) {
@@ -194,7 +195,7 @@ public class SettleCheckSheetController extends DefaultBaseController {
   /**
    * 查询未对账的业务单据
    */
-  @ApiOperation("查询未对账的业务单据")
+  @Operation(summary = "查询未对账的业务单据")
   @HasPermission({"settle:check-sheet:add", "settle:check-sheet:modify"})
   @GetMapping("/uncheck-items")
   public InvokeResult<List<SettleCheckBizItemBo>> getUnCheckItems(@Valid QueryUnCheckBizItemVo vo) {

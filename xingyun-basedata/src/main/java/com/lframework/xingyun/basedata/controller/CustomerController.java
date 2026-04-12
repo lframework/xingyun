@@ -18,16 +18,16 @@ import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.vo.customer.CreateCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.QueryCustomerVo;
 import com.lframework.xingyun.basedata.vo.customer.UpdateCustomerVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,7 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "客户管理")
+@Tag(name = "客户管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/customer")
@@ -55,7 +55,7 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 客户列表
    */
-  @ApiOperation("客户列表")
+  @Operation(summary = "客户列表")
   @HasPermission({"base-data:customer:query", "base-data:customer:add",
       "base-data:customer:modify"})
   @GetMapping("/query")
@@ -76,8 +76,8 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 查询客户
    */
-  @ApiOperation("查询客户")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询客户")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:customer:query", "base-data:customer:add",
       "base-data:customer:modify"})
   @GetMapping
@@ -96,11 +96,11 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 删除客户
    */
-  @ApiOperation("删除客户")
+  @Operation(summary = "删除客户")
   @HasPermission({"base-data:customer:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "客户ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "客户ID不能为空！") String id) {
 
     customerService.deleteById(id);
 
@@ -112,7 +112,7 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 新增客户
    */
-  @ApiOperation("新增客户")
+  @Operation(summary = "新增客户")
   @HasPermission({"base-data:customer:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateCustomerVo vo) {
@@ -125,7 +125,7 @@ public class CustomerController extends DefaultBaseController {
   /**
    * 修改客户
    */
-  @ApiOperation("修改客户")
+  @Operation(summary = "修改客户")
   @HasPermission({"base-data:customer:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateCustomerVo vo) {
@@ -137,14 +137,14 @@ public class CustomerController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:customer:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("客户导入模板", CustomerImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:customer:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

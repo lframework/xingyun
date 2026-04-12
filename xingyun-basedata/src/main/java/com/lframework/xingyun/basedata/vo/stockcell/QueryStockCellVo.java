@@ -2,9 +2,9 @@ package com.lframework.xingyun.basedata.vo.stockcell;
 
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.starter.web.core.vo.SortPageVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -15,36 +15,36 @@ public class QueryStockCellVo extends SortPageVo implements BaseVo, Serializable
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID")
+  @Schema(description = "仓库ID")
   private String scId;
 
   /**
    * 仓库编号
    */
-  @ApiModelProperty(value = "仓库编号")
+  @Schema(description = "仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty(value = "仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 编号
    */
-  @ApiModelProperty("编号")
+  @Schema(description = "编号")
   private String code;
 
   /**
    * 名称
    */
-  @ApiModelProperty("名称")
+  @Schema(description = "名称")
   private String name;
 
   /**
    * 仓位类别
    */
-  @ApiModelProperty("仓位类别")
+  @Schema(description = "仓位类别")
   private Integer cellType;
 }

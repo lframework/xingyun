@@ -29,13 +29,13 @@ import com.lframework.xingyun.sc.vo.purchase.receive.ReceiveSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.StockAdjustReasonSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.TakeStockPlanSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "数据选择器")
+@Tag(name = "数据选择器")
 @Validated
 @RestController
 @RequestMapping("/selector")
@@ -76,7 +76,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 采购订单
    */
-  @ApiOperation("采购订单")
+  @Operation(summary = "采购订单")
   @GetMapping("/purchaseorder")
   public InvokeResult<PageResult<PurchaseOrderSelectorBo>> selector(
       @Valid PurchaseOrderSelectorVo vo) {
@@ -97,7 +97,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 加载采购订单
    */
-  @ApiOperation("加载采购订单")
+  @Operation(summary = "加载采购订单")
   @PostMapping("/purchaseorder/load")
   public InvokeResult<List<PurchaseOrderSelectorBo>> loadPurchaseOrder(
       @RequestBody(required = false) List<String> ids) {
@@ -115,7 +115,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 采购收货单
    */
-  @ApiOperation("采购收货单")
+  @Operation(summary = "采购收货单")
   @GetMapping("/receivesheet")
   public InvokeResult<PageResult<ReceiveSheetSelectorBo>> selector(
       @Valid ReceiveSheetSelectorVo vo) {
@@ -136,7 +136,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 加载采购收货单
    */
-  @ApiOperation("加载采购收货单")
+  @Operation(summary = "加载采购收货单")
   @PostMapping("/receivesheet/load")
   public InvokeResult<List<ReceiveSheetSelectorBo>> loadReceiveSheet(
       @RequestBody(required = false) List<String> ids) {
@@ -154,7 +154,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 盘点任务
    */
-  @ApiOperation("盘点任务")
+  @Operation(summary = "盘点任务")
   @GetMapping("/takestock/plan")
   public InvokeResult<PageResult<TakeStockPlanSelectorBo>> selector(
       @Valid TakeStockPlanSelectorVo vo) {
@@ -175,7 +175,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 加载盘点任务
    */
-  @ApiOperation("加载盘点任务")
+  @Operation(summary = "加载盘点任务")
   @PostMapping("/takestock/plan/load")
   public InvokeResult<List<TakeStockPlanSelectorBo>> loadTakeStockPlan(
       @RequestBody(required = false) List<String> ids) {
@@ -193,7 +193,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 预先盘点单
    */
-  @ApiOperation("预先盘点单")
+  @Operation(summary = "预先盘点单")
   @GetMapping("/takestock/pre")
   public InvokeResult<PageResult<PreTakeStockSheetSelectorBo>> selector(
       @Valid PreTakeStockSheetSelectorVo vo) {
@@ -214,7 +214,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 加载预先盘点单
    */
-  @ApiOperation("加载预先盘点单")
+  @Operation(summary = "加载预先盘点单")
   @PostMapping("/takestock/pre/load")
   public InvokeResult<List<PreTakeStockSheetSelectorBo>> loadPreTakeStock(
       @RequestBody(required = false) List<String> ids) {
@@ -229,7 +229,7 @@ public class ScSelectorController extends DefaultBaseController {
     return InvokeResultBuilder.success(results);
   }
 
-  @ApiOperation("订单支付方式")
+  @Operation(summary = "订单支付方式")
   @GetMapping("/paytype/order")
   public InvokeResult<List<OrderPayTypeBo>> getOrderPayType(
       @NotBlank(message = "订单ID不能为空！") String orderId) {
@@ -242,7 +242,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 库存调整原因
    */
-  @ApiOperation("库存调整原因")
+  @Operation(summary = "库存调整原因")
   @GetMapping("/stock/adjust/reason")
   public InvokeResult<PageResult<StockAdjustReasonSelectorBo>> selector(
       @Valid StockAdjustReasonSelectorVo vo) {
@@ -263,7 +263,7 @@ public class ScSelectorController extends DefaultBaseController {
   /**
    * 加载库存调整原因
    */
-  @ApiOperation("加载库存调整原因")
+  @Operation(summary = "加载库存调整原因")
   @PostMapping("/stock/adjust/reason/load")
   public InvokeResult<List<StockAdjustReasonSelectorBo>> loadStockAdjustReason(
       @RequestBody(required = false) List<String> ids) {

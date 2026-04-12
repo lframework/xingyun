@@ -22,14 +22,15 @@ import com.lframework.xingyun.basedata.vo.print.QueryPrintTemplateVo;
 import com.lframework.xingyun.basedata.vo.print.UpdatePrintTemplateDemoDataVo;
 import com.lframework.xingyun.basedata.vo.print.UpdatePrintTemplateSettingVo;
 import com.lframework.xingyun.basedata.vo.print.UpdatePrintTemplateVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "打印模板")
+@Tag(name = "打印模板")
 @Validated
 @RestController
 @RequestMapping("/basedata/print/template")
@@ -58,7 +59,7 @@ public class PrintTemplateController extends DefaultBaseController {
   /**
    * 查询列表
    */
-  @ApiOperation("查询列表")
+  @Operation(summary = "查询列表")
   @HasPermission({"base-data:print-template:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryPrintTemplateBo>> query(@Valid QueryPrintTemplateVo vo) {
@@ -79,8 +80,8 @@ public class PrintTemplateController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:print-template:query"})
   @GetMapping
   public InvokeResult<GetPrintTemplateBo> get(@NotNull(message = "ID不能为空！") Integer id) {
@@ -98,7 +99,7 @@ public class PrintTemplateController extends DefaultBaseController {
   /**
    * 新增
    */
-  @ApiOperation("新增")
+  @Operation(summary = "新增")
   @HasPermission({"base-data:print-template:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreatePrintTemplateVo vo) {
@@ -111,7 +112,7 @@ public class PrintTemplateController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"base-data:print-template:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdatePrintTemplateVo vo) {
@@ -124,8 +125,8 @@ public class PrintTemplateController extends DefaultBaseController {
   /**
    * 查询设置
    */
-  @ApiOperation("查询设置")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询设置")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @GetMapping("/setting")
   public InvokeResult<GetPrintTemplateSettingBo> getSetting(
       @NotNull(message = "ID不能为空！") Integer id) {
@@ -143,7 +144,7 @@ public class PrintTemplateController extends DefaultBaseController {
   /**
    * 保存设置
    */
-  @ApiOperation("保存设置")
+  @Operation(summary = "保存设置")
   @HasPermission({"base-data:print-template:modify"})
   @PutMapping("/setting")
   public InvokeResult<Void> updateSetting(@Valid UpdatePrintTemplateSettingVo vo) {
@@ -153,7 +154,7 @@ public class PrintTemplateController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("设置示例数据")
+  @Operation(summary = "设置示例数据")
   @HasPermission({"base-data:print-template:modify"})
   @PutMapping("/setting/demo")
   public InvokeResult<Void> updateDemoData(@Valid UpdatePrintTemplateDemoDataVo vo) {
@@ -166,8 +167,8 @@ public class PrintTemplateController extends DefaultBaseController {
   /**
    * 查询组件设置
    */
-  @ApiOperation("查询组件设置")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询组件设置")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:print-template:modify"})
   @GetMapping("/setting/comp")
   public InvokeResult<List<GetPrintTemplateCompSettingBo>> getCompSetting(

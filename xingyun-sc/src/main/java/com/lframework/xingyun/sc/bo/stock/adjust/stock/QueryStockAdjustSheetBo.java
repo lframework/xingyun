@@ -12,7 +12,7 @@ import com.lframework.xingyun.sc.entity.StockAdjustReason;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -29,75 +29,75 @@ public class QueryStockAdjustSheetBo extends BaseBo<StockAdjustSheet> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 业务单据号
    */
-  @ApiModelProperty("业务单据号")
+  @Schema(description = "业务单据号")
   private String code;
 
   /**
    * 仓库编号
    */
-  @ApiModelProperty("仓库编号")
+  @Schema(description = "仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 业务类型
    */
-  @ApiModelProperty("业务类型")
+  @Schema(description = "业务类型")
   @EnumConvert
   private Integer bizType;
 
   /**
    * 调整原因
    */
-  @ApiModelProperty("调整原因")
+  @Schema(description = "调整原因")
   private String reasonName;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   private Integer status;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 修改人
    */
-  @ApiModelProperty("修改人")
+  @Schema(description = "修改人")
   private String updateBy;
 
   /**
    * 修改时间
    */
-  @ApiModelProperty("修改时间")
+  @Schema(description = "修改时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime updateTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime approveTime;
 

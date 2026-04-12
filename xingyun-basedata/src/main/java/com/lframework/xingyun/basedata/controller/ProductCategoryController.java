@@ -16,16 +16,16 @@ import com.lframework.xingyun.basedata.excel.product.category.ProductCategoryImp
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,7 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "分类管理")
+@Tag(name = "分类管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/category")
@@ -56,7 +56,7 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 分类列表
    */
-  @ApiOperation("分类列表")
+  @Operation(summary = "分类列表")
   @HasPermission({"base-data:product:category:query", "base-data:product:category:add",
       "base-data:product:category:modify"})
   @GetMapping("/query")
@@ -76,8 +76,8 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 查询分类
    */
-  @ApiOperation("查询分类")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询分类")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:category:query", "base-data:product:category:add",
       "base-data:product:category:modify"})
   @GetMapping
@@ -96,11 +96,11 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
+  @Operation(summary = "根据ID删除")
   @HasPermission({"base-data:product:category:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "分类ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "分类ID不能为空！") String id) {
 
     productCategoryService.deleteById(id);
     productCategoryService.cleanCacheByKey(id);
@@ -111,7 +111,7 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 新增分类
    */
-  @ApiOperation("新增分类")
+  @Operation(summary = "新增分类")
   @HasPermission({"base-data:product:category:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateProductCategoryVo vo) {
@@ -124,7 +124,7 @@ public class ProductCategoryController extends DefaultBaseController {
   /**
    * 修改分类
    */
-  @ApiOperation("修改分类")
+  @Operation(summary = "修改分类")
   @HasPermission({"base-data:product:category:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateProductCategoryVo vo) {
@@ -136,14 +136,14 @@ public class ProductCategoryController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:product:category:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("分类导入模板", ProductCategoryImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:product:category:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

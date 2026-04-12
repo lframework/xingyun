@@ -4,8 +4,8 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.PurchaseReturn;
 import com.lframework.xingyun.sc.service.purchase.PurchaseReturnService;
-import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -16,7 +16,7 @@ public class UpdatePurchaseReturnVo extends CreatePurchaseReturnVo {
   /**
    * 退货单ID
    */
-  @ApiModelProperty(value = "退货单ID", required = true)
+  @Schema(description = "退货单ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "退货单ID不能为空！")
   private String id;
 

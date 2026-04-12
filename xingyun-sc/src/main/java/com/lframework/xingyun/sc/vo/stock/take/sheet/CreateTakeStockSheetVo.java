@@ -3,12 +3,12 @@ package com.lframework.xingyun.sc.vo.stock.take.sheet;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
@@ -19,26 +19,26 @@ public class CreateTakeStockSheetVo implements BaseVo, Serializable {
   /**
    * 盘点任务ID
    */
-  @ApiModelProperty(value = "盘点任务ID", required = true)
+  @Schema(description = "盘点任务ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请选择关联盘点任务！")
   private String planId;
 
   /**
    * 预先盘点单ID
    */
-  @ApiModelProperty("预先盘点单ID")
+  @Schema(description = "预先盘点单ID")
   private String preSheetId;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "请录入商品！")
   private List<TakeStockSheetProductVo> products;

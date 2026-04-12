@@ -1,0 +1,31 @@
+server:
+  port: 15020
+
+spring:
+  application:
+    name: @project.artifactId@
+  profiles:
+    active: @profiles-active@
+  config:
+    import:
+      - optional:nacos:common.yaml?group=DEFAULT_GROUP
+      - optional:nacos:common-${spring.profiles.active}.yaml?group=DEFAULT_GROUP
+      - optional:nacos:db.yaml?group=DEFAULT_GROUP
+      - optional:nacos:db-${spring.profiles.active}.yaml?group=DEFAULT_GROUP
+      - optional:nacos:redis.yaml?group=DEFAULT_GROUP
+      - optional:nacos:redis-${spring.profiles.active}.yaml?group=DEFAULT_GROUP
+      - optional:nacos:mq.yaml?group=DEFAULT_GROUP
+      - optional:nacos:mq-${spring.profiles.active}.yaml?group=DEFAULT_GROUP
+      - optional:nacos:xingyun-cloud-api.yaml?group=DEFAULT_GROUP
+      - optional:nacos:xingyun-cloud-api-${spring.profiles.active}.yaml?group=DEFAULT_GROUP
+  cloud:
+    nacos:
+      config:
+        server-addr: ${nacos-server-addr}
+        file-extension: yaml
+        namespace: ${spring.profiles.active}
+      discovery:
+        server-addr: ${nacos-server-addr}
+        namespace: ${spring.profiles.active}
+
+nacos-server-addr: ${XINGYUN_NACOS_SERVER_ADDR:@discovery-server@}

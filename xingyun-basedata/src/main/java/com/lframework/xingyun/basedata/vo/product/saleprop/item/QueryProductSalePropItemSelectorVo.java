@@ -2,7 +2,7 @@ package com.lframework.xingyun.basedata.vo.product.saleprop.item;
 
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.starter.web.core.vo.PageVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import lombok.Data;
 
@@ -14,24 +14,24 @@ public class QueryProductSalePropItemSelectorVo extends PageVo implements BaseVo
   /**
    * 编号
    */
-  @ApiModelProperty("编号")
+  @Schema(description = "编号")
   private String code;
 
   /**
    * 名称
    */
-  @ApiModelProperty("名称")
+  @Schema(description = "名称")
   private String name;
 
   /**
    * 销售属性组ID
    */
-  @ApiModelProperty("销售属性组ID")
+  @Schema(description = "销售属性组ID")
   private String salePropGroupId;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   private Boolean available;
 }

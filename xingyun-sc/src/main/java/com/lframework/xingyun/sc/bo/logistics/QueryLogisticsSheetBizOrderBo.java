@@ -12,7 +12,7 @@ import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.logistics.LogisticsSheetBizOrderDto;
 import com.lframework.xingyun.sc.enums.LogisticsSheetDetailBizType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -22,56 +22,56 @@ public class QueryLogisticsSheetBizOrderBo extends BaseBo<LogisticsSheetBizOrder
   /**
    * 业务单据ID
    */
-  @ApiModelProperty("业务单据ID")
+  @Schema(description = "业务单据ID")
   private String bizId;
 
   /**
    * 业务单据号
    */
-  @ApiModelProperty("业务单据号")
+  @Schema(description = "业务单据号")
   private String bizCode;
 
   /**
    * 业务类型
    */
-  @ApiModelProperty("业务类型")
+  @Schema(description = "业务类型")
   @EnumConvert
   private Integer bizType;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty("仓库ID")
+  @Schema(description = "仓库ID")
   private String scId;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 收货人ID
    */
-  @ApiModelProperty("收货人ID")
+  @Schema(description = "收货人ID")
   private String receiverId;
 
   /**
    * 收货人姓名
    */
-  @ApiModelProperty("收货人姓名")
+  @Schema(description = "收货人姓名")
   private String receiverName;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   private LocalDateTime createTime;
 
   public QueryLogisticsSheetBizOrderBo() {

@@ -6,7 +6,7 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.JsonUtil;
 import com.lframework.xingyun.basedata.entity.PrintTemplate;
 import com.lframework.xingyun.basedata.service.print.PrintTemplateCompService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,25 +18,25 @@ public class GetPrintTemplateSettingBo extends BaseBo<PrintTemplate> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private Integer id;
 
   /**
    * JSON配置
    */
-  @ApiModelProperty("JSON配置")
+  @Schema(description = "JSON配置")
   private Map<String, Object> templateJson;
 
   /**
    * 示例数据
    */
-  @ApiModelProperty("示例数据")
+  @Schema(description = "示例数据")
   private Map<String, Object> demoData;
 
   /**
    * 附加组件配置
    */
-  @ApiModelProperty("附加组件配置")
+  @Schema(description = "附加组件配置")
   private List<Map<String, Object>> compJsonList;
 
   public GetPrintTemplateSettingBo() {

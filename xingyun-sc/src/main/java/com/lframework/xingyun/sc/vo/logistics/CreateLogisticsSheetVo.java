@@ -1,14 +1,14 @@
 package com.lframework.xingyun.sc.vo.logistics;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
@@ -19,125 +19,125 @@ public class CreateLogisticsSheetVo implements BaseVo, Serializable {
   /**
    * 物流单号
    */
-  @ApiModelProperty(value = "物流单号")
+  @Schema(description = "物流单号")
   private String logisticsNo;
 
   /**
    * 物流公司ID
    */
-  @ApiModelProperty(value = "物流公司ID", required = true)
+  @Schema(description = "物流公司ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "物流公司ID不能为空！")
   private String logisticsCompanyId;
 
   /**
    * 寄件人姓名
    */
-  @ApiModelProperty(value = "寄件人姓名", required = true)
+  @Schema(description = "寄件人姓名", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "寄件人姓名不能为空！")
   private String senderName;
 
   /**
    * 寄件人联系电话
    */
-  @ApiModelProperty(value = "寄件人联系电话", required = true)
+  @Schema(description = "寄件人联系电话", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "寄件人联系电话不能为空！")
   private String senderTelephone;
 
   /**
    * 寄件人省
    */
-  @ApiModelProperty(value = "寄件人省", required = true)
+  @Schema(description = "寄件人省", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "寄件人省不能为空！")
   private String senderProvinceId;
 
   /**
    * 寄件人市
    */
-  @ApiModelProperty(value = "寄件人市", required = true)
+  @Schema(description = "寄件人市", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "寄件人市不能为空！")
   private String senderCityId;
 
   /**
    * 寄件人区
    */
-  @ApiModelProperty(value = "寄件人区", required = true)
+  @Schema(description = "寄件人区", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "寄件人区不能为空！")
   private String senderDistrictId;
 
   /**
    * 寄件人地址
    */
-  @ApiModelProperty(value = "寄件人地址", required = true)
+  @Schema(description = "寄件人地址", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "寄件人地址不能为空！")
   private String senderAddress;
 
   /**
    * 收件人姓名
    */
-  @ApiModelProperty(value = "收件人姓名", required = true)
+  @Schema(description = "收件人姓名", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "收件人姓名不能为空！")
   private String receiverName;
 
   /**
    * 收件人联系电话
    */
-  @ApiModelProperty(value = "收件人联系电话", required = true)
+  @Schema(description = "收件人联系电话", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "收件人联系电话不能为空！")
   private String receiverTelephone;
 
   /**
    * 收件人省
    */
-  @ApiModelProperty(value = "收件人省", required = true)
+  @Schema(description = "收件人省", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "收件人省不能为空！")
   private String receiverProvinceId;
 
   /**
    * 收件人市
    */
-  @ApiModelProperty(value = "收件人市", required = true)
+  @Schema(description = "收件人市", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "收件人市不能为空！")
   private String receiverCityId;
 
   /**
    * 收件人区
    */
-  @ApiModelProperty(value = "收件人区", required = true)
+  @Schema(description = "收件人区", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "收件人区不能为空！")
   private String receiverDistrictId;
 
   /**
    * 收件人地址
    */
-  @ApiModelProperty(value = "收件人地址", required = true)
+  @Schema(description = "收件人地址", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "收件人地址不能为空！")
   private String receiverAddress;
 
   /**
    * 总重量
    */
-  @ApiModelProperty(value = "总重量")
+  @Schema(description = "总重量")
   @Min(value = 0, message = "总重量必须大于0！")
   private BigDecimal totalWeight;
 
   /**
    * 总体积
    */
-  @ApiModelProperty(value = "总体积")
+  @Schema(description = "总体积")
   @Min(value = 0, message = "总体积必须大于0！")
   private BigDecimal totalVolume;
 
   /**
    * 物流费
    */
-  @ApiModelProperty(value = "物流费")
+  @Schema(description = "物流费")
   @Min(value = 0, message = "物流费必须大于0！")
   private BigDecimal totalAmount;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**

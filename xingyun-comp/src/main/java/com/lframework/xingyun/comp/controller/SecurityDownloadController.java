@@ -10,11 +10,12 @@ import com.lframework.starter.web.core.utils.ResponseUtil;
 import com.lframework.starter.web.core.utils.UploadUtil;
 import com.lframework.starter.web.inner.entity.SecurityUploadRecord;
 import com.lframework.starter.web.inner.service.SecurityUploadRecordService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.io.File;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "安全下载")
+@Tag(name = "安全下载")
 @Slf4j
 @Validated
 @RestController
@@ -40,8 +41,8 @@ public class SecurityDownloadController extends DefaultBaseController {
   @Autowired
   private RedisHandler redisHandler;
 
-  @ApiOperation("下载文件（获取签名URL）")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "下载文件（获取签名URL）")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @GetMapping("/url")
   public InvokeResult<String> getSecurityDownloadUrl(@NotBlank(message = "ID不能为空！") String id) {
     SecurityUploadRecord record = securityUploadRecordService.getById(id);
@@ -57,8 +58,8 @@ public class SecurityDownloadController extends DefaultBaseController {
         UploadUtil.generatePresignedUrl(record.getUploadType().getCode(), record.getFilePath()));
   }
 
-  @ApiOperation("下载文件")
-  @ApiImplicitParam(value = "签名", name = "sign", paramType = "query", required = true)
+  @Operation(summary = "下载文件")
+  @Parameter(name = "sign", description = "签名", in = ParameterIn.QUERY, required = true)
   @GetMapping
   public void download(@NotBlank(message = "签名不能为空！") String sign) {
     Object val = redisHandler.hget("security-upload", sign);

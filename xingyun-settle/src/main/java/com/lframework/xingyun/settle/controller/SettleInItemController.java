@@ -17,15 +17,15 @@ import com.lframework.xingyun.settle.service.SettleInItemService;
 import com.lframework.xingyun.settle.vo.item.in.CreateSettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.QuerySettleInItemVo;
 import com.lframework.xingyun.settle.vo.item.in.UpdateSettleInItemVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "收入项目")
+@Tag(name = "收入项目")
 @Validated
 @RestController
 @RequestMapping("/settle/item/in")
@@ -52,7 +52,7 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 收入项目列表
    */
-  @ApiOperation("收入项目列表")
+  @Operation(summary = "收入项目列表")
   @HasPermission({"settle:in-item:query", "settle:in-item:add", "settle:in-item:modify"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QuerySettleInItemBo>> query(@Valid QuerySettleInItemVo vo) {
@@ -73,8 +73,8 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 查询收入项目
    */
-  @ApiOperation("查询收入项目")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询收入项目")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"settle:in-item:query", "settle:in-item:add", "settle:in-item:modify"})
   @GetMapping
   public InvokeResult<GetSettleInItemBo> get(@NotBlank(message = "ID不能为空！") String id) {
@@ -92,7 +92,7 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 导出收入项目
    */
-  @ApiOperation("导出收入项目")
+  @Operation(summary = "导出收入项目")
   @HasPermission({"settle:in-item:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QuerySettleInItemVo vo) {
@@ -105,11 +105,11 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
+  @Operation(summary = "根据ID删除")
   @HasPermission({"settle:in-item:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "收入项目ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "收入项目ID不能为空！") String id) {
 
     settleInItemService.deleteById(id);
 
@@ -121,7 +121,7 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 新增收入项目
    */
-  @ApiOperation("新增收入项目")
+  @Operation(summary = "新增收入项目")
   @HasPermission({"settle:in-item:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateSettleInItemVo vo) {
@@ -134,7 +134,7 @@ public class SettleInItemController extends DefaultBaseController {
   /**
    * 修改收入项目
    */
-  @ApiOperation("修改收入项目")
+  @Operation(summary = "修改收入项目")
   @HasPermission({"settle:in-item:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateSettleInItemVo vo) {

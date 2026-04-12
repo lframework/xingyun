@@ -22,16 +22,16 @@ import com.lframework.xingyun.sc.service.stock.warning.ProductStockWarningServic
 import com.lframework.xingyun.sc.vo.stock.warning.CreateProductStockWarningVo;
 import com.lframework.xingyun.sc.vo.stock.warning.QueryProductStockWarningVo;
 import com.lframework.xingyun.sc.vo.stock.warning.UpdateProductStockWarningVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,7 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "库存预警")
+@Tag(name = "库存预警")
 @Validated
 @RestController
 @RequestMapping("/stock/warning")
@@ -63,7 +63,7 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 查询列表
    */
-  @ApiOperation("查询列表")
+  @Operation(summary = "查询列表")
   @HasPermission({"stock:warning:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryProductStockWarningBo>> query(
@@ -86,8 +86,8 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:warning:query"})
   @GetMapping("/detail")
   public InvokeResult<GetProductStockWarningBo> getDetail(
@@ -106,7 +106,7 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 新增
    */
-  @ApiOperation("新增")
+  @Operation(summary = "新增")
   @HasPermission({"stock:warning:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateProductStockWarningVo vo) {
@@ -119,7 +119,7 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"stock:warning:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateProductStockWarningVo vo) {
@@ -132,8 +132,8 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:warning:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "id不能为空！") String id) {
@@ -146,11 +146,11 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 批量删除
    */
-  @ApiOperation("批量删除")
+  @Operation(summary = "批量删除")
   @HasPermission({"stock:warning:delete"})
   @DeleteMapping("/batch")
   public InvokeResult<Void> deleteByIds(
-      @ApiParam(value = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的库存预警！") List<String> ids) {
+      @Parameter(description = "ID", required = true) @RequestBody @NotEmpty(message = "请选择需要删除的库存预警！") List<String> ids) {
 
     productStockWarningService.deleteByIds(ids);
 
@@ -160,7 +160,7 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 查询设置的消息通知组
    */
-  @ApiOperation("查询设置的消息通知组")
+  @Operation(summary = "查询设置的消息通知组")
   @HasPermission({"stock:warning:notify"})
   @GetMapping("/setting")
   public InvokeResult<List<GetProductStockWarningNotifyBo>> getSetting() {
@@ -176,11 +176,11 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 新增设置的消息通知组
    */
-  @ApiOperation("保存设置的消息通知组")
+  @Operation(summary = "保存设置的消息通知组")
   @HasPermission({"stock:warning:notify"})
   @PostMapping("/setting")
   public InvokeResult<Void> createSetting(
-      @ApiParam(value = "消息通知组ID", required = true) @NotBlank(message = "消息通知组ID不能为空！") String id) {
+      @Parameter(description = "消息通知组ID", required = true) @NotBlank(message = "消息通知组ID不能为空！") String id) {
 
     productStockWarningNotifyService.createSetting(id);
 
@@ -190,25 +190,25 @@ public class ProductStockWarningController extends DefaultBaseController {
   /**
    * 删除设置的消息通知组
    */
-  @ApiOperation("删除设置的消息通知组")
+  @Operation(summary = "删除设置的消息通知组")
   @HasPermission({"stock:warning:notify"})
   @DeleteMapping("/setting")
   public InvokeResult<Void> deleteSetting(
-      @ApiParam(value = "消息通知组ID", required = true) @NotBlank(message = "消息通知组ID不能为空！") String id) {
+      @Parameter(description = "消息通知组ID", required = true) @NotBlank(message = "消息通知组ID不能为空！") String id) {
 
     productStockWarningNotifyService.deleteSetting(id);
 
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"stock:warning:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("库存预警导入模板", StockWarningImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"stock:warning:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

@@ -15,14 +15,15 @@ import com.lframework.xingyun.comp.vo.sw.filebox.CreateFileBoxDirVo;
 import com.lframework.xingyun.comp.vo.sw.filebox.QueryFileBoxVo;
 import com.lframework.xingyun.comp.vo.sw.filebox.UpdateFileBoxVo;
 import com.lframework.xingyun.comp.vo.sw.filebox.UploadFileBoxVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 文件收纳箱 Controller
  */
-@Api(tags = "文件收纳箱")
+@Tag(name = "文件收纳箱")
 @Validated
 @RestController
 @RequestMapping("/sw/filebox")
@@ -44,7 +45,7 @@ public class FileBoxController extends DefaultBaseController {
   @Autowired
   private FileBoxService fileBoxService;
 
-  @ApiOperation("创建文件夹")
+  @Operation(summary = "创建文件夹")
   @PostMapping("/dir")
   public InvokeResult<Void> createDir(@Valid CreateFileBoxDirVo vo) {
 
@@ -56,7 +57,7 @@ public class FileBoxController extends DefaultBaseController {
   /**
    * 上传文件
    */
-  @ApiOperation("上传文件")
+  @Operation(summary = "上传文件")
   @PostMapping("/upload")
   public InvokeResult<Void> upload(@Valid UploadFileBoxVo vo) {
 
@@ -68,7 +69,7 @@ public class FileBoxController extends DefaultBaseController {
   /**
    * 查询列表
    */
-  @ApiOperation("查询列表")
+  @Operation(summary = "查询列表")
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryFileBoxBo>> query(@Valid QueryFileBoxVo vo) {
 
@@ -88,8 +89,8 @@ public class FileBoxController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "id", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @GetMapping
   public InvokeResult<GetFileBoxBo> get(@NotBlank(message = "id不能为空！") String id) {
 
@@ -106,7 +107,7 @@ public class FileBoxController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateFileBoxVo vo) {
 
@@ -115,7 +116,7 @@ public class FileBoxController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("删除")
+  @Operation(summary = "删除")
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotEmpty(message = "ID不能为空！") String id) {
     fileBoxService.deleteById(id);

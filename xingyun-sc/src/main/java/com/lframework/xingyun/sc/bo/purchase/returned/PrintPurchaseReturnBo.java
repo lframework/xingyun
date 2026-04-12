@@ -18,7 +18,7 @@ import com.lframework.xingyun.sc.enums.PurchaseReturnStatus;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,85 +30,85 @@ public class PrintPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
   /**
    * 单号
    */
-  @ApiModelProperty("单号")
+  @Schema(description = "单号")
   private String code;
 
   /**
    * 仓库编号
    */
-  @ApiModelProperty("仓库编号")
+  @Schema(description = "仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 供应商编号
    */
-  @ApiModelProperty("供应商编号")
+  @Schema(description = "供应商编号")
   private String supplierCode;
 
   /**
    * 供应商名称
    */
-  @ApiModelProperty("供应商名称")
+  @Schema(description = "供应商名称")
   private String supplierName;
 
   /**
    * 采购员姓名
    */
-  @ApiModelProperty("采购员姓名")
+  @Schema(description = "采购员姓名")
   private String purchaserName;
 
   /**
    * 付款日期
    */
-  @ApiModelProperty("付款日期")
+  @Schema(description = "付款日期")
   private String paymentDate;
 
   /**
    * 采购收货单号
    */
-  @ApiModelProperty("采购收货单号")
+  @Schema(description = "采购收货单号")
   private String receiveSheetCode;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   private String createTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   private String approveTime;
 
   /**
    * 订单明细
    */
-  @ApiModelProperty("订单明细")
+  @Schema(description = "订单明细")
   private List<ReturnDetailBo> details;
 
   public PrintPurchaseReturnBo(PurchaseReturnFullDto dto) {
@@ -176,43 +176,43 @@ public class PrintPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
     /**
      * 明细ID
      */
-    @ApiModelProperty("明细ID")
+    @Schema(description = "明细ID")
     private String id;
 
     /**
      * 商品ID
      */
-    @ApiModelProperty("商品ID")
+    @Schema(description = "商品ID")
     private String productId;
 
     /**
      * 商品编号
      */
-    @ApiModelProperty("商品编号")
+    @Schema(description = "商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
-    @ApiModelProperty("商品名称")
+    @Schema(description = "商品名称")
     private String productName;
 
     /**
      * 退货数量
      */
-    @ApiModelProperty("退货数量")
+    @Schema(description = "退货数量")
     private BigDecimal returnNum;
 
     /**
      * 退货价
      */
-    @ApiModelProperty("退货价")
+    @Schema(description = "退货价")
     private BigDecimal purchasePrice;
 
     /**
      * 退货金额
      */
-    @ApiModelProperty("退货金额")
+    @Schema(description = "退货金额")
     private BigDecimal returnAmount;
 
     public ReturnDetailBo(PurchaseReturnFullDto.ReturnDetailDto dto) {

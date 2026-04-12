@@ -2,10 +2,10 @@ package com.lframework.xingyun.settle.vo.item.out;
 
 import com.lframework.starter.web.core.components.validation.IsCode;
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -16,14 +16,14 @@ public class UpdateSettleOutItemVo implements BaseVo, Serializable {
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "ID不能为空！")
   private String id;
 
   /**
    * 编号
    */
-  @ApiModelProperty(value = "编号", required = true)
+  @Schema(description = "编号", requiredMode = Schema.RequiredMode.REQUIRED)
   @IsCode
   @NotBlank(message = "请输入编号！")
   private String code;
@@ -31,13 +31,13 @@ public class UpdateSettleOutItemVo implements BaseVo, Serializable {
   /**
    * 名称
    */
-  @ApiModelProperty(value = "名称", required = true)
+  @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请输入名称！")
   private String name;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 }

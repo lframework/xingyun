@@ -35,16 +35,17 @@ import com.lframework.xingyun.sc.vo.logistics.LogisticsSheetCalcWeightOrVolumeVo
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetBizOrderVo;
 import com.lframework.xingyun.sc.vo.logistics.QueryLogisticsSheetVo;
 import com.lframework.xingyun.sc.vo.logistics.UpdateLogisticsSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -61,7 +62,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "物流单管理")
+@Tag(name = "物流单管理")
 @Validated
 @RestController
 @RequestMapping("/logistics/sheet")
@@ -79,7 +80,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 物流单列表
    */
-  @ApiOperation("物流单列表")
+  @Operation(summary = "物流单列表")
   @HasPermission({"logistics:sheet:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryLogisticsSheetBo>> query(@Valid QueryLogisticsSheetVo vo) {
@@ -100,8 +101,8 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"logistics:sheet:query"})
   @GetMapping
   public InvokeResult<GetLogisticsSheetBo> findById(
@@ -117,7 +118,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 查询业务单据
    */
-  @ApiOperation("查询业务单据")
+  @Operation(summary = "查询业务单据")
   @HasPermission({"logistics:sheet:add", "logistics:sheet:modify"})
   @GetMapping("/biz")
   public InvokeResult<PageResult<QueryLogisticsSheetBizOrderBo>> queryBizOrder(
@@ -139,7 +140,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 计算重量
    */
-  @ApiOperation("计算重量")
+  @Operation(summary = "计算重量")
   @HasPermission({"logistics:sheet:add", "logistics:sheet:modify"})
   @PostMapping("/calc/weight")
   public InvokeResult<BigDecimal> calcWeight(
@@ -177,7 +178,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 计算体积
    */
-  @ApiOperation("计算体积")
+  @Operation(summary = "计算体积")
   @HasPermission({"logistics:sheet:add", "logistics:sheet:modify"})
   @PostMapping("/calc/volume")
   public InvokeResult<BigDecimal> calcVolume(
@@ -215,7 +216,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 创建物流单
    */
-  @ApiOperation("创建物流单")
+  @Operation(summary = "创建物流单")
   @HasPermission({"logistics:sheet:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateLogisticsSheetVo vo) {
@@ -228,7 +229,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 修改物流单
    */
-  @ApiOperation("修改物流单")
+  @Operation(summary = "修改物流单")
   @HasPermission({"logistics:sheet:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateLogisticsSheetVo vo) {
@@ -241,8 +242,8 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 删除物流单
    */
-  @ApiOperation("删除物流单")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除物流单")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"logistics:sheet:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "物流单ID不能为空！") String id) {
@@ -255,8 +256,8 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 查询物流单发货信息
    */
-  @ApiOperation("查询物流单发货信息")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询物流单发货信息")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"logistics:sheet:delivery"})
   @GetMapping("/delivery")
   public InvokeResult<GetLogisticsSheetDeliveryBo> queryDelivery(
@@ -273,7 +274,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 物流单发货
    */
-  @ApiOperation("物流单发货")
+  @Operation(summary = "物流单发货")
   @HasPermission({"logistics:sheet:delivery"})
   @PutMapping("/delivery")
   public InvokeResult<Void> delivery(@Valid DeliveryLogisticsSheetVo vo) {
@@ -286,7 +287,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"logistics:sheet:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryLogisticsSheetVo vo) {
@@ -296,14 +297,14 @@ public class LogisticsSheetController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"logistics:sheet:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("物流单导入模板", LogisticsSheetImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"logistics:sheet:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,
@@ -316,14 +317,14 @@ public class LogisticsSheetController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载批量发货模板")
+  @Operation(summary = "下载批量发货模板")
   @HasPermission({"logistics:sheet:delivery"})
   @GetMapping("/import/template/delivery")
   public void downloadDeliveryImportTemplate() {
     ExcelUtil.exportXls("物流单批量发货模板", LogisticsSheetDeliveryImportModel.class);
   }
 
-  @ApiOperation("批量发货")
+  @Operation(summary = "批量发货")
   @HasPermission({"logistics:sheet:delivery"})
   @PostMapping("/import/delivery")
   public InvokeResult<Void> deliveryImportExcel(@NotBlank(message = "ID不能为空") String id,

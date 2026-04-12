@@ -5,7 +5,7 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.PayType;
 import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
 import com.lframework.xingyun.sc.entity.OrderPayType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -15,34 +15,34 @@ public class OrderPayTypeBo extends BaseBo<OrderPayType> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 订单ID
    */
-  @ApiModelProperty("订单ID")
+  @Schema(description = "订单ID")
   private String orderId;
 
   /**
    * 支付方式ID
    */
-  @ApiModelProperty("支付方式ID")
+  @Schema(description = "支付方式ID")
   private String payTypeId;
 
   /**
    * 支付金额
    */
-  @ApiModelProperty("支付金额")
+  @Schema(description = "支付金额")
   private BigDecimal payAmount;
 
   /**
    * 支付内容
    */
-  @ApiModelProperty("支付内容")
+  @Schema(description = "支付内容")
   private String text;
 
-  @ApiModelProperty("是否记录内容")
+  @Schema(description = "是否记录内容")
   private Boolean recText;
 
   public OrderPayTypeBo() {

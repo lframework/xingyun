@@ -6,7 +6,7 @@ import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.enums.PropertyType;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -17,55 +17,55 @@ public class GetProductPropertyBo extends BaseBo<ProductProperty> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 编号
    */
-  @ApiModelProperty("编号")
+  @Schema(description = "编号")
   private String code;
 
   /**
    * 名称
    */
-  @ApiModelProperty("名称")
+  @Schema(description = "名称")
   private String name;
 
   /**
    * 是否必填
    */
-  @ApiModelProperty("是否必填")
+  @Schema(description = "是否必填")
   private Boolean isRequired;
 
   /**
    * 录入类型
    */
-  @ApiModelProperty("录入类型")
+  @Schema(description = "录入类型")
   private Integer columnType;
 
   /**
    * 数据类型
    */
-  @ApiModelProperty("数据类型")
+  @Schema(description = "数据类型")
   private Integer columnDataType;
 
   /**
    * 属性类别
    */
-  @ApiModelProperty("属性类别")
+  @Schema(description = "属性类别")
   private Integer propertyType;
 
   /**
    * 分类
    */
-  @ApiModelProperty("分类")
+  @Schema(description = "分类")
   private List<String> categories;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   public GetProductPropertyBo() {

@@ -32,14 +32,15 @@ import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.QueryScTransferProductVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.ReceiveScTransferOrderVo;
 import com.lframework.xingyun.sc.vo.stock.transfer.UpdateScTransferOrderVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,7 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "仓库调拨单")
+@Tag(name = "仓库调拨单")
 @Validated
 @RestController
 @RequestMapping("/stock/transfer/sc")
@@ -71,7 +72,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 查询列表
    */
-  @ApiOperation("查询列表")
+  @Operation(summary = "查询列表")
   @HasPermission({"stock:sc-transfer:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryScTransferOrderBo>> query(
@@ -94,8 +95,8 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:sc-transfer:query"})
   @GetMapping("/detail")
   public InvokeResult<ScTransferOrderFullBo> getDetail(
@@ -114,7 +115,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"stock:sc-transfer:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryScTransferOrderVo vo) {
@@ -127,10 +128,10 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 根据关键字查询商品列表
    */
-  @ApiOperation("根据关键字查询商品列表")
-  @ApiImplicitParams({
-      @ApiImplicitParam(value = "仓库ID", name = "scId", paramType = "query", required = true),
-      @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
+  @Operation(summary = "根据关键字查询商品列表")
+  @Parameters({
+      @Parameter(name = "scId", description = "仓库ID", in = ParameterIn.QUERY, required = true),
+      @Parameter(name = "condition", description = "关键字", in = ParameterIn.QUERY, required = true)})
   @HasPermission({"stock:sc-transfer:add", "stock:sc-transfer:modify"})
   @GetMapping("/product/search")
   public InvokeResult<List<ScTransferProductBo>> searchProducts(
@@ -155,7 +156,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 查询商品列表
    */
-  @ApiOperation("查询商品列表")
+  @Operation(summary = "查询商品列表")
   @HasPermission({"stock:sc-transfer:add", "stock:sc-transfer:modify"})
   @GetMapping("/product/list")
   public InvokeResult<PageResult<ScTransferProductBo>> queryProductList(
@@ -178,7 +179,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 新增
    */
-  @ApiOperation("新增")
+  @Operation(summary = "新增")
   @HasPermission({"stock:sc-transfer:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreateScTransferOrderVo vo) {
@@ -193,7 +194,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"stock:sc-transfer:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid @RequestBody UpdateScTransferOrderVo vo) {
@@ -208,8 +209,8 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:sc-transfer:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "id不能为空！") String id) {
@@ -222,7 +223,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 审核通过
    */
-  @ApiOperation("审核通过")
+  @Operation(summary = "审核通过")
   @HasPermission({"stock:sc-transfer:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassScTransferOrderVo vo) {
@@ -235,7 +236,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
-  @ApiOperation("直接审核通过")
+  @Operation(summary = "直接审核通过")
   @HasPermission({"stock:sc-transfer:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateScTransferOrderVo vo) {
@@ -250,7 +251,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
-  @ApiOperation("审核拒绝")
+  @Operation(summary = "审核拒绝")
   @HasPermission({"stock:sc-transfer:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(
@@ -264,7 +265,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 收货
    */
-  @ApiOperation("收货")
+  @Operation(summary = "收货")
   @HasPermission({"stock:sc-transfer:receive"})
   @PatchMapping("/receive")
   public InvokeResult<Void> receive(@RequestBody @Valid ReceiveScTransferOrderVo vo) {
@@ -277,7 +278,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   /**
    * 收货记录
    */
-  @ApiOperation("收货记录")
+  @Operation(summary = "收货记录")
   @HasPermission({"stock:sc-transfer:query"})
   @GetMapping("/receive/detail")
   public InvokeResult<PageResult<QueryScTransferOrderDetailReceiveBo>> receiveDetail(

@@ -1,9 +1,9 @@
 package com.lframework.xingyun.sc.vo.stock.take.sheet;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -14,14 +14,14 @@ public class ApproveRefuseTakeStockSheetVo implements BaseVo, Serializable {
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "id不能为空！")
   private String id;
 
   /**
    * 拒绝理由
    */
-  @ApiModelProperty(value = "拒绝理由", required = true)
+  @Schema(description = "拒绝理由", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "拒绝理由不能为空！")
   private String refuseReason;
 }

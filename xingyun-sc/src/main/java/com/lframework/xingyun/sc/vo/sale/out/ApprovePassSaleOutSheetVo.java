@@ -1,9 +1,9 @@
 package com.lframework.xingyun.sc.vo.sale.out;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -14,13 +14,13 @@ public class ApprovePassSaleOutSheetVo implements BaseVo, Serializable {
   /**
    * 出库单ID
    */
-  @ApiModelProperty(value = "出库单ID", required = true)
+  @Schema(description = "出库单ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "出库单ID不能为空！")
   private String id;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 }

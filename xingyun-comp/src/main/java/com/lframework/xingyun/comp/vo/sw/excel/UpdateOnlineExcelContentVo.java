@@ -1,9 +1,9 @@
 package com.lframework.xingyun.comp.vo.sw.excel;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -14,14 +14,14 @@ public class UpdateOnlineExcelContentVo implements BaseVo, Serializable {
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "id不能为空！")
   private String id;
 
   /**
    * 内容
    */
-  @ApiModelProperty(value = "内容", required = true)
+  @Schema(description = "内容", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "内容不能为空！")
   private String content;
 }

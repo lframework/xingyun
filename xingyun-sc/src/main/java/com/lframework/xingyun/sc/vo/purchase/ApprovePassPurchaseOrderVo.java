@@ -1,9 +1,9 @@
 package com.lframework.xingyun.sc.vo.purchase;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -14,7 +14,7 @@ public class ApprovePassPurchaseOrderVo implements BaseVo, Serializable {
   /**
    * 订单ID
    */
-  @ApiModelProperty(value = "订单ID", required = true)
+  @Schema(description = "订单ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "订单ID不能为空！")
   private String id;
 }

@@ -17,7 +17,7 @@ import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,69 +30,69 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 业务单据号
    */
-  @ApiModelProperty("业务单据号")
+  @Schema(description = "业务单据号")
   private String code;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 盘点类别
    */
-  @ApiModelProperty("盘点类别")
+  @Schema(description = "盘点类别")
   private Integer takeType;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 盘点状态
    */
-  @ApiModelProperty("盘点状态")
+  @Schema(description = "盘点状态")
   private Integer takeStatus;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime createTime;
 
   /**
    * 修改人
    */
-  @ApiModelProperty("修改人")
+  @Schema(description = "修改人")
   private String updateBy;
 
   /**
    * 修改时间
    */
-  @ApiModelProperty("修改时间")
+  @Schema(description = "修改时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime updateTime;
 
   /**
    * 明细
    */
-  @ApiModelProperty("明细")
+  @Schema(description = "明细")
   private List<DetailBo> details;
 
   public TakeStockPlanFullBo(TakeStockPlanFullDto dto) {
@@ -128,97 +128,97 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
     /**
      * 明细ID
      */
-    @ApiModelProperty("明细ID")
+    @Schema(description = "明细ID")
     private String id;
 
     /**
      * 商品ID
      */
-    @ApiModelProperty("商品ID")
+    @Schema(description = "商品ID")
     private String productId;
 
     /**
      * 商品编号
      */
-    @ApiModelProperty("商品编号")
+    @Schema(description = "商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
-    @ApiModelProperty("商品名称")
+    @Schema(description = "商品名称")
     private String productName;
 
     /**
      * 分类名称
      */
-    @ApiModelProperty("分类名称")
+    @Schema(description = "分类名称")
     private String categoryName;
 
     /**
      * 品牌名称
      */
-    @ApiModelProperty("品牌名称")
+    @Schema(description = "品牌名称")
     private String brandName;
 
     /**
      * 规格
      */
-    @ApiModelProperty("规格")
+    @Schema(description = "规格")
     private String spec;
 
     /**
      * 单位
      */
-    @ApiModelProperty("单位")
+    @Schema(description = "单位")
     private String unit;
 
     /**
      * 库存数量
      */
-    @ApiModelProperty("库存数量")
+    @Schema(description = "库存数量")
     private BigDecimal stockNum;
 
     /**
      * 原盘点数量（通过盘点单统计）
      */
-    @ApiModelProperty("原盘点数量（通过盘点单统计）")
+    @Schema(description = "原盘点数量（通过盘点单统计）")
     private BigDecimal oriTakeNum;
 
     /**
      * 修改后的盘点数量
      */
-    @ApiModelProperty("修改后的盘点数量")
+    @Schema(description = "修改后的盘点数量")
     private BigDecimal takeNum;
 
     /**
      * 出项数量
      */
-    @ApiModelProperty("出项数量")
+    @Schema(description = "出项数量")
     private BigDecimal totalOutNum;
 
     /**
      * 进项数量
      */
-    @ApiModelProperty("进项数量")
+    @Schema(description = "进项数量")
     private BigDecimal totalInNum;
 
     /**
      * 备注
      */
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     private String description;
 
     /**
      * 差异数量
      */
-    @ApiModelProperty("差异数量")
+    @Schema(description = "差异数量")
     private BigDecimal diffNum;
 
     /**
      * 盘点任务ID
      */
-    @ApiModelProperty(value = "盘点任务ID", hidden = true)
+    @Schema(description = "盘点任务ID", hidden = true)
     @JsonIgnore
     private String planId;
 

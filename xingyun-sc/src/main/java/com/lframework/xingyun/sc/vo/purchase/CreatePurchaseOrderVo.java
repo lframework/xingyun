@@ -6,15 +6,15 @@ import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -25,34 +25,34 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 供应商ID
    */
-  @ApiModelProperty(value = "供应商ID", required = true)
+  @Schema(description = "供应商ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "供应商ID不能为空！")
   private String supplierId;
 
   /**
    * 采购员ID
    */
-  @ApiModelProperty("采购员ID")
+  @Schema(description = "采购员ID")
   private String purchaserId;
 
   /**
    * 预计到货日期
    */
-  @ApiModelProperty(value = "预计到货日期", required = true)
+  @Schema(description = "预计到货日期", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "预计到货日期不能为空！")
   private LocalDate expectArriveDate;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<PurchaseProductVo> products;
@@ -60,14 +60,14 @@ public class CreatePurchaseOrderVo implements BaseVo, Serializable {
   /**
    * 支付方式
    */
-  @ApiModelProperty("约定支付")
+  @Schema(description = "约定支付")
   @Valid
   private List<OrderPayTypeVo> payTypes;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   public void validate() {

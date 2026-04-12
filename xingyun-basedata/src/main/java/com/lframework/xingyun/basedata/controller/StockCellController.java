@@ -18,16 +18,16 @@ import com.lframework.xingyun.basedata.service.stockcell.StockCellService;
 import com.lframework.xingyun.basedata.vo.stockcell.CreateStockCellVo;
 import com.lframework.xingyun.basedata.vo.stockcell.QueryStockCellVo;
 import com.lframework.xingyun.basedata.vo.stockcell.UpdateStockCellVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,7 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "仓位管理")
+@Tag(name = "仓位管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/stock-cell")
@@ -55,7 +55,7 @@ public class StockCellController extends DefaultBaseController {
   /**
    * 仓位列表
    */
-  @ApiOperation("仓位列表")
+  @Operation(summary = "仓位列表")
   @HasPermission({"base-data:stock-cell:query", "base-data:stock-cell:add",
       "base-data:stock-cell:modify", "base-data:stock-cell-product:query",
       "base-data:stock-cell-product:add",
@@ -79,8 +79,8 @@ public class StockCellController extends DefaultBaseController {
   /**
    * 查询仓位
    */
-  @ApiOperation("查询仓位")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询仓位")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:stock-cell:query", "base-data:stock-cell:add",
       "base-data:stock-cell:modify"})
   @GetMapping
@@ -99,11 +99,11 @@ public class StockCellController extends DefaultBaseController {
   /**
    * 删除仓位
    */
-  @ApiOperation("删除仓位")
+  @Operation(summary = "删除仓位")
   @HasPermission({"base-data:stock-cell:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "仓位ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "仓位ID不能为空！") String id) {
 
     stockCellService.deleteById(id);
 
@@ -115,7 +115,7 @@ public class StockCellController extends DefaultBaseController {
   /**
    * 新增仓位
    */
-  @ApiOperation("新增仓位")
+  @Operation(summary = "新增仓位")
   @HasPermission({"base-data:stock-cell:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateStockCellVo vo) {
@@ -128,7 +128,7 @@ public class StockCellController extends DefaultBaseController {
   /**
    * 修改仓位
    */
-  @ApiOperation("修改仓位")
+  @Operation(summary = "修改仓位")
   @HasPermission({"base-data:stock-cell:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateStockCellVo vo) {
@@ -140,14 +140,14 @@ public class StockCellController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:stock-cell:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("仓位导入模板", StockCellImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:stock-cell:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

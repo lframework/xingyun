@@ -19,7 +19,7 @@ import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,136 +33,136 @@ public class GetPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 单号
    */
-  @ApiModelProperty("单号")
+  @Schema(description = "单号")
   private String code;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty("仓库ID")
+  @Schema(description = "仓库ID")
   private String scId;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 供应商ID
    */
-  @ApiModelProperty("供应商ID")
+  @Schema(description = "供应商ID")
   private String supplierId;
 
   /**
    * 供应商名称
    */
-  @ApiModelProperty("供应商名称")
+  @Schema(description = "供应商名称")
   private String supplierName;
 
   /**
    * 采购员ID
    */
-  @ApiModelProperty("采购员ID")
+  @Schema(description = "采购员ID")
   private String purchaserId;
 
   /**
    * 采购员姓名
    */
-  @ApiModelProperty("采购员姓名")
+  @Schema(description = "采购员姓名")
   private String purchaserName;
 
   /**
    * 预计到货日期
    */
-  @ApiModelProperty("预计到货日期")
+  @Schema(description = "预计到货日期")
   @JsonFormat(pattern = StringPool.DATE_PATTERN)
   private LocalDate expectArriveDate;
 
   /**
    * 采购数量
    */
-  @ApiModelProperty("采购数量")
+  @Schema(description = "采购数量")
   private BigDecimal totalNum;
 
   /**
    * 赠品数量
    */
-  @ApiModelProperty("赠品数量")
+  @Schema(description = "赠品数量")
   private BigDecimal giftNum;
 
   /**
    * 采购金额
    */
-  @ApiModelProperty("采购金额")
+  @Schema(description = "采购金额")
   private BigDecimal totalAmount;
 
   /**
    * 支付方式
    */
-  @ApiModelProperty("支付方式")
+  @Schema(description = "支付方式")
   private List<OrderPayTypeBo> payTypes;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime createTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime approveTime;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   private Integer status;
 
   /**
    * 拒绝原因
    */
-  @ApiModelProperty("拒绝原因")
+  @Schema(description = "拒绝原因")
   private String refuseReason;
 
   /**
    * 关联的审批流程ID
    */
-  @ApiModelProperty(value = "关联的审批流程ID")
+  @Schema(description = "关联的审批流程ID")
   private String flowInstanceId;
 
   /**
    * 订单明细
    */
-  @ApiModelProperty("订单明细")
+  @Schema(description = "订单明细")
   private List<OrderDetailBo> details;
 
   public GetPurchaseOrderBo() {
@@ -220,97 +220,97 @@ public class GetPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
     /**
      * 明细ID
      */
-    @ApiModelProperty("明细ID")
+    @Schema(description = "明细ID")
     private String id;
 
     /**
      * 商品ID
      */
-    @ApiModelProperty("商品ID")
+    @Schema(description = "商品ID")
     private String productId;
 
     /**
      * 商品编号
      */
-    @ApiModelProperty("商品编号")
+    @Schema(description = "商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
-    @ApiModelProperty("商品名称")
+    @Schema(description = "商品名称")
     private String productName;
 
     /**
      * 单位
      */
-    @ApiModelProperty("单位")
+    @Schema(description = "单位")
     private String unit;
 
     /**
      * 规格
      */
-    @ApiModelProperty("规格")
+    @Schema(description = "规格")
     private String spec;
 
     /**
      * 分类名称
      */
-    @ApiModelProperty("分类名称")
+    @Schema(description = "分类名称")
     private String categoryName;
 
     /**
      * 品牌名称
      */
-    @ApiModelProperty("品牌名称")
+    @Schema(description = "品牌名称")
     private String brandName;
 
     /**
      * 采购数量
      */
-    @ApiModelProperty("采购数量")
+    @Schema(description = "采购数量")
     private BigDecimal purchaseNum;
 
     /**
      * 采购价
      */
-    @ApiModelProperty("采购价")
+    @Schema(description = "采购价")
     private BigDecimal purchasePrice;
 
     /**
      * 含税成本价
      */
-    @ApiModelProperty("含税成本价")
+    @Schema(description = "含税成本价")
     private BigDecimal taxCostPrice;
 
     /**
      * 库存数量
      */
-    @ApiModelProperty("库存数量")
+    @Schema(description = "库存数量")
     private BigDecimal stockNum;
 
     /**
      * 是否赠品
      */
-    @ApiModelProperty("是否赠品")
+    @Schema(description = "是否赠品")
     private Boolean isGift;
 
     /**
      * 税率
      */
-    @ApiModelProperty("税率")
+    @Schema(description = "税率")
     private BigDecimal taxRate;
 
     /**
      * 备注
      */
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     private String description;
 
     /**
      * 仓库ID
      */
-    @ApiModelProperty(value = "仓库ID", hidden = true)
+    @Schema(description = "仓库ID", hidden = true)
     @JsonIgnore
     private String scId;
 

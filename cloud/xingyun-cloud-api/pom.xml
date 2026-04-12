@@ -42,6 +42,11 @@
       <groupId>com.lframework</groupId>
       <artifactId>cloud-starter</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -90,7 +95,7 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
         <includes>
-          <include>bootstrap.yml</include>
+          <include>application.yml</include>
         </includes>
       </resource>
       <resource>
@@ -101,9 +106,25 @@
         </includes>
         <excludes>
           <exclude>scripts/*</exclude>
+          <exclude>application.yml</exclude>
+          <exclude>bootstrap.yml</exclude>
           <exclude>project.yaml</exclude>
+          <exclude>xingyun-cloud-api.yaml</exclude>
         </excludes>
       </resource>
     </resources>
   </build>
+
+  <profiles>
+    <profile>
+      <id>demo</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.lframework</groupId>
+          <artifactId>xingyun-demo</artifactId>
+          <version>1.0.0</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

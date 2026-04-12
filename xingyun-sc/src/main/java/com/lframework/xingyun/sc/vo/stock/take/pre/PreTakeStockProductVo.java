@@ -1,10 +1,10 @@
 package com.lframework.xingyun.sc.vo.stock.take.pre;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -15,25 +15,25 @@ public class PreTakeStockProductVo implements BaseVo, Serializable {
   /**
    * 商品ID
    */
-  @ApiModelProperty(value = "商品ID", required = true)
+  @Schema(description = "商品ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "商品ID不能为空！")
   private String productId;
 
   /**
    * 初盘数量
    */
-  @ApiModelProperty("初盘数量")
+  @Schema(description = "初盘数量")
   private BigDecimal firstNum;
 
   /**
    * 复盘数量
    */
-  @ApiModelProperty("复盘数量")
+  @Schema(description = "复盘数量")
   private BigDecimal secondNum;
 
   /**
    * 抽盘数量
    */
-  @ApiModelProperty("抽盘数量")
+  @Schema(description = "抽盘数量")
   private BigDecimal randNum;
 }

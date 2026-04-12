@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-slim
+FROM eclipse-temurin:21-jre-jammy
 
 WORKDIR /opt
 
@@ -7,6 +7,7 @@ COPY ${JAR_FILE} /opt/app.jar
 
 EXPOSE 15000
 
-ENV JAVA_OPTS="-Dspring.profiles.active=prod"
+ENV SPRING_PROFILES_ACTIVE="prod" \
+    JAVA_OPTS=""
 
-CMD ["sh", "-c", "java $JAVA_OPTS -jar -server app.jar"]
+CMD ["sh", "-c", "exec java -server -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} ${JAVA_OPTS} -jar /opt/app.jar"]

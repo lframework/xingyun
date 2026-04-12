@@ -1,5 +1,4 @@
 server:
-  #端口
   port: 15000
 
 spring:
@@ -7,18 +6,18 @@ spring:
     name: @project.artifactId@
   profiles:
     active: @profiles-active@
+  config:
+    import:
+      - optional:nacos:xingyun-cloud-gateway.yaml?group=DEFAULT_GROUP
+      - optional:nacos:xingyun-cloud-gateway-${spring.profiles.active}.yaml?group=DEFAULT_GROUP
   cloud:
     nacos:
       config:
         server-addr: ${nacos-server-addr}
         file-extension: yaml
         namespace: ${spring.profiles.active}
-        extension-configs[0]:
-          data-id: zipkin.yaml
-          refresh: true
       discovery:
         server-addr: ${nacos-server-addr}
         namespace: ${spring.profiles.active}
 
-# nacos-server地址
-nacos-server-addr: @discovery-server@
+nacos-server-addr: ${XINGYUN_NACOS_SERVER_ADDR:@discovery-server@}

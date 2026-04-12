@@ -16,7 +16,7 @@ import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.enums.PurchaseOrderStatus;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,79 +28,79 @@ public class PrintPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
   /**
    * 单号
    */
-  @ApiModelProperty("单号")
+  @Schema(description = "单号")
   private String code;
 
   /**
    * 仓库编号
    */
-  @ApiModelProperty("仓库编号")
+  @Schema(description = "仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 供应商编号
    */
-  @ApiModelProperty("供应商编号")
+  @Schema(description = "供应商编号")
   private String supplierCode;
 
   /**
    * 供应商名称
    */
-  @ApiModelProperty("供应商名称")
+  @Schema(description = "供应商名称")
   private String supplierName;
 
   /**
    * 采购员姓名
    */
-  @ApiModelProperty("采购员姓名")
+  @Schema(description = "采购员姓名")
   private String purchaserName;
 
   /**
    * 预计到货日期
    */
-  @ApiModelProperty("预计到货日期")
+  @Schema(description = "预计到货日期")
   private String expectArriveDate;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   private String createTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   private String approveTime;
 
   /**
    * 订单明细
    */
-  @ApiModelProperty("订单明细")
+  @Schema(description = "订单明细")
   private List<OrderDetailBo> details;
 
   public PrintPurchaseOrderBo() {
@@ -164,31 +164,31 @@ public class PrintPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
     /**
      * 商品编号
      */
-    @ApiModelProperty("商品编号")
+    @Schema(description = "商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
-    @ApiModelProperty("商品名称")
+    @Schema(description = "商品名称")
     private String productName;
 
     /**
      * 采购数量
      */
-    @ApiModelProperty("采购数量")
+    @Schema(description = "采购数量")
     private BigDecimal purchaseNum;
 
     /**
      * 采购价
      */
-    @ApiModelProperty("采购价")
+    @Schema(description = "采购价")
     private BigDecimal purchasePrice;
 
     /**
      * 采购金额
      */
-    @ApiModelProperty("采购金额")
+    @Schema(description = "采购金额")
     private BigDecimal purchaseAmount;
 
     public OrderDetailBo(PurchaseOrderFullDto.OrderDetailDto dto) {

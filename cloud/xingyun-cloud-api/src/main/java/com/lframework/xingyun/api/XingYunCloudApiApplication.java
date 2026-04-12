@@ -1,9 +1,11 @@
 package com.lframework.xingyun.api;
 
-import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
 import com.lframework.starter.web.core.annotations.locker.EnableLock;
 import com.lframework.starter.web.core.annotations.locker.LockType;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
@@ -11,12 +13,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 
 @EnableLock(type = LockType.REDIS)
 @EnableDiscoveryClient
@@ -27,39 +23,32 @@ import springfox.documentation.spring.web.plugins.Docket;
 public class XingYunCloudApiApplication {
 
   public static void main(String[] args) {
-
     SpringApplication.run(XingYunCloudApiApplication.class, args);
   }
 
-  /**
-   * Swagger 自定义配置信息 请自行修改
-   */
   @Configuration
-  public static class SwaggerApiConfiguration {
+  public static class OpenApiConfiguration {
 
-    @Bean(value = "defaultApi")
-    public Docket defaultApi(OpenApiExtensionResolver openApiExtensionResolver) {
-
-      Docket docket = new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).groupName("星云ERP")
-          .select()
-          .apis(RequestHandlerSelectors.basePackage("com.lframework.xingyun.api")
-              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.basedata"))
-              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.chart"))
-              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.core"))
-              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.sc"))
-              .or(RequestHandlerSelectors.basePackage("com.lframework.xingyun.settle")))
-          .paths(PathSelectors.any())
-          .build().extensions(openApiExtensionResolver.buildSettingExtensions());
-      return docket;
+    @Bean("xingyunCloudApi")
+    public GroupedOpenApi xingyunCloudApi() {
+      return GroupedOpenApi.builder()
+          .group("星云ERP")
+          .packagesToScan(
+              "com.lframework.xingyun.api",
+              "com.lframework.xingyun.basedata",
+              "com.lframework.xingyun.chart",
+              "com.lframework.xingyun.comp",
+              "com.lframework.xingyun.sc",
+              "com.lframework.xingyun.settle")
+          .build();
     }
 
-    // 可以修改内容 但是不要删除这个Bean
     @Bean
-    public ApiInfo apiInfo() {
-
-      return new ApiInfoBuilder().title("星云ERP接口文档").description("# 星云ERP接口文档")
-          .contact("lframework@163.com")
-          .build();
+    public OpenAPI openAPI() {
+      return new OpenAPI().info(new Info()
+          .title("星云ERP接口文档")
+          .description("# 星云ERP接口文档")
+          .version("v1.0.0"));
     }
   }
 }

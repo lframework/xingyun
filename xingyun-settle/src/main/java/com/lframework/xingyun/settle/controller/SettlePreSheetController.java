@@ -19,13 +19,14 @@ import com.lframework.xingyun.settle.vo.pre.ApproveRefuseSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.CreateSettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.QuerySettlePreSheetVo;
 import com.lframework.xingyun.settle.vo.pre.UpdateSettlePreSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "供应商预付款单")
+@Tag(name = "供应商预付款单")
 @Validated
 @RestController
 @RequestMapping("/settle/presheet")
@@ -54,7 +55,7 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 供应商预付款单列表
    */
-  @ApiOperation("供应商预付款单列表")
+  @Operation(summary = "供应商预付款单列表")
   @HasPermission({"settle:pre-sheet:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QuerySettlePreSheetBo>> query(@Valid QuerySettlePreSheetVo vo) {
@@ -75,7 +76,7 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"settle:pre-sheet:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QuerySettlePreSheetVo vo) {
@@ -87,8 +88,8 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"settle:pre-sheet:query"})
   @GetMapping
   public InvokeResult<GetSettlePreSheetBo> findById(
@@ -104,7 +105,7 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 创建供应商预付款单
    */
-  @ApiOperation("创建供应商预付款单")
+  @Operation(summary = "创建供应商预付款单")
   @HasPermission({"settle:pre-sheet:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateSettlePreSheetVo vo) {
@@ -119,7 +120,7 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 修改供应商预付款单
    */
-  @ApiOperation("修改供应商预付款单")
+  @Operation(summary = "修改供应商预付款单")
   @HasPermission({"settle:pre-sheet:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateSettlePreSheetVo vo) {
@@ -134,7 +135,7 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 审核通过供应商预付款单
    */
-  @ApiOperation("审核通过供应商预付款单")
+  @Operation(summary = "审核通过供应商预付款单")
   @HasPermission({"settle:pre-sheet:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSettlePreSheetVo vo) {
@@ -147,7 +148,7 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 直接审核通过供应商预付款单
    */
-  @ApiOperation("直接审核通过供应商预付款单")
+  @Operation(summary = "直接审核通过供应商预付款单")
   @HasPermission({"settle:pre-sheet:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSettlePreSheetVo vo) {
@@ -162,7 +163,7 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 审核拒绝供应商预付款单
    */
-  @ApiOperation("审核拒绝供应商预付款单")
+  @Operation(summary = "审核拒绝供应商预付款单")
   @HasPermission({"settle:pre-sheet:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSettlePreSheetVo vo) {
@@ -175,8 +176,8 @@ public class SettlePreSheetController extends DefaultBaseController {
   /**
    * 删除供应商预付款单
    */
-  @ApiOperation("删除供应商预付款单")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除供应商预付款单")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"settle:pre-sheet:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "供应商预付款单ID不能为空！") String id) {

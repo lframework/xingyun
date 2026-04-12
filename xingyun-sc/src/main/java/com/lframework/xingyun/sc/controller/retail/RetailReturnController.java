@@ -21,13 +21,14 @@ import com.lframework.xingyun.sc.vo.retail.returned.ApproveRefuseRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.CreateRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.QueryRetailReturnVo;
 import com.lframework.xingyun.sc.vo.retail.returned.UpdateRetailReturnVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "零售退单管理")
+@Tag(name = "零售退单管理")
 @Validated
 @RestController
 @RequestMapping("/retail/return")
@@ -56,8 +57,8 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 打印
    */
-  @ApiOperation("打印")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "打印")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"retail:return:query"})
   @GetMapping("/print")
   public InvokeResult<PrintRetailReturnBo> print(
@@ -76,7 +77,7 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 退单列表
    */
-  @ApiOperation("退单列表")
+  @Operation(summary = "退单列表")
   @HasPermission({"retail:return:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryRetailReturnBo>> query(@Valid QueryRetailReturnVo vo) {
@@ -97,7 +98,7 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"retail:return:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryRetailReturnVo vo) {
@@ -109,8 +110,8 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"retail:return:query"})
   @GetMapping
   public InvokeResult<GetRetailReturnBo> findById(@NotBlank(message = "退单ID不能为空！") String id) {
@@ -125,7 +126,7 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 创建
    */
-  @ApiOperation("创建")
+  @Operation(summary = "创建")
   @HasPermission({"retail:return:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateRetailReturnVo vo) {
@@ -140,7 +141,7 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"retail:return:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateRetailReturnVo vo) {
@@ -155,7 +156,7 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 审核通过
    */
-  @ApiOperation("审核通过")
+  @Operation(summary = "审核通过")
   @HasPermission({"retail:return:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassRetailReturnVo vo) {
@@ -170,7 +171,7 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
-  @ApiOperation("直接审核通过")
+  @Operation(summary = "直接审核通过")
   @HasPermission({"retail:return:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateRetailReturnVo vo) {
@@ -185,7 +186,7 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
-  @ApiOperation("审核拒绝")
+  @Operation(summary = "审核拒绝")
   @HasPermission({"retail:return:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseRetailReturnVo vo) {
@@ -198,8 +199,8 @@ public class RetailReturnController extends DefaultBaseController {
   /**
    * 删除
    */
-  @ApiOperation("删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"retail:return:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "零售退货单ID不能为空！") String id) {

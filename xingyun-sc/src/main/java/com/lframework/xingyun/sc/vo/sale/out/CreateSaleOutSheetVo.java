@@ -12,14 +12,14 @@ import com.lframework.xingyun.sc.entity.SaleOrderDetail;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
 import com.lframework.xingyun.sc.service.sale.SaleOrderDetailService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
@@ -30,39 +30,39 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 客户ID
    */
-  @ApiModelProperty(value = "客户ID", required = true)
+  @Schema(description = "客户ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "客户ID不能为空！")
   private String customerId;
 
   /**
    * 销售员ID
    */
-  @ApiModelProperty("销售员ID")
+  @Schema(description = "销售员ID")
   private String salerId;
 
   /**
    * 付款日期
    */
-  @ApiModelProperty("付款日期")
+  @Schema(description = "付款日期")
   private LocalDate paymentDate;
 
   /**
    * 是否允许修改付款日期
    */
-  @ApiModelProperty("是否允许修改付款日期")
+  @Schema(description = "是否允许修改付款日期")
   private Boolean allowModifyPaymentDate = Boolean.FALSE;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<SaleOutProductVo> products;
@@ -70,19 +70,19 @@ public class CreateSaleOutSheetVo implements BaseVo, Serializable {
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 销售订单ID
    */
-  @ApiModelProperty("销售订单ID")
+  @Schema(description = "销售订单ID")
   private String saleOrderId;
 
   /**
    * 是否关联销售订单
    */
-  @ApiModelProperty("是否关联销售订单")
+  @Schema(description = "是否关联销售订单")
   private Boolean required;
 
   public void validate() {

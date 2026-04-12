@@ -11,7 +11,7 @@ import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.entity.TakeStockSheet;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -28,80 +28,80 @@ public class QueryTakeStockSheetBo extends BaseBo<TakeStockSheet> {
     /**
      * ID
      */
-    @ApiModelProperty("ID")
+    @Schema(description = "ID")
     private String id;
 
     /**
      * 业务单据号
      */
-    @ApiModelProperty("业务单据号")
+    @Schema(description = "业务单据号")
     private String code;
 
     /**
      * 盘点任务号
      */
-    @ApiModelProperty("盘点任务号")
+    @Schema(description = "盘点任务号")
     private String planCode;
 
     /**
      * 仓库编号
      */
-    @ApiModelProperty("仓库编号")
+    @Schema(description = "仓库编号")
     private String scCode;
 
     /**
      * 仓库名称
      */
-    @ApiModelProperty("仓库名称")
+    @Schema(description = "仓库名称")
     private String scName;
 
     /**
      * 盘点任务-盘点类别
      */
-    @ApiModelProperty("盘点任务-盘点类别")
+    @Schema(description = "盘点任务-盘点类别")
     private Integer takeType;
 
     /**
      * 盘点任务-盘点状态
      */
-    @ApiModelProperty("盘点任务-盘点状态")
+    @Schema(description = "盘点任务-盘点状态")
     private Integer takeStatus;
 
     /**
      * 状态
      */
-    @ApiModelProperty("状态")
+    @Schema(description = "状态")
     private Integer status;
 
     /**
      * 备注
      */
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     private String description;
 
     /**
      * 修改人
      */
-    @ApiModelProperty("修改人")
+    @Schema(description = "修改人")
     private String updateBy;
 
     /**
      * 修改时间
      */
-    @ApiModelProperty("修改时间")
+    @Schema(description = "修改时间")
     @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
     private LocalDateTime updateTime;
 
     /**
      * 审核人
      */
-    @ApiModelProperty("审核人")
+    @Schema(description = "审核人")
     private String approveBy;
 
     /**
      * 审核时间
      */
-    @ApiModelProperty("审核时间")
+    @Schema(description = "审核时间")
     @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
     private LocalDateTime approveTime;
 

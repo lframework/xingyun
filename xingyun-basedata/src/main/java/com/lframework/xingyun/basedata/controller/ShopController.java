@@ -18,15 +18,15 @@ import com.lframework.xingyun.basedata.service.shop.ShopService;
 import com.lframework.xingyun.basedata.vo.shop.CreateShopVo;
 import com.lframework.xingyun.basedata.vo.shop.QueryShopVo;
 import com.lframework.xingyun.basedata.vo.shop.UpdateShopVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "门店")
+@Tag(name = "门店")
 @Validated
 @RestController
 @RequestMapping("/basedata/shop")
@@ -54,7 +54,7 @@ public class ShopController extends DefaultBaseController {
   /**
    * 查询列表
    */
-  @ApiOperation("查询列表")
+  @Operation(summary = "查询列表")
   @HasPermission({"base-data:shop:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryShopBo>> query(@Valid QueryShopVo vo) {
@@ -74,8 +74,8 @@ public class ShopController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "id", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:shop:query"})
   @GetMapping
   public InvokeResult<GetShopBo> get(@NotBlank(message = "id不能为空！") String id) {
@@ -93,7 +93,7 @@ public class ShopController extends DefaultBaseController {
   /**
    * 新增
    */
-  @ApiOperation("新增")
+  @Operation(summary = "新增")
   @HasPermission({"base-data:shop:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateShopVo vo) {
@@ -106,11 +106,11 @@ public class ShopController extends DefaultBaseController {
   /**
    * 删除
    */
-  @ApiOperation("删除")
+  @Operation(summary = "删除")
   @HasPermission({"base-data:shop:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotBlank(message = "门店ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotBlank(message = "门店ID不能为空！") String id) {
 
     shopService.deleteById(id);
 
@@ -122,7 +122,7 @@ public class ShopController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"base-data:shop:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateShopVo vo) {
@@ -134,14 +134,14 @@ public class ShopController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:shop:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("门店导入模板", ShopImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:shop:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

@@ -1,8 +1,8 @@
 package com.lframework.xingyun.sc.vo.stock.warning;
 
-import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -13,14 +13,14 @@ public class UpdateProductStockWarningVo extends CreateProductStockWarningVo {
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "id不能为空！")
   private String id;
 
   /**
    * 状态
    */
-  @ApiModelProperty(value = "状态", required = true)
+  @Schema(description = "状态", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "状态不能为空！")
   private Boolean available;
 }

@@ -7,11 +7,11 @@ import com.lframework.starter.web.core.components.validation.TypeMismatch;
 import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -22,7 +22,7 @@ public class CreateTakeStockPlanVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请输入仓库ID！")
   private String scId;
 
@@ -30,7 +30,7 @@ public class CreateTakeStockPlanVo implements BaseVo, Serializable {
   /**
    * 盘点类别
    */
-  @ApiModelProperty(value = "盘点类别", required = true)
+  @Schema(description = "盘点类别", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "请选择盘点类别！")
   @TypeMismatch(message = "盘点类别格式有误！")
   @IsEnum(message = "盘点类别格式有误！", enumClass = TakeStockPlanType.class)
@@ -39,13 +39,13 @@ public class CreateTakeStockPlanVo implements BaseVo, Serializable {
   /**
    * 业务ID
    */
-  @ApiModelProperty("业务ID")
+  @Schema(description = "业务ID")
   private List<String> bizIds;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   public void validate() {

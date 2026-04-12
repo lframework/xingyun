@@ -32,16 +32,17 @@ import com.lframework.xingyun.sc.vo.stock.take.plan.CreateTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.HandleTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.QueryTakeStockPlanVo;
 import com.lframework.xingyun.sc.vo.stock.take.plan.UpdateTakeStockPlanVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,7 +59,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "盘点任务")
+@Tag(name = "盘点任务")
 @Validated
 @RestController
 @RequestMapping("/stock/take/plan")
@@ -73,7 +74,7 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 查询列表
    */
-  @ApiOperation("查询列表")
+  @Operation(summary = "查询列表")
   @HasPermission({"stock:take:plan:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryTakeStockPlanBo>> query(@Valid QueryTakeStockPlanVo vo) {
@@ -94,7 +95,7 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 导出列表
    */
-  @ApiOperation("导出列表")
+  @Operation(summary = "导出列表")
   @HasPermission({"stock:take:plan:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryTakeStockPlanVo vo) {
@@ -107,8 +108,8 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:take:plan:query", "stock:take:sheet:add", "stock:take:sheet:modify"})
   @GetMapping
   public InvokeResult<GetTakeStockPlanBo> get(@NotBlank(message = "id不能为空！") String id) {
@@ -126,8 +127,8 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询详情")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询详情")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:take:plan:query", "stock:take:sheet:add", "stock:take:sheet:modify"})
   @GetMapping("/detail")
   public InvokeResult<TakeStockPlanFullBo> getDetail(@NotBlank(message = "id不能为空！") String id) {
@@ -145,8 +146,8 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 根据盘点任务ID查询商品信息
    */
-  @ApiOperation("根据盘点任务ID查询商品信息")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据盘点任务ID查询商品信息")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:take:sheet:add", "stock:take:sheet:modify"})
   @GetMapping("/products")
   public InvokeResult<List<QueryTakeStockPlanProductBo>> getProducts(
@@ -172,7 +173,7 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 新增
    */
-  @ApiOperation("新增")
+  @Operation(summary = "新增")
   @HasPermission({"stock:take:plan:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreateTakeStockPlanVo vo) {
@@ -199,7 +200,7 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"stock:take:plan:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateTakeStockPlanVo vo) {
@@ -212,8 +213,8 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 差异生成
    */
-  @ApiOperation("差异生成")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "差异生成")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:take:plan:create-diff"})
   @PatchMapping("/diff")
   public InvokeResult<Void> createDiff(@NotBlank(message = "ID不能为空！") String id) {
@@ -226,7 +227,7 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 差异处理
    */
-  @ApiOperation("差异处理")
+  @Operation(summary = "差异处理")
   @HasPermission({"stock:take:plan:handle-diff"})
   @PatchMapping("/handle")
   public InvokeResult<Void> handleDiff(@Valid @RequestBody HandleTakeStockPlanVo vo) {
@@ -241,7 +242,7 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 作废
    */
-  @ApiOperation("作废")
+  @Operation(summary = "作废")
   @HasPermission({"stock:take:plan:cancel"})
   @PatchMapping("/cancel")
   public InvokeResult<Void> cancel(@Valid CancelTakeStockPlanVo vo) {
@@ -254,8 +255,8 @@ public class TakeStockPlanController extends DefaultBaseController {
   /**
    * 删除
    */
-  @ApiOperation("删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:take:plan:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "ID不能为空！") String id) {

@@ -5,7 +5,7 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.ProductStockWarningNotify;
 import com.lframework.starter.web.inner.entity.SysNotifyGroup;
 import com.lframework.starter.web.inner.service.system.SysNotifyGroupService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
@@ -14,19 +14,19 @@ public class GetProductStockWarningNotifyBo extends BaseBo<ProductStockWarningNo
   /**
    * 消息通知组ID
    */
-  @ApiModelProperty("消息通知组ID")
+  @Schema(description = "消息通知组ID")
   private String id;
 
   /**
    * 消息通知组名称
    */
-  @ApiModelProperty("消息通知组名称")
+  @Schema(description = "消息通知组名称")
   private String name;
 
   /**
    * 消息通知组状态
    */
-  @ApiModelProperty("消息通知组状态")
+  @Schema(description = "消息通知组状态")
   private Boolean available;
 
   public GetProductStockWarningNotifyBo(ProductStockWarningNotify dto) {

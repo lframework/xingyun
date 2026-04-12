@@ -10,7 +10,7 @@ import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -20,49 +20,49 @@ public class QueryRetailOutSheetWithReturnBo extends BaseBo<RetailOutSheet> {
     /**
      * ID
      */
-    @ApiModelProperty("ID")
+    @Schema(description = "ID")
     private String id;
 
     /**
      * 单号
      */
-    @ApiModelProperty("单号")
+    @Schema(description = "单号")
     private String code;
 
     /**
      * 仓库编号
      */
-    @ApiModelProperty("仓库编号")
+    @Schema(description = "仓库编号")
     private String scCode;
 
     /**
      * 仓库名称
      */
-    @ApiModelProperty("仓库名称")
+    @Schema(description = "仓库名称")
     private String scName;
 
     /**
      * 会员编号
      */
-    @ApiModelProperty("会员编号")
+    @Schema(description = "会员编号")
     private String memberCode;
 
     /**
      * 会员名称
      */
-    @ApiModelProperty("会员名称")
+    @Schema(description = "会员名称")
     private String memberName;
 
     /**
      * 创建人
      */
-    @ApiModelProperty("创建人")
+    @Schema(description = "创建人")
     private String createBy;
 
     /**
      * 创建时间
      */
-    @ApiModelProperty("创建时间")
+    @Schema(description = "创建时间")
     @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
     private LocalDateTime createTime;
 

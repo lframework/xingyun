@@ -27,13 +27,14 @@ import com.lframework.xingyun.sc.vo.sale.out.CreateSaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetVo;
 import com.lframework.xingyun.sc.vo.sale.out.QuerySaleOutSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.sale.out.UpdateSaleOutSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,7 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "销售出库单管理")
+@Tag(name = "销售出库单管理")
 @Validated
 @RestController
 @RequestMapping("/sale/out/sheet")
@@ -62,8 +63,8 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 打印
    */
-  @ApiOperation("打印")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "打印")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:out:query"})
   @GetMapping("/print")
   public InvokeResult<PrintSaleOutSheetBo> print(
@@ -82,7 +83,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 订单列表
    */
-  @ApiOperation("订单列表")
+  @Operation(summary = "订单列表")
   @HasPermission({"sale:out:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QuerySaleOutSheetBo>> query(@Valid QuerySaleOutSheetVo vo) {
@@ -103,7 +104,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"sale:out:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QuerySaleOutSheetVo vo) {
@@ -116,8 +117,8 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:out:query"})
   @GetMapping
   public InvokeResult<GetSaleOutSheetBo> findById(
@@ -133,8 +134,8 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 根据客户ID查询默认付款日期
    */
-  @ApiOperation("根据客户ID查询默认付款日期")
-  @ApiImplicitParam(value = "客户ID", name = "customerId", paramType = "query", required = true)
+  @Operation(summary = "根据客户ID查询默认付款日期")
+  @Parameter(name = "customerId", description = "客户ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:out:add", "sale:out:modify"})
   @GetMapping("/paymentdate")
   public InvokeResult<GetPaymentDateBo> getPaymentDate(
@@ -150,8 +151,8 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 根据ID查询（销售退货业务）
    */
-  @ApiOperation("根据ID查询（销售退货业务）")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询（销售退货业务）")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:return:add", "sale:return:modify"})
   @GetMapping("/return")
   public InvokeResult<SaleOutSheetWithReturnBo> getWithReturn(
@@ -166,7 +167,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 查询列表（销售退货业务）
    */
-  @ApiOperation("查询列表（销售退货业务）")
+  @Operation(summary = "查询列表（销售退货业务）")
   @HasPermission({"sale:return:add", "sale:return:modify"})
   @GetMapping("/query/return")
   public InvokeResult<PageResult<QuerySaleOutSheetWithReturnBo>> queryWithReturn(
@@ -189,7 +190,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 加载列表（销售退货业务）
    */
-  @ApiOperation("加载列表（销售退货业务）")
+  @Operation(summary = "加载列表（销售退货业务）")
   @HasPermission({"sale:return:add", "sale:return:modify"})
   @PostMapping("/query/return/load")
   public InvokeResult<List<QuerySaleOutSheetWithReturnBo>> loadWithReturn(
@@ -207,7 +208,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 创建
    */
-  @ApiOperation("创建")
+  @Operation(summary = "创建")
   @HasPermission({"sale:out:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateSaleOutSheetVo vo) {
@@ -222,7 +223,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"sale:out:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateSaleOutSheetVo vo) {
@@ -237,7 +238,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 审核通过
    */
-  @ApiOperation("审核通过")
+  @Operation(summary = "审核通过")
   @HasPermission({"sale:out:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleOutSheetVo vo) {
@@ -250,7 +251,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
-  @ApiOperation("直接审核通过")
+  @Operation(summary = "直接审核通过")
   @HasPermission({"sale:out:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSaleOutSheetVo vo) {
@@ -265,7 +266,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
-  @ApiOperation("审核拒绝")
+  @Operation(summary = "审核拒绝")
   @HasPermission({"sale:out:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleOutSheetVo vo) {
@@ -278,8 +279,8 @@ public class SaleOutSheetController extends DefaultBaseController {
   /**
    * 删除
    */
-  @ApiOperation("删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:out:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "销售出库单ID不能为空！") String id) {

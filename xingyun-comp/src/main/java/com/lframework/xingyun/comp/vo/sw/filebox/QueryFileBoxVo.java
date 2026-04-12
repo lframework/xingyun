@@ -2,7 +2,7 @@ package com.lframework.xingyun.comp.vo.sw.filebox;
 
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.starter.web.core.vo.PageVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import lombok.Data;
 
@@ -14,9 +14,9 @@ public class QueryFileBoxVo extends PageVo implements BaseVo, Serializable {
   /**
    * 名称
    */
-  @ApiModelProperty("名称")
+  @Schema(description = "名称")
   private String name;
 
-  @ApiModelProperty("路径")
+  @Schema(description = "路径")
   private String path;
 }

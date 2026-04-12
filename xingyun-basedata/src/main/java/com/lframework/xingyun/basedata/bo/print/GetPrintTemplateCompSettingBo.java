@@ -3,7 +3,7 @@ package com.lframework.xingyun.basedata.bo.print;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.JsonUtil;
 import com.lframework.xingyun.basedata.entity.PrintTemplateComp;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 import lombok.Data;
 
@@ -13,13 +13,13 @@ public class GetPrintTemplateCompSettingBo extends BaseBo<PrintTemplateComp> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 组件配置
    */
-  @ApiModelProperty("组件配置")
+  @Schema(description = "组件配置")
   private Map<String, Object> compJson;
 
   public GetPrintTemplateCompSettingBo() {

@@ -18,13 +18,14 @@ import com.lframework.xingyun.comp.vo.sw.excel.QueryOnlineExcelVo;
 import com.lframework.xingyun.comp.vo.sw.excel.SendOnlineExcelVo;
 import com.lframework.xingyun.comp.vo.sw.excel.UpdateOnlineExcelContentVo;
 import com.lframework.xingyun.comp.vo.sw.excel.UpdateOnlineExcelVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 在线Excel Controller
  */
-@Api(tags = "在线Excel")
+@Tag(name = "在线Excel")
 @Validated
 @RestController
 @RequestMapping("/sw/excel")
@@ -49,7 +50,7 @@ public class OnlineExcelController extends DefaultBaseController {
   /**
    * 查询列表
    */
-  @ApiOperation("查询列表")
+  @Operation(summary = "查询列表")
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryOnlineExcelBo>> query(@Valid QueryOnlineExcelVo vo) {
 
@@ -69,8 +70,8 @@ public class OnlineExcelController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "id", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @GetMapping
   public InvokeResult<GetOnlineExcelBo> get(@NotBlank(message = "id不能为空！") String id) {
 
@@ -87,7 +88,7 @@ public class OnlineExcelController extends DefaultBaseController {
   /**
    * 新增
    */
-  @ApiOperation("新增")
+  @Operation(summary = "新增")
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateOnlineExcelVo vo) {
 
@@ -99,7 +100,7 @@ public class OnlineExcelController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateOnlineExcelVo vo) {
 
@@ -108,8 +109,8 @@ public class OnlineExcelController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("查询内容")
-  @ApiImplicitParam(value = "id", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询内容")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @GetMapping("/content")
   public InvokeResult<String> getContent(@NotBlank(message = "id不能为空！") String id) {
 
@@ -121,7 +122,7 @@ public class OnlineExcelController extends DefaultBaseController {
     return InvokeResultBuilder.success(data.getContent());
   }
 
-  @ApiOperation("修改内容")
+  @Operation(summary = "修改内容")
   @PutMapping("/content")
   public InvokeResult<Void> updateContent(@Valid UpdateOnlineExcelContentVo vo) {
 
@@ -130,7 +131,7 @@ public class OnlineExcelController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("发送文件给他人")
+  @Operation(summary = "发送文件给他人")
   @PostMapping("/send")
   public InvokeResult<Void> send(@Valid SendOnlineExcelVo vo) {
 
@@ -143,7 +144,7 @@ public class OnlineExcelController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("批量发送文件给他人")
+  @Operation(summary = "批量发送文件给他人")
   @PostMapping("/send/batch")
   public InvokeResult<Void> batchSend(@Valid @RequestBody BatchSendOnlineExcelVo vo) {
 

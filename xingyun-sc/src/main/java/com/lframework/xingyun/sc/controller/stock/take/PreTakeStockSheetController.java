@@ -27,14 +27,15 @@ import com.lframework.xingyun.sc.vo.stock.take.pre.CreatePreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,7 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "预先盘点单")
+@Tag(name = "预先盘点单")
 @Validated
 @RestController
 @RequestMapping("/stock/take/pre")
@@ -65,7 +66,7 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 查询列表
    */
-  @ApiOperation("查询列表")
+  @Operation(summary = "查询列表")
   @HasPermission({"stock:take:pre:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryPreTakeStockSheetBo>> query(
@@ -88,7 +89,7 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 导出列表
    */
-  @ApiOperation("导出列表")
+  @Operation(summary = "导出列表")
   @HasPermission({"stock:take:pre:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryPreTakeStockSheetVo vo) {
@@ -101,8 +102,8 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:take:pre:query"})
   @GetMapping
   public InvokeResult<GetPreTakeStockSheetBo> getDetail(
@@ -121,10 +122,10 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 根据预先盘点单、盘点任务查询商品信息
    */
-  @ApiOperation("根据预先盘点单、盘点任务查询商品信息")
-  @ApiImplicitParams({
-      @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true),
-      @ApiImplicitParam(value = "盘点任务ID", name = "planId", paramType = "query", required = true)})
+  @Operation(summary = "根据预先盘点单、盘点任务查询商品信息")
+  @Parameters({
+      @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true),
+      @Parameter(name = "planId", description = "盘点任务ID", in = ParameterIn.QUERY, required = true)})
   @HasPermission({"stock:take:sheet:add", "stock:take:sheet:modify"})
   @GetMapping("/products")
   public InvokeResult<List<QueryPreTakeStockSheetProductBo>> getProducts(
@@ -150,7 +151,7 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 新增
    */
-  @ApiOperation("新增")
+  @Operation(summary = "新增")
   @HasPermission({"stock:take:pre:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreatePreTakeStockSheetVo vo) {
@@ -165,7 +166,7 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"stock:take:pre:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid @RequestBody UpdatePreTakeStockSheetVo vo) {
@@ -180,8 +181,8 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:take:pre:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "ID不能为空！") String id) {
@@ -194,8 +195,8 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 根据关键字查询商品列表
    */
-  @ApiOperation("根据关键字查询预先盘点单商品列表")
-  @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)
+  @Operation(summary = "根据关键字查询预先盘点单商品列表")
+  @Parameter(name = "condition", description = "关键字", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:take:pre:add", "stock:take:pre:modify"})
   @GetMapping("/product/search")
   public InvokeResult<List<PreTakeStockProductBo>> searchProducts(String condition) {
@@ -217,7 +218,7 @@ public class PreTakeStockSheetController extends DefaultBaseController {
   /**
    * 查询商品列表
    */
-  @ApiOperation("查询预先盘点单商品列表")
+  @Operation(summary = "查询预先盘点单商品列表")
   @HasPermission({"stock:take:pre:add", "stock:take:pre:modify"})
   @GetMapping("/product/list")
   public InvokeResult<PageResult<PreTakeStockProductBo>> queryProductList(

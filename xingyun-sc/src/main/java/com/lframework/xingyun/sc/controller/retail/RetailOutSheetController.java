@@ -31,14 +31,15 @@ import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailOutSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.retail.out.QueryRetailProductVo;
 import com.lframework.xingyun.sc.vo.retail.out.UpdateRetailOutSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -55,7 +56,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "零售出库单管理")
+@Tag(name = "零售出库单管理")
 @Validated
 @RestController
 @RequestMapping("/retail/out/sheet")
@@ -67,8 +68,8 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 打印
    */
-  @ApiOperation("打印")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "打印")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"retail:out:query"})
   @GetMapping("/print")
   public InvokeResult<PrintRetailOutSheetBo> print(
@@ -87,7 +88,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 订单列表
    */
-  @ApiOperation("订单列表")
+  @Operation(summary = "订单列表")
   @HasPermission({"retail:out:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryRetailOutSheetBo>> query(@Valid QueryRetailOutSheetVo vo) {
@@ -109,7 +110,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"retail:out:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryRetailOutSheetVo vo) {
@@ -122,8 +123,8 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"retail:out:query"})
   @GetMapping
   public InvokeResult<GetRetailOutSheetBo> findById(
@@ -139,8 +140,8 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 根据会员ID查询默认付款日期
    */
-  @ApiOperation("根据会员ID查询默认付款日期")
-  @ApiImplicitParam(value = "会员ID", name = "memberId", paramType = "query")
+  @Operation(summary = "根据会员ID查询默认付款日期")
+  @Parameter(name = "memberId", description = "会员ID", in = ParameterIn.QUERY)
   @HasPermission({"retail:out:add", "retail:out:modify"})
   @GetMapping("/paymentdate")
   public InvokeResult<GetPaymentDateBo> getPaymentDate(String memberId) {
@@ -155,8 +156,8 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 根据ID查询（零售退货业务）
    */
-  @ApiOperation("根据ID查询（零售退货业务）")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询（零售退货业务）")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"retail:return:add", "retail:return:modify"})
   @GetMapping("/return")
   public InvokeResult<RetailOutSheetWithReturnBo> getWithReturn(
@@ -171,7 +172,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 查询列表（零售退货业务）
    */
-  @ApiOperation("查询列表（零售退货业务）")
+  @Operation(summary = "查询列表（零售退货业务）")
   @HasPermission({"retail:return:add", "retail:return:modify"})
   @GetMapping("/query/return")
   public InvokeResult<PageResult<QueryRetailOutSheetWithReturnBo>> queryWithReturn(
@@ -195,7 +196,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 加载列表（零售退货业务）
    */
-  @ApiOperation("加载列表（零售退货业务）")
+  @Operation(summary = "加载列表（零售退货业务）")
   @HasPermission({"retail:return:add", "retail:return:modify"})
   @PostMapping("/query/return/load")
   public InvokeResult<List<QueryRetailOutSheetWithReturnBo>> loadWithReturn(
@@ -213,7 +214,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 创建
    */
-  @ApiOperation("创建")
+  @Operation(summary = "创建")
   @HasPermission({"retail:out:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateRetailOutSheetVo vo) {
@@ -228,7 +229,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"retail:out:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateRetailOutSheetVo vo) {
@@ -243,7 +244,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 审核通过
    */
-  @ApiOperation("审核通过")
+  @Operation(summary = "审核通过")
   @HasPermission({"retail:out:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassRetailOutSheetVo vo) {
@@ -256,7 +257,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
-  @ApiOperation("直接审核通过")
+  @Operation(summary = "直接审核通过")
   @HasPermission({"retail:out:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateRetailOutSheetVo vo) {
@@ -271,7 +272,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
-  @ApiOperation("审核拒绝")
+  @Operation(summary = "审核拒绝")
   @HasPermission({"retail:out:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseRetailOutSheetVo vo) {
@@ -284,8 +285,8 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 删除
    */
-  @ApiOperation("删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"retail:out:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "零售出库单ID不能为空！") String id) {
@@ -298,10 +299,10 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 根据关键字查询商品
    */
-  @ApiOperation("根据关键字查询可零售商品")
-  @ApiImplicitParams({
-      @ApiImplicitParam(value = "仓库ID", name = "scId", paramType = "query", required = true),
-      @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
+  @Operation(summary = "根据关键字查询可零售商品")
+  @Parameters({
+      @Parameter(name = "scId", description = "仓库ID", in = ParameterIn.QUERY, required = true),
+      @Parameter(name = "condition", description = "关键字", in = ParameterIn.QUERY, required = true)})
   @HasPermission({"retail:out:add", "retail:out:modify", "retail:return:add",
       "retail:return:modify"})
   @GetMapping("/product/search")
@@ -331,7 +332,7 @@ public class RetailOutSheetController extends DefaultBaseController {
   /**
    * 查询商品列表
    */
-  @ApiOperation("查询可零售商品列表")
+  @Operation(summary = "查询可零售商品列表")
   @HasPermission({"retail:out:add", "retail:out:modify", "retail:return:add",
       "retail:return:modify"})
   @GetMapping("/product/list")

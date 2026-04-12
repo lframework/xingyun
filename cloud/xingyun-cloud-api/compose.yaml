@@ -1,0 +1,13 @@
+services:
+  xingyun-cloud-api:
+    image: ${XINGYUN_CLOUD_API_IMAGE:-xingyun-cloud-api:local}
+    build:
+      context: ./target
+      dockerfile: Dockerfile
+    container_name: ${XINGYUN_CLOUD_API_CONTAINER_NAME:-xingyun-cloud-api}
+    restart: unless-stopped
+    ports:
+      - "${XINGYUN_CLOUD_API_PORT:-15020}:15020"
+    environment:
+      XINGYUN_NACOS_SERVER_ADDR: ${XINGYUN_NACOS_SERVER_ADDR:?XINGYUN_NACOS_SERVER_ADDR is required}
+      JAVA_OPTS: ${JAVA_OPTS:-}

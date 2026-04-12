@@ -21,14 +21,15 @@ import com.lframework.xingyun.sc.vo.purchase.returned.ApproveRefusePurchaseRetur
 import com.lframework.xingyun.sc.vo.purchase.returned.CreatePurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.QueryPurchaseReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.returned.UpdatePurchaseReturnVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +47,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "采购退单管理")
+@Tag(name = "采购退单管理")
 @Validated
 @RestController
 @RequestMapping("/purchase/return")
@@ -58,8 +59,8 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 打印
    */
-  @ApiOperation("打印")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "打印")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"purchase:return:query"})
   @GetMapping("/print")
   public InvokeResult<PrintPurchaseReturnBo> print(
@@ -75,7 +76,7 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 退单列表
    */
-  @ApiOperation("退单列表")
+  @Operation(summary = "退单列表")
   @HasPermission({"purchase:return:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryPurchaseReturnBo>> query(@Valid QueryPurchaseReturnVo vo) {
@@ -97,7 +98,7 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"purchase:return:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryPurchaseReturnVo vo) {
@@ -110,8 +111,8 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"purchase:return:query"})
   @GetMapping
   public InvokeResult<GetPurchaseReturnBo> findById(
@@ -127,7 +128,7 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 创建
    */
-  @ApiOperation("创建")
+  @Operation(summary = "创建")
   @HasPermission({"purchase:return:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreatePurchaseReturnVo vo) {
@@ -142,7 +143,7 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"purchase:return:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdatePurchaseReturnVo vo) {
@@ -157,7 +158,7 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 审核通过
    */
-  @ApiOperation("审核通过")
+  @Operation(summary = "审核通过")
   @HasPermission({"purchase:return:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassPurchaseReturnVo vo) {
@@ -170,7 +171,7 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
-  @ApiOperation("直接审核通过")
+  @Operation(summary = "直接审核通过")
   @HasPermission({"purchase:return:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreatePurchaseReturnVo vo) {
@@ -185,7 +186,7 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
-  @ApiOperation("审核拒绝")
+  @Operation(summary = "审核拒绝")
   @HasPermission({"purchase:return:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefusePurchaseReturnVo vo) {
@@ -198,8 +199,8 @@ public class PurchaseReturnController extends DefaultBaseController {
   /**
    * 删除
    */
-  @ApiOperation("删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"purchase:return:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "采购退货单ID不能为空！") String id) {

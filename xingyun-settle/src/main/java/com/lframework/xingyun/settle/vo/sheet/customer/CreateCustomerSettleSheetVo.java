@@ -3,12 +3,12 @@ package com.lframework.xingyun.settle.vo.sheet.customer;
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -19,35 +19,35 @@ public class CreateCustomerSettleSheetVo implements BaseVo, Serializable {
   /**
    * 客户ID
    */
-  @ApiModelProperty(value = "客户ID", required = true)
+  @Schema(description = "客户ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "客户ID不能为空！")
   private String customerId;
 
   /**
    * 项目
    */
-  @ApiModelProperty(value = "项目", required = true)
+  @Schema(description = "项目", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotEmpty(message = "项目不能为空！")
   private List<CustomerSettleSheetItemVo> items;
 
   /**
    * 起始日期
    */
-  @ApiModelProperty(value = "起始日期", required = true)
+  @Schema(description = "起始日期", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "起始日期不能为空！")
   private LocalDate startDate;
 
   /**
    * 截止日期
    */
-  @ApiModelProperty(value = "截止日期", required = true)
+  @Schema(description = "截止日期", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "截止日期不能为空！")
   private LocalDate endDate;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   public void validate() {

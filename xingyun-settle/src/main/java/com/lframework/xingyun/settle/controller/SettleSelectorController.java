@@ -15,12 +15,12 @@ import com.lframework.xingyun.settle.service.SettleInItemService;
 import com.lframework.xingyun.settle.service.SettleOutItemService;
 import com.lframework.xingyun.settle.vo.item.in.SettleInItemSelectorVo;
 import com.lframework.xingyun.settle.vo.item.out.SettleOutItemSelectorVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "数据选择器")
+@Tag(name = "数据选择器")
 @Validated
 @RestController
 @RequestMapping("/selector")
@@ -49,7 +49,7 @@ public class SettleSelectorController extends DefaultBaseController {
   /**
    * 收入项目
    */
-  @ApiOperation("收入项目")
+  @Operation(summary = "收入项目")
   @GetMapping("/settle/item/in")
   public InvokeResult<PageResult<SettleInItemSelectorBo>> selector(
       @Valid SettleInItemSelectorVo vo) {
@@ -71,7 +71,7 @@ public class SettleSelectorController extends DefaultBaseController {
   /**
    * 加载收入项目
    */
-  @ApiOperation("加载收入项目")
+  @Operation(summary = "加载收入项目")
   @PostMapping("/settle/item/in/load")
   public InvokeResult<List<SettleInItemSelectorBo>> loadSettleInItem(
       @RequestBody(required = false) List<String> ids) {
@@ -91,7 +91,7 @@ public class SettleSelectorController extends DefaultBaseController {
   /**
    * 支出项目
    */
-  @ApiOperation("支出项目")
+  @Operation(summary = "支出项目")
   @GetMapping("/settle/item/out")
   public InvokeResult<PageResult<SettleOutItemSelectorBo>> selector(
       @Valid SettleOutItemSelectorVo vo) {
@@ -112,7 +112,7 @@ public class SettleSelectorController extends DefaultBaseController {
   /**
    * 加载支出项目
    */
-  @ApiOperation("加载支出项目")
+  @Operation(summary = "加载支出项目")
   @PostMapping("/settle/item/out/load")
   public InvokeResult<List<SettleOutItemSelectorBo>> loadSettleOutItem(
       @RequestBody(required = false) List<String> ids) {

@@ -19,13 +19,14 @@ import com.lframework.xingyun.settle.vo.fee.customer.ApproveRefuseCustomerSettle
 import com.lframework.xingyun.settle.vo.fee.customer.CreateCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.QueryCustomerSettleFeeSheetVo;
 import com.lframework.xingyun.settle.vo.fee.customer.UpdateCustomerSettleFeeSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "客户费用单")
+@Tag(name = "客户费用单")
 @Validated
 @RestController
 @RequestMapping("/customer/settle/feesheet")
@@ -54,7 +55,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 客户费用单列表
    */
-  @ApiOperation("客户费用单列表")
+  @Operation(summary = "客户费用单列表")
   @HasPermission({"customer-settle:fee-sheet:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryCustomerSettleFeeSheetBo>> query(
@@ -76,7 +77,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"customer-settle:fee-sheet:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryCustomerSettleFeeSheetVo vo) {
@@ -89,8 +90,8 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"customer-settle:fee-sheet:query"})
   @GetMapping
   public InvokeResult<GetCustomerSettleFeeSheetBo> findById(
@@ -106,7 +107,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 创建客户费用单
    */
-  @ApiOperation("创建客户费用单")
+  @Operation(summary = "创建客户费用单")
   @HasPermission({"customer-settle:fee-sheet:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateCustomerSettleFeeSheetVo vo) {
@@ -121,7 +122,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 修改客户费用单
    */
-  @ApiOperation("修改客户费用单")
+  @Operation(summary = "修改客户费用单")
   @HasPermission({"customer-settle:fee-sheet:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateCustomerSettleFeeSheetVo vo) {
@@ -136,7 +137,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 审核通过客户费用单
    */
-  @ApiOperation("审核通过客户费用单")
+  @Operation(summary = "审核通过客户费用单")
   @HasPermission({"customer-settle:fee-sheet:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(
@@ -150,7 +151,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 直接审核通过客户费用单
    */
-  @ApiOperation("直接审核通过客户费用单")
+  @Operation(summary = "直接审核通过客户费用单")
   @HasPermission({"customer-settle:fee-sheet:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(
@@ -166,7 +167,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 审核拒绝客户费用单
    */
-  @ApiOperation("审核拒绝客户费用单")
+  @Operation(summary = "审核拒绝客户费用单")
   @HasPermission({"customer-settle:fee-sheet:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(
@@ -180,8 +181,8 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   /**
    * 删除客户费用单
    */
-  @ApiOperation("删除客户费用单")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除客户费用单")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"customer-settle:fee-sheet:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "客户费用单ID不能为空！") String id) {

@@ -11,7 +11,7 @@ import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -27,43 +27,43 @@ public class GetTakeStockPlanBo extends BaseBo<TakeStockPlan> {
     /**
      * ID
      */
-    @ApiModelProperty("ID")
+    @Schema(description = "ID")
     private String id;
 
     /**
      * 业务单据号
      */
-    @ApiModelProperty("业务单据号")
+    @Schema(description = "业务单据号")
     private String code;
 
     /**
      * 仓库ID
      */
-    @ApiModelProperty("仓库ID")
+    @Schema(description = "仓库ID")
     private String scId;
 
     /**
      * 仓库名称
      */
-    @ApiModelProperty("仓库名称")
+    @Schema(description = "仓库名称")
     private String scName;
 
     /**
      * 盘点类别
      */
-    @ApiModelProperty("盘点类别")
+    @Schema(description = "盘点类别")
     private Integer takeType;
 
     /**
      * 盘点状态
      */
-    @ApiModelProperty("盘点状态")
+    @Schema(description = "盘点状态")
     private Integer takeStatus;
 
     /**
      * 业务名称
      */
-    @ApiModelProperty("业务名称")
+    @Schema(description = "业务名称")
     private String bizName;
 
     public GetTakeStockPlanBo() {

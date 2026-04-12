@@ -1,0 +1,13 @@
+services:
+  xingyun-cloud-gateway:
+    image: ${XINGYUN_CLOUD_GATEWAY_IMAGE:-xingyun-cloud-gateway:local}
+    build:
+      context: ./target
+      dockerfile: Dockerfile
+    container_name: ${XINGYUN_CLOUD_GATEWAY_CONTAINER_NAME:-xingyun-cloud-gateway}
+    restart: unless-stopped
+    ports:
+      - "${XINGYUN_CLOUD_GATEWAY_PORT:-15000}:15000"
+    environment:
+      XINGYUN_NACOS_SERVER_ADDR: ${XINGYUN_NACOS_SERVER_ADDR:?XINGYUN_NACOS_SERVER_ADDR is required}
+      JAVA_OPTS: ${JAVA_OPTS:-}

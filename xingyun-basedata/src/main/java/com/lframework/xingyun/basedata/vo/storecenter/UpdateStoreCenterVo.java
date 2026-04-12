@@ -2,9 +2,9 @@ package com.lframework.xingyun.basedata.vo.storecenter;
 
 import com.lframework.starter.web.core.components.validation.IsCode;
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -15,14 +15,14 @@ public class UpdateStoreCenterVo implements BaseVo, Serializable {
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "ID不能为空！")
   private String id;
 
   /**
    * 编号
    */
-  @ApiModelProperty(value = "编号", required = true)
+  @Schema(description = "编号", requiredMode = Schema.RequiredMode.REQUIRED)
   @IsCode
   @NotBlank(message = "请输入编号！")
   private String code;
@@ -30,43 +30,43 @@ public class UpdateStoreCenterVo implements BaseVo, Serializable {
   /**
    * 名称
    */
-  @ApiModelProperty(value = "名称", required = true)
+  @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请输入名称！")
   private String name;
 
   /**
    * 联系人
    */
-  @ApiModelProperty("联系人")
+  @Schema(description = "联系人")
   private String contact;
 
   /**
    * 联系人手机号码
    */
-  @ApiModelProperty("联系人手机号码")
+  @Schema(description = "联系人手机号码")
   private String telephone;
 
   /**
    * 地区ID
    */
-  @ApiModelProperty("地区ID")
+  @Schema(description = "地区ID")
   private String cityId;
 
   /**
    * 地址
    */
-  @ApiModelProperty("地址")
+  @Schema(description = "地址")
   private String address;
 
   /**
    * 仓库人数
    */
-  @ApiModelProperty("仓库人数")
+  @Schema(description = "仓库人数")
   private Integer peopleNum;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 }

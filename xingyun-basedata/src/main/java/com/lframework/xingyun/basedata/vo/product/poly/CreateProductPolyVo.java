@@ -6,16 +6,16 @@ import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.validation.IsCode;
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -26,7 +26,7 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   /**
    * 商品货号
    */
-  @ApiModelProperty(value = "商品货号", required = true)
+  @Schema(description = "商品货号", requiredMode = Schema.RequiredMode.REQUIRED)
   @IsCode
   @NotBlank(message = "商品货号不能为空！")
   private String code;
@@ -34,41 +34,41 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   /**
    * 商品名称
    */
-  @ApiModelProperty(value = "商品名称", required = true)
+  @Schema(description = "商品名称", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "商品名称不能为空！")
   private String name;
 
   /**
    * 商品简称
    */
-  @ApiModelProperty("商品简称")
+  @Schema(description = "商品简称")
   private String shortName;
 
   /**
    * 分类ID
    */
-  @ApiModelProperty(value = "分类ID", required = true)
+  @Schema(description = "分类ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请选择商品分类！")
   private String categoryId;
 
   /**
    * 品牌ID
    */
-  @ApiModelProperty(value = "品牌ID", required = true)
+  @Schema(description = "品牌ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请选择商品品牌！")
   private String brandId;
 
   /**
    * 是否多销售属性
    */
-  @ApiModelProperty(value = "是否多销售属性", required = true)
+  @Schema(description = "是否多销售属性", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "请选择是否多销售属性！")
   private Boolean multipleSaleProp;
 
   /**
    * 进项税率（%）
    */
-  @ApiModelProperty(value = "进项税率（%）", required = true)
+  @Schema(description = "进项税率（%）", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "进项税率（%）不能为空！")
   @Min(value = 0, message = "进项税率（%）不允许小于0！")
   @Digits(integer = 10, fraction = 0, message = "进项税率（%）必须为整数！")
@@ -77,7 +77,7 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   /**
    * 销项税率（%）
    */
-  @ApiModelProperty(value = "销项税率（%）", required = true)
+  @Schema(description = "销项税率（%）", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "销项税率（%）不能为空！")
   @Min(value = 0, message = "销项税率（%）不允许小于0！")
   @Digits(integer = 10, fraction = 0, message = "销项税率（%）必须为整数！")
@@ -86,14 +86,14 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   /**
    * 商品属性
    */
-  @ApiModelProperty(value = "商品属性", required = true)
+  @Schema(description = "商品属性", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   private List<PropertyVo> properties;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty
   private List<ProductVo> products;

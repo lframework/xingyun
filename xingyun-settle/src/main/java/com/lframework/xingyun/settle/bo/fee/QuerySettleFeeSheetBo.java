@@ -9,7 +9,7 @@ import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.settle.entity.SettleFeeSheet;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -20,87 +20,87 @@ public class QuerySettleFeeSheetBo extends BaseBo<SettleFeeSheet> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 单号
    */
-  @ApiModelProperty("单号")
+  @Schema(description = "单号")
   private String code;
 
   /**
    * 供应商ID
    */
-  @ApiModelProperty("供应商ID")
+  @Schema(description = "供应商ID")
   private String supplierId;
 
   /**
    * 供应商编号
    */
-  @ApiModelProperty("供应商编号")
+  @Schema(description = "供应商编号")
   private String supplierCode;
 
   /**
    * 供应商名称
    */
-  @ApiModelProperty("供应商名称")
+  @Schema(description = "供应商名称")
   private String supplierName;
 
   /**
    * 单据类型
    */
-  @ApiModelProperty("单据类型")
+  @Schema(description = "单据类型")
   private Integer sheetType;
 
   /**
    * 总金额
    */
-  @ApiModelProperty("总金额")
+  @Schema(description = "总金额")
   private BigDecimal totalAmount;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime createTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime approveTime;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   private Integer status;
 
   /**
    * 结算状态
    */
-  @ApiModelProperty("结算状态")
+  @Schema(description = "结算状态")
   private Integer settleStatus;
 
   public QuerySettleFeeSheetBo() {

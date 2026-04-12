@@ -4,12 +4,12 @@ import com.lframework.starter.web.inner.enums.system.Gender;
 import com.lframework.starter.web.core.components.validation.IsCode;
 import com.lframework.starter.web.core.components.validation.IsEnum;
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.LocalDate;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -20,7 +20,7 @@ public class CreateMemberVo implements BaseVo, Serializable {
   /**
    * 编号
    */
-  @ApiModelProperty(value = "编号", required = true)
+  @Schema(description = "编号", requiredMode = Schema.RequiredMode.REQUIRED)
   @IsCode
   @NotBlank(message = "请输入编号！")
   private String code;
@@ -28,14 +28,14 @@ public class CreateMemberVo implements BaseVo, Serializable {
   /**
    * 名称
    */
-  @ApiModelProperty(value = "名称", required = true)
+  @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请输入名称！")
   private String name;
 
   /**
    * 性别
    */
-  @ApiModelProperty(value = "性别", required = true)
+  @Schema(description = "性别", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "请选择性别！")
   @IsEnum(message = "请选择性别！", enumClass = Gender.class)
   private Integer gender;
@@ -43,45 +43,45 @@ public class CreateMemberVo implements BaseVo, Serializable {
   /**
    * 联系电话
    */
-  @ApiModelProperty("联系电话")
+  @Schema(description = "联系电话")
   private String telephone;
 
   /**
    * 电子邮箱
    */
-  @ApiModelProperty("电子邮箱")
+  @Schema(description = "电子邮箱")
   @Email(message = "电子邮箱格式不正确！")
   private String email;
 
   /**
    * 出生日期
    */
-  @ApiModelProperty("出生日期")
+  @Schema(description = "出生日期")
   private LocalDate birthday;
 
 
   /**
    * 入会日期
    */
-  @ApiModelProperty(value = "入会日期", required = true)
+  @Schema(description = "入会日期", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "入会日期不能为空！")
   private LocalDate joinDay;
 
   /**
    * 所属门店ID
    */
-  @ApiModelProperty("所属门店ID")
+  @Schema(description = "所属门店ID")
   private String shopId;
 
   /**
    * 所属导购ID
    */
-  @ApiModelProperty("所属导购ID")
+  @Schema(description = "所属导购ID")
   private String guiderId;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 }

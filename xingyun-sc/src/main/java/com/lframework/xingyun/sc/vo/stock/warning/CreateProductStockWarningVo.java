@@ -1,14 +1,14 @@
 package com.lframework.xingyun.sc.vo.stock.warning;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
@@ -19,21 +19,21 @@ public class CreateProductStockWarningVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 商品ID
    */
-  @ApiModelProperty(value = "商品ID", required = true)
+  @Schema(description = "商品ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "商品ID不能为空！")
   private String productId;
 
   /**
    * 预警下限
    */
-  @ApiModelProperty(value = "预警下限", required = true)
+  @Schema(description = "预警下限", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "预警下限不能为空！")
   @Positive(message = "预警下限必须大于0！")
   @Digits(integer = 20, fraction = 8, message = "预警下限最多允许8位小数！")
@@ -42,7 +42,7 @@ public class CreateProductStockWarningVo implements BaseVo, Serializable {
   /**
    * 预警上限
    */
-  @ApiModelProperty(value = "预警上限", required = true)
+  @Schema(description = "预警上限", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "预警上限不能为空！")
   @Positive(message = "预警上限必须大于0！")
   @Digits(integer = 20, fraction = 8, message = "预警上限最多允许8位小数！")

@@ -23,15 +23,15 @@ import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.UpdateProductPropertyVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "属性管理")
+@Tag(name = "属性管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/property")
@@ -62,7 +62,7 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 属性列表
    */
-  @ApiOperation("属性列表")
+  @Operation(summary = "属性列表")
   @HasPermission({"base-data:product:property:query", "base-data:product:property:add",
       "base-data:product:property:modify"})
   @GetMapping("/query")
@@ -85,8 +85,8 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 查询属性
    */
-  @ApiOperation("查询属性")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询属性")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:property:query", "base-data:product:property:add",
       "base-data:product:property:modify"})
   @GetMapping
@@ -105,11 +105,11 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
+  @Operation(summary = "根据ID删除")
   @HasPermission({"base-data:product:property:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "属性ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "属性ID不能为空！") String id) {
 
     productPropertyService.deleteById(id);
 
@@ -121,7 +121,7 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 新增属性
    */
-  @ApiOperation("新增属性")
+  @Operation(summary = "新增属性")
   @HasPermission({"base-data:product:property:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreateProductPropertyVo vo) {
@@ -134,7 +134,7 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 修改属性
    */
-  @ApiOperation("修改属性")
+  @Operation(summary = "修改属性")
   @HasPermission({"base-data:product:property:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid @RequestBody UpdateProductPropertyVo vo) {
@@ -162,8 +162,8 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 属性模型
    */
-  @ApiOperation("属性模型")
-  @ApiImplicitParam(value = "分类ID", name = "categoryId", paramType = "query", required = true)
+  @Operation(summary = "属性模型")
+  @Parameter(name = "categoryId", description = "分类ID", in = ParameterIn.QUERY, required = true)
   @GetMapping("/modelor/category")
   public InvokeResult<List<ProductPropertyModelorBo>> getModelorByCategory(
       @NotBlank(message = "分类ID不能为空！") String categoryId) {

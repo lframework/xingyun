@@ -7,9 +7,9 @@ import com.lframework.xingyun.sc.bo.sale.config.GetSaleConfigBo;
 import com.lframework.xingyun.sc.entity.SaleConfig;
 import com.lframework.xingyun.sc.service.sale.SaleConfigService;
 import com.lframework.xingyun.sc.vo.sale.config.UpdateSaleConfigVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import javax.validation.Valid;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "销售参数设置")
+@Tag(name = "销售参数设置")
 @Validated
 @RestController
 @RequestMapping("/sale/config")
@@ -34,7 +34,7 @@ public class SaleConfigController extends DefaultBaseController {
     /**
      * 查询详情
      */
-    @ApiOperation("查询详情")
+    @Operation(summary = "查询详情")
     @GetMapping
     public InvokeResult<GetSaleConfigBo> get() {
 
@@ -47,7 +47,7 @@ public class SaleConfigController extends DefaultBaseController {
     /**
      * 修改
      */
-    @ApiOperation("修改")
+    @Operation(summary = "修改")
     @PutMapping
     public InvokeResult<Void> update(@Valid UpdateSaleConfigVo vo) {
 

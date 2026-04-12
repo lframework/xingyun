@@ -5,14 +5,14 @@ import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.web.core.components.validation.IsEnum;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetBizType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -23,14 +23,14 @@ public class CreateStockAdjustSheetVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请输入仓库ID！")
   private String scId;
 
   /**
    * 业务类型
    */
-  @ApiModelProperty(value = "业务类型", required = true)
+  @Schema(description = "业务类型", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "业务类型不能为空！")
   @IsEnum(message = "业务类型格式错误！", enumClass = StockAdjustSheetBizType.class)
   private Integer bizType;
@@ -38,20 +38,20 @@ public class CreateStockAdjustSheetVo implements BaseVo, Serializable {
   /**
    * 调整原因ID
    */
-  @ApiModelProperty(value = "调整原因ID", required = true)
+  @Schema(description = "调整原因ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "调整原因ID不能为空！")
   private String reasonId;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "请录入商品！")
   private List<StockAdjustProductVo> products;

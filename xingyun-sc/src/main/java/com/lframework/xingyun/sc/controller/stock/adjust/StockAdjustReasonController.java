@@ -15,15 +15,15 @@ import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.CreateStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.QueryStockAdjustReasonVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.reason.UpdateStockAdjustReasonVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "库存调整原因")
+@Tag(name = "库存调整原因")
 @Validated
 @RestController
 @RequestMapping("/stock/adjust/reason")
@@ -50,7 +50,7 @@ public class StockAdjustReasonController extends DefaultBaseController {
   /**
    * 库存调整原因列表
    */
-  @ApiOperation("库存调整原因列表")
+  @Operation(summary = "库存调整原因列表")
   @HasPermission({"stock:adjust:reason:query", "stock:adjust:reason:add",
       "stock:adjust:reason:modify"})
   @GetMapping("/query")
@@ -73,8 +73,8 @@ public class StockAdjustReasonController extends DefaultBaseController {
   /**
    * 查询库存调整原因
    */
-  @ApiOperation("查询库存调整原因")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询库存调整原因")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"stock:adjust:reason:query", "stock:adjust:reason:add",
       "stock:adjust:reason:modify"})
   @GetMapping
@@ -93,11 +93,11 @@ public class StockAdjustReasonController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
+  @Operation(summary = "根据ID删除")
   @HasPermission({"stock:adjust:reason:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "库存调整原因ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "库存调整原因ID不能为空！") String id) {
 
     stockAdjustReasonService.deleteById(id);
 
@@ -109,7 +109,7 @@ public class StockAdjustReasonController extends DefaultBaseController {
   /**
    * 新增库存调整原因
    */
-  @ApiOperation("新增库存调整原因")
+  @Operation(summary = "新增库存调整原因")
   @HasPermission({"stock:adjust:reason:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateStockAdjustReasonVo vo) {
@@ -122,7 +122,7 @@ public class StockAdjustReasonController extends DefaultBaseController {
   /**
    * 修改库存调整原因
    */
-  @ApiOperation("修改库存调整原因")
+  @Operation(summary = "修改库存调整原因")
   @HasPermission({"stock:adjust:reason:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateStockAdjustReasonVo vo) {

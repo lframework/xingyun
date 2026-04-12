@@ -1,0 +1,32 @@
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint}|%clr(%5p)|%clr(${PID:- }){magenta}|%clr(%15.15t){faint}|%clr(${spring.application.name}){cyan}|%clr(%-40.40logger{39}){cyan}|%m%n%wEx"
+    file: ${logging.pattern.console}
+  file:
+    name: logs/${spring.application.name}.log
+    max-history: 14
+  level:
+    io.lettuce.core.protocol: OFF
+
+jugg:
+  web:
+    #终端ID
+    worker-id: 1
+    #数据中心ID
+    center-id: 1
+  #开启websocket
+  ws:
+    #通信topic
+    #topic: xingyun:ws:topic
+    #是否支持跨域
+    #support-cross-domain: false
+
+warm-flow:
+  token-name: ${sa-token.token-name}
+  data-fill-handler-path: com.lframework.starter.bpm.handlers.BpmDataFillHandler
+  # 是否开启逻辑删除（orm框架本身不支持逻辑删除，可通过这种方式开启）
+  logic_delete: true
+  # 逻辑删除字段值（开启后默认为2）
+  logic_delete_value: 2
+  # 逻辑未删除字段（开启后默认为0）
+  logic_not_delete_value: 0

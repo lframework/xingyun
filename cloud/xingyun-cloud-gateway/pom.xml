@@ -16,8 +16,18 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-gateway</artifactId>
+      <artifactId>spring-cloud-gateway-server-webflux</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-loadbalancer</artifactId>
     </dependency>
 
     <dependency>
@@ -34,10 +44,10 @@
       <artifactId>nacos-client</artifactId>
       <groupId>com.alibaba.nacos</groupId>
     </dependency>
-
     <dependency>
-      <artifactId>spring-cloud-starter-zipkin</artifactId>
-      <groupId>org.springframework.cloud</groupId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -91,7 +101,7 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
         <includes>
-          <include>bootstrap.yml</include>
+          <include>application.yml</include>
         </includes>
       </resource>
       <resource>
@@ -102,7 +112,10 @@
         </includes>
         <excludes>
           <exclude>scripts/*</exclude>
+          <exclude>application.yml</exclude>
+          <exclude>bootstrap.yml</exclude>
           <exclude>project.yaml</exclude>
+          <exclude>xingyun-cloud-gateway.yaml</exclude>
         </excludes>
       </resource>
     </resources>

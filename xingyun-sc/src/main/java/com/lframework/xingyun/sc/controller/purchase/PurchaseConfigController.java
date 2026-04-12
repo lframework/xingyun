@@ -7,9 +7,9 @@ import com.lframework.xingyun.sc.bo.purchase.config.GetPurchaseConfigBo;
 import com.lframework.xingyun.sc.entity.PurchaseConfig;
 import com.lframework.xingyun.sc.service.purchase.PurchaseConfigService;
 import com.lframework.xingyun.sc.vo.purchase.config.UpdatePurchaseConfigVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import javax.validation.Valid;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "采购参数设置")
+@Tag(name = "采购参数设置")
 @Validated
 @RestController
 @RequestMapping("/purchase/config")
@@ -34,7 +34,7 @@ public class PurchaseConfigController extends DefaultBaseController {
   /**
    * 查询详情
    */
-  @ApiOperation("查询详情")
+  @Operation(summary = "查询详情")
   @GetMapping
   public InvokeResult<GetPurchaseConfigBo> get() {
 
@@ -47,7 +47,7 @@ public class PurchaseConfigController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdatePurchaseConfigVo vo) {
 

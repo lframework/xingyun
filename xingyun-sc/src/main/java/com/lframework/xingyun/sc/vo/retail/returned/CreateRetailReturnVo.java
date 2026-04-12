@@ -16,14 +16,14 @@ import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import com.lframework.xingyun.sc.vo.paytype.OrderPayTypeVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
@@ -34,44 +34,44 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "仓库ID不能为空！")
   private String scId;
 
   /**
    * 会员ID
    */
-  @ApiModelProperty("会员ID")
+  @Schema(description = "会员ID")
   private String memberId;
 
   /**
    * 采购员ID
    */
-  @ApiModelProperty("采购员ID")
+  @Schema(description = "采购员ID")
   private String salerId;
 
   /**
    * 付款日期
    */
-  @ApiModelProperty("付款日期")
+  @Schema(description = "付款日期")
   private LocalDate paymentDate;
 
   /**
    * 是否允许修改付款日期
    */
-  @ApiModelProperty("是否允许修改付款日期")
+  @Schema(description = "是否允许修改付款日期")
   private Boolean allowModifyPaymentDate = Boolean.FALSE;
 
   /**
    * 收货单ID
    */
-  @ApiModelProperty("收货单ID")
+  @Schema(description = "收货单ID")
   private String outSheetId;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "商品不能为空！")
   private List<RetailReturnProductVo> products;
@@ -79,20 +79,20 @@ public class CreateRetailReturnVo implements BaseVo, Serializable {
   /**
    * 支付方式
    */
-  @ApiModelProperty("支付方式")
+  @Schema(description = "支付方式")
   @Valid
   private List<OrderPayTypeVo> payTypes;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 是否关联零售出库单
    */
-  @ApiModelProperty("是否关联零售出库单")
+  @Schema(description = "是否关联零售出库单")
   private Boolean required;
 
   public void validate() {

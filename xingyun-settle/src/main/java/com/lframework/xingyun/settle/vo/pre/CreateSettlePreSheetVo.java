@@ -4,11 +4,11 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.List;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -19,21 +19,21 @@ public class CreateSettlePreSheetVo implements BaseVo, Serializable {
   /**
    * 供应商ID
    */
-  @ApiModelProperty(value = "供应商ID", required = true)
+  @Schema(description = "供应商ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "供应商ID不能为空！")
   private String supplierId;
 
   /**
    * 项目
    */
-  @ApiModelProperty(value = "项目", required = true)
+  @Schema(description = "项目", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotEmpty(message = "项目不能为空！")
   private List<SettlePreSheetItemVo> items;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   public void validate() {

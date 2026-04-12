@@ -1,9 +1,9 @@
 package com.lframework.xingyun.comp.vo.sw.excel;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -14,21 +14,21 @@ public class CreateOnlineExcelVo implements BaseVo, Serializable {
   /**
    * 名称
    */
-  @ApiModelProperty(value = "名称", required = true)
+  @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请输入名称！")
   private String name;
 
   /**
    * 内容
    */
-  @ApiModelProperty(value = "内容", required = true)
+  @Schema(description = "内容", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请输入内容！")
   private String content;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
 }

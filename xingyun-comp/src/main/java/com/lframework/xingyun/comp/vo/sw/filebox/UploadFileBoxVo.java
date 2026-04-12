@@ -1,10 +1,10 @@
 package com.lframework.xingyun.comp.vo.sw.filebox;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,11 +16,11 @@ public class UploadFileBoxVo implements BaseVo, Serializable {
   /**
    * 文件
    */
-  @ApiModelProperty(value = "文件", required = true)
+  @Schema(description = "文件", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "文件不能为空！")
   private MultipartFile file;
 
-  @ApiModelProperty(value = "路径", required = true)
+  @Schema(description = "路径", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "路径不能为空！")
   private String path;
 }

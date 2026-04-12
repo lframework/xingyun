@@ -29,14 +29,15 @@ import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleOrderWithOutVo;
 import com.lframework.xingyun.sc.vo.sale.QuerySaleProductVo;
 import com.lframework.xingyun.sc.vo.sale.UpdateSaleOrderVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "销售订单管理")
+@Tag(name = "销售订单管理")
 @Validated
 @RestController
 @RequestMapping("/sale/order")
@@ -65,8 +66,8 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 打印
    */
-  @ApiOperation("打印")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "打印")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:order:query"})
   @GetMapping("/print")
   public InvokeResult<PrintSaleOrderBo> print(
@@ -85,7 +86,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 订单列表
    */
-  @ApiOperation("订单列表")
+  @Operation(summary = "订单列表")
   @HasPermission({"sale:order:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QuerySaleOrderBo>> query(@Valid QuerySaleOrderVo vo) {
@@ -106,7 +107,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"sale:order:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QuerySaleOrderVo vo) {
@@ -119,8 +120,8 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:order:query"})
   @GetMapping
   public InvokeResult<GetSaleOrderBo> findById(@NotBlank(message = "订单ID不能为空！") String id) {
@@ -135,8 +136,8 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 根据ID查询（出库业务）
    */
-  @ApiOperation("根据ID查询（出库业务）")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询（出库业务）")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:out:add", "sale:out:modify"})
   @GetMapping("/out")
   public InvokeResult<SaleOrderWithOutBo> getWithOut(
@@ -151,7 +152,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 查询列表（出库业务）
    */
-  @ApiOperation("查询列表（出库业务）")
+  @Operation(summary = "查询列表（出库业务）")
   @HasPermission({"sale:out:add", "sale:out:modify"})
   @GetMapping("/query/out")
   public InvokeResult<PageResult<QuerySaleOrderWithOutBo>> queryWithOut(
@@ -173,7 +174,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 加载列表（出库业务）
    */
-  @ApiOperation("加载列表（出库业务）")
+  @Operation(summary = "加载列表（出库业务）")
   @HasPermission({"sale:out:add", "sale:out:modify"})
   @PostMapping("/query/out/load")
   public InvokeResult<List<QuerySaleOrderWithOutBo>> getWithOut(
@@ -191,7 +192,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 创建订单
    */
-  @ApiOperation("创建订单")
+  @Operation(summary = "创建订单")
   @HasPermission({"sale:order:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateSaleOrderVo vo) {
@@ -206,7 +207,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 修改订单
    */
-  @ApiOperation("修改订单")
+  @Operation(summary = "修改订单")
   @HasPermission({"sale:order:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateSaleOrderVo vo) {
@@ -221,7 +222,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 审核通过订单
    */
-  @ApiOperation("审核通过订单")
+  @Operation(summary = "审核通过订单")
   @HasPermission({"sale:order:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleOrderVo vo) {
@@ -234,7 +235,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 直接审核通过订单
    */
-  @ApiOperation("直接审核通过订单")
+  @Operation(summary = "直接审核通过订单")
   @HasPermission({"sale:order:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateSaleOrderVo vo) {
@@ -249,7 +250,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 审核拒绝订单
    */
-  @ApiOperation("审核拒绝订单")
+  @Operation(summary = "审核拒绝订单")
   @HasPermission({"sale:order:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleOrderVo vo) {
@@ -262,8 +263,8 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 删除订单
    */
-  @ApiOperation("删除订单")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除订单")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"sale:order:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "订单ID不能为空！") String id) {
@@ -276,10 +277,10 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 根据关键字查询商品
    */
-  @ApiOperation("根据关键字查询可销售商品")
-  @ApiImplicitParams({
-      @ApiImplicitParam(value = "仓库ID", name = "scId", paramType = "query", required = true),
-      @ApiImplicitParam(value = "关键字", name = "condition", paramType = "query", required = true)})
+  @Operation(summary = "根据关键字查询可销售商品")
+  @Parameters({
+      @Parameter(name = "scId", description = "仓库ID", in = ParameterIn.QUERY, required = true),
+      @Parameter(name = "condition", description = "关键字", in = ParameterIn.QUERY, required = true)})
   @HasPermission({"sale:order:add", "sale:order:modify", "sale:out:add", "sale:out:modify",
       "sale:return:add", "sale:return:modify"})
   @GetMapping("/product/search")
@@ -307,7 +308,7 @@ public class SaleOrderController extends DefaultBaseController {
   /**
    * 查询商品列表
    */
-  @ApiOperation("查询可销售商品列表")
+  @Operation(summary = "查询可销售商品列表")
   @HasPermission({"sale:order:add", "sale:order:modify", "sale:out:add", "sale:out:modify",
       "sale:return:add", "sale:return:modify"})
   @GetMapping("/product/list")

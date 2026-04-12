@@ -9,7 +9,7 @@ import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -19,56 +19,56 @@ public class ReceiveSheetSelectorBo extends BaseBo<ReceiveSheet> {
     /**
      * ID
      */
-    @ApiModelProperty("ID")
+    @Schema(description = "ID")
     private String id;
 
     /**
      * 单号
      */
-    @ApiModelProperty("单号")
+    @Schema(description = "单号")
     private String code;
 
     /**
      * 仓库编号
      */
-    @ApiModelProperty("仓库编号")
+    @Schema(description = "仓库编号")
     private String scCode;
 
     /**
      * 仓库名称
      */
-    @ApiModelProperty("仓库名称")
+    @Schema(description = "仓库名称")
     private String scName;
 
     /**
      * 供应商编号
      */
-    @ApiModelProperty("供应商编号")
+    @Schema(description = "供应商编号")
     private String supplierCode;
 
     /**
      * 供应商名称
      */
-    @ApiModelProperty("供应商名称")
+    @Schema(description = "供应商名称")
     private String supplierName;
 
     /**
      * 创建人
      */
-    @ApiModelProperty("创建人")
+    @Schema(description = "创建人")
     private String createBy;
 
     /**
      * 创建时间
      */
-    @ApiModelProperty("创建时间")
+    @Schema(description = "创建时间")
     @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
     private LocalDateTime createTime;
 
     /**
      * 状态
      */
-    @ApiModelProperty("状态")
+    @Schema(description = "状态")
     private Integer status;
 
     public ReceiveSheetSelectorBo() {

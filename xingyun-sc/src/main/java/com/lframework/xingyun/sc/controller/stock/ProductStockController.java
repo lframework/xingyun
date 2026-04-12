@@ -13,11 +13,11 @@ import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.excel.stock.ProductStockExportTaskWorker;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.vo.stock.QueryProductStockVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "商品库存")
+@Tag(name = "商品库存")
 @Validated
 @RestController
 @RequestMapping("/stock/product")
@@ -41,7 +41,7 @@ public class ProductStockController extends DefaultBaseController {
   /**
    * 查询商品库存
    */
-  @ApiOperation("查询商品库存")
+  @Operation(summary = "查询商品库存")
   @HasPermission({"stock:product:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryProductStockBo>> query(@Valid QueryProductStockVo vo) {
@@ -61,7 +61,7 @@ public class ProductStockController extends DefaultBaseController {
   /**
    * 导出商品库存
    */
-  @ApiOperation("导出商品库存")
+  @Operation(summary = "导出商品库存")
   @HasPermission({"stock:product:export"})
   @GetMapping("/export")
   public InvokeResult<Void> export(@Valid QueryProductStockVo vo) {

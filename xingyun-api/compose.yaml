@@ -1,0 +1,31 @@
+services:
+  xingyun-api:
+    image: ${XINGYUN_API_IMAGE:-xingyun-api:local}
+    build:
+      context: ./target
+      dockerfile: Dockerfile
+    container_name: ${XINGYUN_API_CONTAINER_NAME:-xingyun-api}
+    restart: unless-stopped
+    ports:
+      - "${XINGYUN_API_PORT:-8080}:8080"
+    environment:
+      XINGYUN_DB_URL: ${XINGYUN_DB_URL:?XINGYUN_DB_URL is required}
+      XINGYUN_DB_USERNAME: ${XINGYUN_DB_USERNAME:?XINGYUN_DB_USERNAME is required}
+      XINGYUN_DB_PASSWORD: ${XINGYUN_DB_PASSWORD:?XINGYUN_DB_PASSWORD is required}
+      XINGYUN_REDIS_HOST: ${XINGYUN_REDIS_HOST:?XINGYUN_REDIS_HOST is required}
+      XINGYUN_REDIS_PASSWORD: ${XINGYUN_REDIS_PASSWORD:?XINGYUN_REDIS_PASSWORD is required}
+      XINGYUN_RABBITMQ_ADDRESSES: ${XINGYUN_RABBITMQ_ADDRESSES:?XINGYUN_RABBITMQ_ADDRESSES is required}
+      XINGYUN_RABBITMQ_USERNAME: ${XINGYUN_RABBITMQ_USERNAME:?XINGYUN_RABBITMQ_USERNAME is required}
+      XINGYUN_RABBITMQ_PASSWORD: ${XINGYUN_RABBITMQ_PASSWORD:?XINGYUN_RABBITMQ_PASSWORD is required}
+      XINGYUN_REDIS_PORT: ${XINGYUN_REDIS_PORT:-6379}
+      XINGYUN_REDIS_DATABASE: ${XINGYUN_REDIS_DATABASE:-0}
+      XINGYUN_REDIS_TIMEOUT: ${XINGYUN_REDIS_TIMEOUT:-10s}
+      XINGYUN_RABBITMQ_VHOST: ${XINGYUN_RABBITMQ_VHOST:-/}
+      XINGYUN_RABBITMQ_CONNECTION_TIMEOUT: ${XINGYUN_RABBITMQ_CONNECTION_TIMEOUT:-60000}
+      XINGYUN_UPLOAD_DOMAIN: ${XINGYUN_UPLOAD_DOMAIN:-http://localhost:8080}
+      JAVA_OPTS: ${JAVA_OPTS:-}
+    volumes:
+      - ./data/tmp:/opt/data/tmp
+      - ./data/upload:/opt/data/upload
+      - ./data/security-upload:/opt/data/security-upload
+      - ./logs:/opt/logs

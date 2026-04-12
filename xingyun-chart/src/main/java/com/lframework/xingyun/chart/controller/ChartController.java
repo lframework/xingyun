@@ -15,8 +15,8 @@ import com.lframework.xingyun.chart.enums.OrderChartBizType;
 import com.lframework.xingyun.chart.service.OrderChartService;
 import com.lframework.xingyun.chart.vo.GetOrderChartVo;
 import com.lframework.xingyun.chart.vo.QueryOrderChartVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "报表")
+@Tag(name = "报表")
 @Validated
 @RestController
 @RequestMapping("/chart")
@@ -44,7 +44,7 @@ public class ChartController extends DefaultBaseController {
   /**
    * 订单报表
    */
-  @ApiOperation("订单报表")
+  @Operation(summary = "订单报表")
   @GetMapping("/order")
   public InvokeResult<Map<String, Map<String, ? extends BaseBo>>> orderChart() {
 

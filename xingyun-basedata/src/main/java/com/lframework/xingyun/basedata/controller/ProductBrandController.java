@@ -18,16 +18,16 @@ import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.vo.product.brand.CreateProductBrandVo;
 import com.lframework.xingyun.basedata.vo.product.brand.QueryProductBrandVo;
 import com.lframework.xingyun.basedata.vo.product.brand.UpdateProductBrandVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,7 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "品牌管理")
+@Tag(name = "品牌管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/brand")
@@ -55,7 +55,7 @@ public class ProductBrandController extends DefaultBaseController {
   /**
    * 品牌列表
    */
-  @ApiOperation("品牌列表")
+  @Operation(summary = "品牌列表")
   @HasPermission({"base-data:product:brand:query", "base-data:product:brand:add",
       "base-data:product:brand:modify"})
   @GetMapping("/query")
@@ -79,8 +79,8 @@ public class ProductBrandController extends DefaultBaseController {
   /**
    * 查询品牌
    */
-  @ApiOperation("查询品牌")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询品牌")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:brand:query", "base-data:product:brand:add",
       "base-data:product:brand:modify"})
   @GetMapping
@@ -99,11 +99,11 @@ public class ProductBrandController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
+  @Operation(summary = "根据ID删除")
   @HasPermission({"base-data:product:brand:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "品牌ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "品牌ID不能为空！") String id) {
 
     productBrandService.deleteById(id);
 
@@ -115,7 +115,7 @@ public class ProductBrandController extends DefaultBaseController {
   /**
    * 新增品牌
    */
-  @ApiOperation("新增品牌")
+  @Operation(summary = "新增品牌")
   @HasPermission({"base-data:product:brand:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateProductBrandVo vo) {
@@ -128,7 +128,7 @@ public class ProductBrandController extends DefaultBaseController {
   /**
    * 修改品牌
    */
-  @ApiOperation("修改品牌")
+  @Operation(summary = "修改品牌")
   @HasPermission({"base-data:product:brand:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateProductBrandVo vo) {
@@ -140,14 +140,14 @@ public class ProductBrandController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:product:brand:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("品牌导入模板", ProductBrandImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:product:brand:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

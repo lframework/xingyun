@@ -62,14 +62,14 @@ import com.lframework.xingyun.basedata.vo.shop.ShopSelectorVo;
 import com.lframework.xingyun.basedata.vo.stockcell.QueryStockCellSelectorVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterSelectorVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierSelectorVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,7 +83,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "基础数据数据选择器")
+@Tag(name = "基础数据数据选择器")
 @Validated
 @RestController
 @RequestMapping("/selector")
@@ -128,7 +128,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 商品
    */
-  @ApiOperation("商品")
+  @Operation(summary = "商品")
   @GetMapping("/product")
   public InvokeResult<PageResult<ProductSelectorBo>> product(
       @Valid QueryProductSelectorVo vo) {
@@ -148,7 +148,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载商品
    */
-  @ApiOperation("加载商品")
+  @Operation(summary = "加载商品")
   @PostMapping("/product/load")
   public InvokeResult<List<ProductSelectorBo>> loadProduct(
       @RequestBody(required = false) List<String> ids) {
@@ -168,7 +168,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 品牌
    */
-  @ApiOperation("品牌")
+  @Operation(summary = "品牌")
   @GetMapping("/brand")
   public InvokeResult<PageResult<ProductBrandSelectorBo>> brand(
       @Valid QueryProductBrandSelectorVo vo) {
@@ -188,7 +188,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载品牌
    */
-  @ApiOperation("加载品牌")
+  @Operation(summary = "加载品牌")
   @PostMapping("/brand/load")
   public InvokeResult<List<ProductBrandSelectorBo>> loadBrand(
       @RequestBody(required = false) List<String> ids) {
@@ -208,7 +208,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 分类
    */
-  @ApiOperation("分类")
+  @Operation(summary = "分类")
   @GetMapping("/category")
   public InvokeResult<List<ProductCategorySelectorBo>> category(
       @Valid QueryProductCategorySelectorVo vo) {
@@ -225,7 +225,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载分类
    */
-  @ApiOperation("加载分类")
+  @Operation(summary = "加载分类")
   @PostMapping("/category/load")
   public InvokeResult<List<ProductCategorySelectorBo>> loadCustomList(
       @RequestBody(required = false) List<String> ids) {
@@ -246,7 +246,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 会员
    */
-  @ApiOperation("会员")
+  @Operation(summary = "会员")
   @GetMapping("/member")
   public InvokeResult<PageResult<MemberSelectorBo>> selector(@Valid QueryMemberSelectorVo vo) {
 
@@ -264,7 +264,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载会员
    */
-  @ApiOperation("加载会员")
+  @Operation(summary = "加载会员")
   @PostMapping("/member/load")
   public InvokeResult<List<MemberSelectorBo>> loadMember(
       @RequestBody(required = false) List<String> ids) {
@@ -284,7 +284,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 仓库
    */
-  @ApiOperation("仓库")
+  @Operation(summary = "仓库")
   @GetMapping("/sc")
   public InvokeResult<PageResult<StoreCenterSelectorBo>> selector(
       @Valid QueryStoreCenterSelectorVo vo) {
@@ -304,7 +304,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载仓库
    */
-  @ApiOperation("加载仓库")
+  @Operation(summary = "加载仓库")
   @PostMapping("/sc/load")
   public InvokeResult<List<StoreCenterSelectorBo>> loadSc(
       @RequestBody(required = false) List<String> ids) {
@@ -324,7 +324,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 仓位
    */
-  @ApiOperation("仓位")
+  @Operation(summary = "仓位")
   @GetMapping("/stock-cell")
   public InvokeResult<PageResult<StockCellSelectorBo>> selector(
       @Valid QueryStockCellSelectorVo vo) {
@@ -344,7 +344,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载仓位
    */
-  @ApiOperation("加载仓位")
+  @Operation(summary = "加载仓位")
   @PostMapping("/stock-cell/load")
   public InvokeResult<List<StockCellSelectorBo>> loadStockCell(
       @RequestBody(required = false) List<String> ids) {
@@ -364,7 +364,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 供应商
    */
-  @ApiOperation("供应商")
+  @Operation(summary = "供应商")
   @GetMapping("/supplier")
   public InvokeResult<PageResult<SupplierSelectorBo>> selector(@Valid QuerySupplierSelectorVo vo) {
 
@@ -383,7 +383,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载供应商
    */
-  @ApiOperation("加载供应商")
+  @Operation(summary = "加载供应商")
   @PostMapping("/supplier/load")
   public InvokeResult<List<SupplierSelectorBo>> loadSupplier(
       @RequestBody(required = false) List<String> ids) {
@@ -403,7 +403,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 客户
    */
-  @ApiOperation("客户")
+  @Operation(summary = "客户")
   @GetMapping("/customer")
   public InvokeResult<PageResult<CustomerSelectorBo>> selector(@Valid QueryCustomerSelectorVo vo) {
 
@@ -423,7 +423,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载客户
    */
-  @ApiOperation("加载客户")
+  @Operation(summary = "加载客户")
   @PostMapping("/customer/load")
   public InvokeResult<List<CustomerSelectorBo>> loadCustomer(
       @RequestBody(required = false) List<String> ids) {
@@ -443,7 +443,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 门店
    */
-  @ApiOperation("门店")
+  @Operation(summary = "门店")
   @GetMapping("/shop")
   public InvokeResult<PageResult<ShopSelectorBo>> selector(@Valid ShopSelectorVo vo) {
 
@@ -474,7 +474,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载门店
    */
-  @ApiOperation("加载门店")
+  @Operation(summary = "加载门店")
   @PostMapping("/shop/load")
   public InvokeResult<List<ShopSelectorBo>> loadShop(
       @RequestBody(required = false) List<String> ids) {
@@ -495,7 +495,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 地址
    */
-  @ApiOperation("地址")
+  @Operation(summary = "地址")
   @GetMapping("/address")
   public InvokeResult<PageResult<AddressSelectorBo>> selector(@Valid AddressSelectorVo vo) {
 
@@ -515,7 +515,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载地址
    */
-  @ApiOperation("加载地址")
+  @Operation(summary = "加载地址")
   @PostMapping("/address/load")
   public InvokeResult<List<AddressSelectorBo>> loadAddress(
       @RequestBody(required = false) List<String> ids) {
@@ -536,7 +536,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 默认地址
    */
-  @ApiOperation("默认地址")
+  @Operation(summary = "默认地址")
   @GetMapping("/address/default")
   public InvokeResult<AddressSelectorBo> selector(
       @NotBlank(message = "实体ID不能为空！") String entityId,
@@ -555,7 +555,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 支付方式
    */
-  @ApiOperation("支付方式")
+  @Operation(summary = "支付方式")
   @GetMapping("/paytype")
   public InvokeResult<PageResult<PayTypeSelectorBo>> selector(@Valid PayTypeSelectorVo vo) {
 
@@ -575,7 +575,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载支付方式
    */
-  @ApiOperation("加载支付方式")
+  @Operation(summary = "加载支付方式")
   @PostMapping("/paytype/load")
   public InvokeResult<List<PayTypeSelectorBo>> loadPayType(
       @RequestBody(required = false) List<String> ids) {
@@ -596,7 +596,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 物流公司
    */
-  @ApiOperation("物流公司")
+  @Operation(summary = "物流公司")
   @GetMapping("/logistics/company")
   public InvokeResult<PageResult<LogisticsCompanySelectorBo>> selector(
       @Valid QueryLogisticsCompanySelectorVo vo) {
@@ -618,7 +618,7 @@ public class BaseDataSelectorController extends DefaultBaseController {
   /**
    * 加载物流公司
    */
-  @ApiOperation("加载物流公司")
+  @Operation(summary = "加载物流公司")
   @PostMapping("/logistics/company/load")
   public InvokeResult<List<LogisticsCompanySelectorBo>> loadLogisticsCompany(
       @RequestBody(required = false) List<String> ids) {

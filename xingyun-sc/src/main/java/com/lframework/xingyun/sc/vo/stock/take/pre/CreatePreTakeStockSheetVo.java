@@ -7,15 +7,15 @@ import com.lframework.starter.web.core.components.validation.TypeMismatch;
 import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -26,14 +26,14 @@ public class CreatePreTakeStockSheetVo implements BaseVo, Serializable {
   /**
    * 仓库ID
    */
-  @ApiModelProperty(value = "仓库ID", required = true)
+  @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请选择仓库！")
   private String scId;
 
   /**
    * 预先盘点状态
    */
-  @ApiModelProperty(value = "预先盘点状态", required = true)
+  @Schema(description = "预先盘点状态", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "请选择预先盘点状态！")
   @IsEnum(message = "预先盘点状态格式错误！", enumClass = PreTakeStockSheetStatus.class)
   @TypeMismatch(message = "预先盘点状态格式错误！")
@@ -42,13 +42,13 @@ public class CreatePreTakeStockSheetVo implements BaseVo, Serializable {
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 商品
    */
-  @ApiModelProperty(value = "商品", required = true)
+  @Schema(description = "商品", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "请录入商品！")
   private List<PreTakeStockProductVo> products;

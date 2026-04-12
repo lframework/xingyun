@@ -4,10 +4,10 @@ import com.lframework.starter.web.core.components.validation.IsEnum;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.basedata.enums.AddressEntityType;
 import com.lframework.xingyun.basedata.enums.AddressType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -18,14 +18,14 @@ public class CreateAddressVo implements BaseVo, Serializable {
   /**
    * 实体ID
    */
-  @ApiModelProperty(value = "实体ID", required = true)
+  @Schema(description = "实体ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "实体ID不能为空！")
   private String entityId;
 
   /**
    * 实体类型
    */
-  @ApiModelProperty(value = "实体类型", required = true)
+  @Schema(description = "实体类型", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "实体类型不能为空！")
   @IsEnum(message = "实体类型格式错误！", enumClass = AddressEntityType.class)
   private Integer entityType;
@@ -33,7 +33,7 @@ public class CreateAddressVo implements BaseVo, Serializable {
   /**
    * 地址类型
    */
-  @ApiModelProperty(value = "地址类型", required = true)
+  @Schema(description = "地址类型", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "地址类型不能为空！")
   @IsEnum(message = "地址类型格式错误！", enumClass = AddressType.class)
   private Integer addressType;
@@ -41,35 +41,35 @@ public class CreateAddressVo implements BaseVo, Serializable {
   /**
    * 姓名
    */
-  @ApiModelProperty(value = "姓名", required = true)
+  @Schema(description = "姓名", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "姓名不能为空！")
   private String name;
 
   /**
    * 手机号
    */
-  @ApiModelProperty(value = "手机号", required = true)
+  @Schema(description = "手机号", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "手机号不能为空！")
   private String telephone;
 
   /**
    * 地区ID
    */
-  @ApiModelProperty(value = "地区ID", required = true)
+  @Schema(description = "地区ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "地区ID不能为空！")
   private String cityId;
 
   /**
    * 详细地址
    */
-  @ApiModelProperty(value = "详细地址", required = true)
+  @Schema(description = "详细地址", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "详细地址不能为空！")
   private String address;
 
   /**
    * 是否默认地址
    */
-  @ApiModelProperty(value = "是否默认地址", required = true)
+  @Schema(description = "是否默认地址", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "是否默认地址不能为空！")
   private Boolean isDefault;
 }

@@ -16,7 +16,7 @@ import com.lframework.xingyun.settle.enums.CustomerSettleFeeSheetType;
 import com.lframework.xingyun.settle.service.SettleInItemService;
 import com.lframework.xingyun.settle.service.SettleOutItemService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,90 +29,90 @@ public class GetCustomerSettleFeeSheetBo extends BaseBo<CustomerSettleFeeSheetFu
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 单号
    */
-  @ApiModelProperty("单号")
+  @Schema(description = "单号")
   private String code;
 
   /**
    * 客户ID
    */
-  @ApiModelProperty("客户ID")
+  @Schema(description = "客户ID")
   private String customerId;
 
   /**
    * 客户编号
    */
-  @ApiModelProperty("客户编号")
+  @Schema(description = "客户编号")
   private String customerCode;
 
   /**
    * 客户名称
    */
-  @ApiModelProperty("客户名称")
+  @Schema(description = "客户名称")
   private String customerName;
 
   /**
    * 单据类型
    */
-  @ApiModelProperty("单据类型")
+  @Schema(description = "单据类型")
   private Integer sheetType;
 
   /**
    * 总金额
    */
-  @ApiModelProperty("总金额")
+  @Schema(description = "总金额")
   private BigDecimal totalAmount;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 创建人ID
    */
-  @ApiModelProperty("创建人ID")
+  @Schema(description = "创建人ID")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime createTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime approveTime;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   private Integer status;
 
   /**
    * 拒绝原因
    */
-  @ApiModelProperty("拒绝原因")
+  @Schema(description = "拒绝原因")
   private String refuseReason;
 
-  @ApiModelProperty("明细")
+  @Schema(description = "明细")
   private List<SheetDetailBo> details;
 
   public GetCustomerSettleFeeSheetBo() {
@@ -161,25 +161,25 @@ public class GetCustomerSettleFeeSheetBo extends BaseBo<CustomerSettleFeeSheetFu
     /**
      * 明细ID
      */
-    @ApiModelProperty("明细ID")
+    @Schema(description = "明细ID")
     private String id;
 
     /**
      * 项目ID
      */
-    @ApiModelProperty("项目ID")
+    @Schema(description = "项目ID")
     private String itemId;
 
     /**
      * 项目名称
      */
-    @ApiModelProperty("项目名称")
+    @Schema(description = "项目名称")
     private String itemName;
 
     /**
      * 金额
      */
-    @ApiModelProperty("金额")
+    @Schema(description = "金额")
     private BigDecimal amount;
 
     @JsonIgnore

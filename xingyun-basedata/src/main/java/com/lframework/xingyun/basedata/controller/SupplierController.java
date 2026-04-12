@@ -18,16 +18,16 @@ import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.basedata.vo.supplier.CreateSupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.QuerySupplierVo;
 import com.lframework.xingyun.basedata.vo.supplier.UpdateSupplierVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,7 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "供应商管理")
+@Tag(name = "供应商管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/supplier")
@@ -55,7 +55,7 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 供应商列表
    */
-  @ApiOperation("供应商列表")
+  @Operation(summary = "供应商列表")
   @HasPermission({"base-data:supplier:query", "base-data:supplier:add",
       "base-data:supplier:modify"})
   @GetMapping("/query")
@@ -77,8 +77,8 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 查询供应商
    */
-  @ApiOperation("查询供应商")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询供应商")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:supplier:query", "base-data:supplier:add",
       "base-data:supplier:modify"})
   @GetMapping
@@ -97,11 +97,11 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 删除供应商
    */
-  @ApiOperation("删除供应商")
+  @Operation(summary = "删除供应商")
   @HasPermission({"base-data:supplier:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "供应商ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "供应商ID不能为空！") String id) {
 
     supplierService.deleteById(id);
 
@@ -113,7 +113,7 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 新增供应商
    */
-  @ApiOperation("新增供应商")
+  @Operation(summary = "新增供应商")
   @HasPermission({"base-data:supplier:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateSupplierVo vo) {
@@ -126,7 +126,7 @@ public class SupplierController extends DefaultBaseController {
   /**
    * 修改供应商
    */
-  @ApiOperation("修改供应商")
+  @Operation(summary = "修改供应商")
   @HasPermission({"base-data:supplier:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateSupplierVo vo) {
@@ -138,14 +138,14 @@ public class SupplierController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:supplier:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("供应商导入模板", SupplierImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:supplier:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

@@ -6,13 +6,13 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
@@ -23,14 +23,14 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "ID不能为空！")
   private String id;
 
   /**
    * 商品信息
    */
-  @ApiModelProperty(value = "商品信息", required = true)
+  @Schema(description = "商品信息", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   @NotEmpty(message = "商品信息不能为空！")
   private List<ProductVo> products;
@@ -38,19 +38,19 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 是否允许修改数量
    */
-  @ApiModelProperty("是否允许修改数量")
+  @Schema(description = "是否允许修改数量")
   private Boolean allowChangeNum;
 
   /**
    * 是否自动计算数量
    */
-  @ApiModelProperty("是否自动计算数量")
+  @Schema(description = "是否自动计算数量")
   private Boolean autoChangeStock;
 
   @Data
@@ -61,20 +61,20 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
     /**
      * 商品ID
      */
-    @ApiModelProperty(value = "商品ID", required = true)
+    @Schema(description = "商品ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "商品ID不能为空！")
     private String productId;
 
     /**
      * 修改后盘点数量
      */
-    @ApiModelProperty(value = "修改后盘点数量")
+    @Schema(description = "修改后盘点数量")
     private BigDecimal takeNum;
 
     /**
      * 备注
      */
-    @ApiModelProperty(value = "备注")
+    @Schema(description = "备注")
     private String description;
   }
 

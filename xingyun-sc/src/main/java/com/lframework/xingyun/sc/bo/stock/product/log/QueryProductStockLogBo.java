@@ -15,7 +15,7 @@ import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.ProductStockLog;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -26,122 +26,122 @@ public class QueryProductStockLogBo extends BaseBo<ProductStockLog> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty("仓库ID")
+  @Schema(description = "仓库ID")
   private String scId;
 
   /**
    * 仓库编号
    */
-  @ApiModelProperty("仓库编号")
+  @Schema(description = "仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 商品ID
    */
-  @ApiModelProperty("商品ID")
+  @Schema(description = "商品ID")
   private String productId;
 
   /**
    * 商品编号
    */
-  @ApiModelProperty("商品编号")
+  @Schema(description = "商品编号")
   private String productCode;
 
   /**
    * 商品名称
    */
-  @ApiModelProperty("商品名称")
+  @Schema(description = "商品名称")
   private String productName;
 
   /**
    * 商品分类
    */
-  @ApiModelProperty("商品分类")
+  @Schema(description = "商品分类")
   private String categoryName;
 
   /**
    * 商品品牌
    */
-  @ApiModelProperty("商品品牌")
+  @Schema(description = "商品品牌")
   private String brandName;
 
   /**
    * 库存数量
    */
-  @ApiModelProperty("库存数量")
+  @Schema(description = "库存数量")
   private BigDecimal stockNum;
 
   /**
    * 原库存数量
    */
-  @ApiModelProperty("原库存数量")
+  @Schema(description = "原库存数量")
   private BigDecimal oriStockNum;
 
   /**
    * 现库存数量
    */
-  @ApiModelProperty("现库存数量")
+  @Schema(description = "现库存数量")
   private BigDecimal curStockNum;
 
   /**
    * 原含税成本价
    */
-  @ApiModelProperty("原含税成本价")
+  @Schema(description = "原含税成本价")
   private BigDecimal oriTaxPrice;
 
   /**
    * 现含税成本价
    */
-  @ApiModelProperty("现含税成本价")
+  @Schema(description = "现含税成本价")
   private BigDecimal curTaxPrice;
 
   /**
    * 含税金额
    */
-  @ApiModelProperty("含税金额")
+  @Schema(description = "含税金额")
   private BigDecimal taxAmount;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime createTime;
 
   /**
    * 业务单据ID
    */
-  @ApiModelProperty("业务单据ID")
+  @Schema(description = "业务单据ID")
   private String bizId;
 
   /**
    * 业务单据号
    */
-  @ApiModelProperty("业务单据号")
+  @Schema(description = "业务单据号")
   private String bizCode;
 
   /**
    * 业务类型
    */
-  @ApiModelProperty("业务类型")
+  @Schema(description = "业务类型")
   private Integer bizType;
 
   public QueryProductStockLogBo() {

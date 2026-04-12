@@ -16,7 +16,7 @@ import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -26,62 +26,62 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
     /**
      * 仓库ID
      */
-    @ApiModelProperty(value = "仓库ID", hidden = true)
+    @Schema(description = "仓库ID", hidden = true)
     @JsonIgnore
     private String scId;
 
     /**
      * 商品ID
      */
-    @ApiModelProperty("商品ID")
+    @Schema(description = "商品ID")
     private String productId;
 
     /**
      * 商品编号
      */
-    @ApiModelProperty("商品编号")
+    @Schema(description = "商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
-    @ApiModelProperty("商品名称")
+    @Schema(description = "商品名称")
     private String productName;
 
     /**
      * 分类名称
      */
-    @ApiModelProperty("分类名称")
+    @Schema(description = "分类名称")
     private String categoryName;
 
     /**
      * 品牌名称
      */
-    @ApiModelProperty("品牌名称")
+    @Schema(description = "品牌名称")
     private String brandName;
 
     /**
      * 规格
      */
-    @ApiModelProperty("规格")
+    @Schema(description = "规格")
     private String spec;
 
     /**
      * 单位
      */
-    @ApiModelProperty("单位")
+    @Schema(description = "单位")
     private String unit;
 
     /**
      * 库存数量
      */
-    @ApiModelProperty("库存数量")
+    @Schema(description = "库存数量")
     private BigDecimal stockNum;
 
     /**
      * 盘点数量
      */
-    @ApiModelProperty("盘点数量")
+    @Schema(description = "盘点数量")
     private BigDecimal takeNum;
 
     public QueryPreTakeStockSheetProductBo(QueryPreTakeStockSheetProductDto dto, String scId) {

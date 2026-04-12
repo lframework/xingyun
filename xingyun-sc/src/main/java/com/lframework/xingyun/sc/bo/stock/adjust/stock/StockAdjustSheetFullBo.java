@@ -23,7 +23,7 @@ import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
 import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,94 +43,94 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 业务单据号
    */
-  @ApiModelProperty("业务单据号")
+  @Schema(description = "业务单据号")
   private String code;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty("仓库ID")
+  @Schema(description = "仓库ID")
   private String scId;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 业务类型
    */
-  @ApiModelProperty("业务类型")
+  @Schema(description = "业务类型")
   @EnumConvert
   private Integer bizType;
 
   /**
    * 调整原因ID
    */
-  @ApiModelProperty("调整原因ID")
+  @Schema(description = "调整原因ID")
   private String reasonId;
 
   /**
    * 调整原因
    */
-  @ApiModelProperty("调整原因")
+  @Schema(description = "调整原因")
   private String reasonName;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   private Integer status;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 修改人
    */
-  @ApiModelProperty("修改人")
+  @Schema(description = "修改人")
   private String updateBy;
 
   /**
    * 修改时间
    */
-  @ApiModelProperty("修改时间")
+  @Schema(description = "修改时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime updateTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime approveTime;
 
   /**
    * 拒绝原因
    */
-  @ApiModelProperty("拒绝原因")
+  @Schema(description = "拒绝原因")
   private String refuseReason;
 
   /**
    * 明细
    */
-  @ApiModelProperty("明细")
+  @Schema(description = "明细")
   private List<DetailBo> details;
 
   public StockAdjustSheetFullBo(StockAdjustSheetFullDto dto) {
@@ -172,81 +172,81 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
     /**
      * ID
      */
-    @ApiModelProperty("ID")
+    @Schema(description = "ID")
     private String id;
 
     /**
      * 商品ID
      */
-    @ApiModelProperty("商品ID")
+    @Schema(description = "商品ID")
     private String productId;
 
     /**
      * 编号
      */
-    @ApiModelProperty("编号")
+    @Schema(description = "编号")
     private String productCode;
 
     /**
      * 名称
      */
-    @ApiModelProperty("名称")
+    @Schema(description = "名称")
     private String productName;
 
     /**
      * 分类名称
      */
-    @ApiModelProperty("分类名称")
+    @Schema(description = "分类名称")
     private String categoryName;
 
     /**
      * 品牌名称
      */
-    @ApiModelProperty("品牌名称")
+    @Schema(description = "品牌名称")
     private String brandName;
 
     /**
      * 规格
      */
-    @ApiModelProperty("规格")
+    @Schema(description = "规格")
     private String spec;
 
     /**
      * 单位
      */
-    @ApiModelProperty("单位")
+    @Schema(description = "单位")
     private String unit;
 
     /**
      * 调整库存数量
      */
-    @ApiModelProperty("调整库存数量")
+    @Schema(description = "调整库存数量")
     private BigDecimal stockNum;
 
     /**
      * 当前库存数量
      */
-    @ApiModelProperty("当前库存数量")
+    @Schema(description = "当前库存数量")
     private BigDecimal curStockNum;
 
     /**
      * 备注
      */
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     private String description;
 
     /**
      * 仓库ID
      */
     @JsonIgnore
-    @ApiModelProperty(hidden = true)
+    @Schema(hidden = true)
     private String scId;
 
     /**
      * 状态
      */
     @JsonIgnore
-    @ApiModelProperty(hidden = true)
+    @Schema(hidden = true)
     private Integer status;
 
     public DetailBo(StockAdjustSheetFullDto.DetailDto dto, String scId, Integer status) {

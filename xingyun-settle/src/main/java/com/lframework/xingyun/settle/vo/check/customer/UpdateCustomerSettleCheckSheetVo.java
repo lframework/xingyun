@@ -1,7 +1,7 @@
 package com.lframework.xingyun.settle.vo.check.customer;
 
-import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -12,7 +12,7 @@ public class UpdateCustomerSettleCheckSheetVo extends CreateCustomerSettleCheckS
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "ID不能为空！")
   private String id;
 }

@@ -18,16 +18,16 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.vo.storecenter.CreateStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.QueryStoreCenterVo;
 import com.lframework.xingyun.basedata.vo.storecenter.UpdateStoreCenterVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "仓库管理")
+@Tag(name = "仓库管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/storecenter")
@@ -50,7 +50,7 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 仓库列表
    */
-  @ApiOperation("仓库列表")
+  @Operation(summary = "仓库列表")
   @HasPermission({"base-data:store-center:query", "base-data:store-center:add",
       "base-data:store-center:modify"})
   @GetMapping("/query")
@@ -72,8 +72,8 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 查询仓库
    */
-  @ApiOperation("查询仓库")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询仓库")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:store-center:query", "base-data:store-center:add",
       "base-data:store-center:modify"})
   @GetMapping
@@ -92,11 +92,11 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 删除仓库
    */
-  @ApiOperation("删除仓库")
+  @Operation(summary = "删除仓库")
   @HasPermission({"base-data:store-center:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "仓库ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "仓库ID不能为空！") String id) {
 
     storeCenterService.deleteById(id);
 
@@ -108,7 +108,7 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 新增仓库
    */
-  @ApiOperation("新增仓库")
+  @Operation(summary = "新增仓库")
   @HasPermission({"base-data:store-center:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateStoreCenterVo vo) {
@@ -121,7 +121,7 @@ public class StoreCenterController extends DefaultBaseController {
   /**
    * 修改仓库
    */
-  @ApiOperation("修改仓库")
+  @Operation(summary = "修改仓库")
   @HasPermission({"base-data:store-center:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateStoreCenterVo vo) {
@@ -133,14 +133,14 @@ public class StoreCenterController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:store-center:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("仓库导入模板", StoreCenterImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:store-center:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

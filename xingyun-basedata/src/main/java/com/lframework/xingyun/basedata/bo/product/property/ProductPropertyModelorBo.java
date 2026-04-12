@@ -3,7 +3,7 @@ package com.lframework.xingyun.basedata.bo.product.property;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -14,49 +14,49 @@ public class ProductPropertyModelorBo extends BaseBo<ProductPropertyModelorDto> 
     /**
      * ID
      */
-    @ApiModelProperty("ID")
+    @Schema(description = "ID")
     private String id;
 
     /**
      * 名称
      */
-    @ApiModelProperty("名称")
+    @Schema(description = "名称")
     private String name;
 
     /**
      * 是否必填
      */
-    @ApiModelProperty("是否必填")
+    @Schema(description = "是否必填")
     private Boolean isRequired;
 
     /**
      * 可选项，当columnType != CUSTOM时 不为空
      */
-    @ApiModelProperty("可选项，当columnType != CUSTOM时 不为空")
+    @Schema(description = "可选项，当columnType != CUSTOM时 不为空")
     private List<ProductPropertyItemModelorBo> items;
 
     /**
      * 显示值 当columnType != CUSTOM时，此值为items项ID 当columnType == CUSTOM时，此值为录入值
      */
-    @ApiModelProperty("显示值 当columnType != CUSTOM时，此值为items项ID 当columnType == CUSTOM时，此值为录入值")
+    @Schema(description = "显示值 当columnType != CUSTOM时，此值为items项ID 当columnType == CUSTOM时，此值为录入值")
     private String text;
 
     /**
      * 录入类型
      */
-    @ApiModelProperty("录入类型")
+    @Schema(description = "录入类型")
     private Integer columnType;
 
     /**
      * 数据类型
      */
-    @ApiModelProperty("数据类型")
+    @Schema(description = "数据类型")
     private Integer columnDataType;
 
     /**
      * 属性类别
      */
-    @ApiModelProperty("属性类别")
+    @Schema(description = "属性类别")
     private Integer propertyType;
 
     public ProductPropertyModelorBo() {
@@ -99,13 +99,13 @@ public class ProductPropertyModelorBo extends BaseBo<ProductPropertyModelorDto> 
         /**
          * ID
          */
-        @ApiModelProperty("ID")
+        @Schema(description = "ID")
         private String id;
 
         /**
          * 名称
          */
-        @ApiModelProperty("名称")
+        @Schema(description = "名称")
         private String name;
 
         public ProductPropertyItemModelorBo() {

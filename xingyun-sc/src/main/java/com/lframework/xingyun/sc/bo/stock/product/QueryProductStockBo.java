@@ -13,7 +13,7 @@ import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.ProductStock;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -23,73 +23,73 @@ public class QueryProductStockBo extends BaseBo<ProductStock> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty("仓库ID")
+  @Schema(description = "仓库ID")
   private String scId;
 
   /**
    * 仓库编号
    */
-  @ApiModelProperty("仓库编号")
+  @Schema(description = "仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 商品ID
    */
-  @ApiModelProperty("商品ID")
+  @Schema(description = "商品ID")
   private String productId;
 
   /**
    * 商品编号
    */
-  @ApiModelProperty("商品编号")
+  @Schema(description = "商品编号")
   private String productCode;
 
   /**
    * 商品名称
    */
-  @ApiModelProperty("商品名称")
+  @Schema(description = "商品名称")
   private String productName;
 
   /**
    * 商品分类
    */
-  @ApiModelProperty("商品分类")
+  @Schema(description = "商品分类")
   private String categoryName;
 
   /**
    * 商品品牌
    */
-  @ApiModelProperty("商品品牌")
+  @Schema(description = "商品品牌")
   private String brandName;
 
   /**
    * 库存数量
    */
-  @ApiModelProperty("库存数量")
+  @Schema(description = "库存数量")
   private BigDecimal stockNum;
 
   /**
    * 含税价格
    */
-  @ApiModelProperty("含税价格")
+  @Schema(description = "含税价格")
   private BigDecimal taxPrice;
 
   /**
    * 含税金额
    */
-  @ApiModelProperty("含税金额")
+  @Schema(description = "含税金额")
   private BigDecimal taxAmount;
 
   public QueryProductStockBo() {

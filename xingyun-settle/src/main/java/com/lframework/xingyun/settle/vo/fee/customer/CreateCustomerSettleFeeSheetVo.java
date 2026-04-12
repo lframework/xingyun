@@ -6,11 +6,11 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.validation.IsEnum;
 import com.lframework.starter.web.core.vo.BaseVo;
 import com.lframework.xingyun.settle.enums.CustomerSettleFeeSheetType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.List;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -21,14 +21,14 @@ public class CreateCustomerSettleFeeSheetVo implements BaseVo, Serializable {
   /**
    * 客户ID
    */
-  @ApiModelProperty(value = "客户ID", required = true)
+  @Schema(description = "客户ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "客户ID不能为空！")
   private String customerId;
 
   /**
    * 收支方式
    */
-  @ApiModelProperty(value = "收支方式", required = true)
+  @Schema(description = "收支方式", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "收支方式不能为空！")
   @IsEnum(message = "收支方式不能为空！", enumClass = CustomerSettleFeeSheetType.class)
   private Integer sheetType;
@@ -36,14 +36,14 @@ public class CreateCustomerSettleFeeSheetVo implements BaseVo, Serializable {
   /**
    * 项目
    */
-  @ApiModelProperty(value = "项目", required = true)
+  @Schema(description = "项目", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotEmpty(message = "项目不能为空！")
   private List<CustomerSettleFeeSheetItemVo> items;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   public void validate() {

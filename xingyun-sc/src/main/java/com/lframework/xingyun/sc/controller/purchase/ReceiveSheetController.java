@@ -34,14 +34,15 @@ import com.lframework.xingyun.sc.vo.purchase.receive.CreateReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.QueryReceiveSheetWithReturnVo;
 import com.lframework.xingyun.sc.vo.purchase.receive.UpdateReceiveSheetVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,7 +60,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "采购收货单管理")
+@Tag(name = "采购收货单管理")
 @Validated
 @RestController
 @RequestMapping("/purchase/receive/sheet")
@@ -74,8 +75,8 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 打印
    */
-  @ApiOperation("打印")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "打印")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"purchase:receive:query"})
   @GetMapping("/print")
   public InvokeResult<PrintReceiveSheetBo> print(
@@ -91,7 +92,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 订单列表
    */
-  @ApiOperation("订单列表")
+  @Operation(summary = "订单列表")
   @HasPermission({"purchase:receive:query"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryReceiveSheetBo>> query(@Valid QueryReceiveSheetVo vo) {
@@ -112,7 +113,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"purchase:receive:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryReceiveSheetVo vo) {
@@ -125,8 +126,8 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 根据ID查询
    */
-  @ApiOperation("根据ID查询")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"purchase:receive:query"})
   @GetMapping
   public InvokeResult<GetReceiveSheetBo> findById(
@@ -142,8 +143,8 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 根据供应商ID查询默认付款日期
    */
-  @ApiOperation("根据供应商ID查询默认付款日期")
-  @ApiImplicitParam(value = "供应商ID", name = "supplierId", paramType = "query", required = true)
+  @Operation(summary = "根据供应商ID查询默认付款日期")
+  @Parameter(name = "supplierId", description = "供应商ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"purchase:receive:add", "purchase:receive:modify"})
   @GetMapping("/paymentdate")
   public InvokeResult<GetPaymentDateBo> getPaymentDate(
@@ -159,8 +160,8 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 根据ID查询（采购退货业务）
    */
-  @ApiOperation("根据ID查询（采购退货业务）")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "根据ID查询（采购退货业务）")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"purchase:return:add", "purchase:return:modify"})
   @GetMapping("/return")
   public InvokeResult<ReceiveSheetWithReturnBo> getWithReturn(
@@ -175,7 +176,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 查询列表（采购退货业务）
    */
-  @ApiOperation("查询列表（采购退货业务）")
+  @Operation(summary = "查询列表（采购退货业务）")
   @HasPermission({"purchase:return:add", "purchase:return:modify"})
   @GetMapping("/query/return")
   public InvokeResult<PageResult<QueryReceiveSheetWithReturnBo>> queryWithReturn(
@@ -197,7 +198,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 加载列表（采购退货业务）
    */
-  @ApiOperation("加载列表（采购退货业务）")
+  @Operation(summary = "加载列表（采购退货业务）")
   @HasPermission({"purchase:return:add", "purchase:return:modify"})
   @PostMapping("/query/return/load")
   public InvokeResult<List<QueryReceiveSheetWithReturnBo>> loadWithReturn(
@@ -215,7 +216,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 创建
    */
-  @ApiOperation("创建")
+  @Operation(summary = "创建")
   @HasPermission({"purchase:receive:add"})
   @PostMapping
   public InvokeResult<String> create(@RequestBody @Valid CreateReceiveSheetVo vo) {
@@ -230,7 +231,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 修改
    */
-  @ApiOperation("修改")
+  @Operation(summary = "修改")
   @HasPermission({"purchase:receive:modify"})
   @PutMapping
   public InvokeResult<Void> update(@RequestBody @Valid UpdateReceiveSheetVo vo) {
@@ -245,7 +246,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 审核通过
    */
-  @ApiOperation("审核通过")
+  @Operation(summary = "审核通过")
   @HasPermission({"purchase:receive:approve"})
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassReceiveSheetVo vo) {
@@ -258,7 +259,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 直接审核通过
    */
-  @ApiOperation("直接审核通过")
+  @Operation(summary = "直接审核通过")
   @HasPermission({"purchase:receive:approve"})
   @PostMapping("/approve/pass/direct")
   public InvokeResult<Void> directApprovePass(@RequestBody @Valid CreateReceiveSheetVo vo) {
@@ -273,7 +274,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 审核拒绝
    */
-  @ApiOperation("审核拒绝")
+  @Operation(summary = "审核拒绝")
   @HasPermission({"purchase:receive:approve"})
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseReceiveSheetVo vo) {
@@ -286,8 +287,8 @@ public class ReceiveSheetController extends DefaultBaseController {
   /**
    * 删除
    */
-  @ApiOperation("删除")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "删除")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"purchase:receive:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotBlank(message = "采购收货单ID不能为空！") String id) {
@@ -297,21 +298,21 @@ public class ReceiveSheetController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"purchase:receive:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("采购收货单导入模板", ReceiveSheetImportModel.class);
   }
 
-  @ApiOperation("下载导入支付方式模板")
+  @Operation(summary = "下载导入支付方式模板")
   @HasPermission({"purchase:receive:import"})
   @GetMapping("/import/template/paytype")
   public void downloadImportPayTypeTemplate() {
     ExcelUtil.exportXls("采购收货单导入支付方式模板", ReceiveSheetPayTypeImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"purchase:receive:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,
@@ -329,7 +330,7 @@ public class ReceiveSheetController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("导入支付方式")
+  @Operation(summary = "导入支付方式")
   @HasPermission({"purchase:receive:import"})
   @PostMapping("/import/paytype")
   public InvokeResult<Void> importPayTypeExcel(@NotBlank(message = "ID不能为空") String id,

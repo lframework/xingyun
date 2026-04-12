@@ -1,10 +1,10 @@
 package com.lframework.xingyun.basedata.vo.print;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -15,14 +15,14 @@ public class UpdatePrintTemplateSettingVo implements BaseVo, Serializable {
   /**
    * ID
    */
-  @ApiModelProperty(value = "ID", required = true)
+  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotNull(message = "ID不能为空！")
   private Integer id;
 
   /**
    * 模板配置
    */
-  @ApiModelProperty(value = "模板配置", required = true)
+  @Schema(description = "模板配置", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "模板配置不能为空！")
   private String templateJson;
 }

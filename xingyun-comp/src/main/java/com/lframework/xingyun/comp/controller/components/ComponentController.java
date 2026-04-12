@@ -20,17 +20,18 @@ import com.lframework.xingyun.comp.bo.components.OrderTimeLineBo;
 import com.lframework.starter.web.inner.entity.OrderTimeLine;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.OrderTimeLineService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -44,7 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 公共组件 Controller
  */
 @Slf4j
-@Api(tags = "公共组件")
+@Tag(name = "公共组件")
 @Validated
 @RestController
 @RequestMapping("/component")
@@ -59,7 +60,7 @@ public class ComponentController extends DefaultBaseController {
   @Autowired
   private GenerateCodeService generateCodeService;
 
-  @ApiOperation("查询导入Excel任务")
+  @Operation(summary = "查询导入Excel任务")
   @GetMapping("/import/task")
   public InvokeResult<ExcelImportBo> getExcelImportTask(
       @NotBlank(message = "ID不能为空！") String id) {
@@ -67,7 +68,7 @@ public class ComponentController extends DefaultBaseController {
     return InvokeResultBuilder.success(ExcelImportUtil.getTask(id));
   }
 
-  @ApiOperation("获取地图Key")
+  @Operation(summary = "获取地图Key")
   @GetMapping("/map/key")
   public InvokeResult<String> getMapKey() {
     String key = sysConfService.findRequiredByKey("tx-map.key");
@@ -75,7 +76,7 @@ public class ComponentController extends DefaultBaseController {
     return InvokeResultBuilder.success(key);
   }
 
-  @ApiOperation("根据地址查询经纬度")
+  @Operation(summary = "根据地址查询经纬度")
   @GetMapping("/map/location")
   public InvokeResult<MapLocationBo> getMapLocation(
       @NotEmpty(message = "地址不能为空！") String address) {
@@ -119,8 +120,8 @@ public class ComponentController extends DefaultBaseController {
     }
   }
 
-  @ApiOperation("单据时间轴")
-  @ApiImplicitParam(value = "单据ID", name = "orderId", paramType = "query", required = true)
+  @Operation(summary = "单据时间轴")
+  @Parameter(name = "orderId", description = "单据ID", in = ParameterIn.QUERY, required = true)
   @GetMapping("/timeline/order")
   public InvokeResult<List<OrderTimeLineBo>> getOrderTimeLine(
       @NotBlank(message = "单据ID不能为空！") String orderId) {
@@ -132,7 +133,7 @@ public class ComponentController extends DefaultBaseController {
     return InvokeResultBuilder.success(results);
   }
 
-  @ApiOperation("通用上传图片")
+  @Operation(summary = "通用上传图片")
   @PostMapping("/upload/image")
   public InvokeResult<String> uploadImage(MultipartFile file) {
     if (!FileUtil.IMG_SUFFIX.contains(
@@ -147,7 +148,7 @@ public class ComponentController extends DefaultBaseController {
     return InvokeResultBuilder.success(url);
   }
 
-  @ApiOperation("通用上传视频")
+  @Operation(summary = "通用上传视频")
   @PostMapping("/upload/video")
   public InvokeResult<String> uploadVideo(MultipartFile file) {
     if (!FileUtil.VIDEO_SUFFIX.contains(
@@ -162,8 +163,8 @@ public class ComponentController extends DefaultBaseController {
     return InvokeResultBuilder.success(url);
   }
 
-  @ApiOperation("获取编号")
-  @ApiImplicitParam(value = "编号类型", name = "type", paramType = "query", required = true)
+  @Operation(summary = "获取编号")
+  @Parameter(name = "type", description = "编号类型", in = ParameterIn.QUERY, required = true)
   @GetMapping("/generate/code")
   public InvokeResult<String> generateCode(@NotNull(message = "编号类型不能为空！") Integer type) {
     return InvokeResultBuilder.success(generateCodeService.generate(type));

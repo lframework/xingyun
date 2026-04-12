@@ -4,8 +4,8 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
-import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -16,7 +16,7 @@ public class UpdateReceiveSheetVo extends CreateReceiveSheetVo {
   /**
    * 收货单ID
    */
-  @ApiModelProperty(value = "收货单ID", required = true)
+  @Schema(description = "收货单ID", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "收货单ID不能为空！")
   private String id;
 

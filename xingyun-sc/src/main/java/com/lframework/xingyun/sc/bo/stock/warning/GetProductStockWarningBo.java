@@ -9,7 +9,7 @@ import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.ProductStockWarning;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -27,74 +27,74 @@ public class GetProductStockWarningBo extends BaseBo<ProductStockWarning> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 仓库ID
    */
-  @ApiModelProperty("仓库ID")
+  @Schema(description = "仓库ID")
   private String scId;
 
   /**
    * 仓库编号
    */
-  @ApiModelProperty("仓库编号")
+  @Schema(description = "仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 商品ID
    */
-  @ApiModelProperty("商品ID")
+  @Schema(description = "商品ID")
   private String productId;
 
   /**
    * 商品编号
    */
-  @ApiModelProperty("商品编号")
+  @Schema(description = "商品编号")
   private String productCode;
 
   /**
    * 商品名称
    */
-  @ApiModelProperty("商品名称")
+  @Schema(description = "商品名称")
   private String productName;
 
   /**
    * 预警上限
    */
-  @ApiModelProperty("预警上限")
+  @Schema(description = "预警上限")
   private BigDecimal maxLimit;
 
   /**
    * 预警下限
    */
-  @ApiModelProperty("预警下限")
+  @Schema(description = "预警下限")
   private BigDecimal minLimit;
 
   /**
    * 操作人
    */
-  @ApiModelProperty("操作人")
+  @Schema(description = "操作人")
   private String updateBy;
 
   /**
    * 操作时间
    */
-  @ApiModelProperty("操作时间")
+  @Schema(description = "操作时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime updateTime;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   private Boolean available;
 
   public GetProductStockWarningBo() {

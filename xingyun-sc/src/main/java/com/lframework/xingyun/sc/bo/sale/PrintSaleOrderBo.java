@@ -16,7 +16,7 @@ import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,73 +28,73 @@ public class PrintSaleOrderBo extends BaseBo<SaleOrderFullDto> {
   /**
    * 单号
    */
-  @ApiModelProperty("单号")
+  @Schema(description = "单号")
   private String code;
 
   /**
    * 仓库编号
    */
-  @ApiModelProperty("仓库编号")
+  @Schema(description = "仓库编号")
   private String scCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 客户编号
    */
-  @ApiModelProperty("客户编号")
+  @Schema(description = "客户编号")
   private String customerCode;
 
   /**
    * 客户名称
    */
-  @ApiModelProperty("客户名称")
+  @Schema(description = "客户名称")
   private String customerName;
 
   /**
    * 销售员姓名
    */
-  @ApiModelProperty("销售员姓名")
+  @Schema(description = "销售员姓名")
   private String salerName;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 创建人
    */
-  @ApiModelProperty("创建人")
+  @Schema(description = "创建人")
   private String createBy;
 
   /**
    * 创建时间
    */
-  @ApiModelProperty("创建时间")
+  @Schema(description = "创建时间")
   private String createTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   private String approveTime;
 
   /**
    * 订单明细
    */
-  @ApiModelProperty("订单明细")
+  @Schema(description = "订单明细")
   private List<OrderDetailBo> details;
 
   public PrintSaleOrderBo() {
@@ -153,31 +153,31 @@ public class PrintSaleOrderBo extends BaseBo<SaleOrderFullDto> {
     /**
      * 商品编号
      */
-    @ApiModelProperty("商品编号")
+    @Schema(description = "商品编号")
     private String productCode;
 
     /**
      * 商品名称
      */
-    @ApiModelProperty("商品名称")
+    @Schema(description = "商品名称")
     private String productName;
 
     /**
      * 销售数量
      */
-    @ApiModelProperty("销售数量")
+    @Schema(description = "销售数量")
     private BigDecimal orderNum;
 
     /**
      * 现价
      */
-    @ApiModelProperty("现价")
+    @Schema(description = "现价")
     private BigDecimal taxPrice;
 
     /**
      * 销售金额
      */
-    @ApiModelProperty("销售金额")
+    @Schema(description = "销售金额")
     private BigDecimal orderAmount;
 
     public OrderDetailBo(SaleOrderFullDto.OrderDetailDto dto) {

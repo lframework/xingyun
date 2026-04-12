@@ -25,7 +25,7 @@ import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationSe
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductRetailService;
 import com.lframework.xingyun.basedata.service.product.ProductSaleService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,140 +38,140 @@ public class GetProductBo extends BaseBo<Product> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 编号
    */
-  @ApiModelProperty("编号")
+  @Schema(description = "编号")
   private String code;
 
   /**
    * 是否一品多码
    */
-  @ApiModelProperty("是否一品多码")
+  @Schema(description = "是否一品多码")
   private Boolean multiCode;
 
   /**
    * 扩展编号
    */
-  @ApiModelProperty("扩展编号")
+  @Schema(description = "扩展编号")
   private List<String> multiCodes;
 
   /**
    * 扩展编号 - 字符串
    */
-  @ApiModelProperty("扩展编号 - 字符串")
+  @Schema(description = "扩展编号 - 字符串")
   private String multiCodesStr;
 
   /**
    * 名称
    */
-  @ApiModelProperty("名称")
+  @Schema(description = "名称")
   private String name;
 
   /**
    * 简称
    */
-  @ApiModelProperty("简称")
+  @Schema(description = "简称")
   private String shortName;
 
   /**
    * 分类ID
    */
-  @ApiModelProperty("分类ID")
+  @Schema(description = "分类ID")
   private String categoryId;
 
   /**
    * 分类名称
    */
-  @ApiModelProperty("分类名称")
+  @Schema(description = "分类名称")
   private String categoryName;
 
   /**
    * 品牌ID
    */
-  @ApiModelProperty("品牌ID")
+  @Schema(description = "品牌ID")
   private String brandId;
 
   /**
    * 品牌名称
    */
-  @ApiModelProperty("品牌名称")
+  @Schema(description = "品牌名称")
   private String brandName;
 
   /**
    * 重量（kg）
    */
-  @ApiModelProperty("重量（kg）")
+  @Schema(description = "重量（kg）")
   private BigDecimal weight;
 
   /**
    * 体积（cm3）
    */
-  @ApiModelProperty("体积（cm3）")
+  @Schema(description = "体积（cm3）")
   private BigDecimal volume;
 
   /**
    * 进项税率（%）
    */
-  @ApiModelProperty("进项税率（%）")
+  @Schema(description = "进项税率（%）")
   private BigDecimal taxRate;
 
   /**
    * 销项税率（%）
    */
-  @ApiModelProperty("销项税率（%）")
+  @Schema(description = "销项税率（%）")
   private BigDecimal saleTaxRate;
 
   /**
    * 规格
    */
-  @ApiModelProperty("规格")
+  @Schema(description = "规格")
   private String spec;
 
   /**
    * 单位
    */
-  @ApiModelProperty("单位")
+  @Schema(description = "单位")
   private String unit;
 
   /**
    * 商品类型
    */
-  @ApiModelProperty("商品类型")
+  @Schema(description = "商品类型")
   @EnumConvert
   private Integer productType;
 
   /**
    * 单品
    */
-  @ApiModelProperty("单品")
+  @Schema(description = "单品")
   private List<ProductBundleBo> productBundles;
 
   /**
    * 采购价
    */
-  @ApiModelProperty("采购价")
+  @Schema(description = "采购价")
   private BigDecimal purchasePrice;
 
   /**
    * 销售价
    */
-  @ApiModelProperty("销售价")
+  @Schema(description = "销售价")
   private BigDecimal salePrice;
 
   /**
    * 零售价
    */
-  @ApiModelProperty("零售价")
+  @Schema(description = "零售价")
   private BigDecimal retailPrice;
 
   /**
    * 属性
    */
-  @ApiModelProperty("属性")
+  @Schema(description = "属性")
   private List<PropertyBo> properties;
 
   public GetProductBo() {
@@ -261,31 +261,31 @@ public class GetProductBo extends BaseBo<Product> {
     /**
      * 属性ID
      */
-    @ApiModelProperty("属性ID")
+    @Schema(description = "属性ID")
     private String id;
 
     /**
      * 属性名
      */
-    @ApiModelProperty("属性名")
+    @Schema(description = "属性名")
     private String name;
 
     /**
      * 字段类型
      */
-    @ApiModelProperty("字段类型")
+    @Schema(description = "字段类型")
     private Integer columnType;
 
     /**
      * 属性值
      */
-    @ApiModelProperty("属性值")
+    @Schema(description = "属性值")
     private String text;
 
     /**
      * 属性文本
      */
-    @ApiModelProperty("属性文本")
+    @Schema(description = "属性文本")
     private String textStr;
 
     public PropertyBo() {

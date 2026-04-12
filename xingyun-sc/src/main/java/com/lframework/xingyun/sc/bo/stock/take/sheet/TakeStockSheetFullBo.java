@@ -24,7 +24,7 @@ import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanDetailService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,111 +44,111 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 业务单据号
    */
-  @ApiModelProperty("业务单据号")
+  @Schema(description = "业务单据号")
   private String code;
 
   /**
    * 盘点任务ID
    */
-  @ApiModelProperty("盘点任务ID")
+  @Schema(description = "盘点任务ID")
   private String planId;
 
   /**
    * 盘点任务号
    */
-  @ApiModelProperty("盘点任务号")
+  @Schema(description = "盘点任务号")
   private String planCode;
 
   /**
    * 预先盘点单ID
    */
-  @ApiModelProperty("预先盘点单ID")
+  @Schema(description = "预先盘点单ID")
   private String preSheetId;
 
   /**
    * 预先盘点单号
    */
-  @ApiModelProperty("预先盘点单号")
+  @Schema(description = "预先盘点单号")
   private String preSheetCode;
 
   /**
    * 仓库名称
    */
-  @ApiModelProperty("仓库名称")
+  @Schema(description = "仓库名称")
   private String scName;
 
   /**
    * 盘点任务-盘点类别
    */
-  @ApiModelProperty("盘点任务-盘点类别")
+  @Schema(description = "盘点任务-盘点类别")
   private Integer takeType;
 
   /**
    * 业务名称
    */
-  @ApiModelProperty("业务名称")
+  @Schema(description = "业务名称")
   private String bizName;
 
   /**
    * 盘点任务-盘点状态
    */
-  @ApiModelProperty("盘点任务-盘点状态")
+  @Schema(description = "盘点任务-盘点状态")
   private Integer takeStatus;
 
   /**
    * 状态
    */
-  @ApiModelProperty("状态")
+  @Schema(description = "状态")
   private Integer status;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   /**
    * 拒绝理由
    */
-  @ApiModelProperty("拒绝理由")
+  @Schema(description = "拒绝理由")
   private String refuseReason;
 
   /**
    * 修改人
    */
-  @ApiModelProperty("修改人")
+  @Schema(description = "修改人")
   private String updateBy;
 
   /**
    * 修改时间
    */
-  @ApiModelProperty("修改时间")
+  @Schema(description = "修改时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime updateTime;
 
   /**
    * 审核人
    */
-  @ApiModelProperty("审核人")
+  @Schema(description = "审核人")
   private String approveBy;
 
   /**
    * 审核时间
    */
-  @ApiModelProperty("审核时间")
+  @Schema(description = "审核时间")
   @JsonFormat(pattern = StringPool.DATE_TIME_PATTERN)
   private LocalDateTime approveTime;
 
   /**
    * 明细
    */
-  @ApiModelProperty("明细")
+  @Schema(description = "明细")
   private List<SheetDetailBo> details;
 
   public TakeStockSheetFullBo(TakeStockSheetFullDto dto) {
@@ -231,67 +231,67 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
     /**
      * ID
      */
-    @ApiModelProperty("ID")
+    @Schema(description = "ID")
     private String productId;
 
     /**
      * 编号
      */
-    @ApiModelProperty("编号")
+    @Schema(description = "编号")
     private String productCode;
 
     /**
      * 名称
      */
-    @ApiModelProperty("名称")
+    @Schema(description = "名称")
     private String productName;
 
     /**
      * 分类名称
      */
-    @ApiModelProperty("分类名称")
+    @Schema(description = "分类名称")
     private String categoryName;
 
     /**
      * 品牌名称
      */
-    @ApiModelProperty("品牌名称")
+    @Schema(description = "品牌名称")
     private String brandName;
 
     /**
      * 规格
      */
-    @ApiModelProperty("规格")
+    @Schema(description = "规格")
     private String spec;
 
     /**
      * 单位
      */
-    @ApiModelProperty("单位")
+    @Schema(description = "单位")
     private String unit;
 
     /**
      * 库存数量
      */
-    @ApiModelProperty("库存数量")
+    @Schema(description = "库存数量")
     private BigDecimal stockNum;
 
     /**
      * 盘点数量
      */
-    @ApiModelProperty("盘点数量")
+    @Schema(description = "盘点数量")
     private BigDecimal takeNum;
 
     /**
      * 备注
      */
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     private String description;
 
     /**
      * 盘点任务ID
      */
-    @ApiModelProperty("盘点任务ID")
+    @Schema(description = "盘点任务ID")
     private String planId;
 
     public SheetDetailBo(TakeStockSheetFullDto.SheetDetailDto dto, String planId) {

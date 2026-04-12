@@ -10,7 +10,7 @@ import com.lframework.xingyun.basedata.entity.Shop;
 import com.lframework.xingyun.basedata.service.shop.ShopService;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -20,81 +20,81 @@ public class GetMemberBo extends BaseBo<Member> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 编号
    */
-  @ApiModelProperty("编号")
+  @Schema(description = "编号")
   private String code;
 
   /**
    * 名称
    */
-  @ApiModelProperty("名称")
+  @Schema(description = "名称")
   private String name;
 
   /**
    * 性别
    */
-  @ApiModelProperty("性别")
+  @Schema(description = "性别")
   private Integer gender;
 
   /**
    * 联系电话
    */
-  @ApiModelProperty("联系电话")
+  @Schema(description = "联系电话")
   private String telephone;
 
   /**
    * 电子邮箱
    */
-  @ApiModelProperty("电子邮箱")
+  @Schema(description = "电子邮箱")
   private String email;
 
   /**
    * 出生日期
    */
-  @ApiModelProperty("出生日期")
+  @Schema(description = "出生日期")
   @JsonFormat(pattern = StringPool.DATE_PATTERN)
   private LocalDate birthday;
 
   /**
    * 入会日期
    */
-  @ApiModelProperty("入会日期")
+  @Schema(description = "入会日期")
   @JsonFormat(pattern = StringPool.DATE_PATTERN)
   private LocalDate joinDay;
 
   /**
    * 所属门店ID
    */
-  @ApiModelProperty("所属门店ID")
+  @Schema(description = "所属门店ID")
   private String shopId;
 
   /**
    * 所属门店名称
    */
-  @ApiModelProperty("所属门店名称")
+  @Schema(description = "所属门店名称")
   private String shopName;
 
   /**
    * 所属导购ID
    */
-  @ApiModelProperty("所属导购ID")
+  @Schema(description = "所属导购ID")
   private String guiderId;
 
   /**
    * 所属导购名称
    */
-  @ApiModelProperty("所属导购名称")
+  @Schema(description = "所属导购名称")
   private String guiderName;
 
   /**
    * 备注
    */
-  @ApiModelProperty("备注")
+  @Schema(description = "备注")
   private String description;
 
   public GetMemberBo() {

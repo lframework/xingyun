@@ -1,4 +1,7 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
   servlet:
     multipart:
       #是否开启文件上传
@@ -30,9 +33,10 @@ spring:
   #使用redis存储SESSION
   session:
     store-type: redis
-  redis:
-    lettuce:
-      reader-idle-time-seconds: 30
+  data:
+    redis:
+      lettuce:
+        reader-idle-time-seconds: 30
 
 knife4j:
   enable: true
@@ -55,6 +59,9 @@ knife4j:
   # 是否生产环境
   production: false
 
+springdoc:
+  default-flat-param-object: true
+
 # Sa-Token配置
 sa-token:
   # token名称 (同时也是cookie名称)，此值不要修改
@@ -62,7 +69,7 @@ sa-token:
   # token有效期，单位s 默认30天, -1代表永不过期
   timeout: 25920000
   # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
-  activity-timeout: 7200
+  active-timeout: 7200
   # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
   is-concurrent: true
   # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
@@ -111,24 +118,16 @@ jugg:
   kaptcha:
     #过期时间（单位：分钟）
     expire-time: 5
-    session-config-key: KAPTCHA_SESSION_KEY
-    session-config-date: KAPTCHA_SESSION_DATE
     border: true
     border-color: black
     border-thickness: 1
     noise-color: black
-    noise-impl: com.google.code.kaptcha.impl.DefaultNoise
-    obscurificator-impl: com.google.code.kaptcha.impl.WaterRipple
-    producer-impl: com.google.code.kaptcha.impl.DefaultKaptcha
-    text-producer-impl: com.google.code.kaptcha.text.impl.DefaultTextCreator
     text-producer-char-string: abcde2345678gfynmnpwx
     text-producer-char-length: 4
     text-producer-font-names: Arial,Courier
     text-producer-font-color: black
     text-producer-font-size: 28
     text-producer-char-space: 2
-    word-render-impl: com.google.code.kaptcha.text.impl.DefaultWordRenderer
-    back-ground-impl: com.google.code.kaptcha.impl.DefaultBackground
     back-ground-clr-from: lightGray
     back-ground-clr-to: white
     image-width: 120
@@ -144,7 +143,7 @@ pagehelper:
   support-methods-arguments: false
 mybatis-plus:
   mapper-locations: classpath*:/mappers/**/*.xml
-  typeEnumsPackage: com.lframework.xingyun.**.enums,com.lframework.xingyun.**.enums
+  typeEnumsPackage: com.lframework.starter.**.enums,com.lframework.xingyun.**.enums
 
 op-logs:
   #是否开启

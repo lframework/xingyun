@@ -2,7 +2,7 @@ package com.lframework.xingyun.sc.bo.logistics;
 
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.xingyun.sc.entity.LogisticsSheet;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -12,19 +12,19 @@ public class GetLogisticsSheetDeliveryBo extends BaseBo<LogisticsSheet> {
   /**
    * ID
    */
-  @ApiModelProperty("ID")
+  @Schema(description = "ID")
   private String id;
 
   /**
    * 物流单号
    */
-  @ApiModelProperty("物流单号")
+  @Schema(description = "物流单号")
   private String logisticsNo;
 
   /**
    * 物流费
    */
-  @ApiModelProperty("物流费")
+  @Schema(description = "物流费")
   private BigDecimal totalAmount;
 
   public GetLogisticsSheetDeliveryBo() {

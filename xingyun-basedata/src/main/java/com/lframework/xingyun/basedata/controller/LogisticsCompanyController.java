@@ -15,15 +15,15 @@ import com.lframework.xingyun.basedata.service.logistics.LogisticsCompanyService
 import com.lframework.xingyun.basedata.vo.logistics.company.CreateLogisticsCompanyVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.QueryLogisticsCompanyVo;
 import com.lframework.xingyun.basedata.vo.logistics.company.UpdateLogisticsCompanyVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "物流公司管理")
+@Tag(name = "物流公司管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/logistics/company")
@@ -50,7 +50,7 @@ public class LogisticsCompanyController extends DefaultBaseController {
   /**
    * 物流公司列表
    */
-  @ApiOperation("物流公司列表")
+  @Operation(summary = "物流公司列表")
   @HasPermission({"base-data:logistics-company:query", "base-data:logistics-company:add",
       "base-data:logistics-company:modify"})
   @GetMapping("/query")
@@ -74,8 +74,8 @@ public class LogisticsCompanyController extends DefaultBaseController {
   /**
    * 查询物流公司
    */
-  @ApiOperation("查询物流公司")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询物流公司")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:logistics-company:query", "base-data:logistics-company:add",
       "base-data:logistics-company:modify"})
   @GetMapping
@@ -94,11 +94,11 @@ public class LogisticsCompanyController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @ApiOperation("根据ID删除")
+  @Operation(summary = "根据ID删除")
   @HasPermission({"base-data:logistics-company:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotEmpty(message = "物流公司ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "物流公司ID不能为空！") String id) {
 
     logisticsCompanyService.deleteById(id);
 
@@ -110,7 +110,7 @@ public class LogisticsCompanyController extends DefaultBaseController {
   /**
    * 新增物流公司
    */
-  @ApiOperation("新增物流公司")
+  @Operation(summary = "新增物流公司")
   @HasPermission({"base-data:logistics-company:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateLogisticsCompanyVo vo) {
@@ -123,7 +123,7 @@ public class LogisticsCompanyController extends DefaultBaseController {
   /**
    * 修改物流公司
    */
-  @ApiOperation("修改物流公司")
+  @Operation(summary = "修改物流公司")
   @HasPermission({"base-data:logistics-company:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateLogisticsCompanyVo vo) {

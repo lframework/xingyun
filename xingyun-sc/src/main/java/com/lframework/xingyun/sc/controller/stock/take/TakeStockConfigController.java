@@ -9,9 +9,9 @@ import com.lframework.xingyun.sc.bo.stock.take.config.GetTakeStockConfigBo;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import com.lframework.xingyun.sc.vo.stock.take.config.UpdateTakeStockConfigVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import javax.validation.Valid;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "盘点参数")
+@Tag(name = "盘点参数")
 @Validated
 @RestController
 @RequestMapping("/stock/take/config")
@@ -36,7 +36,7 @@ public class TakeStockConfigController extends DefaultBaseController {
     /**
      * 根据ID查询
      */
-    @ApiOperation("根据ID查询")
+    @Operation(summary = "根据ID查询")
     @HasPermission({"stock:take:config:modify", "stock:take:plan:handle:diff"})
     @GetMapping
     public InvokeResult<GetTakeStockConfigBo> get() {
@@ -54,7 +54,7 @@ public class TakeStockConfigController extends DefaultBaseController {
     /**
      * 修改
      */
-    @ApiOperation("修改")
+    @Operation(summary = "修改")
     @HasPermission({"stock:take:config:modify"})
     @PutMapping
     public InvokeResult<Void> update(@Valid UpdateTakeStockConfigVo vo) {

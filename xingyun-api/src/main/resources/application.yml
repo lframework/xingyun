@@ -2,6 +2,9 @@ server:
   #端口
   port: 8080
 spring:
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
   application:
     name: @project.artifactId@
   profiles:
@@ -30,9 +33,10 @@ spring:
   #使用redis存储SESSION
   session:
     store-type: redis
-  redis:
-    lettuce:
-      reader-idle-time-seconds: 30
+  data:
+    redis:
+      lettuce:
+        reader-idle-time-seconds: 30
 
 knife4j:
   enable: true
@@ -55,6 +59,9 @@ knife4j:
   # 是否生产环境
   production: false
 
+springdoc:
+  default-flat-param-object: true
+
 # Sa-Token配置
 sa-token:
   # token名称 (同时也是cookie名称)，此值不要修改
@@ -62,7 +69,7 @@ sa-token:
   # token有效期，单位s 默认30天, -1代表永不过期
   timeout: 25920000
   # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
-  activity-timeout: 7200
+  active-timeout: 7200
   # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
   is-concurrent: true
   # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
@@ -84,8 +91,6 @@ jugg:
     #默认的用户姓名，用于写入数据库时的createBy和updateBy的自动赋值，如果有登录人则取登录人姓名，如果没有则取默认用户姓名，如果不配置，默认是系统管理员
     default-user-name: 系统管理员
   web:
-    #不需要认证的Url
-    filter-url: ${magic-api.push_path}
     #终端ID
     worker-id: 1
     #数据中心ID
@@ -106,7 +111,6 @@ jugg:
       product_stock_warning_notify: 86400
   #开启websocket
   ws:
-    enabled: true
     #通信topic
     #topic: xingyun:ws:topic
     #是否支持跨域
@@ -115,24 +119,16 @@ jugg:
   kaptcha:
     #过期时间（单位：分钟）
     expire-time: 5
-    session-config-key: KAPTCHA_SESSION_KEY
-    session-config-date: KAPTCHA_SESSION_DATE
     border: true
     border-color: black
     border-thickness: 1
     noise-color: black
-    noise-impl: com.google.code.kaptcha.impl.DefaultNoise
-    obscurificator-impl: com.google.code.kaptcha.impl.WaterRipple
-    producer-impl: com.google.code.kaptcha.impl.DefaultKaptcha
-    text-producer-impl: com.google.code.kaptcha.text.impl.DefaultTextCreator
     text-producer-char-string: abcde2345678gfynmnpwx
     text-producer-char-length: 4
     text-producer-font-names: Arial,Courier
     text-producer-font-color: black
     text-producer-font-size: 28
     text-producer-char-space: 2
-    word-render-impl: com.google.code.kaptcha.text.impl.DefaultWordRenderer
-    back-ground-impl: com.google.code.kaptcha.impl.DefaultBackground
     back-ground-clr-from: lightGray
     back-ground-clr-to: white
     image-width: 120
@@ -159,52 +155,6 @@ op-logs:
 
 # 是否移除内置权限，针对admin等内置权限，因为内置权限等同于通配符权限，设置为true时会用具体的权限将内置权限替换掉，生产环境建议设置为true
 remove-fixed-permissions: false
-
-magic-api:
-  # 编辑器配置项
-  editor-config: classpath:magic-editor-config.js
-  # 这里改为项目运行时的域名，菜单中嵌入的页面为base-url + web，这里示例即为http://localhost:8080/dynamic/web
-  base-url: http://localhost:8080
-  # 编辑器页面的访问路径url
-  web: /dynamic/web
-  resource:
-    type: database
-    tableName: magic_api_file
-    prefix: /magic-api
-    readonly: false
-  # 接口前缀
-  prefix: /dynamic-api
-  # 禁止覆盖应用接口
-  allow-override: true
-  # 是否支持跨域
-  support-cross-domain: false
-  # 推送路径
-  push_path: /_magic-api-sync
-  # 推送秘钥，自行修改
-  secret-key: 123456789
-  throw-exception: true
-  response: |- #配置JSON格式，格式为magic-script中的表达式
-    {
-      code: code,
-      msg: message,
-      data,
-      timestamp,
-      requestTime,
-      executeTime,
-    }
-  response-code:
-    success: 200
-    invalid: 400
-    exception: 500
-  page:
-    size: pageSize # 页大小的参数名称
-    page: pageIndex # 页码的参数名称
-    default-page: 1 # 未传页码时的默认首页
-    default-size: 20 # 未传页大小时的默认页大小
-  backup:
-    enable: true
-    max-history: 14 #备份保留天数，-1为永久保留
-    table-name: magic_api_file_backup
 
 # warm-flow
 warm-flow:

@@ -15,14 +15,14 @@ import com.lframework.xingyun.basedata.service.paytype.PayTypeService;
 import com.lframework.xingyun.basedata.vo.paytype.CreatePayTypeVo;
 import com.lframework.xingyun.basedata.vo.paytype.QueryPayTypeVo;
 import com.lframework.xingyun.basedata.vo.paytype.UpdatePayTypeVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author zmj
  */
-@Api(tags = "支付方式管理")
+@Tag(name = "支付方式管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/paytype")
@@ -49,7 +49,7 @@ public class PayTypeController extends DefaultBaseController {
   /**
    * 支付方式列表
    */
-  @ApiOperation("支付方式列表")
+  @Operation(summary = "支付方式列表")
   @HasPermission({"base-data:pay-type:query", "base-data:pay-type:add",
       "base-data:pay-type:modify"})
   @GetMapping("/query")
@@ -70,8 +70,8 @@ public class PayTypeController extends DefaultBaseController {
   /**
    * 查询支付方式
    */
-  @ApiOperation("查询支付方式")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询支付方式")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:pay-type:query", "base-data:pay-type:add",
       "base-data:pay-type:modify"})
   @GetMapping
@@ -90,7 +90,7 @@ public class PayTypeController extends DefaultBaseController {
   /**
    * 新增支付方式
    */
-  @ApiOperation("新增支付方式")
+  @Operation(summary = "新增支付方式")
   @HasPermission({"base-data:pay-type:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreatePayTypeVo vo) {
@@ -103,7 +103,7 @@ public class PayTypeController extends DefaultBaseController {
   /**
    * 修改支付方式
    */
-  @ApiOperation("修改支付方式")
+  @Operation(summary = "修改支付方式")
   @HasPermission({"base-data:pay-type:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdatePayTypeVo vo) {
@@ -118,11 +118,11 @@ public class PayTypeController extends DefaultBaseController {
   /**
    * 删除支付方式
    */
-  @ApiOperation("删除支付方式")
+  @Operation(summary = "删除支付方式")
   @HasPermission({"base-data:pay-type:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @ApiParam(value = "ID", required = true) @NotBlank(message = "支付方式ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotBlank(message = "支付方式ID不能为空！") String id) {
 
     payTypeService.deleteById(id);
 

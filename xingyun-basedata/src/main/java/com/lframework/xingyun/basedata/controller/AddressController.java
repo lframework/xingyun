@@ -20,15 +20,15 @@ import com.lframework.xingyun.basedata.vo.address.CreateAddressVo;
 import com.lframework.xingyun.basedata.vo.address.QueryAddressVo;
 import com.lframework.xingyun.basedata.vo.address.UpdateAddressVo;
 import com.lframework.starter.mq.core.utils.ExportTaskUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,7 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author zmj
  */
-@Api(tags = "地址库")
+@Tag(name = "地址库")
 @Validated
 @RestController
 @RequestMapping("/basedata/address")
@@ -56,7 +56,7 @@ public class AddressController extends DefaultBaseController {
   /**
    * 地址列表
    */
-  @ApiOperation("地址列表")
+  @Operation(summary = "地址列表")
   @HasPermission({"base-data:address:query", "base-data:address:add", "base-data:address:modify"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QueryAddressBo>> query(@Valid QueryAddressVo vo) {
@@ -76,8 +76,8 @@ public class AddressController extends DefaultBaseController {
   /**
    * 查询地址
    */
-  @ApiOperation("查询地址")
-  @ApiImplicitParam(value = "ID", name = "id", paramType = "query", required = true)
+  @Operation(summary = "查询地址")
+  @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:address:query", "base-data:address:add", "base-data:address:modify"})
   @GetMapping
   public InvokeResult<GetAddressBo> get(@NotBlank(message = "ID不能为空！") String id) {
@@ -95,7 +95,7 @@ public class AddressController extends DefaultBaseController {
   /**
    * 新增地址
    */
-  @ApiOperation("新增地址")
+  @Operation(summary = "新增地址")
   @HasPermission({"base-data:address:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateAddressVo vo) {
@@ -108,7 +108,7 @@ public class AddressController extends DefaultBaseController {
   /**
    * 修改地址
    */
-  @ApiOperation("修改地址")
+  @Operation(summary = "修改地址")
   @HasPermission({"base-data:address:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateAddressVo vo) {
@@ -123,7 +123,7 @@ public class AddressController extends DefaultBaseController {
   /**
    * 导出
    */
-  @ApiOperation("导出")
+  @Operation(summary = "导出")
   @HasPermission({"base-data:address:export"})
   @PostMapping("/export")
   public InvokeResult<Void> export(@Valid QueryAddressVo vo) {
@@ -133,14 +133,14 @@ public class AddressController extends DefaultBaseController {
     return InvokeResultBuilder.success();
   }
 
-  @ApiOperation("下载导入模板")
+  @Operation(summary = "下载导入模板")
   @HasPermission({"base-data:address:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
     ExcelUtil.exportXls("地址导入模板", AddressImportModel.class);
   }
 
-  @ApiOperation("导入")
+  @Operation(summary = "导入")
   @HasPermission({"base-data:address:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,

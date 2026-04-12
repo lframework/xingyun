@@ -16,7 +16,7 @@ import com.lframework.xingyun.sc.enums.SettleStatus;
 import com.lframework.xingyun.settle.entity.CustomerSettlePreSheet;
 import com.lframework.xingyun.settle.enums.CustomerSettlePreSheetStatus;
 import com.lframework.starter.web.inner.service.system.SysUserService;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
@@ -34,13 +34,13 @@ public class CustomerSettlePreSheetExportModel extends BaseBo<CustomerSettlePreS
   /**
    * 客户编号
    */
-  @ApiModelProperty("客户编号")
+  @Schema(description = "客户编号")
   private String customerCode;
 
   /**
    * 客户名称
    */
-  @ApiModelProperty("客户名称")
+  @Schema(description = "客户名称")
   private String customerName;
 
   /**

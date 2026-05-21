@@ -28,6 +28,12 @@
     <delete id="setCommonToAppoint">
         DELETE FROM base_data_product_property_relation WHERE property_id = #{propertyId} AND product_id NOT IN (SELECT id from base_data_product WHERE category_id = #{categoryId})
     </delete>
+    <delete id="deleteByPropertyIdAndCategoryId">
+        DELETE r FROM base_data_product_property_relation AS r
+        INNER JOIN base_data_product AS p ON p.id = r.product_id
+        WHERE r.property_id = #{propertyId}
+        AND p.category_id = #{categoryId}
+    </delete>
     <select id="getByProductId" resultMap="ProductPropertyRelationDto">
         <include refid="ProductPropertyRelationDto_sql"/>
         WHERE pp.product_id = #{productId}

@@ -190,6 +190,13 @@ public class ProductPropertyRelationServiceImpl extends
     getBaseMapper().delete(deleteWrapper);
   }
 
+  @Transactional(rollbackFor = Exception.class)
+  @Override
+  public void deleteByPropertyIdAndCategoryId(String propertyId, String categoryId) {
+
+    getBaseMapper().deleteByPropertyIdAndCategoryId(propertyId, categoryId);
+  }
+
   @CacheEvict(value = ProductPropertyRelationDto.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")
   @Override
   public void cleanCacheByKey(Serializable key) {

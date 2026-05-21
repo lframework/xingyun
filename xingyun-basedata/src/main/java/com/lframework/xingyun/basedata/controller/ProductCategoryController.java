@@ -1,5 +1,7 @@
 package com.lframework.xingyun.basedata.controller;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.core.annotations.security.HasPermission;
@@ -11,9 +13,11 @@ import com.lframework.starter.web.inner.service.RecursionMappingService;
 import com.lframework.xingyun.basedata.bo.product.category.GetProductCategoryBo;
 import com.lframework.xingyun.basedata.bo.product.category.ProductCategoryTreeBo;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.excel.product.category.ProductCategoryImportListener;
 import com.lframework.xingyun.basedata.excel.product.category.ProductCategoryImportModel;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +25,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -53,6 +58,9 @@ public class ProductCategoryController extends DefaultBaseController {
   @Autowired
   private RecursionMappingService recursionMappingService;
 
+  @Autowired
+  private ProductCategoryPropertyService productCategoryPropertyService;
+
   /**
    * 分类列表
    */
@@ -67,7 +75,17 @@ public class ProductCategoryController extends DefaultBaseController {
       return InvokeResultBuilder.success(CollectionUtil.emptyList());
     }
 
+    Wrapper<ProductCategoryProperty> propertyWrapper = Wrappers.lambdaQuery(
+            ProductCategoryProperty.class)
+        .select(ProductCategoryProperty::getCategoryId)
+        .in(ProductCategoryProperty::getCategoryId,
+            datas.stream().map(ProductCategory::getId).collect(Collectors.toList()))
+        .groupBy(ProductCategoryProperty::getCategoryId);
+    Set<String> hasPropertyCategoryIds = productCategoryPropertyService.list(propertyWrapper)
+        .stream().map(ProductCategoryProperty::getCategoryId).collect(Collectors.toSet());
+
     List<ProductCategoryTreeBo> results = datas.stream().map(ProductCategoryTreeBo::new)
+        .peek(t -> t.setHasProperty(hasPropertyCategoryIds.contains(t.getId())))
         .collect(Collectors.toList());
 
     return InvokeResultBuilder.success(results);

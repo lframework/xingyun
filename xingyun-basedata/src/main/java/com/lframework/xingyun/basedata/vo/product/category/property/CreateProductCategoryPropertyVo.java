@@ -1,29 +1,26 @@
-package com.lframework.xingyun.basedata.vo.product.property;
+package com.lframework.xingyun.basedata.vo.product.category.property;
 
 import com.lframework.starter.web.core.components.validation.IsCode;
 import com.lframework.starter.web.core.components.validation.IsEnum;
 import com.lframework.starter.web.core.vo.BaseVo;
-import com.lframework.xingyun.basedata.enums.ColumnDataType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
-import com.lframework.xingyun.basedata.enums.PropertyType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.Serializable;
-import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class UpdateProductPropertyVo implements BaseVo, Serializable {
+public class CreateProductCategoryPropertyVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 
   /**
-   * ID
+   * 分类ID
    */
-  @Schema(description = "ID")
-  @NotBlank(message = "ID不能为空！")
-  private String id;
+  @Schema(description = "分类ID", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotBlank(message = "商品分类不能为空！")
+  private String categoryId;
 
   /**
    * 编号
@@ -54,26 +51,6 @@ public class UpdateProductPropertyVo implements BaseVo, Serializable {
   @NotNull(message = "请选择录入类型！")
   @IsEnum(enumClass = ColumnType.class, message = "请选择录入类型！")
   private Integer columnType;
-
-  /**
-   * 数据类型
-   */
-  @Schema(description = "数据类型")
-  @IsEnum(enumClass = ColumnDataType.class, message = "请选择数据类型！")
-  private Integer columnDataType;
-
-  /**
-   * 属性类别
-   */
-  @Schema(description = "属性类别")
-  @IsEnum(enumClass = PropertyType.class, message = "请选择属性类别！")
-  private Integer propertyType;
-
-  /**
-   * 分类ID
-   */
-  @Schema(description = "分类ID")
-  private List<String> categoryIds;
 
   /**
    * 备注

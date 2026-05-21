@@ -60,4 +60,11 @@ public interface ProductCategoryService extends BaseMpService<ProductCategory> {
    * @param parentId
    */
   void saveRecursion(Boolean isCreate, String categoryId, String parentId);
+
+  /**
+   * 校验父级分类是否允许新增子分类
+   *
+   * @param parentId
+   */
+  void checkAllowCreateChild(String parentId);
 }

@@ -15,10 +15,12 @@ import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.inner.service.RecursionMappingService;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.events.DeleteProductCategoryEvent;
 import com.lframework.xingyun.basedata.mappers.ProductCategoryMapper;
+import com.lframework.xingyun.basedata.mappers.ProductCategoryPropertyMapper;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
@@ -44,6 +46,9 @@ public class ProductCategoryServiceImpl extends
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductCategoryPropertyMapper productCategoryPropertyMapper;
 
   @Override
   public List<ProductCategory> getAllProductCategories() {
@@ -110,20 +115,7 @@ public class ProductCategoryServiceImpl extends
 
     //如果parentId不为空，查询上级分类是否存在
     if (!StringUtil.isBlank(vo.getParentId())) {
-      Wrapper<ProductCategory> checkParentWrapper = Wrappers.lambdaQuery(ProductCategory.class)
-          .eq(ProductCategory::getId, vo.getParentId())
-          .eq(ProductCategory::getAvailable, Boolean.TRUE);
-      if (getBaseMapper().selectCount(checkParentWrapper) == 0) {
-        throw new DefaultClientException("上级分类不存在，请检查！");
-      }
-
-      // 然后判断上级分类下是否有商品，如果有商品不允许新增子分类
-      Wrapper<Product> checkProductWrapper = Wrappers.lambdaQuery(Product.class)
-          .eq(Product::getCategoryId, vo.getParentId())
-          .eq(Product::getAvailable, Boolean.TRUE);
-      if (productService.count(checkProductWrapper) > 0) {
-        throw new DefaultClientException("上级分类已关联商品，不允许新增子分类！");
-      }
+      this.checkAllowCreateChild(vo.getParentId());
     }
 
     ProductCategory data = new ProductCategory();
@@ -185,6 +177,36 @@ public class ProductCategoryServiceImpl extends
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
     OpLogUtil.setExtra(vo);
+  }
+
+  @Override
+  public void checkAllowCreateChild(String parentId) {
+
+    if (StringUtil.isBlank(parentId)) {
+      return;
+    }
+
+    Wrapper<ProductCategory> checkParentWrapper = Wrappers.lambdaQuery(ProductCategory.class)
+        .eq(ProductCategory::getId, parentId)
+        .eq(ProductCategory::getAvailable, Boolean.TRUE);
+    if (getBaseMapper().selectCount(checkParentWrapper) == 0) {
+      throw new DefaultClientException("上级分类不存在，请检查！");
+    }
+
+    // 然后判断上级分类下是否有商品，如果有商品不允许新增子分类
+    Wrapper<Product> checkProductWrapper = Wrappers.lambdaQuery(Product.class)
+        .eq(Product::getCategoryId, parentId)
+        .eq(Product::getAvailable, Boolean.TRUE);
+    if (productService.count(checkProductWrapper) > 0) {
+      throw new DefaultClientException("上级分类已关联商品，不允许新增子分类！");
+    }
+
+    Wrapper<ProductCategoryProperty> checkPropertyWrapper = Wrappers.lambdaQuery(
+            ProductCategoryProperty.class)
+        .eq(ProductCategoryProperty::getCategoryId, parentId);
+    if (productCategoryPropertyMapper.selectCount(checkPropertyWrapper) > 0) {
+      throw new DefaultClientException("上级分类已配置商品属性，不允许新增子分类！");
+    }
   }
 
   /**

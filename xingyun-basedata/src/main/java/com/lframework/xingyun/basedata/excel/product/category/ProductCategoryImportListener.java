@@ -117,6 +117,11 @@ public class ProductCategoryImportListener extends ExcelImportListener<ProductCa
           throw new DefaultClientException(
               "第" + (i + 1) + "行“上级分类编号”与“编号”相同，请重新输入");
         }
+        try {
+          productCategoryService.checkAllowCreateChild(parent.getId());
+        } catch (DefaultClientException e) {
+          throw new DefaultClientException("第" + (i + 1) + "行" + e.getMsg());
+        }
         record.setParentId(parent.getId());
       }
       record.setDescription(

@@ -20,31 +20,21 @@ import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
-import com.lframework.starter.web.inner.service.RecursionMappingService;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
-import com.lframework.xingyun.basedata.entity.ProductCategory;
-import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.ColumnDataType;
 import com.lframework.xingyun.basedata.enums.ColumnType;
-import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.enums.PropertyType;
 import com.lframework.xingyun.basedata.events.DeleteProductPropertyEvent;
 import com.lframework.xingyun.basedata.mappers.ProductPropertyMapper;
-import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyService;
-import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
 import com.lframework.xingyun.basedata.vo.product.property.UpdateProductPropertyVo;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -55,15 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductPropertyServiceImpl extends
     BaseMpServiceImpl<ProductPropertyMapper, ProductProperty>
     implements ProductPropertyService {
-
-  @Autowired
-  private ProductCategoryService productCategoryService;
-
-  @Autowired
-  private RecursionMappingService recursionMappingService;
-
-  @Autowired
-  private ProductCategoryPropertyService productCategoryPropertyService;
 
   @Autowired
   private ProductPropertyRelationService productPropertyRelationService;
@@ -109,31 +90,6 @@ public class ProductPropertyServiceImpl extends
         productProperty);
   }
 
-  private List<String> calcCategoryIds(List<String> categoryIds) {
-
-    if (CollectionUtil.isEmpty(categoryIds)) {
-      return CollectionUtil.emptyList();
-    }
-
-    //先整理categoryId，因为可能父级分类和子级分类全传过来了
-    Set<String> childCategoryIds = new HashSet<>();
-
-    for (String categoryId : categoryIds) {
-
-      List<String> children = recursionMappingService.getNodeChildIds(categoryId,
-          ProductCategoryNodeType.class);
-      if (!CollectionUtil.isEmpty(children)) {
-        childCategoryIds.addAll(children);
-      }
-    }
-
-    //如果传过来的categoryId在childCategoryIds中，则表示categoryId和他的父级节点一起传过来了，需要去除
-    List<String> results = categoryIds.stream().filter(t -> !childCategoryIds.contains(t))
-        .collect(Collectors.toList());
-
-    return results;
-  }
-
   @OpLog(type = BaseDataOpLogType.class, name = "新增商品属性，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
@@ -152,22 +108,6 @@ public class ProductPropertyServiceImpl extends
       throw new DefaultClientException("名称重复，请重新输入！");
     }
 
-    if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
-      //如果是指定分类
-      if (CollectionUtil.isEmpty(vo.getCategoryIds())) {
-        throw new InputErrorException("请选择商品分类！");
-      }
-
-      for (String categoryId : vo.getCategoryIds()) {
-        ProductCategory productCategory = productCategoryService.findById(categoryId);
-        if (productCategory == null) {
-          throw new InputErrorException("商品分类数据有误，请检查！");
-        }
-      }
-
-      vo.setCategoryIds(this.calcCategoryIds(vo.getCategoryIds()));
-    }
-
     ProductProperty data = new ProductProperty();
     data.setId(IdUtil.getId());
     data.setCode(vo.getCode());
@@ -175,24 +115,14 @@ public class ProductPropertyServiceImpl extends
     data.setIsRequired(vo.getIsRequired());
     data.setColumnType(EnumUtil.getByCode(ColumnType.class, vo.getColumnType()));
     if (data.getColumnType() == ColumnType.CUSTOM) {
-      if (vo.getColumnDataType() == null) {
-        throw new InputErrorException("数据类型不能为空！");
-      }
-
-      data.setColumnDataType(EnumUtil.getByCode(ColumnDataType.class, vo.getColumnDataType()));
+      data.setColumnDataType(ColumnDataType.STRING);
     }
-    data.setPropertyType(EnumUtil.getByCode(PropertyType.class, vo.getPropertyType()));
+    data.setPropertyType(PropertyType.APPOINT);
     data.setAvailable(Boolean.TRUE);
     data.setDescription(
         StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
 
     getBaseMapper().insert(data);
-
-    if (data.getPropertyType() == PropertyType.APPOINT) {
-      for (String categoryId : vo.getCategoryIds()) {
-        productCategoryPropertyService.create(categoryId, data.getId());
-      }
-    }
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -233,16 +163,8 @@ public class ProductPropertyServiceImpl extends
             "该属性的字段类型为“" + ColumnType.CUSTOM.getDesc() + "”，不允许修改！");
       }
 
-      if (vo.getColumnDataType() == null) {
-        throw new InputErrorException("请选择数据类型！");
-      }
-
-      if (data.getColumnDataType().getCode().intValue() != vo.getColumnDataType()) {
+      if (data.getColumnDataType() != ColumnDataType.STRING) {
         throw new InputErrorException("数据类型不允许修改！");
-      }
-
-      if (vo.getPropertyType() != data.getPropertyType().getCode().intValue()) {
-        throw new InputErrorException("该属性不允许修改属性类别！");
       }
     }
 
@@ -253,90 +175,28 @@ public class ProductPropertyServiceImpl extends
           "该属性不允许将字段类型修改为“" + ColumnType.CUSTOM.getDesc() + "”！");
     }
 
-    if (data.getPropertyType() != PropertyType.NONE
-        && vo.getPropertyType() == PropertyType.NONE.getCode()
-        .intValue()) {
-      throw new InputErrorException(
-          "该属性的属性类别为“" + data.getPropertyType().getDesc() + "”，不允许修改为“"
-              + PropertyType.NONE.getDesc() + "”");
-    }
-
-    List<ProductCategoryProperty> oldProductCategoryPropertyList = new ArrayList<>();
-
-    if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
-      //如果是指定分类
-      if (CollectionUtil.isEmpty(vo.getCategoryIds())) {
-        throw new InputErrorException("请选择商品分类！");
-      }
-
-      for (String categoryId : vo.getCategoryIds()) {
-        ProductCategory productCategory = productCategoryService.findById(categoryId);
-        if (productCategory == null) {
-          throw new InputErrorException("商品分类数据有误，请检查！");
-        }
-      }
-
-      vo.setCategoryIds(this.calcCategoryIds(vo.getCategoryIds()));
-    }
-
-    if (data.getPropertyType() == PropertyType.APPOINT) {
-      //删除关系
-      oldProductCategoryPropertyList = productCategoryPropertyService.getByPropertyId(data.getId());
-      productCategoryPropertyService.deleteByPropertyId(data.getId());
-    }
-
     LambdaUpdateWrapper<ProductProperty> updateWrapper = Wrappers.lambdaUpdate(
             ProductProperty.class)
         .set(ProductProperty::getCode, vo.getCode()).set(ProductProperty::getName, vo.getName())
         .set(ProductProperty::getIsRequired, vo.getIsRequired())
         .set(ProductProperty::getColumnType, vo.getColumnType())
-        .set(ProductProperty::getPropertyType, vo.getPropertyType())
+        .set(ProductProperty::getPropertyType, PropertyType.APPOINT.getCode())
         .set(ProductProperty::getDescription,
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription())
         .eq(ProductProperty::getId, vo.getId());
     if (vo.getColumnType() != ColumnType.CUSTOM.getCode().intValue()) {
       updateWrapper.set(ProductProperty::getColumnDataType, null);
     } else {
-      updateWrapper.set(ProductProperty::getColumnDataType, vo.getColumnDataType());
-    }
-
-    if (vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
-      for (String categoryId : vo.getCategoryIds()) {
-        productCategoryPropertyService.create(categoryId, data.getId());
-      }
+      updateWrapper.set(ProductProperty::getColumnDataType, ColumnDataType.STRING.getCode());
     }
 
     getBaseMapper().update(updateWrapper);
 
-    if (vo.getPropertyType() != PropertyType.NONE.getCode().intValue()) {
-      if (data.getColumnType() == ColumnType.MULTIPLE
-          && vo.getColumnType() == ColumnType.SINGLE.getCode()
-          .intValue()) {
-        //从多选更改为单选
-        productPropertyRelationService.setMultipleToSimple(data.getId());
-      }
-
-      if (data.getPropertyType() == PropertyType.COMMON
-          && vo.getPropertyType() == PropertyType.APPOINT.getCode()
-          .intValue()) {
-        //从通用改成指定分类
-        productPropertyRelationService.setCommonToAppoint(data.getId());
-
-      } else if (data.getPropertyType() == PropertyType.APPOINT
-          && vo.getPropertyType() == PropertyType.COMMON.getCode().intValue()) {
-        //从指定分类改成通用
-        productPropertyRelationService.setAppointToCommon(data.getId());
-      } else if (data.getPropertyType() == PropertyType.APPOINT
-          && vo.getPropertyType() == PropertyType.APPOINT.getCode().intValue()) {
-        List<String> oldCategoryIds = oldProductCategoryPropertyList.stream()
-            .map(ProductCategoryProperty::getCategoryId).collect(Collectors.toList());
-
-        boolean isUpdateCategory = CollectionUtil.isEqualList(oldCategoryIds, vo.getCategoryIds());
-        if (isUpdateCategory) {
-          //更改了分类ID
-          productPropertyRelationService.updateAppointCategoryId(data.getId());
-        }
-      }
+    if (data.getColumnType() == ColumnType.MULTIPLE
+        && vo.getColumnType() == ColumnType.SINGLE.getCode()
+        .intValue()) {
+      //从多选更改为单选
+      productPropertyRelationService.setMultipleToSimple(data.getId());
     }
 
     OpLogUtil.setVariable("id", data.getId());
@@ -347,11 +207,7 @@ public class ProductPropertyServiceImpl extends
   @Override
   public List<ProductPropertyModelorDto> getModelorByCategoryId(String categoryId) {
 
-    List<String> parentCategoryIds = recursionMappingService.getNodeParentIds(categoryId,
-        ProductCategoryNodeType.class);
-    List<String> categoryIds = new ArrayList<>(parentCategoryIds);
-    categoryIds.add(categoryId);
-    List<ProductPropertyModelorDto> datas = getBaseMapper().getModelorByCategoryId(categoryIds);
+    List<ProductPropertyModelorDto> datas = getBaseMapper().getModelorByCategoryId(categoryId);
     return datas;
   }
 

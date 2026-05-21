@@ -73,7 +73,8 @@
         item_name
         FROM base_data_product_property AS p
         LEFT JOIN base_data_product_property_item AS i ON i.property_id = p.id AND i.available = TRUE
-        WHERE (p.property_type = 1 OR (p.property_type = 2 AND p.id IN (SELECT property_id FROM base_data_product_category_property WHERE category_id IN <foreach collection="categoryIds" open="(" separator="," close=")" item="item">#{item}</foreach>)))
+        INNER JOIN base_data_product_category_property AS cp ON cp.property_id = p.id AND cp.category_id = #{categoryId}
+        WHERE 1 = 1
         AND ((p.column_type IN (1, 2) AND i.id IS NOT NULL) OR p.column_type = 3)
         AND p.available = TRUE
         ORDER BY p.code, i.code

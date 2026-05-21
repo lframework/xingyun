@@ -40,4 +40,11 @@ public interface ProductPropertyRelationMapper extends BaseMapper<ProductPropert
      */
     void setCommonToAppoint(@Param("propertyId") String propertyId, @Param("categoryId") String categoryId);
 
+    /**
+     * 根据属性ID和分类ID删除
+     *
+     * @param propertyId
+     * @param categoryId
+     */
+    void deleteByPropertyIdAndCategoryId(@Param("propertyId") String propertyId, @Param("categoryId") String categoryId);
 }

@@ -58,8 +58,7 @@ public class CreateProductPropertyVo implements BaseVo, Serializable {
   /**
    * 属性类别
    */
-  @Schema(description = "属性类别", requiredMode = Schema.RequiredMode.REQUIRED)
-  @NotNull(message = "请选择属性类别！")
+  @Schema(description = "属性类别")
   @IsEnum(enumClass = PropertyType.class, message = "请选择属性类别！")
   private Integer propertyType;
 

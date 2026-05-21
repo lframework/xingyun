@@ -58,4 +58,12 @@ public interface ProductPropertyRelationService extends BaseMpService<ProductPro
    * @param productId
    */
   void deleteByProductId(String productId);
+
+  /**
+   * 根据属性ID和分类ID删除
+   *
+   * @param propertyId
+   * @param categoryId
+   */
+  void deleteByPropertyIdAndCategoryId(String propertyId, String categoryId);
 }

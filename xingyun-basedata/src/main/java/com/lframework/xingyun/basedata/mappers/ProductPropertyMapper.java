@@ -6,7 +6,6 @@ import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.vo.product.property.QueryProductPropertyVo;
 import com.lframework.starter.web.core.annotations.sort.Sort;
 import com.lframework.starter.web.core.annotations.sort.Sorts;
-import java.util.Collection;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -35,8 +34,8 @@ public interface ProductPropertyMapper extends BaseMapper<ProductProperty> {
     /**
      * 根据商品分类查询
      *
-     * @param categoryIds
+     * @param categoryId
      * @return
      */
-    List<ProductPropertyModelorDto> getModelorByCategoryId(@Param("categoryIds") Collection<String> categoryIds);
+    List<ProductPropertyModelorDto> getModelorByCategoryId(@Param("categoryId") String categoryId);
 }

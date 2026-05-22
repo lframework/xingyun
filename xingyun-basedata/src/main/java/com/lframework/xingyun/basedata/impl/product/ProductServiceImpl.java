@@ -346,17 +346,17 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
     productRetailService.create(createProductRetailVo);
 
     if (!CollectionUtil.isEmpty(vo.getProperties())) {
-      // 商品和商品属性的关系
+      // 商品和分类属性的关系
       for (ProductPropertyRelationVo property : vo.getProperties()) {
         ProductProperty productProperty = productPropertyService.findById(property.getId());
         if (productProperty == null) {
-          throw new DefaultClientException("商品属性不存在！");
+          throw new DefaultClientException("分类属性不存在！");
         }
         if (productProperty.getColumnType() == ColumnType.SINGLE) {
           ProductPropertyItem propertyItem = productPropertyItemService.findById(
               property.getText());
           if (propertyItem == null) {
-            throw new DefaultClientException("商品属性值不存在！");
+            throw new DefaultClientException("分类属性值不存在！");
           }
 
           CreateProductPropertyRelationVo createProductPropertyRelationVo = new CreateProductPropertyRelationVo();
@@ -385,7 +385,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
           createProductPropertyRelationVo.setPropertyText(property.getText());
           productPropertyRelationService.create(createProductPropertyRelationVo);
         } else {
-          throw new DefaultClientException("商品属性字段类型不存在！");
+          throw new DefaultClientException("分类属性字段类型不存在！");
         }
       }
     }
@@ -515,17 +515,17 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
 
     productPropertyRelationService.deleteByProductId(data.getId());
     if (!CollectionUtil.isEmpty(vo.getProperties())) {
-      // 商品和商品属性的关系
+      // 商品和分类属性的关系
       for (ProductPropertyRelationVo property : vo.getProperties()) {
         ProductProperty productProperty = productPropertyService.findById(property.getId());
         if (productProperty == null) {
-          throw new DefaultClientException("商品属性不存在！");
+          throw new DefaultClientException("分类属性不存在！");
         }
         if (productProperty.getColumnType() == ColumnType.SINGLE) {
           ProductPropertyItem propertyItem = productPropertyItemService.findById(
               property.getText());
           if (propertyItem == null) {
-            throw new DefaultClientException("商品属性值不存在！");
+            throw new DefaultClientException("分类属性值不存在！");
           }
 
           CreateProductPropertyRelationVo createProductPropertyRelationVo = new CreateProductPropertyRelationVo();
@@ -554,7 +554,7 @@ public class ProductServiceImpl extends BaseMpServiceImpl<ProductMapper, Product
           createProductPropertyRelationVo.setPropertyText(property.getText());
           productPropertyRelationService.create(createProductPropertyRelationVo);
         } else {
-          throw new DefaultClientException("商品属性字段类型不存在！");
+          throw new DefaultClientException("分类属性字段类型不存在！");
         }
       }
     }

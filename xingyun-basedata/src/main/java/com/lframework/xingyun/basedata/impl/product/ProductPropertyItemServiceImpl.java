@@ -74,7 +74,7 @@ public class ProductPropertyItemServiceImpl extends
     return getBaseMapper().selectById(id);
   }
 
-  @OpLog(type = BaseDataOpLogType.class, name = "新增商品属性值，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "新增分类属性值，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -119,7 +119,7 @@ public class ProductPropertyItemServiceImpl extends
     return data.getId();
   }
 
-  @OpLog(type = BaseDataOpLogType.class, name = "修改商品属性值，ID：{}, 编号：{}", params = {"#id",
+  @OpLog(type = BaseDataOpLogType.class, name = "修改分类属性值，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
   @Override
@@ -162,7 +162,7 @@ public class ProductPropertyItemServiceImpl extends
   }
 
   @Transactional(rollbackFor = Exception.class)
-  @OpLog(type = BaseDataOpLogType.class, name = "删除商品属性值，ID：{}", params = "#id")
+  @OpLog(type = BaseDataOpLogType.class, name = "删除分类属性值，ID：{}", params = "#id")
   @Override
   public void deleteById(String id) {
 

@@ -39,9 +39,9 @@ public class ProductCategoryTreeBo extends BaseBo<ProductCategory> {
     private String description;
 
     /**
-     * 是否已配置商品属性
+     * 是否已配置商品分类属性
      */
-    @Schema(description = "是否已配置商品属性")
+    @Schema(description = "是否已配置商品分类属性")
     private Boolean hasProperty;
 
     public ProductCategoryTreeBo() {

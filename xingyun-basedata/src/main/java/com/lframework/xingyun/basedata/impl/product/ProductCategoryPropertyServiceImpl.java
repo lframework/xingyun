@@ -84,14 +84,14 @@ public class ProductCategoryPropertyServiceImpl
 
     this.checkCategory(categoryId);
     if (CollectionUtil.isEmpty(propertyIds)) {
-      throw new InputErrorException("请选择商品属性！");
+      throw new InputErrorException("请选择分类属性！");
     }
 
     List<String> distinctPropertyIds = propertyIds.stream().distinct().collect(Collectors.toList());
     for (String propertyId : distinctPropertyIds) {
       ProductProperty productProperty = productPropertyService.findById(propertyId);
       if (productProperty == null || !productProperty.getAvailable()) {
-        throw new InputErrorException("商品属性数据有误，请检查！");
+        throw new InputErrorException("分类属性数据有误，请检查！");
       }
 
       Wrapper<ProductCategoryProperty> checkWrapper = Wrappers.lambdaQuery(
@@ -121,7 +121,7 @@ public class ProductCategoryPropertyServiceImpl
 
     this.checkCategory(categoryId);
     if (StringUtil.isBlank(propertyId)) {
-      throw new InputErrorException("商品属性不能为空！");
+      throw new InputErrorException("分类属性不能为空！");
     }
 
     Wrapper<ProductCategoryProperty> deleteWrapper = Wrappers.lambdaQuery(

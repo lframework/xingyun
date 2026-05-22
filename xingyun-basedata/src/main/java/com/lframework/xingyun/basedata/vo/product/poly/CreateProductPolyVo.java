@@ -84,9 +84,9 @@ public class CreateProductPolyVo implements BaseVo, Serializable {
   private BigDecimal saleTaxRate;
 
   /**
-   * 商品属性
+   * 分类属性
    */
-  @Schema(description = "商品属性", requiredMode = Schema.RequiredMode.REQUIRED)
+  @Schema(description = "分类属性", requiredMode = Schema.RequiredMode.REQUIRED)
   @Valid
   private List<PropertyVo> properties;
 

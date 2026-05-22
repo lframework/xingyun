@@ -150,7 +150,7 @@ public class ProductPropertyRelationServiceImpl extends
 
     ProductProperty productProperty = productPropertyService.findById(vo.getPropertyId());
     if (productProperty == null) {
-      throw new DefaultClientException("商品属性不存在！");
+      throw new DefaultClientException("分类属性不存在！");
     }
 
     ProductPropertyRelation data = new ProductPropertyRelation();

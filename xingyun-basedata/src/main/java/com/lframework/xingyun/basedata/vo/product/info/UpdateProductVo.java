@@ -123,9 +123,9 @@ public class UpdateProductVo implements BaseVo, Serializable {
   private List<ProductBundleVo> productBundles;
 
   /**
-   * 商品属性
+   * 分类属性
    */
-  @Schema(description = "商品属性")
+  @Schema(description = "分类属性")
   @Valid
   private List<ProductPropertyRelationVo> properties;
 

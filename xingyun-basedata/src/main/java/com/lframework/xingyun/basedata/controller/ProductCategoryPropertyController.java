@@ -31,11 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 分类属性管理
+ * 商品分类属性配置管理
  *
  * @author zmj
  */
-@Tag(name = "分类属性管理")
+@Tag(name = "商品分类属性配置管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/category/property")
@@ -45,9 +45,9 @@ public class ProductCategoryPropertyController extends DefaultBaseController {
   private ProductCategoryPropertyService productCategoryPropertyService;
 
   /**
-   * 分类属性列表
+   * 商品分类属性配置列表
    */
-  @Operation(summary = "分类属性列表")
+  @Operation(summary = "商品分类属性配置列表")
   @Parameter(name = "categoryId", description = "分类ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:category:query", "base-data:product:category:modify"})
   @GetMapping("/query")
@@ -67,9 +67,9 @@ public class ProductCategoryPropertyController extends DefaultBaseController {
   }
 
   /**
-   * 绑定已有属性
+   * 绑定已有分类属性
    */
-  @Operation(summary = "绑定已有属性")
+  @Operation(summary = "绑定已有分类属性")
   @HasPermission({"base-data:product:category:modify"})
   @PostMapping("/bind")
   public InvokeResult<Void> bind(@Valid @RequestBody BindProductCategoryPropertyVo vo) {
@@ -80,9 +80,9 @@ public class ProductCategoryPropertyController extends DefaultBaseController {
   }
 
   /**
-   * 新增属性并绑定分类
+   * 新增分类属性并绑定分类
    */
-  @Operation(summary = "新增属性并绑定分类")
+  @Operation(summary = "新增分类属性并绑定分类")
   @HasPermission({"base-data:product:category:modify"})
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreateProductCategoryPropertyVo vo) {
@@ -97,14 +97,14 @@ public class ProductCategoryPropertyController extends DefaultBaseController {
   }
 
   /**
-   * 删除分类属性
+   * 删除商品分类属性配置
    */
-  @Operation(summary = "删除分类属性")
+  @Operation(summary = "删除商品分类属性配置")
   @HasPermission({"base-data:product:category:modify"})
   @DeleteMapping
   public InvokeResult<Void> delete(
       @Parameter(description = "分类ID", required = true) @NotBlank(message = "商品分类不能为空！") String categoryId,
-      @Parameter(description = "属性ID", required = true) @NotBlank(message = "商品属性不能为空！") String propertyId) {
+      @Parameter(description = "分类属性ID", required = true) @NotBlank(message = "分类属性不能为空！") String propertyId) {
 
     productCategoryPropertyService.removeByCategoryIdAndPropertyId(categoryId, propertyId);
 

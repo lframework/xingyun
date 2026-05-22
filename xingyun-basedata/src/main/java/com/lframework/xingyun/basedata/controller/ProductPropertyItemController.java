@@ -34,11 +34,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 属性值管理
+ * 分类属性值管理
  *
  * @author zmj
  */
-@Tag(name = "属性值管理")
+@Tag(name = "分类属性值管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/property/item")
@@ -48,9 +48,9 @@ public class ProductPropertyItemController extends DefaultBaseController {
   private ProductPropertyItemService productPropertyItemService;
 
   /**
-   * 属性值列表
+   * 分类属性值列表
    */
-  @Operation(summary = "属性值列表")
+  @Operation(summary = "分类属性值列表")
   @HasPermission({"base-data:product:property-item:query", "base-data:product:property-item:add",
       "base-data:product:property-item:modify"})
   @GetMapping("/query")
@@ -72,9 +72,9 @@ public class ProductPropertyItemController extends DefaultBaseController {
   }
 
   /**
-   * 查询属性值
+   * 查询分类属性值
    */
-  @Operation(summary = "查询属性值")
+  @Operation(summary = "查询分类属性值")
   @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:property-item:query", "base-data:product:property-item:add",
       "base-data:product:property-item:modify"})
@@ -83,7 +83,7 @@ public class ProductPropertyItemController extends DefaultBaseController {
 
     ProductPropertyItem data = productPropertyItemService.findById(id);
     if (data == null) {
-      throw new DefaultClientException("属性值不存在！");
+      throw new DefaultClientException("分类属性值不存在！");
     }
 
     GetProductPropertyItemBo result = new GetProductPropertyItemBo(data);
@@ -92,9 +92,9 @@ public class ProductPropertyItemController extends DefaultBaseController {
   }
 
   /**
-   * 新增属性值
+   * 新增分类属性值
    */
-  @Operation(summary = "新增属性值")
+  @Operation(summary = "新增分类属性值")
   @HasPermission({"base-data:product:property-item:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid CreateProductPropertyItemVo vo) {
@@ -105,9 +105,9 @@ public class ProductPropertyItemController extends DefaultBaseController {
   }
 
   /**
-   * 修改属性值
+   * 修改分类属性值
    */
-  @Operation(summary = "修改属性值")
+  @Operation(summary = "修改分类属性值")
   @HasPermission({"base-data:product:property-item:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateProductPropertyItemVo vo) {
@@ -122,7 +122,7 @@ public class ProductPropertyItemController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @Operation(summary = "根据ID删除")
+  @Operation(summary = "删除分类属性值")
   @HasPermission({"base-data:product:property-item:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(

@@ -18,7 +18,7 @@ public class ProductCategoryPropertyDto implements BaseDto, Serializable {
   private String id;
 
   /**
-   * 商品属性ID
+   * 分类属性ID
    */
   private String propertyId;
 

@@ -43,11 +43,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 属性管理
+ * 商品分类属性管理
  *
  * @author zmj
  */
-@Tag(name = "属性管理")
+@Tag(name = "商品分类属性管理")
 @Validated
 @RestController
 @RequestMapping("/basedata/product/property")
@@ -60,9 +60,9 @@ public class ProductPropertyController extends DefaultBaseController {
   private ProductPropertyRelationService productPropertyRelationService;
 
   /**
-   * 属性列表
+   * 商品分类属性列表
    */
-  @Operation(summary = "属性列表")
+  @Operation(summary = "商品分类属性列表")
   @HasPermission({"base-data:product:property:query", "base-data:product:property:add",
       "base-data:product:property:modify"})
   @GetMapping("/query")
@@ -83,9 +83,9 @@ public class ProductPropertyController extends DefaultBaseController {
   }
 
   /**
-   * 查询属性
+   * 查询商品分类属性
    */
-  @Operation(summary = "查询属性")
+  @Operation(summary = "查询商品分类属性")
   @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:property:query", "base-data:product:property:add",
       "base-data:product:property:modify"})
@@ -94,7 +94,7 @@ public class ProductPropertyController extends DefaultBaseController {
 
     ProductProperty data = productPropertyService.findById(id);
     if (data == null) {
-      throw new DefaultClientException("属性不存在！");
+      throw new DefaultClientException("商品分类属性不存在！");
     }
 
     GetProductPropertyBo result = new GetProductPropertyBo(data);
@@ -105,11 +105,11 @@ public class ProductPropertyController extends DefaultBaseController {
   /**
    * 根据ID删除
    */
-  @Operation(summary = "根据ID删除")
+  @Operation(summary = "删除商品分类属性")
   @HasPermission({"base-data:product:property:delete"})
   @DeleteMapping
   public InvokeResult<Void> deleteById(
-      @Parameter(description = "ID", required = true) @NotEmpty(message = "属性ID不能为空！") String id) {
+      @Parameter(description = "ID", required = true) @NotEmpty(message = "商品分类属性ID不能为空！") String id) {
 
     productPropertyService.deleteById(id);
 
@@ -119,9 +119,9 @@ public class ProductPropertyController extends DefaultBaseController {
   }
 
   /**
-   * 新增属性
+   * 新增商品分类属性
    */
-  @Operation(summary = "新增属性")
+  @Operation(summary = "新增商品分类属性")
   @HasPermission({"base-data:product:property:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreateProductPropertyVo vo) {
@@ -132,9 +132,9 @@ public class ProductPropertyController extends DefaultBaseController {
   }
 
   /**
-   * 修改属性
+   * 修改商品分类属性
    */
-  @Operation(summary = "修改属性")
+  @Operation(summary = "修改商品分类属性")
   @HasPermission({"base-data:product:property:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid @RequestBody UpdateProductPropertyVo vo) {
@@ -160,9 +160,9 @@ public class ProductPropertyController extends DefaultBaseController {
   }
 
   /**
-   * 属性模型
+   * 分类属性模型
    */
-  @Operation(summary = "属性模型")
+  @Operation(summary = "分类属性模型")
   @Parameter(name = "categoryId", description = "分类ID", in = ParameterIn.QUERY, required = true)
   @GetMapping("/modelor/category")
   public InvokeResult<List<ProductPropertyModelorBo>> getModelorByCategory(

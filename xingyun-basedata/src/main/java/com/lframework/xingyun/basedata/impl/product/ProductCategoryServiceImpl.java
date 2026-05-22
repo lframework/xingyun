@@ -205,7 +205,7 @@ public class ProductCategoryServiceImpl extends
             ProductCategoryProperty.class)
         .eq(ProductCategoryProperty::getCategoryId, parentId);
     if (productCategoryPropertyMapper.selectCount(checkPropertyWrapper) > 0) {
-      throw new DefaultClientException("上级分类已配置商品属性，不允许新增子分类！");
+      throw new DefaultClientException("上级分类已配置商品分类属性，不允许新增子分类！");
     }
   }
 

@@ -24,6 +24,6 @@ public class BindProductCategoryPropertyVo implements BaseVo, Serializable {
    * 属性ID
    */
   @Schema(description = "属性ID", requiredMode = Schema.RequiredMode.REQUIRED)
-  @NotEmpty(message = "请选择商品属性！")
+  @NotEmpty(message = "请选择分类属性！")
   private List<String> propertyIds;
 }

@@ -44,6 +44,12 @@ public class ProductCategoryTreeBo extends BaseBo<ProductCategory> {
     @Schema(description = "是否已配置商品分类属性")
     private Boolean hasProperty;
 
+    /**
+     * 是否已配置商品销售属性
+     */
+    @Schema(description = "是否已配置商品销售属性")
+    private Boolean hasSaleProperty;
+
     public ProductCategoryTreeBo() {
 
     }

@@ -1,14 +1,14 @@
-package com.lframework.xingyun.basedata.vo.product.saleprop.item;
+package com.lframework.xingyun.basedata.vo.product.saleproperty;
 
 import com.lframework.starter.web.core.components.validation.IsCode;
 import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.Serializable;
 import jakarta.validation.constraints.NotBlank;
+import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class CreateProductSalePropItemVo implements BaseVo, Serializable {
+public class CreateProductSalePropertyVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -26,13 +26,6 @@ public class CreateProductSalePropItemVo implements BaseVo, Serializable {
   @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "请输入名称！")
   private String name;
-
-  /**
-   * 销售属性组ID
-   */
-  @Schema(description = "销售属性组ID", requiredMode = Schema.RequiredMode.REQUIRED)
-  @NotBlank(message = "GroupID不能为空！")
-  private String groupId;
 
   /**
    * 备注

@@ -1,7 +1,9 @@
 package com.lframework.xingyun.basedata.service.product;
 
 import com.lframework.starter.web.core.service.BaseMpService;
+import com.lframework.xingyun.basedata.dto.product.category.PropertyCategoryCountDto;
 import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
+import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
 import java.util.List;
@@ -31,6 +33,22 @@ public interface ProductCategoryPropertyService extends BaseMpService<ProductCat
    * @return
    */
   List<ProductCategoryProperty> getByPropertyId(String propertyId);
+
+  /**
+   * 根据属性ID查询已关联商品分类
+   *
+   * @param propertyId
+   * @return
+   */
+  List<ProductCategory> getCategoriesByPropertyId(String propertyId);
+
+  /**
+   * 根据属性ID批量统计已关联商品分类数量
+   *
+   * @param propertyIds
+   * @return
+   */
+  List<PropertyCategoryCountDto> countCategoriesByPropertyIds(List<String> propertyIds);
 
   /**
    * 根据分类ID查询

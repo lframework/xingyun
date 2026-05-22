@@ -9,16 +9,15 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.basedata.dto.product.category.PropertyCategoryCountDto;
-import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
+import com.lframework.xingyun.basedata.dto.product.category.saleproperty.ProductCategorySalePropertyDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
-import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
-import com.lframework.xingyun.basedata.entity.ProductProperty;
-import com.lframework.xingyun.basedata.mappers.ProductCategoryPropertyMapper;
+import com.lframework.xingyun.basedata.entity.ProductCategorySaleProperty;
+import com.lframework.xingyun.basedata.entity.ProductSaleProperty;
+import com.lframework.xingyun.basedata.mappers.ProductCategorySalePropertyMapper;
+import com.lframework.xingyun.basedata.service.product.ProductCategorySalePropertyService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyService;
-import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
-import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
-import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
+import com.lframework.xingyun.basedata.service.product.ProductSalePropertyService;
+import com.lframework.xingyun.basedata.vo.product.saleproperty.CreateProductSalePropertyVo;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,26 +26,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductCategoryPropertyServiceImpl
-    extends BaseMpServiceImpl<ProductCategoryPropertyMapper, ProductCategoryProperty>
-    implements ProductCategoryPropertyService {
+public class ProductCategorySalePropertyServiceImpl
+    extends BaseMpServiceImpl<ProductCategorySalePropertyMapper, ProductCategorySaleProperty>
+    implements ProductCategorySalePropertyService {
 
   @Autowired
   private ProductCategoryService productCategoryService;
 
   @Lazy
   @Autowired
-  private ProductPropertyService productPropertyService;
-
-  @Lazy
-  @Autowired
-  private ProductPropertyRelationService productPropertyRelationService;
+  private ProductSalePropertyService productSalePropertyService;
 
   @Transactional(rollbackFor = Exception.class)
   @Override
   public String create(String categoryId, String propertyId) {
 
-    ProductCategoryProperty record = new ProductCategoryProperty();
+    ProductCategorySaleProperty record = new ProductCategorySaleProperty();
     record.setId(IdUtil.getId());
     record.setPropertyId(propertyId);
     record.setCategoryId(categoryId);
@@ -60,14 +55,14 @@ public class ProductCategoryPropertyServiceImpl
   @Override
   public void deleteByPropertyId(String propertyId) {
 
-    Wrapper<ProductCategoryProperty> deleteWrapper = Wrappers.lambdaQuery(
-            ProductCategoryProperty.class)
-        .eq(ProductCategoryProperty::getPropertyId, propertyId);
+    Wrapper<ProductCategorySaleProperty> deleteWrapper = Wrappers.lambdaQuery(
+            ProductCategorySaleProperty.class)
+        .eq(ProductCategorySaleProperty::getPropertyId, propertyId);
     getBaseMapper().delete(deleteWrapper);
   }
 
   @Override
-  public List<ProductCategoryProperty> getByPropertyId(String propertyId) {
+  public List<ProductCategorySaleProperty> getByPropertyId(String propertyId) {
 
     return getBaseMapper().getByPropertyId(propertyId);
   }
@@ -76,7 +71,7 @@ public class ProductCategoryPropertyServiceImpl
   public List<ProductCategory> getCategoriesByPropertyId(String propertyId) {
 
     if (StringUtil.isBlank(propertyId)) {
-      throw new InputErrorException("分类属性不能为空！");
+      throw new InputErrorException("销售属性不能为空！");
     }
 
     return getBaseMapper().getCategoriesByPropertyId(propertyId);
@@ -93,7 +88,7 @@ public class ProductCategoryPropertyServiceImpl
   }
 
   @Override
-  public List<ProductCategoryPropertyDto> getByCategoryId(String categoryId) {
+  public List<ProductCategorySalePropertyDto> getByCategoryId(String categoryId) {
 
     this.checkCategory(categoryId);
     return getBaseMapper().getByCategoryId(categoryId);
@@ -105,20 +100,20 @@ public class ProductCategoryPropertyServiceImpl
 
     this.checkCategory(categoryId);
     if (CollectionUtil.isEmpty(propertyIds)) {
-      throw new InputErrorException("请选择分类属性！");
+      throw new InputErrorException("请选择销售属性！");
     }
 
     List<String> distinctPropertyIds = propertyIds.stream().distinct().collect(Collectors.toList());
     for (String propertyId : distinctPropertyIds) {
-      ProductProperty productProperty = productPropertyService.findById(propertyId);
-      if (productProperty == null || !productProperty.getAvailable()) {
-        throw new InputErrorException("分类属性数据有误，请检查！");
+      ProductSaleProperty productSaleProperty = productSalePropertyService.findById(propertyId);
+      if (productSaleProperty == null || !productSaleProperty.getAvailable()) {
+        throw new InputErrorException("销售属性数据有误，请检查！");
       }
 
-      Wrapper<ProductCategoryProperty> checkWrapper = Wrappers.lambdaQuery(
-              ProductCategoryProperty.class)
-          .eq(ProductCategoryProperty::getCategoryId, categoryId)
-          .eq(ProductCategoryProperty::getPropertyId, propertyId);
+      Wrapper<ProductCategorySaleProperty> checkWrapper = Wrappers.lambdaQuery(
+              ProductCategorySaleProperty.class)
+          .eq(ProductCategorySaleProperty::getCategoryId, categoryId)
+          .eq(ProductCategorySaleProperty::getPropertyId, propertyId);
       if (getBaseMapper().selectCount(checkWrapper) == 0) {
         this.create(categoryId, propertyId);
       }
@@ -127,10 +122,10 @@ public class ProductCategoryPropertyServiceImpl
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public String createPropertyAndBind(String categoryId, CreateProductPropertyVo vo) {
+  public String createPropertyAndBind(String categoryId, CreateProductSalePropertyVo vo) {
 
     this.checkCategory(categoryId);
-    String propertyId = productPropertyService.create(vo);
+    String propertyId = productSalePropertyService.create(vo);
     this.bindExistingProperties(categoryId, List.of(propertyId));
 
     return propertyId;
@@ -142,16 +137,14 @@ public class ProductCategoryPropertyServiceImpl
 
     this.checkCategory(categoryId);
     if (StringUtil.isBlank(propertyId)) {
-      throw new InputErrorException("分类属性不能为空！");
+      throw new InputErrorException("销售属性不能为空！");
     }
 
-    Wrapper<ProductCategoryProperty> deleteWrapper = Wrappers.lambdaQuery(
-            ProductCategoryProperty.class)
-        .eq(ProductCategoryProperty::getCategoryId, categoryId)
-        .eq(ProductCategoryProperty::getPropertyId, propertyId);
+    Wrapper<ProductCategorySaleProperty> deleteWrapper = Wrappers.lambdaQuery(
+            ProductCategorySaleProperty.class)
+        .eq(ProductCategorySaleProperty::getCategoryId, categoryId)
+        .eq(ProductCategorySaleProperty::getPropertyId, propertyId);
     getBaseMapper().delete(deleteWrapper);
-
-    productPropertyRelationService.deleteByPropertyIdAndCategoryId(propertyId, categoryId);
   }
 
   private void checkCategory(String categoryId) {

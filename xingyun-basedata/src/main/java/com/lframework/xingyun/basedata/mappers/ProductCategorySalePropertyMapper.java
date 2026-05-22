@@ -2,21 +2,13 @@ package com.lframework.xingyun.basedata.mappers;
 
 import com.lframework.starter.web.core.mapper.BaseMapper;
 import com.lframework.xingyun.basedata.dto.product.category.PropertyCategoryCountDto;
-import com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyDto;
+import com.lframework.xingyun.basedata.dto.product.category.saleproperty.ProductCategorySalePropertyDto;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
-import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
+import com.lframework.xingyun.basedata.entity.ProductCategorySaleProperty;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
-/**
- * <p>
- * Mapper 接口
- * </p>
- *
- * @author zmj
- * @since 2021-07-05
- */
-public interface ProductCategoryPropertyMapper extends BaseMapper<ProductCategoryProperty> {
+public interface ProductCategorySalePropertyMapper extends BaseMapper<ProductCategorySaleProperty> {
 
   /**
    * 根据属性ID查询
@@ -24,7 +16,7 @@ public interface ProductCategoryPropertyMapper extends BaseMapper<ProductCategor
    * @param propertyId
    * @return
    */
-  List<ProductCategoryProperty> getByPropertyId(String propertyId);
+  List<ProductCategorySaleProperty> getByPropertyId(String propertyId);
 
   /**
    * 根据属性ID查询已关联商品分类
@@ -49,5 +41,5 @@ public interface ProductCategoryPropertyMapper extends BaseMapper<ProductCategor
    * @param categoryId
    * @return
    */
-  List<ProductCategoryPropertyDto> getByCategoryId(String categoryId);
+  List<ProductCategorySalePropertyDto> getByCategoryId(String categoryId);
 }

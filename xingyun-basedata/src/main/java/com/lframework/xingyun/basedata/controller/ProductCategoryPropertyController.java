@@ -49,7 +49,8 @@ public class ProductCategoryPropertyController extends DefaultBaseController {
    */
   @Operation(summary = "商品分类属性配置列表")
   @Parameter(name = "categoryId", description = "分类ID", in = ParameterIn.QUERY, required = true)
-  @HasPermission({"base-data:product:category:query", "base-data:product:category:modify"})
+  @HasPermission({"base-data:product:property:query", "base-data:product:property:add",
+      "base-data:product:property:modify"})
   @GetMapping("/query")
   public InvokeResult<List<ProductCategoryPropertyBo>> query(
       @NotBlank(message = "商品分类不能为空！") String categoryId) {
@@ -70,7 +71,7 @@ public class ProductCategoryPropertyController extends DefaultBaseController {
    * 绑定已有分类属性
    */
   @Operation(summary = "绑定已有分类属性")
-  @HasPermission({"base-data:product:category:modify"})
+  @HasPermission({"base-data:product:property:modify"})
   @PostMapping("/bind")
   public InvokeResult<Void> bind(@Valid @RequestBody BindProductCategoryPropertyVo vo) {
 
@@ -83,7 +84,7 @@ public class ProductCategoryPropertyController extends DefaultBaseController {
    * 新增分类属性并绑定分类
    */
   @Operation(summary = "新增分类属性并绑定分类")
-  @HasPermission({"base-data:product:category:modify"})
+  @HasPermission({"base-data:product:property:add"})
   @PostMapping
   public InvokeResult<Void> create(@Valid @RequestBody CreateProductCategoryPropertyVo vo) {
 
@@ -100,7 +101,7 @@ public class ProductCategoryPropertyController extends DefaultBaseController {
    * 删除商品分类属性配置
    */
   @Operation(summary = "删除商品分类属性配置")
-  @HasPermission({"base-data:product:category:modify"})
+  @HasPermission({"base-data:product:property:modify"})
   @DeleteMapping
   public InvokeResult<Void> delete(
       @Parameter(description = "分类ID", required = true) @NotBlank(message = "商品分类不能为空！") String categoryId,

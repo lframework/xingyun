@@ -14,10 +14,12 @@ import com.lframework.xingyun.basedata.bo.product.category.GetProductCategoryBo;
 import com.lframework.xingyun.basedata.bo.product.category.ProductCategoryTreeBo;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
+import com.lframework.xingyun.basedata.entity.ProductCategorySaleProperty;
 import com.lframework.xingyun.basedata.excel.product.category.ProductCategoryImportListener;
 import com.lframework.xingyun.basedata.excel.product.category.ProductCategoryImportModel;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyService;
+import com.lframework.xingyun.basedata.service.product.ProductCategorySalePropertyService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
 import com.lframework.xingyun.basedata.vo.product.category.UpdateProductCategoryVo;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,6 +63,9 @@ public class ProductCategoryController extends DefaultBaseController {
   @Autowired
   private ProductCategoryPropertyService productCategoryPropertyService;
 
+  @Autowired
+  private ProductCategorySalePropertyService productCategorySalePropertyService;
+
   /**
    * 分类列表
    */
@@ -84,8 +89,19 @@ public class ProductCategoryController extends DefaultBaseController {
     Set<String> hasPropertyCategoryIds = productCategoryPropertyService.list(propertyWrapper)
         .stream().map(ProductCategoryProperty::getCategoryId).collect(Collectors.toSet());
 
+    Wrapper<ProductCategorySaleProperty> salePropertyWrapper = Wrappers.lambdaQuery(
+            ProductCategorySaleProperty.class)
+        .select(ProductCategorySaleProperty::getCategoryId)
+        .in(ProductCategorySaleProperty::getCategoryId,
+            datas.stream().map(ProductCategory::getId).collect(Collectors.toList()))
+        .groupBy(ProductCategorySaleProperty::getCategoryId);
+    Set<String> hasSalePropertyCategoryIds = productCategorySalePropertyService.list(
+            salePropertyWrapper)
+        .stream().map(ProductCategorySaleProperty::getCategoryId).collect(Collectors.toSet());
+
     List<ProductCategoryTreeBo> results = datas.stream().map(ProductCategoryTreeBo::new)
         .peek(t -> t.setHasProperty(hasPropertyCategoryIds.contains(t.getId())))
+        .peek(t -> t.setHasSaleProperty(hasSalePropertyCategoryIds.contains(t.getId())))
         .collect(Collectors.toList());
 
     return InvokeResultBuilder.success(results);

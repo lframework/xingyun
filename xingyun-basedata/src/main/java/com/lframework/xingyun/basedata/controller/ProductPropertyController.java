@@ -12,12 +12,16 @@ import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
 import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.components.threads.DefaultRunnable;
 import com.lframework.starter.web.core.utils.PageResultUtil;
+import com.lframework.xingyun.basedata.bo.product.category.RelatedProductCategoryBo;
 import com.lframework.xingyun.basedata.bo.product.property.GetProductPropertyBo;
 import com.lframework.xingyun.basedata.bo.product.property.ProductPropertyModelorBo;
 import com.lframework.xingyun.basedata.bo.product.property.QueryProductPropertyBo;
+import com.lframework.xingyun.basedata.dto.product.category.PropertyCategoryCountDto;
 import com.lframework.xingyun.basedata.dto.product.property.ProductPropertyModelorDto;
+import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.ProductProperty;
 import com.lframework.xingyun.basedata.entity.ProductPropertyRelation;
+import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductPropertyService;
 import com.lframework.xingyun.basedata.vo.product.property.CreateProductPropertyVo;
@@ -28,6 +32,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -59,6 +64,9 @@ public class ProductPropertyController extends DefaultBaseController {
   @Autowired
   private ProductPropertyRelationService productPropertyRelationService;
 
+  @Autowired
+  private ProductCategoryPropertyService productCategoryPropertyService;
+
   /**
    * 商品分类属性列表
    */
@@ -77,6 +85,13 @@ public class ProductPropertyController extends DefaultBaseController {
     if (!CollectionUtil.isEmpty(datas)) {
 
       results = datas.stream().map(QueryProductPropertyBo::new).collect(Collectors.toList());
+      List<String> propertyIds = results.stream().map(QueryProductPropertyBo::getId).collect(
+          Collectors.toList());
+      Map<String, Integer> categoryCountMap = productCategoryPropertyService.countCategoriesByPropertyIds(
+              propertyIds).stream()
+          .collect(Collectors.toMap(PropertyCategoryCountDto::getPropertyId,
+              PropertyCategoryCountDto::getCategoryCount));
+      results.forEach(t -> t.setCategoryCount(categoryCountMap.getOrDefault(t.getId(), 0)));
     }
 
     return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
@@ -157,6 +172,25 @@ public class ProductPropertyController extends DefaultBaseController {
     })));
 
     return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 查询已关联商品分类
+   */
+  @Operation(summary = "查询已关联商品分类")
+  @Parameter(name = "id", description = "分类属性ID", in = ParameterIn.QUERY, required = true)
+  @HasPermission({"base-data:product:category:query"})
+  @GetMapping("/categories")
+  public InvokeResult<List<RelatedProductCategoryBo>> getCategories(
+      @NotBlank(message = "分类属性ID不能为空！") String id) {
+
+    List<ProductCategory> datas = productCategoryPropertyService.getCategoriesByPropertyId(id);
+    List<RelatedProductCategoryBo> results = CollectionUtil.emptyList();
+    if (!CollectionUtil.isEmpty(datas)) {
+      results = datas.stream().map(RelatedProductCategoryBo::new).collect(Collectors.toList());
+    }
+
+    return InvokeResultBuilder.success(results);
   }
 
   /**

@@ -45,6 +45,12 @@ public class QueryProductPropertyBo extends BaseBo<ProductProperty> {
     private Integer propertyType;
 
     /**
+     * 已关联商品分类数量
+     */
+    @Schema(description = "已关联商品分类数量")
+    private Integer categoryCount;
+
+    /**
      * 备注
      */
     @Schema(description = "备注")

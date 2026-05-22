@@ -16,11 +16,13 @@ import com.lframework.starter.web.inner.service.RecursionMappingService;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.ProductCategoryProperty;
+import com.lframework.xingyun.basedata.entity.ProductCategorySaleProperty;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
 import com.lframework.xingyun.basedata.enums.ProductCategoryNodeType;
 import com.lframework.xingyun.basedata.events.DeleteProductCategoryEvent;
 import com.lframework.xingyun.basedata.mappers.ProductCategoryMapper;
 import com.lframework.xingyun.basedata.mappers.ProductCategoryPropertyMapper;
+import com.lframework.xingyun.basedata.mappers.ProductCategorySalePropertyMapper;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.vo.product.category.CreateProductCategoryVo;
@@ -49,6 +51,9 @@ public class ProductCategoryServiceImpl extends
 
   @Autowired
   private ProductCategoryPropertyMapper productCategoryPropertyMapper;
+
+  @Autowired
+  private ProductCategorySalePropertyMapper productCategorySalePropertyMapper;
 
   @Override
   public List<ProductCategory> getAllProductCategories() {
@@ -206,6 +211,13 @@ public class ProductCategoryServiceImpl extends
         .eq(ProductCategoryProperty::getCategoryId, parentId);
     if (productCategoryPropertyMapper.selectCount(checkPropertyWrapper) > 0) {
       throw new DefaultClientException("上级分类已配置商品分类属性，不允许新增子分类！");
+    }
+
+    Wrapper<ProductCategorySaleProperty> checkSalePropertyWrapper = Wrappers.lambdaQuery(
+            ProductCategorySaleProperty.class)
+        .eq(ProductCategorySaleProperty::getCategoryId, parentId);
+    if (productCategorySalePropertyMapper.selectCount(checkSalePropertyWrapper) > 0) {
+      throw new DefaultClientException("上级分类已配置商品销售属性，不允许新增子分类！");
     }
   }
 

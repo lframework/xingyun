@@ -1,24 +1,16 @@
-package com.lframework.xingyun.basedata.vo.product.saleprop;
+package com.lframework.xingyun.basedata.vo.product.saleproperty.item;
 
 import com.lframework.starter.web.core.components.validation.IsCode;
 import com.lframework.starter.web.core.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.Serializable;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class UpdateProductSalePropGroupVo implements BaseVo, Serializable {
+public class CreateProductSalePropertyItemVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
-
-  /**
-   * ID
-   */
-  @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED)
-  @NotBlank(message = "ID不能为空！")
-  private String id;
 
   /**
    * 编号
@@ -36,11 +28,11 @@ public class UpdateProductSalePropGroupVo implements BaseVo, Serializable {
   private String name;
 
   /**
-   * 状态
+   * 销售属性ID
    */
-  @Schema(description = "状态", requiredMode = Schema.RequiredMode.REQUIRED)
-  @NotNull(message = "状态不能为空！")
-  private Boolean available;
+  @Schema(description = "销售属性ID", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotBlank(message = "销售属性ID不能为空！")
+  private String propertyId;
 
   /**
    * 备注

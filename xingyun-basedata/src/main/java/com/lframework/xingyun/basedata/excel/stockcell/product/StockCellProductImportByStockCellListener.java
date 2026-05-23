@@ -1,24 +1,18 @@
 package com.lframework.xingyun.basedata.excel.stockcell.product;
 
 import com.alibaba.excel.context.AnalysisContext;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.github.yulichang.query.MPJLambdaQueryWrapper;
-import com.github.yulichang.query.MPJQueryWrapper;
-import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
+import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.excel.ExcelImportListener;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductCode;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StockCell;
-import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.stockcell.StockCellProductService;
 import com.lframework.xingyun.basedata.service.stockcell.StockCellService;
 import com.lframework.xingyun.basedata.vo.stockcell.product.CreateStockCellProductVo;
-import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,22 +28,18 @@ public class StockCellProductImportByStockCellListener extends
 
   @Override
   protected void doInvoke(StockCellProductImportByStockCellModel data, AnalysisContext context) {
-    if (StringUtil.isBlank(data.getProductCode())) {
+    if (StringUtil.isBlank(data.getSkuCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“商品编号”不能为空");
+          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”不能为空");
     }
 
-    ProductService productService = ApplicationUtil.getBean(ProductService.class);
-    Wrapper<Product> productWrapper = new MPJLambdaWrapper<Product>().selectAll(Product.class)
-        .leftJoin(ProductCode.class, ProductCode::getProductId, Product::getId)
-        .eq(ProductCode::getCode, data.getProductCode())
-        .eq(Product::getAvailable, true);
-    Product product = productService.getOne(productWrapper);
-    if (product == null) {
+    ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+    ProductSku sku = productSkuService.findAvailableByCode(data.getSkuCode());
+    if (sku == null) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“商品编号”不存在");
+          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”不存在");
     }
-    data.setProductId(product.getId());
+    data.setSkuId(sku.getId());
   }
 
   @Override
@@ -68,7 +58,7 @@ public class StockCellProductImportByStockCellListener extends
 
       CreateStockCellProductVo vo = new CreateStockCellProductVo();
       vo.setStockCellId(stockCellId);
-      vo.setProductIds(Collections.singletonList(data.getProductId()));
+      vo.setSkuIds(CollectionUtil.toList(data.getSkuId()));
 
       try {
         service.create(vo);

@@ -1,30 +1,36 @@
 package com.lframework.xingyun.basedata.bo.product.info;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.convert.EnumConvert;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.dto.product.ProductPropertyRelationDto;
+import com.lframework.starter.web.core.utils.JsonUtil;
+import com.lframework.xingyun.basedata.dto.product.ProductCategoryPropertyValueRelationDto;
+import com.lframework.xingyun.basedata.dto.product.ProductCategoryPropertyValueRelationDto;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
-import com.lframework.xingyun.basedata.entity.ProductCode;
 import com.lframework.xingyun.basedata.entity.ProductPurchase;
 import com.lframework.xingyun.basedata.entity.ProductRetail;
 import com.lframework.xingyun.basedata.entity.ProductSale;
+import com.lframework.xingyun.basedata.entity.ProductSku;
+import com.lframework.xingyun.basedata.entity.ProductSkuCode;
 import com.lframework.xingyun.basedata.enums.ColumnType;
+import com.lframework.xingyun.basedata.enums.ProductSkuCodeType;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductCodeService;
-import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
+import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyValueRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductRetailService;
 import com.lframework.xingyun.basedata.service.product.ProductSaleService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuCodeService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -169,6 +175,30 @@ public class GetProductBo extends BaseBo<Product> {
   private BigDecimal retailPrice;
 
   /**
+   * SKU类型
+   */
+  @Schema(description = "SKU类型")
+  private Integer skuType;
+
+  /**
+   * 详情图片
+   */
+  @Schema(description = "详情图片")
+  private List<String> detailImages;
+
+  /**
+   * 商品主图
+   */
+  @Schema(description = "商品主图")
+  private List<String> mainImage;
+
+  /**
+   * SKU列表
+   */
+  @Schema(description = "SKU列表")
+  private List<ProductSkuBo> skus;
+
+  /**
    * 属性
    */
   @Schema(description = "属性")
@@ -206,31 +236,52 @@ public class GetProductBo extends BaseBo<Product> {
     if (dto.getProductType() == ProductType.BUNDLE) {
       ProductBundleService productBundleService = ApplicationUtil.getBean(
           ProductBundleService.class);
-      List<ProductBundle> bundles = productBundleService.getByMainProductId(dto.getId());
+      ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+      List<ProductSku> productSkus = productSkuService.getAvailableByProductId(dto.getId());
+      String mainSkuId = CollectionUtil.isEmpty(productSkus) ? dto.getId()
+          : productSkus.get(0).getId();
+      List<ProductBundle> bundles = productBundleService.getByMainProductId(mainSkuId);
       this.productBundles = bundles.stream().map(ProductBundleBo::new).collect(Collectors.toList());
     }
 
+    ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+    List<ProductSku> productSkus = productSkuService.getAvailableByProductId(dto.getId());
+    this.skus = productSkus.stream().map(ProductSkuBo::new).collect(Collectors.toList());
+    this.skuType = dto.getSkuType() == null ? null : dto.getSkuType().getCode();
+    this.mainImage = StringUtil.isBlank(dto.getMainImage()) ? CollectionUtil.emptyList()
+        : JsonUtil.parseList(dto.getMainImage(), String.class);
+    this.detailImages = StringUtil.isBlank(dto.getDetailImages()) ? CollectionUtil.emptyList()
+        : JsonUtil.parseList(dto.getDetailImages(), String.class);
+
     ProductPurchaseService productPurchaseService = ApplicationUtil.getBean(
         ProductPurchaseService.class);
-    ProductPurchase productPurchase = productPurchaseService.getById(dto.getId());
-    this.purchasePrice = productPurchase.getPrice();
+    String singleSkuId = CollectionUtil.isEmpty(productSkus) ? dto.getId()
+        : productSkus.get(0).getId();
+    ProductPurchase productPurchase = productPurchaseService.getById(singleSkuId);
+    if (productPurchase != null) {
+      this.purchasePrice = productPurchase.getPrice();
+    }
 
     ProductSaleService productSaleService = ApplicationUtil.getBean(ProductSaleService.class);
-    ProductSale productSale = productSaleService.getById(dto.getId());
-    this.salePrice = productSale.getPrice();
+    ProductSale productSale = productSaleService.getById(singleSkuId);
+    if (productSale != null) {
+      this.salePrice = productSale.getPrice();
+    }
 
     ProductRetailService productRetailService = ApplicationUtil.getBean(
         ProductRetailService.class);
-    ProductRetail productRetail = productRetailService.getById(dto.getId());
-    this.retailPrice = productRetail.getPrice();
+    ProductRetail productRetail = productRetailService.getById(singleSkuId);
+    if (productRetail != null) {
+      this.retailPrice = productRetail.getPrice();
+    }
 
-    ProductPropertyRelationService productPropertyRelationService = ApplicationUtil.getBean(
-        ProductPropertyRelationService.class);
-    List<ProductPropertyRelationDto> propertyRelationDtos = productPropertyRelationService.getByProductId(
+    ProductCategoryPropertyValueRelationService ProductCategoryPropertyValueRelationService = ApplicationUtil.getBean(
+        ProductCategoryPropertyValueRelationService.class);
+    List<ProductCategoryPropertyValueRelationDto> propertyRelationDtos = ProductCategoryPropertyValueRelationService.getByProductId(
         dto.getId());
     if (!CollectionUtil.isEmpty(propertyRelationDtos)) {
       this.properties = new ArrayList<>();
-      for (ProductPropertyRelationDto property : propertyRelationDtos) {
+      for (ProductCategoryPropertyValueRelationDto property : propertyRelationDtos) {
         if (property.getPropertyColumnType() == ColumnType.MULTIPLE) {
           PropertyBo propertyBo = this.properties.stream()
               .filter(t -> t.getId().equals(property.getPropertyId())).findFirst().orElse(null);
@@ -248,15 +299,19 @@ public class GetProductBo extends BaseBo<Product> {
       }
     }
 
-    ProductCodeService productCodeService = ApplicationUtil.getBean(ProductCodeService.class);
-    List<ProductCode> productCodes = productCodeService.findByProductId(dto.getId());
-    this.multiCodes = productCodes.stream().filter(t -> !t.getIsMain()).map(ProductCode::getCode)
+    ProductSkuCodeService productSkuCodeService = ApplicationUtil.getBean(
+        ProductSkuCodeService.class);
+    List<ProductSkuCode> productCodes = productSkuCodeService.list(
+        Wrappers.lambdaQuery(ProductSkuCode.class).eq(ProductSkuCode::getSkuId, singleSkuId));
+    this.multiCode = productSkus.stream().findFirst().map(ProductSku::getMultiCode).orElse(false);
+    this.multiCodes = productCodes.stream()
+        .filter(t -> t.getCodeType() == ProductSkuCodeType.EXTRA_CODE).map(ProductSkuCode::getCode)
         .collect(Collectors.toList());
     this.multiCodesStr = StringUtil.join(StringPool.STR_SPLIT_CN, this.multiCodes);
   }
 
   @Data
-  public static class PropertyBo extends BaseBo<ProductPropertyRelationDto> {
+  public static class PropertyBo extends BaseBo<ProductCategoryPropertyValueRelationDto> {
 
     /**
      * 属性ID
@@ -292,19 +347,19 @@ public class GetProductBo extends BaseBo<Product> {
 
     }
 
-    public PropertyBo(ProductPropertyRelationDto dto) {
+    public PropertyBo(ProductCategoryPropertyValueRelationDto dto) {
 
       super(dto);
     }
 
     @Override
-    public BaseBo<ProductPropertyRelationDto> convert(ProductPropertyRelationDto dto) {
+    public BaseBo<ProductCategoryPropertyValueRelationDto> convert(ProductCategoryPropertyValueRelationDto dto) {
 
       return super.convert(dto, PropertyBo::getColumnType);
     }
 
     @Override
-    protected void afterInit(ProductPropertyRelationDto dto) {
+    protected void afterInit(ProductCategoryPropertyValueRelationDto dto) {
 
       this.id = dto.getPropertyId();
       this.name = dto.getPropertyName();

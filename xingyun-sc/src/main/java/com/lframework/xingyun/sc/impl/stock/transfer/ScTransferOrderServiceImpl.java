@@ -24,7 +24,9 @@ import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineB
 import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.core.components.timeline.ReceiveOrderTimeLineBizType;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
@@ -74,6 +76,9 @@ public class ScTransferOrderServiceImpl extends
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Override
   public PageResult<ScTransferOrder> query(Integer pageIndex, Integer pageSize,
@@ -252,6 +257,7 @@ public class ScTransferOrderServiceImpl extends
       Product product = productService.findById(detail.getProductId());
       SubProductStockVo subProductStockVo = new SubProductStockVo();
       subProductStockVo.setProductId(product.getId());
+      subProductStockVo.setSkuId(detail.getSkuId());
       subProductStockVo.setScId(data.getSourceScId());
       subProductStockVo.setStockNum(detail.getTransferNum());
       subProductStockVo.setCreateTime(now);
@@ -269,8 +275,7 @@ public class ScTransferOrderServiceImpl extends
               ScTransferOrderDetail.class).eq(ScTransferOrderDetail::getId, detail.getId())
           .set(ScTransferOrderDetail::getTaxPrice, detail.getTaxPrice()).set(ScTransferOrderDetail::getTransferAmount, detail.getTransferAmount());
       scTransferOrderDetailService.update(updateDetailWrapper);
-      totalAmount = NumberUtil.add(totalAmount,
-          NumberUtil.mul(detail.getTaxPrice(), detail.getTransferNum()));
+      totalAmount = NumberUtil.add(totalAmount, detail.getTransferAmount());
     }
 
     updateWrapper = Wrappers.lambdaUpdate(ScTransferOrder.class)
@@ -350,13 +355,19 @@ public class ScTransferOrderServiceImpl extends
 
     LocalDateTime now = LocalDateTime.now();
     for (ReceiveScTransferProductVo productVo : vo.getProducts()) {
+      String skuId = StringUtil.isBlank(productVo.getSkuId()) ? productVo.getProductId()
+          : productVo.getSkuId();
       Wrapper<ScTransferOrderDetail> queryWrapper = Wrappers.lambdaQuery(
               ScTransferOrderDetail.class).eq(ScTransferOrderDetail::getOrderId, data.getId())
-          .eq(ScTransferOrderDetail::getProductId, productVo.getProductId());
+          .eq(ScTransferOrderDetail::getSkuId, skuId);
       ScTransferOrderDetail detail = scTransferOrderDetailService.getOne(queryWrapper);
+      if (detail == null) {
+        throw new DefaultClientException("调拨商品不存在！");
+      }
       // 入库
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
+      addProductStockVo.setSkuId(detail.getSkuId());
       addProductStockVo.setScId(data.getTargetScId());
       addProductStockVo.setStockNum(productVo.getReceiveNum());
       if (NumberUtil.equal(productVo.getReceiveNum(), NumberUtil.sub(detail.getTransferNum(), detail.getReceiveNum()))) {
@@ -382,9 +393,9 @@ public class ScTransferOrderServiceImpl extends
       detailReceive.setReceiveAmount(addProductStockVo.getTaxAmount());
       scTransferOrderDetailReceiveService.save(detailReceive);
 
-        if (scTransferOrderDetailService.receive(data.getId(), productVo.getProductId(),
+        if (scTransferOrderDetailService.receive(data.getId(), detail.getSkuId(),
                 productVo.getReceiveNum(), addProductStockVo.getTaxAmount()) != 1) {
-            Product product = productService.findById(productVo.getProductId());
+            Product product = productService.findById(detail.getProductId());
             throw new DefaultClientException(
                     "商品（" + product.getCode() + "）" + product.getName() + "待收货数量不足，请检查！");
         }
@@ -455,10 +466,16 @@ public class ScTransferOrderServiceImpl extends
     BigDecimal totalNum = BigDecimal.ZERO;
     int orderNo = 1;
     for (ScTransferProductVo product : vo.getProducts()) {
+      ProductSku sku = productSkuService.findById(
+          StringUtil.isBlank(product.getSkuId()) ? product.getProductId() : product.getSkuId());
+      if (sku == null) {
+        throw new DefaultClientException("第" + orderNo + "行商品不存在！");
+      }
       ScTransferOrderDetail detail = new ScTransferOrderDetail();
       detail.setId(IdUtil.getId());
       detail.setOrderId(data.getId());
-      detail.setProductId(product.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       if (!NumberUtil.isNumberPrecision(product.getTransferNum(), 8)) {
         throw new DefaultClientException("第" + orderNo + "行商品的调拨数量最多允许8位小数！");
       }

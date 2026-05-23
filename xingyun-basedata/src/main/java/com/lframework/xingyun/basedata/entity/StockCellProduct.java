@@ -44,6 +44,11 @@ public class StockCellProduct extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 创建人ID 新增时赋值
    */
   @TableField(fill = FieldFill.INSERT)

@@ -112,6 +112,21 @@ public class TakeStockSheetFullDto implements BaseDto, Serializable {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    private String skuId;
+
+    /**
+     * SKU编号
+     */
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    private String salePropertyText;
+
+    /**
      * 盘点数量
      */
     private BigDecimal takeNum;

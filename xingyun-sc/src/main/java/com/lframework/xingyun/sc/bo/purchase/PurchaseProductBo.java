@@ -21,10 +21,28 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
   private String productId;
 
   /**
-   * 编号
+   * SKU ID
    */
-  @Schema(description = "编号")
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
+   * 商品编号
+   */
+  @Schema(description = "商品编号")
   private String productCode;
+
+  /**
+   * SKU编号
+   */
+  @Schema(description = "SKU编号")
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  @Schema(description = "销售属性")
+  private String salePropertyText;
 
   /**
    * 名称
@@ -97,13 +115,16 @@ public class PurchaseProductBo extends BaseBo<PurchaseProductDto> {
   @Override
   protected void afterInit(PurchaseProductDto dto) {
 
-    this.productId = dto.getId();
-    this.productCode = dto.getCode();
+    this.productId = dto.getSkuId();
+    this.skuId = dto.getSkuId();
+    this.productCode = dto.getProductCode();
+    this.skuCode = dto.getSkuCode();
+    this.salePropertyText = dto.getSalePropertyText();
     this.productName = dto.getName();
 
     ProductStockService productStockService = ApplicationUtil.getBean(
         ProductStockService.class);
-    ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
+    ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
         this.getScId());
     this.taxCostPrice =
         productStock == null ? BigDecimal.ZERO

@@ -39,11 +39,13 @@ import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
@@ -121,6 +123,9 @@ public class PurchaseOrderServiceImpl extends
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Autowired
   private PurchaseConfigService purchaseConfigService;
@@ -412,6 +417,7 @@ public class PurchaseOrderServiceImpl extends
           newDetail.setId(IdUtil.getId());
           newDetail.setOrderId(order.getId());
           newDetail.setProductId(purchaseOrderDetailBundle.getProductId());
+          newDetail.setSkuId(purchaseOrderDetailBundle.getSkuId());
           newDetail.setOrderNum(purchaseOrderDetailBundle.getProductOrderNum());
           newDetail.setTaxPrice(purchaseOrderDetailBundle.getProductTaxPrice());
           newDetail.setIsGift(detail.getIsGift());
@@ -631,12 +637,14 @@ public class PurchaseOrderServiceImpl extends
       orderDetail.setId(IdUtil.getId());
       orderDetail.setOrderId(order.getId());
 
-      Product product = productService.findById(productVo.getProductId());
+      ProductSku sku = this.getOrderSku(productVo.getSkuId(), productVo.getProductId(), orderNo);
+      Product product = productService.findById(sku.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
 
-      orderDetail.setProductId(productVo.getProductId());
+      orderDetail.setProductId(sku.getProductId());
+      orderDetail.setSkuId(sku.getId());
       orderDetail.setOrderNum(productVo.getPurchaseNum());
       orderDetail.setTaxPrice(productVo.getPurchasePrice());
       orderDetail.setIsGift(isGift);
@@ -659,7 +667,7 @@ public class PurchaseOrderServiceImpl extends
           throw new InputErrorException("第" + orderNo + "行商品采购数量必须是整数！");
         }
         List<ProductBundle> productBundles = productBundleService.getByMainProductId(
-            product.getId());
+            sku.getId());
         // 构建指标项
         Map<Object, Number> bundleWeight = new HashMap<>(productBundles.size());
         for (ProductBundle productBundle : productBundles) {
@@ -670,14 +678,17 @@ public class PurchaseOrderServiceImpl extends
             bundleWeight, 2);
         List<PurchaseOrderDetailBundle> purchaseOrderDetailBundles = productBundles.stream()
             .map(productBundle -> {
-              Product bundle = productService.findById(productBundle.getProductId());
+              ProductSku bundleSku = productSkuService.findById(productBundle.getProductId());
+              Product bundle = productService.findById(bundleSku.getProductId());
               PurchaseOrderDetailBundle purchaseOrderDetailBundle = newOrderDetailBundle(isForm);
               purchaseOrderDetailBundle.setId(IdUtil.getId());
               purchaseOrderDetailBundle.setOrderId(order.getId());
               purchaseOrderDetailBundle.setDetailId(orderDetail.getId());
               purchaseOrderDetailBundle.setMainProductId(product.getId());
+              purchaseOrderDetailBundle.setMainSkuId(sku.getId());
               purchaseOrderDetailBundle.setOrderNum(orderDetail.getOrderNum());
-              purchaseOrderDetailBundle.setProductId(productBundle.getProductId());
+              purchaseOrderDetailBundle.setProductId(bundleSku.getProductId());
+              purchaseOrderDetailBundle.setSkuId(bundleSku.getId());
               purchaseOrderDetailBundle.setProductOrderNum(
                   NumberUtil.mul(orderDetail.getOrderNum(), productBundle.getBundleNum()));
               purchaseOrderDetailBundle.setProductOriPrice(productBundle.getPurchasePrice());
@@ -887,5 +898,16 @@ public class PurchaseOrderServiceImpl extends
     } else {
       return new PurchaseOrderDetailBundle();
     }
+  }
+
+  private ProductSku getOrderSku(String skuId, String fallbackSkuId, int orderNo) {
+
+    String id = StringUtil.isBlank(skuId) ? fallbackSkuId : skuId;
+    ProductSku sku = productSkuService.findById(id);
+    if (sku == null) {
+      throw new InputErrorException("第" + orderNo + "行SKU不存在！");
+    }
+
+    return sku;
   }
 }

@@ -136,6 +136,11 @@ public class RetailOutSheetFullDto implements BaseDto, Serializable {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    private String skuId;
+
+    /**
      * 出库数量
      */
     private BigDecimal orderNum;

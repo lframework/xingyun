@@ -5,8 +5,10 @@ import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.ProductStockWarning;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -55,10 +57,28 @@ public class QueryProductStockWarningBo extends BaseBo<ProductStockWarning> {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 商品编号
    */
   @Schema(description = "商品编号")
   private String productCode;
+
+  /**
+   * SKU编号
+   */
+  @Schema(description = "SKU编号")
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  @Schema(description = "销售属性")
+  private String salePropertyText;
 
   /**
    * 商品名称
@@ -118,5 +138,10 @@ public class QueryProductStockWarningBo extends BaseBo<ProductStockWarning> {
     Product product = productService.findById(dto.getProductId());
     this.productCode = product.getCode();
     this.productName = product.getName();
+
+    ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+    ProductSku sku = productSkuService.findById(dto.getSkuId());
+    this.skuCode = sku == null ? null : sku.getCode();
+    this.salePropertyText = sku == null ? null : sku.getSalePropertyText();
   }
 }

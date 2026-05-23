@@ -24,16 +24,22 @@ public class ProductImportModel implements ExcelModel {
   private List<String> multiCodes;
 
   /**
-   * 编号
+   * 商品编号
    */
-  @ExcelRequired
-  @ExcelProperty("编号")
+  @ExcelProperty("商品编号")
   private String code;
 
   /**
-   * 扩展编号
+   * SKU编号
    */
-  @ExcelProperty("扩展编号")
+  @ExcelRequired
+  @ExcelProperty("SKU编号")
+  private String skuCode;
+
+  /**
+   * SKU扩展编号
+   */
+  @ExcelProperty("SKU扩展编号")
   private String multiCode;
 
   /**
@@ -56,10 +62,10 @@ public class ProductImportModel implements ExcelModel {
   private String categoryId;
 
   /**
-   * 分类编号
+   * 商品分类编号
    */
   @ExcelRequired
-  @ExcelProperty("分类编号")
+  @ExcelProperty("商品分类编号")
   private String categoryCode;
 
   /**
@@ -69,9 +75,9 @@ public class ProductImportModel implements ExcelModel {
   private String brandId;
 
   /**
-   * 品牌编号
+   * 商品品牌编号
    */
-  @ExcelProperty("品牌编号")
+  @ExcelProperty("商品品牌编号")
   private String brandCode;
 
   /**
@@ -97,6 +103,18 @@ public class ProductImportModel implements ExcelModel {
    */
   @ExcelProperty("单位")
   private String unit;
+
+  /**
+   * 重量（kg）
+   */
+  @ExcelProperty("重量（kg）")
+  private BigDecimal weight;
+
+  /**
+   * 体积（cm³）
+   */
+  @ExcelProperty("体积（cm³）")
+  private BigDecimal volume;
 
   /**
    * 采购价

@@ -70,11 +70,17 @@ public class ReceiveSheetImportModel implements ExcelModel {
   private String productId;
 
   /**
-   * 商品编号
+   * SKU编号
    */
   @ExcelRequired
-  @ExcelProperty("商品编号")
+  @ExcelProperty("SKU编号")
   private String productCode;
+
+  /**
+   * SKU ID
+   */
+  @ExcelIgnore
+  private String skuId;
 
   /**
    * 采购价

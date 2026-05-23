@@ -1,15 +1,8 @@
 package com.lframework.xingyun.sc.bo.stock.take.pre;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductBrand;
-import com.lframework.xingyun.basedata.entity.ProductCategory;
-import com.lframework.xingyun.basedata.service.product.ProductBrandService;
-import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
@@ -37,10 +30,28 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 商品编号
      */
     @Schema(description = "商品编号")
     private String productCode;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
 
     /**
      * 商品名称
@@ -94,24 +105,16 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
     @Override
     protected void afterInit(QueryPreTakeStockSheetProductDto dto) {
 
-        ProductService productService = ApplicationUtil.getBean(ProductService.class);
-        Product product = productService.findById(dto.getProductId());
-
-        ProductCategoryService productCategoryService = ApplicationUtil.getBean(
-            ProductCategoryService.class);
-        ProductCategory productCategory = productCategoryService.findById(product.getCategoryId());
-
-        if(StringUtil.isNotBlank(product.getBrandId())) {
-            ProductBrandService productBrandService = ApplicationUtil.getBean(ProductBrandService.class);
-            ProductBrand productBrand = productBrandService.findById(product.getBrandId());
-            this.brandName = productBrand.getName();
-        }
-
-        this.productCode = product.getCode();
-        this.productName = product.getName();
-        this.categoryName = productCategory.getName();
-        this.spec = product.getSpec();
-        this.unit = product.getUnit();
+        this.productId = dto.getProductId();
+        this.skuId = dto.getSkuId();
+        this.productCode = dto.getProductCode();
+        this.skuCode = dto.getSkuCode();
+        this.productName = dto.getProductName();
+        this.salePropertyText = dto.getSalePropertyText();
+        this.categoryName = dto.getCategoryName();
+        this.brandName = dto.getBrandName();
+        this.spec = dto.getSpec();
+        this.unit = dto.getUnit();
 
         if (dto.getTakeStatus() == PreTakeStockSheetStatus.FIRST_TAKE) {
             this.takeNum = dto.getFirstNum();
@@ -126,7 +129,7 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
         TakeStockConfig config = takeStockConfigService.get();
         if (config.getShowStock()) {
             ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
-            ProductStock productStock = productStockService.getByProductIdAndScId(this.productId, this.scId);
+            ProductStock productStock = productStockService.getBySkuIdAndScId(this.skuId, this.scId);
             this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
         }
     }

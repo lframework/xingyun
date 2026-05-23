@@ -235,6 +235,24 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
+
+    /**
      * 编号
      */
     @Schema(description = "编号")
@@ -306,6 +324,9 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
 
       ProductService productService = ApplicationUtil.getBean(ProductService.class);
       Product product = productService.findById(dto.getProductId());
+      this.skuId = dto.getSkuId();
+      this.skuCode = dto.getSkuCode();
+      this.salePropertyText = dto.getSalePropertyText();
 
       ProductCategoryService productCategoryService = ApplicationUtil.getBean(
           ProductCategoryService.class);
@@ -332,7 +353,7 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
         TakeStockPlanDetailService takeStockPlanDetailService = ApplicationUtil.getBean(
             TakeStockPlanDetailService.class);
         GetTakeStockPlanDetailProductDto planDetail = takeStockPlanDetailService.getByPlanIdAndProductId(
-            this.planId, this.productId);
+            this.planId, this.skuId);
         this.stockNum = planDetail.getStockNum();
       }
     }

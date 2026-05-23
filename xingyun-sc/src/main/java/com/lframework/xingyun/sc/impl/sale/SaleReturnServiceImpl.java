@@ -30,11 +30,14 @@ import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductPurchase;
+import com.lframework.xingyun.basedata.entity.ProductSku;
+import com.lframework.xingyun.basedata.entity.ProductSkuPurchase;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
-import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuPurchaseService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.purchase.receive.GetPaymentDateDto;
@@ -96,6 +99,9 @@ public class SaleReturnServiceImpl extends
   private ProductService productService;
 
   @Autowired
+  private ProductSkuService productSkuService;
+
+  @Autowired
   private SaleOutSheetService saleOutSheetService;
 
   @Autowired
@@ -111,7 +117,7 @@ public class SaleReturnServiceImpl extends
   private ProductStockService productStockService;
 
   @Autowired
-  private ProductPurchaseService productPurchaseService;
+  private ProductSkuPurchaseService productSkuPurchaseService;
 
   @Override
   public PageResult<SaleReturn> query(Integer pageIndex, Integer pageSize, QuerySaleReturnVo vo) {
@@ -279,9 +285,10 @@ public class SaleReturnServiceImpl extends
         .orderByAsc(SaleReturnDetail::getOrderNo);
     List<SaleReturnDetail> details = saleReturnDetailService.list(queryDetailWrapper);
     for (SaleReturnDetail detail : details) {
-      ProductPurchase productPurchase = productPurchaseService.getById(detail.getProductId());
+      ProductSkuPurchase productPurchase = productSkuPurchaseService.getById(detail.getSkuId());
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
+      addProductStockVo.setSkuId(detail.getSkuId());
       addProductStockVo.setScId(saleReturn.getScId());
       addProductStockVo.setStockNum(detail.getReturnNum());
       addProductStockVo.setDefaultTaxAmount(
@@ -520,6 +527,7 @@ public class SaleReturnServiceImpl extends
           productVo.setOriPrice(detail.getOriPrice());
           productVo.setTaxPrice(detail.getTaxPrice());
           productVo.setDiscountRate(detail.getDiscountRate());
+          productVo.setSkuId(detail.getSkuId());
         } else {
           productVo.setTaxPrice(BigDecimal.ZERO);
           productVo.setDiscountRate(BigDecimal.valueOf(100));
@@ -550,12 +558,17 @@ public class SaleReturnServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setReturnId(saleReturn.getId());
 
-      Product product = productService.findById(productVo.getProductId());
+      ProductSku sku = this.getReturnSku(productVo.getSkuId(), productVo.getProductId(), orderNo);
+      Product product = productService.findById(sku.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
+      if (product.getProductType() != ProductType.NORMAL) {
+        throw new InputErrorException("第" + orderNo + "行商品不允许录入组合商品！");
+      }
 
-      detail.setProductId(productVo.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setReturnNum(productVo.getReturnNum());
       detail.setOriPrice(productVo.getOriPrice());
       detail.setTaxPrice(productVo.getTaxPrice());
@@ -606,5 +619,16 @@ public class SaleReturnServiceImpl extends
     ApprovePassSaleReturnEvent event = new ApprovePassSaleReturnEvent(this, dto);
 
     ApplicationUtil.publishEvent(event);
+  }
+
+  private ProductSku getReturnSku(String skuId, String fallbackSkuId, int orderNo) {
+
+    String id = StringUtil.isBlank(skuId) ? fallbackSkuId : skuId;
+    ProductSku sku = productSkuService.findById(id);
+    if (sku == null) {
+      throw new InputErrorException("第" + orderNo + "行SKU不存在！");
+    }
+
+    return sku;
   }
 }

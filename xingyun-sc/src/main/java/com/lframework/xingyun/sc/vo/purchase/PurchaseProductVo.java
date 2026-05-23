@@ -18,6 +18,12 @@ public class PurchaseProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 采购价
    */
   @Schema(description = "采购价")

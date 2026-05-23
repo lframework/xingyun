@@ -22,6 +22,12 @@ public class StockAdjustProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 调整库存数量
    */
   @Schema(description = "调整库存数量", requiredMode = Schema.RequiredMode.REQUIRED)

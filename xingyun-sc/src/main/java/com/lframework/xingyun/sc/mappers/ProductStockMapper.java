@@ -51,6 +51,15 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
       @Param("scId") String scId);
 
   /**
+   * 根据SKU ID、仓库ID查询
+   *
+   * @param skuId
+   * @param scId
+   * @return
+   */
+  ProductStock getBySkuIdAndScId(@Param("skuId") String skuId, @Param("scId") String scId);
+
+  /**
    * 根据商品ID、仓库ID查询
    *
    * @param productIds
@@ -58,6 +67,16 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @return
    */
   List<ProductStock> getByProductIdsAndScId(@Param("productIds") List<String> productIds,
+      @Param("scId") String scId, @Param("productType") Integer productType);
+
+  /**
+   * 根据SKU ID、仓库ID查询
+   *
+   * @param skuIds
+   * @param scId
+   * @return
+   */
+  List<ProductStock> getBySkuIdsAndScId(@Param("skuIds") List<String> skuIds,
       @Param("scId") String scId, @Param("productType") Integer productType);
 
   /**
@@ -72,6 +91,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @return
    */
   int addStock(@Param("productId") String productId, @Param("scId") String scId,
+      @Param("skuId") String skuId,
       @Param("stockNum") BigDecimal stockNum,
       @Param("taxAmount") BigDecimal taxAmount,
       @Param("oriStockNum") BigDecimal oriStockNum, @Param("oriTaxAmount") BigDecimal oriTaxAmount,
@@ -89,6 +109,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
    * @return
    */
   int subStock(@Param("productId") String productId, @Param("scId") String scId,
+      @Param("skuId") String skuId,
       @Param("stockNum") BigDecimal stockNum,
       @Param("taxAmount") BigDecimal taxAmount,
       @Param("oriStockNum") BigDecimal oriStockNum, @Param("oriTaxAmount") BigDecimal oriTaxAmount,

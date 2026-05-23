@@ -83,7 +83,7 @@ public class StockCellProductController extends DefaultBaseController {
   @Operation(summary = "新增")
   @PostMapping
   @HasPermission({"base-data:stock-cell-product:add"})
-  public InvokeResult<Void> create(@RequestBody CreateStockCellProductVo vo) {
+  public InvokeResult<Void> create(@Valid @RequestBody CreateStockCellProductVo vo) {
     stockCellProductService.create(vo);
     return InvokeResultBuilder.success();
   }

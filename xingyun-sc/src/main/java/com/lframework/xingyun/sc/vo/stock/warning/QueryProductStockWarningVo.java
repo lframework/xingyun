@@ -26,6 +26,12 @@ public class QueryProductStockWarningVo extends SortPageVo implements BaseVo, Se
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 操作时间 起始时间
    */
   @Schema(description = "操作时间 起始时间")

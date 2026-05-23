@@ -16,7 +16,7 @@
         <where>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
-                    AND g.id IN (SELECT product_id FROM base_data_product_code WHERE code = #{vo.code})
+                    AND g.code = #{vo.code}
                 </if>
                 <if test="vo.brandId != null and vo.brandId != ''">
                     AND g.brand_id = #{vo.brandId}
@@ -51,6 +51,12 @@
         <include refid="ProductDto_sql"/>
         WHERE g.id = #{id}
     </select>
+    <select id="findByCode" resultType="com.lframework.xingyun.basedata.entity.Product">
+        <include refid="ProductDto_sql"/>
+        WHERE g.available = TRUE
+          AND g.code = #{code}
+        LIMIT 1
+    </select>
     <select id="getByCategoryIds" resultType="com.lframework.xingyun.basedata.entity.Product">
         <include refid="ProductDto_sql"/>
         WHERE c.id IN <foreach collection="categoryIds" open="(" separator="," close=")" item="item">#{item}</foreach>
@@ -76,7 +82,7 @@
         <where>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
-                    AND g.id IN (SELECT product_id FROM base_data_product_code WHERE code = #{vo.code})
+                    AND g.code = #{vo.code}
                 </if>
                 <if test="vo.name != null and vo.name != ''">
                     AND g.name LIKE CONCAT('%', #{vo.name}, '%')
@@ -103,10 +109,10 @@
         </where>
         ORDER BY g.code
     </select>
-    <select id="getIdNotInProductProperty" resultType="java.lang.String">
+    <select id="getIdNotInProductCategoryPropertyDefinition" resultType="java.lang.String">
         SELECT p.id
         FROM base_data_product AS p
-        LEFT JOIN base_data_product_property_relation AS pr ON p.id = pr.product_id AND pr.property_id = #{propertyId}
+        LEFT JOIN base_data_product_category_property_value_relation AS pr ON p.id = pr.product_id AND pr.property_id = #{propertyId}
         WHERE p.available = TRUE AND pr.product_id IS NULL
     </select>
     <select id="getIdByCategoryId" resultType="java.lang.String">
@@ -121,7 +127,7 @@
         <where>
           <if test="vo != null">
               <if test="vo.code != null and vo.code != ''">
-                  AND g.id IN (SELECT product_id FROM base_data_product_code WHERE code = #{vo.code})
+                  AND g.code = #{vo.code}
               </if>
               <if test="vo.brandId != null and vo.brandId != ''">
                   AND g.brand_id = #{vo.brandId}

@@ -55,6 +55,21 @@ public class StockCellProductDto implements BaseDto, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
+   * SKU编号
+   */
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  private String salePropertyText;
+
+  /**
    * 商品编号
    */
   private String productCode;

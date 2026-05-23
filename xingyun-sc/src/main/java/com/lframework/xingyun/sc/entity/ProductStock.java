@@ -36,6 +36,11 @@ public class ProductStock extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 库存数量
    */
   private BigDecimal stockNum;

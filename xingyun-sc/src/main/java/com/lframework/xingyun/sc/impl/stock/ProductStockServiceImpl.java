@@ -16,9 +16,11 @@ import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.sc.dto.stock.ProductStockChangeDto;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.events.stock.AddStockEvent;
@@ -44,6 +46,9 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Autowired
   private ProductBundleService productBundleService;
@@ -119,6 +124,59 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   }
 
   @Override
+  public ProductStock getBySkuIdAndScId(String skuId, String scId) {
+
+    ProductSku sku = productSkuService.findById(skuId);
+    if (sku == null) {
+      return null;
+    }
+
+    Product product = productService.findById(sku.getProductId());
+    if (product == null) {
+      return null;
+    }
+
+    if (product.getProductType() == ProductType.NORMAL) {
+      return getBaseMapper().getBySkuIdAndScId(skuId, scId);
+    } else {
+      List<ProductBundle> productBundles = productBundleService.getByMainProductId(skuId);
+      if (CollectionUtil.isEmpty(productBundles)) {
+        return null;
+      }
+
+      List<String> skuIds = productBundles.stream().map(ProductBundle::getProductId).collect(
+          Collectors.toList());
+      List<ProductStock> productStocks = getBaseMapper().getBySkuIdsAndScId(skuIds, scId,
+          ProductType.NORMAL.getCode());
+
+      BigDecimal stockNum = BigDecimal.valueOf(Integer.MAX_VALUE);
+      for (ProductBundle productBundle : productBundles) {
+        String id = productBundle.getProductId();
+        ProductStock productStock = productStocks.stream().filter(t -> t.getSkuId().equals(id))
+            .findFirst().orElse(null);
+        if (productStock == null || NumberUtil.le(productStock.getStockNum(), 0)) {
+          return null;
+        }
+
+        stockNum = BigDecimal.valueOf(
+            NumberUtil.min(NumberUtil.div(productStock.getStockNum(), productBundle.getBundleNum()),
+                stockNum).intValue());
+      }
+
+      ProductStock productStock = new ProductStock();
+      productStock.setId(IdUtil.getId());
+      productStock.setScId(scId);
+      productStock.setProductId(sku.getProductId());
+      productStock.setSkuId(skuId);
+      productStock.setStockNum(stockNum);
+      productStock.setTaxPrice(BigDecimal.ZERO);
+      productStock.setTaxAmount(BigDecimal.ZERO);
+
+      return productStock;
+    }
+  }
+
+  @Override
   public List<ProductStock> getByProductIdsAndScId(List<String> productIds, String scId,
       Integer productType) {
 
@@ -129,11 +187,26 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     return getBaseMapper().getByProductIdsAndScId(productIds, scId, productType);
   }
 
+  @Override
+  public List<ProductStock> getBySkuIdsAndScId(List<String> skuIds, String scId,
+      Integer productType) {
+
+    if (CollectionUtil.isEmpty(skuIds)) {
+      return CollectionUtil.emptyList();
+    }
+
+    return getBaseMapper().getBySkuIdsAndScId(skuIds, scId, productType);
+  }
+
   @Transactional(rollbackFor = Exception.class)
   @Override
   public ProductStockChangeDto addStock(AddProductStockVo vo) {
 
     Assert.greaterThanZero(vo.getStockNum());
+
+    ProductSku sku = this.getStockSku(vo.getSkuId(), vo.getProductId());
+    vo.setSkuId(sku.getId());
+    vo.setProductId(sku.getProductId());
 
     Product product = productService.findById(vo.getProductId());
     if (product.getProductType() != ProductType.NORMAL) {
@@ -142,7 +215,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     }
 
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
-        .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
+        .eq(ProductStock::getSkuId, vo.getSkuId()).eq(ProductStock::getScId, vo.getScId());
 
     ProductStock productStock = getBaseMapper().selectOne(queryWrapper);
 
@@ -153,6 +226,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
       productStock.setId(IdUtil.getId());
       productStock.setScId(vo.getScId());
       productStock.setProductId(vo.getProductId());
+      productStock.setSkuId(vo.getSkuId());
       productStock.setStockNum(BigDecimal.ZERO);
       productStock.setTaxPrice(BigDecimal.ZERO);
       productStock.setTaxAmount(BigDecimal.ZERO);
@@ -168,7 +242,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     if (vo.getTaxAmount() == null) {
       vo.setTaxAmount(isStockEmpty ?
           vo.getDefaultTaxAmount() :
-          productStock.getTaxAmount());
+          NumberUtil.mul(productStock.getTaxPrice(), vo.getStockNum()));
     }
     if (vo.getTaxAmount() == null) {
       // 如果此时taxPrice还是null，则代表taxPrice和defaultTaxPrice均为null
@@ -182,7 +256,8 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     }
 
     vo.setTaxAmount(NumberUtil.getNumber(vo.getTaxAmount(), 2));
-    int count = getBaseMapper().addStock(vo.getProductId(), vo.getScId(), vo.getStockNum(),
+    int count = getBaseMapper().addStock(vo.getProductId(), vo.getScId(), vo.getSkuId(),
+            vo.getStockNum(),
             vo.getTaxAmount(), productStock.getStockNum(),
         productStock.getTaxAmount(), reCalcCostPrice);
     if (count != 1) {
@@ -192,6 +267,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
 
     AddLogWithAddStockVo addLogWithAddStockVo = new AddLogWithAddStockVo();
     addLogWithAddStockVo.setProductId(vo.getProductId());
+    addLogWithAddStockVo.setSkuId(vo.getSkuId());
     addLogWithAddStockVo.setScId(vo.getScId());
     addLogWithAddStockVo.setStockNum(vo.getStockNum());
     addLogWithAddStockVo.setTaxAmount(vo.getTaxAmount());
@@ -216,6 +292,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     ProductStockChangeDto stockChange = new ProductStockChangeDto();
     stockChange.setScId(vo.getScId());
     stockChange.setProductId(vo.getProductId());
+    stockChange.setSkuId(vo.getSkuId());
     stockChange.setNum(vo.getStockNum());
     stockChange.setTaxAmount(addLogWithAddStockVo.getTaxAmount());
     stockChange.setCurTaxPrice(addLogWithAddStockVo.getCurTaxPrice());
@@ -233,6 +310,10 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
   public ProductStockChangeDto subStock(SubProductStockVo vo) {
     Assert.greaterThanZero(vo.getStockNum());
 
+    ProductSku sku = this.getStockSku(vo.getSkuId(), vo.getProductId());
+    vo.setSkuId(sku.getId());
+    vo.setProductId(sku.getProductId());
+
     Product product = productService.findById(vo.getProductId());
     if (product.getProductType() != ProductType.NORMAL) {
       throw new DefaultClientException(
@@ -240,7 +321,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     }
 
     Wrapper<ProductStock> queryWrapper = Wrappers.lambdaQuery(ProductStock.class)
-        .eq(ProductStock::getProductId, vo.getProductId()).eq(ProductStock::getScId, vo.getScId());
+        .eq(ProductStock::getSkuId, vo.getSkuId()).eq(ProductStock::getScId, vo.getScId());
 
     ProductStock productStock = getBaseMapper().selectOne(queryWrapper);
     if (productStock == null) {
@@ -258,14 +339,17 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     // 如果taxAmount为null，代表不重算均价，即：按当前均价直接出库
     boolean reCalcCostPrice = vo.getTaxAmount() != null;
     if (vo.getTaxAmount() == null) {
-      vo.setTaxAmount(NumberUtil.mul(productStock.getTaxPrice(), vo.getStockNum()));
+      vo.setTaxAmount(NumberUtil.equal(productStock.getStockNum(), vo.getStockNum()) ?
+          productStock.getTaxAmount() :
+          NumberUtil.mul(productStock.getTaxPrice(), vo.getStockNum()));
     }
 
     vo.setTaxAmount(NumberUtil.getNumber(vo.getTaxAmount(), 2));
 
     BigDecimal subTaxAmount = vo.getTaxAmount();
 
-    int count = getBaseMapper().subStock(vo.getProductId(), vo.getScId(), vo.getStockNum(),
+    int count = getBaseMapper().subStock(vo.getProductId(), vo.getScId(), vo.getSkuId(),
+        vo.getStockNum(),
         subTaxAmount,
         productStock.getStockNum(), productStock.getTaxAmount(), reCalcCostPrice);
     if (count != 1) {
@@ -275,6 +359,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
 
     AddLogWithSubStockVo addLogWithAddStockVo = new AddLogWithSubStockVo();
     addLogWithAddStockVo.setProductId(vo.getProductId());
+    addLogWithAddStockVo.setSkuId(vo.getSkuId());
     addLogWithAddStockVo.setScId(vo.getScId());
     addLogWithAddStockVo.setStockNum(vo.getStockNum());
     addLogWithAddStockVo.setTaxAmount(subTaxAmount);
@@ -300,6 +385,7 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     ProductStockChangeDto stockChange = new ProductStockChangeDto();
     stockChange.setScId(vo.getScId());
     stockChange.setProductId(vo.getProductId());
+    stockChange.setSkuId(vo.getSkuId());
     stockChange.setNum(vo.getStockNum());
     stockChange.setTaxAmount(subTaxAmount);
     stockChange.setCurTaxPrice(addLogWithAddStockVo.getCurTaxPrice());
@@ -310,5 +396,20 @@ public class ProductStockServiceImpl extends BaseMpServiceImpl<ProductStockMappe
     ApplicationUtil.publishEvent(subStockEvent);
 
     return stockChange;
+  }
+
+  private ProductSku getStockSku(String skuId, String fallbackSkuId) {
+
+    String id = skuId;
+    if (id == null || id.isBlank()) {
+      id = fallbackSkuId;
+    }
+
+    ProductSku sku = productSkuService.findById(id);
+    if (sku == null) {
+      throw new DefaultClientException("SKU不存在！");
+    }
+
+    return sku;
   }
 }

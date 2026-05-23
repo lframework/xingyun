@@ -39,6 +39,15 @@ public interface ProductStockService extends BaseMpService<ProductStock> {
   ProductStock getByProductIdAndScId(String productId, String scId);
 
   /**
+   * 根据SKU ID、仓库ID查询
+   *
+   * @param skuId
+   * @param scId
+   * @return
+   */
+  ProductStock getBySkuIdAndScId(String skuId, String scId);
+
+  /**
    * 根据商品ID、仓库ID查询
    *
    * @param productIds
@@ -47,6 +56,15 @@ public interface ProductStockService extends BaseMpService<ProductStock> {
    */
   List<ProductStock> getByProductIdsAndScId(List<String> productIds, String scId,
       Integer productType);
+
+  /**
+   * 根据SKU ID、仓库ID查询
+   *
+   * @param skuIds
+   * @param scId
+   * @return
+   */
+  List<ProductStock> getBySkuIdsAndScId(List<String> skuIds, String scId, Integer productType);
 
   /**
    * 入库

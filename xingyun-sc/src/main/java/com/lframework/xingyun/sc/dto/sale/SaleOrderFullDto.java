@@ -124,6 +124,11 @@ public class SaleOrderFullDto implements BaseDto, Serializable {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    private String skuId;
+
+    /**
      * 采购数量
      */
     private BigDecimal orderNum;

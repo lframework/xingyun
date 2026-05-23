@@ -55,6 +55,11 @@ public class ReceiveSheetWithReturnDto implements BaseDto, Serializable {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    private String skuId;
+
+    /**
      * 收货数量
      */
     private BigDecimal orderNum;

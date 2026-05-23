@@ -37,6 +37,11 @@ public class RetailOutSheetDetail extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 出库数量
    */
   private BigDecimal orderNum;

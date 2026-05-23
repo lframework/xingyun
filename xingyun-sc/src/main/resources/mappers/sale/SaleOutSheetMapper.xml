@@ -47,6 +47,7 @@
             <id column="detail_id" property="id"/>
             <result column="detail_main_product_id" property="mainProductId"/>
             <result column="detail_product_id" property="productId"/>
+            <result column="detail_sku_id" property="skuId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
             <result column="detail_tax_price" property="taxPrice"/>
@@ -69,6 +70,7 @@
         <collection property="details" javaType="java.util.ArrayList" ofType="com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto$SheetDetailDto">
             <id column="detail_id" property="id"/>
             <result column="detail_product_id" property="productId"/>
+            <result column="detail_sku_id" property="skuId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
             <result column="detail_tax_price" property="taxPrice"/>
@@ -129,6 +131,7 @@
             d.id AS detail_id,
             b.main_product_id AS detail_main_product_id,
             d.product_id AS detail_product_id,
+            d.sku_id AS detail_sku_id,
             d.order_num AS detail_order_num,
             d.ori_price AS detail_ori_price,
             d.tax_price AS detail_tax_price,
@@ -234,14 +237,14 @@
     <select id="getWithReturn" resultMap="SaleOutSheetWithReturnDto">
         SELECT
         s.id, s.code, s.sc_id, s.customer_id, s.saler_id, d.id AS detail_id, d.sheet_id AS detail_sheet_id,
-        d.product_id AS detail_product_id, d.order_num AS detail_order_num, d.ori_price AS detail_ori_price,
+        d.product_id AS detail_product_id, d.sku_id AS detail_sku_id, d.order_num AS detail_order_num, d.ori_price AS detail_ori_price,
         d.tax_price AS detail_tax_price, d.discount_rate AS detail_discount_rate, d.is_gift AS detail_is_gift,
         d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
         d.return_num AS detail_return_num
         FROM tbl_sale_out_sheet AS s
         LEFT JOIN (
         SELECT
-        l.id, d.sheet_id, d.product_id, l.order_num, d.ori_price, d.tax_price, d.discount_rate, d.is_gift,
+        l.id, d.sheet_id, d.product_id, d.sku_id, l.order_num, d.ori_price, d.tax_price, d.discount_rate, d.is_gift,
         d.tax_rate, d.description, d.order_no, l.return_num, l.order_no AS lot_order_no
         FROM tbl_sale_out_sheet_detail AS d
         INNER JOIN tbl_sale_out_sheet_detail_lot AS l ON l.detail_id = d.id

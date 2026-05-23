@@ -37,6 +37,11 @@ public class SaleReturnDetail extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 退货数量
    */
   private BigDecimal returnNum;

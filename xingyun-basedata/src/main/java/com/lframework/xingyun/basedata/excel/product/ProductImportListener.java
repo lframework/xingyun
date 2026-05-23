@@ -12,47 +12,63 @@ import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.excel.ExcelImportListener;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.starter.web.core.utils.IdUtil;
-import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductCodeService;
-import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
-import com.lframework.xingyun.basedata.service.product.ProductRetailService;
-import com.lframework.xingyun.basedata.service.product.ProductSaleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.basedata.vo.product.purchase.CreateProductPurchaseVo;
-import com.lframework.xingyun.basedata.vo.product.retail.CreateProductRetailVo;
-import com.lframework.xingyun.basedata.vo.product.sale.CreateProductSaleVo;
-import java.math.BigDecimal;
+import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
+import com.lframework.xingyun.basedata.vo.product.info.ProductSkuVo;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ProductImportListener extends ExcelImportListener<ProductImportModel> {
 
-  private List<String> checkList = new ArrayList<>();
+  private List<String> rowCodeList = new ArrayList<>();
 
   @Override
   protected void doInvoke(ProductImportModel data, AnalysisContext context) {
-    if (StringUtil.isBlank(data.getCode())) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“编号”不能为空");
-    }
-    if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, data.getCode())) {
+    if (StringUtil.isNotBlank(data.getCode()) && !RegUtil.isMatch(PatternPool.PATTERN_CODE,
+        data.getCode())) {
       throw new DefaultClientException(
           "第" + context.readRowHolder().getRowIndex()
-              + "行“编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+              + "行“商品编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
     }
-    if (checkList.contains(data.getCode())) {
+    if (StringUtil.isNotBlank(data.getCode()) && rowCodeList.contains(data.getCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“编号”与其他行重复");
+          "第" + context.readRowHolder().getRowIndex() + "行“商品编号”与其他行重复");
     }
-    checkList.add(data.getCode());
+    if (StringUtil.isNotBlank(data.getCode())) {
+      rowCodeList.add(data.getCode());
+    }
+    if (StringUtil.isBlank(data.getSkuCode())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”不能为空");
+    }
+    if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, data.getSkuCode())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex()
+              + "行“SKU编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+    }
+    List<String> currentRowCodes = new ArrayList<>();
+    if (StringUtil.isNotBlank(data.getCode())) {
+      currentRowCodes.add(data.getCode());
+    }
+    if (currentRowCodes.contains(data.getSkuCode())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”与商品编号重复");
+    }
+    if (rowCodeList.contains(data.getSkuCode())) {
+      throw new DefaultClientException(
+          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”与其他行重复");
+    }
+    rowCodeList.add(data.getSkuCode());
+    currentRowCodes.add(data.getSkuCode());
     String[] multiCodeArr =
         StringUtil.isBlank(data.getMultiCode()) ? new String[0] : data.getMultiCode()
             .split(",");
@@ -67,16 +83,22 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, multiCode)) {
         throw new DefaultClientException(
             "第" + context.readRowHolder().getRowIndex()
-                + "行“扩展编号" + (i + 1) + "”必须由字母、数字、“-_.”组成，长度不能超过20位");
+                + "行“SKU扩展编号" + (i + 1) + "”必须由字母、数字、“-_.”组成，长度不能超过20位");
       }
 
-      if (checkList.contains(multiCode)) {
+      if (currentRowCodes.contains(multiCode)) {
         throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“扩展编号" + (i + 1)
+            "第" + context.readRowHolder().getRowIndex() + "行“SKU扩展编号" + (i + 1)
+                + "”与本行其他编号重复");
+      }
+      if (rowCodeList.contains(multiCode)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“SKU扩展编号" + (i + 1)
                 + "”与其他行重复");
       }
 
-      checkList.add(multiCode);
+      rowCodeList.add(multiCode);
+      currentRowCodes.add(multiCode);
 
       multiCodes.add(multiCode);
     }
@@ -90,7 +112,7 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
 
     if (StringUtil.isBlank(data.getCategoryCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“分类编号”不能为空");
+          "第" + context.readRowHolder().getRowIndex() + "行“商品分类编号”不能为空");
     }
 
     ProductCategoryService productCategoryService = ApplicationUtil.getBean(
@@ -101,7 +123,7 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
     ProductCategory productCategory = productCategoryService.getOne(queryProductCategoryWrapper);
     if (productCategory == null) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“分类编号”不存在，请检查");
+          "第" + context.readRowHolder().getRowIndex() + "行“商品分类编号”不存在，请检查");
     }
 
     data.setCategoryId(productCategory.getId());
@@ -115,9 +137,33 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       ProductBrand productBrand = productBrandService.getOne(queryProductBrandWrapper);
       if (productBrand == null) {
         throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“品牌编号”不存在，请检查");
+            "第" + context.readRowHolder().getRowIndex() + "行“商品品牌编号”不存在，请检查");
       }
       data.setBrandId(productBrand.getId());
+    }
+
+    if (data.getWeight() != null) {
+      if (NumberUtil.lt(data.getWeight(), 0)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“重量（kg）”不允许小于0");
+      }
+
+      if (!NumberUtil.isNumberPrecision(data.getWeight(), 2)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“重量（kg）”最多允许2位小数");
+      }
+    }
+
+    if (data.getVolume() != null) {
+      if (NumberUtil.lt(data.getVolume(), 0)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“体积（cm³）”不允许小于0");
+      }
+
+      if (!NumberUtil.isNumberPrecision(data.getVolume(), 2)) {
+        throw new DefaultClientException(
+            "第" + context.readRowHolder().getRowIndex() + "行“体积（cm³）”最多允许2位小数");
+      }
     }
 
     if (data.getTaxRate() != null) {
@@ -196,15 +242,8 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
     for (int i = 0; i < datas.size(); i++) {
       ProductImportModel data = datas.get(i);
 
-      Product record = new Product();
-
-      record.setId(IdUtil.getId());
-
-      record.setCode(data.getCode());
-      record.setMultiCode(CollectionUtil.isNotEmpty(data.getMultiCodes()));
-
       List<String> multiCodes = new ArrayList<>(data.getMultiCodes());
-      multiCodes.add(data.getCode());
+      multiCodes.add(data.getSkuCode());
 
       ProductCodeService productCodeService = ApplicationUtil.getBean(ProductCodeService.class);
       List<String> conflictCodes = productCodeService.checkMultiCodes(multiCodes, null);
@@ -213,12 +252,6 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
             "第" + context.readRowHolder().getRowIndex() + "行编号【" + StringUtil.join(
                 StringPool.STR_SPLIT_CN, conflictCodes) + "】已存在");
       }
-
-      record.setName(data.getName());
-      if (StringUtil.isNotBlank(data.getShortName())) {
-        record.setShortName(data.getShortName());
-      }
-      record.setCategoryId(data.getCategoryId());
 
       // 判断分类是否是末级分类
       ProductCategoryService productCategoryService = ApplicationUtil.getBean(
@@ -231,53 +264,42 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
         throw new DefaultClientException(
             "第" + (i + 1) + "行“商品分类”不是末级分类，请使用末级分类");
       }
-      record.setBrandId(data.getBrandId());
-      record.setTaxRate(data.getTaxRate() == null ? BigDecimal.ZERO : data.getTaxRate());
-      record.setSaleTaxRate(
-          data.getSaleTaxRate() == null ? BigDecimal.ZERO : data.getSaleTaxRate());
-      record.setSpec(data.getSpec());
-      record.setUnit(data.getUnit());
-      record.setProductType(ProductType.NORMAL);
-
-      record.setAvailable(Boolean.TRUE);
-
-      productService.save(record);
-
-      productService.recordMultiCodes(record.getId(), data.getMultiCodes());
-
-      data.setId(record.getId());
-
-      if (data.getPurchasePrice() != null) {
-        ProductPurchaseService productPurchaseService = ApplicationUtil.getBean(
-            ProductPurchaseService.class);
-        CreateProductPurchaseVo createProductPurchaseVo = new CreateProductPurchaseVo();
-        createProductPurchaseVo.setId(data.getId());
-        createProductPurchaseVo.setPrice(data.getPurchasePrice());
-
-        productPurchaseService.create(createProductPurchaseVo);
-      }
-
-      if (data.getSalePrice() != null) {
-        ProductSaleService productSaleService = ApplicationUtil.getBean(ProductSaleService.class);
-        CreateProductSaleVo createProductSaleVo = new CreateProductSaleVo();
-        createProductSaleVo.setId(data.getId());
-        createProductSaleVo.setPrice(data.getSalePrice());
-
-        productSaleService.create(createProductSaleVo);
-      }
-
-      if (data.getRetailPrice() != null) {
-        ProductRetailService productRetailService = ApplicationUtil.getBean(
-            ProductRetailService.class);
-        CreateProductRetailVo createProductRetailVo = new CreateProductRetailVo();
-        createProductRetailVo.setId(data.getId());
-        createProductRetailVo.setPrice(data.getRetailPrice());
-
-        productRetailService.create(createProductRetailVo);
-      }
+      data.setId(productService.create(toCreateVo(data)));
 
       this.setSuccessProcess(i);
     }
+  }
+
+  private CreateProductVo toCreateVo(ProductImportModel data) {
+
+    CreateProductVo vo = new CreateProductVo();
+    vo.setCode(data.getCode());
+    vo.setName(data.getName());
+    vo.setShortName(data.getShortName());
+    vo.setCategoryId(data.getCategoryId());
+    vo.setBrandId(data.getBrandId());
+    vo.setTaxRate(data.getTaxRate());
+    vo.setSaleTaxRate(data.getSaleTaxRate());
+    vo.setSpec(data.getSpec());
+    vo.setUnit(data.getUnit());
+    vo.setWeight(data.getWeight());
+    vo.setVolume(data.getVolume());
+    vo.setProductType(ProductType.NORMAL.getCode());
+    vo.setSkus(Collections.singletonList(toSkuVo(data)));
+
+    return vo;
+  }
+
+  private ProductSkuVo toSkuVo(ProductImportModel data) {
+
+    ProductSkuVo skuVo = new ProductSkuVo();
+    skuVo.setCode(data.getSkuCode());
+    skuVo.setMultiCodes(data.getMultiCodes());
+    skuVo.setPurchasePrice(data.getPurchasePrice());
+    skuVo.setSalePrice(data.getSalePrice());
+    skuVo.setRetailPrice(data.getRetailPrice());
+
+    return skuVo;
   }
 
   @Override

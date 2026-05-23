@@ -10,9 +10,11 @@ import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto;
@@ -183,10 +185,28 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 编号
      */
     @Schema(description = "编号")
     private String productCode;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
 
     /**
      * 名称
@@ -277,6 +297,8 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
       ProductService productService = ApplicationUtil.getBean(ProductService.class);
 
       Product product = productService.findById(dto.getProductId());
+      ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+      ProductSku sku = productSkuService.findById(dto.getSkuId());
 
       ProductCategoryService productCategoryService = ApplicationUtil.getBean(
           ProductCategoryService.class);
@@ -289,6 +311,8 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
       }
 
       this.productCode = product.getCode();
+      this.skuCode = sku == null ? null : sku.getCode();
+      this.salePropertyText = sku == null ? null : sku.getSalePropertyText();
       this.productName = product.getName();
       this.categoryName = productCategory.getName();
       this.spec = product.getSpec();
@@ -298,7 +322,7 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
           != ScTransferOrderStatus.APPROVE_PASS) {
         ProductStockService productStockService = ApplicationUtil.getBean(
             ProductStockService.class);
-        ProductStock productStock = productStockService.getByProductIdAndScId(dto.getProductId(),
+        ProductStock productStock = productStockService.getBySkuIdAndScId(dto.getSkuId(),
             this.scId);
         this.curStockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
       }

@@ -267,10 +267,28 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 商品编号
      */
     @Schema(description = "商品编号")
     private String productCode;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
 
     /**
      * 商品名称
@@ -396,9 +414,13 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
       this.salePrice = dto.getOriPrice();
 
       SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
-      SaleProductDto product = saleOrderService.getSaleById(dto.getProductId());
+      SaleProductDto product = saleOrderService.getSaleById(dto.getSkuId());
 
+      this.productId = product.getId();
+      this.skuId = product.getSkuId();
       this.productCode = product.getCode();
+      this.skuCode = product.getSkuCode();
+      this.salePropertyText = product.getSalePropertyText();
       this.productName = product.getName();
       this.unit = product.getUnit();
       this.spec = product.getSpec();
@@ -416,7 +438,7 @@ public class GetSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
 
       ProductStockService productStockService = ApplicationUtil.getBean(
           ProductStockService.class);
-      ProductStock productStock = productStockService.getByProductIdAndScId(this.getProductId(),
+      ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
           this.getScId());
       this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
 

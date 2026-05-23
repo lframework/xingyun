@@ -56,7 +56,7 @@ public interface ProductService extends BaseMpService<Product> {
    * @param propertyId
    * @return
    */
-  List<String> getIdNotInProductProperty(String propertyId);
+  List<String> getIdNotInProductCategoryPropertyDefinition(String propertyId);
 
   /**
    * 根据分类ID查询

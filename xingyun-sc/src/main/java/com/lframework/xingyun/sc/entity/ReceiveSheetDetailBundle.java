@@ -42,6 +42,11 @@ public class ReceiveSheetDetailBundle extends BaseEntity implements BaseDto {
   private String mainProductId;
 
   /**
+   * 组合SKU ID
+   */
+  private String mainSkuId;
+
+  /**
    * 组合商品数量
    */
   private BigDecimal orderNum;
@@ -50,6 +55,11 @@ public class ReceiveSheetDetailBundle extends BaseEntity implements BaseDto {
    * 单品ID
    */
   private String productId;
+
+  /**
+   * 单品SKU ID
+   */
+  private String skuId;
 
   /**
    * 单品数量

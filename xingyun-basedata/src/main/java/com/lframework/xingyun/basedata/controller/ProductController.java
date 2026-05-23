@@ -11,12 +11,14 @@ import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.product.info.GetProductBo;
 import com.lframework.xingyun.basedata.bo.product.info.QueryProductBo;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.excel.product.ProductImportListener;
 import com.lframework.xingyun.basedata.excel.product.ProductImportModel;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductCodeService;
-import com.lframework.xingyun.basedata.service.product.ProductPropertyRelationService;
+import com.lframework.xingyun.basedata.service.product.ProductCategoryPropertyValueRelationService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.vo.product.info.CreateProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.basedata.vo.product.info.UpdateProductVo;
@@ -59,10 +61,13 @@ public class ProductController extends DefaultBaseController {
   private ProductBundleService productBundleService;
 
   @Autowired
-  private ProductPropertyRelationService productPropertyRelationService;
+  private ProductCategoryPropertyValueRelationService ProductCategoryPropertyValueRelationService;
 
   @Autowired
   private ProductCodeService productCodeService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   /**
    * 商品列表
@@ -89,16 +94,16 @@ public class ProductController extends DefaultBaseController {
   /**
    * 根据商品编号查询商品ID
    */
-  @Operation(summary = "根据商品编号查询商品ID", description = "返回商品ID，如果商品不存在则返回null")
+  @Operation(summary = "根据商品编号查询商品ID", description = "返回SKU ID，如果SKU不存在则返回null")
   @Parameter(name = "code", description = "商品编号", in = ParameterIn.QUERY, required = true)
   @HasPermission({"base-data:product:info:query"})
   @GetMapping("/id/code")
   public InvokeResult<String> getIdByCode(
       @NotBlank(message = "商品编号不能为空！") String code) {
 
-    Product product = productService.findByCode(code);
+    ProductSku sku = productSkuService.findAvailableByCode(code);
 
-    return InvokeResultBuilder.success(product == null ? null : product.getId());
+    return InvokeResultBuilder.success(sku == null ? null : sku.getId());
   }
 
   /**
@@ -143,7 +148,7 @@ public class ProductController extends DefaultBaseController {
 
     productService.cleanCacheByKey(vo.getId());
 
-    productPropertyRelationService.cleanCacheByKey(vo.getId());
+    ProductCategoryPropertyValueRelationService.cleanCacheByKey(vo.getId());
 
     productBundleService.cleanCacheByKey(vo.getId());
 
@@ -165,7 +170,7 @@ public class ProductController extends DefaultBaseController {
 
     productService.cleanCacheByKey(id);
 
-    productPropertyRelationService.cleanCacheByKey(id);
+    ProductCategoryPropertyValueRelationService.cleanCacheByKey(id);
 
     productBundleService.cleanCacheByKey(id);
 

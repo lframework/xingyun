@@ -18,6 +18,12 @@ public class RetailOutProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 原价
    */
   @Schema(description = "原价")

@@ -11,10 +11,12 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -138,6 +140,24 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
+
+    /**
      * 商品编号
      */
     @Schema(description = "商品编号")
@@ -240,6 +260,9 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
 
       ProductService productService = ApplicationUtil.getBean(ProductService.class);
       Product product = productService.findById(dto.getProductId());
+      this.skuId = dto.getSkuId();
+      ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+      ProductSku sku = productSkuService.findById(dto.getSkuId());
 
       ProductCategoryService productCategoryService = ApplicationUtil.getBean(
           ProductCategoryService.class);
@@ -252,6 +275,8 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
       }
 
       this.productCode = product.getCode();
+      this.skuCode = sku == null ? null : sku.getCode();
+      this.salePropertyText = sku == null ? null : sku.getSalePropertyText();
       this.productName = product.getName();
       this.categoryName = productCategory.getName();
       this.spec = product.getSpec();

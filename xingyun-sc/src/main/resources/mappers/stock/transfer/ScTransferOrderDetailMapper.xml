@@ -4,7 +4,7 @@
   <update id="receive">
     UPDATE tbl_sc_transfer_order_detail SET receive_num = receive_num + #{receiveNum}, receive_amount = receive_amount + #{receiveAmount}
     WHERE order_id = #{orderId}
-    AND product_id = #{productId}
+    AND sku_id = #{skuId}
     AND transfer_num - receive_num >= #{receiveNum}
   </update>
 

@@ -2,16 +2,9 @@ package com.lframework.xingyun.sc.bo.stock.take.pre;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lframework.starter.common.constants.StringPool;
-import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductBrand;
-import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.product.ProductBrandService;
-import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -102,10 +95,28 @@ public class GetPreTakeStockSheetBo extends BaseBo<PreTakeStockSheetFullDto> {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 编号
      */
     @Schema(description = "编号")
     private String productCode;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
 
     /**
      * 名称
@@ -163,25 +174,16 @@ public class GetPreTakeStockSheetBo extends BaseBo<PreTakeStockSheetFullDto> {
     @Override
     protected void afterInit(PreTakeStockSheetFullDto.SheetDetailDto dto) {
 
-      ProductService productService = ApplicationUtil.getBean(ProductService.class);
-
-      Product product = productService.findById(dto.getProductId());
-
-      ProductCategoryService productCategoryService = ApplicationUtil.getBean(
-          ProductCategoryService.class);
-      ProductCategory productCategory = productCategoryService.findById(product.getCategoryId());
-
-      if(StringUtil.isNotBlank(product.getBrandId())) {
-        ProductBrandService productBrandService = ApplicationUtil.getBean(ProductBrandService.class);
-        ProductBrand productBrand = productBrandService.findById(product.getBrandId());
-        this.brandName = productBrand.getName();
-      }
-
-      this.productCode = product.getCode();
-      this.productName = product.getName();
-      this.categoryName = productCategory.getName();
-      this.spec = product.getSpec();
-      this.unit = product.getUnit();
+      this.productId = dto.getProductId();
+      this.skuId = dto.getSkuId();
+      this.productCode = dto.getProductCode();
+      this.skuCode = dto.getSkuCode();
+      this.productName = dto.getProductName();
+      this.salePropertyText = dto.getSalePropertyText();
+      this.categoryName = dto.getCategoryName();
+      this.brandName = dto.getBrandName();
+      this.spec = dto.getSpec();
+      this.unit = dto.getUnit();
     }
   }
 

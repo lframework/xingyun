@@ -4,6 +4,7 @@ import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.lframework.starter.web.core.annotations.excel.ExcelRequired;
 import com.lframework.starter.web.core.components.excel.ExcelModel;
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -22,10 +23,10 @@ public class StockCellProductImportModel implements ExcelModel {
   private String stockCellId;
 
   /**
-   * 商品ID
+   * SKU ID
    */
   @ExcelIgnore
-  private String productId;
+  private String skuId;
 
   /**
    * 仓位类别
@@ -48,9 +49,9 @@ public class StockCellProductImportModel implements ExcelModel {
   private String stockCellCode;
 
   /**
-   * 商品编号
+   * SKU编号
    */
   @ExcelRequired
-  @ExcelProperty("商品编号")
+  @ExcelProperty("SKU编号")
   private String productCode;
 }

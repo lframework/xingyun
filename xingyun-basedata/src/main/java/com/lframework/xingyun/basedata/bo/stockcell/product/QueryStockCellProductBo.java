@@ -63,6 +63,24 @@ public class QueryStockCellProductBo extends BaseBo<StockCellProductDto> {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
+   * SKU编号
+   */
+  @Schema(description = "SKU编号")
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  @Schema(description = "销售属性")
+  private String salePropertyText;
+
+  /**
    * 商品编号
    */
   @Schema(description = "商品编号")

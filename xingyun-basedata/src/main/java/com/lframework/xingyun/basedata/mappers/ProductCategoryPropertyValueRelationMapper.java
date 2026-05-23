@@ -1,0 +1,50 @@
+package com.lframework.xingyun.basedata.mappers;
+
+import com.lframework.starter.web.core.mapper.BaseMapper;
+import com.lframework.xingyun.basedata.dto.product.ProductCategoryPropertyValueRelationDto;
+import com.lframework.xingyun.basedata.entity.ProductCategoryPropertyValueRelation;
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
+/**
+ * <p>
+ * Mapper 接口
+ * </p>
+ *
+ * @author zmj
+ * @since 2021-08-05
+ */
+public interface ProductCategoryPropertyValueRelationMapper extends BaseMapper<ProductCategoryPropertyValueRelation> {
+
+    /**
+     * 根据商品ID查询
+     *
+     * @param productId
+     * @return
+     */
+    List<ProductCategoryPropertyValueRelationDto> getByProductId(String productId);
+
+    /**
+     * 根据属性ID查询
+     *
+     * @param propertyId
+     * @return
+     */
+    List<ProductCategoryPropertyValueRelationDto> getByPropertyId(String propertyId);
+
+    /**
+     * 将通用更改为指定分类
+     *
+     * @param propertyId
+     * @param categoryId
+     */
+    void setCommonToAppoint(@Param("propertyId") String propertyId, @Param("categoryId") String categoryId);
+
+    /**
+     * 根据属性ID和分类ID删除
+     *
+     * @param propertyId
+     * @param categoryId
+     */
+    void deleteByPropertyIdAndCategoryId(@Param("propertyId") String propertyId, @Param("categoryId") String categoryId);
+}

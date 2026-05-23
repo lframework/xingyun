@@ -22,6 +22,12 @@ public class ScTransferProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 调拨数量
    */
   @Schema(description = "调拨数量", requiredMode = Schema.RequiredMode.REQUIRED)

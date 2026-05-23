@@ -26,6 +26,8 @@ import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineB
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
+import com.lframework.xingyun.basedata.entity.ProductSku;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockPlan;
@@ -73,6 +75,9 @@ public class TakeStockSheetServiceImpl extends
 
   @Autowired
   private TakeStockPlanDetailService takeStockPlanDetailService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Override
   public PageResult<TakeStockSheet> query(Integer pageIndex, Integer pageSize,
@@ -134,10 +139,16 @@ public class TakeStockSheetServiceImpl extends
 
     int orderNo = 1;
     for (TakeStockSheetProductVo product : vo.getProducts()) {
+      ProductSku sku = productSkuService.findById(
+          StringUtil.isBlank(product.getSkuId()) ? product.getProductId() : product.getSkuId());
+      if (sku == null) {
+        throw new DefaultClientException("第" + orderNo + "行商品不存在！");
+      }
       TakeStockSheetDetail detail = new TakeStockSheetDetail();
       detail.setId(IdUtil.getId());
       detail.setSheetId(data.getId());
-      detail.setProductId(product.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setTakeNum(product.getTakeNum());
       detail.setDescription(
           StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
@@ -150,7 +161,8 @@ public class TakeStockSheetServiceImpl extends
     // 盘点任务如果是单品盘点
     if (takeStockPlan.getTakeType() == TakeStockPlanType.SIMPLE) {
       takeStockPlanDetailService.savePlanDetailBySimple(takeStockPlan.getId(),
-          vo.getProducts().stream().map(TakeStockSheetProductVo::getProductId)
+          vo.getProducts().stream().map(t -> StringUtil.isBlank(t.getSkuId()) ? t.getProductId()
+                  : t.getSkuId())
               .collect(Collectors.toList()));
     }
 
@@ -202,10 +214,16 @@ public class TakeStockSheetServiceImpl extends
 
     int orderNo = 1;
     for (TakeStockSheetProductVo product : vo.getProducts()) {
+      ProductSku sku = productSkuService.findById(
+          StringUtil.isBlank(product.getSkuId()) ? product.getProductId() : product.getSkuId());
+      if (sku == null) {
+        throw new DefaultClientException("第" + orderNo + "行商品不存在！");
+      }
       TakeStockSheetDetail detail = new TakeStockSheetDetail();
       detail.setId(IdUtil.getId());
       detail.setSheetId(data.getId());
-      detail.setProductId(product.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setTakeNum(product.getTakeNum());
       detail.setDescription(
           StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR
@@ -218,7 +236,8 @@ public class TakeStockSheetServiceImpl extends
     // 盘点任务如果是单品盘点
     if (takeStockPlan.getTakeType() == TakeStockPlanType.SIMPLE) {
       takeStockPlanDetailService.savePlanDetailBySimple(takeStockPlan.getId(),
-          vo.getProducts().stream().map(TakeStockSheetProductVo::getProductId)
+          vo.getProducts().stream().map(t -> StringUtil.isBlank(t.getSkuId()) ? t.getProductId()
+                  : t.getSkuId())
               .collect(Collectors.toList()));
     }
 
@@ -263,7 +282,7 @@ public class TakeStockSheetServiceImpl extends
         .orderByAsc(TakeStockSheetDetail::getOrderNo);
     List<TakeStockSheetDetail> details = takeStockSheetDetailService.list(queryDetailWrapper);
     for (TakeStockSheetDetail detail : details) {
-      takeStockPlanDetailService.updateOriTakeNum(data.getPlanId(), detail.getProductId(),
+      takeStockPlanDetailService.updateOriTakeNum(data.getPlanId(), detail.getSkuId(),
           detail.getTakeNum());
     }
 
@@ -361,7 +380,7 @@ public class TakeStockSheetServiceImpl extends
         .orderByAsc(TakeStockSheetDetail::getOrderNo);
     List<TakeStockSheetDetail> details = takeStockSheetDetailService.list(queryDetailWrapper);
     for (TakeStockSheetDetail detail : details) {
-      takeStockPlanDetailService.updateOriTakeNum(data.getPlanId(), detail.getProductId(),
+      takeStockPlanDetailService.updateOriTakeNum(data.getPlanId(), detail.getSkuId(),
           detail.getTakeNum().negate());
     }
 

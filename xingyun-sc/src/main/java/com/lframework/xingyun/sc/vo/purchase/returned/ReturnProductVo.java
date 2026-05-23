@@ -18,6 +18,12 @@ public class ReturnProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 退货价
    */
   @Schema(description = "退货价")

@@ -38,6 +38,11 @@ public class ProductStockWarning extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 预警上限
    */
   private BigDecimal maxLimit;

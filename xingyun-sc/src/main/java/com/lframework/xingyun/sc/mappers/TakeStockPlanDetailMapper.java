@@ -17,14 +17,14 @@ import org.apache.ibatis.annotations.Param;
 public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetail> {
 
   /**
-   * 根据盘点任务ID、商品ID查询
+   * 根据盘点任务ID、SKU ID查询
    *
    * @param planId
-   * @param productId
+   * @param skuId
    * @return
    */
   GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(@Param("planId") String planId,
-      @Param("productId") String productId);
+      @Param("skuId") String skuId);
 
   /**
    * 根据盘点任务ID查询
@@ -38,30 +38,30 @@ public interface TakeStockPlanDetailMapper extends BaseMapper<TakeStockPlanDetai
    * 更新盘点数量
    *
    * @param planId
-   * @param productId
+   * @param skuId
    * @param num
    */
-  void updateOriTakeNum(@Param("planId") String planId, @Param("productId") String productId,
+  void updateOriTakeNum(@Param("planId") String planId, @Param("skuId") String skuId,
       @Param("num") BigDecimal num);
 
   /**
    * 增加进项数量
    *
    * @param scId
-   * @param productId
+   * @param skuId
    * @param num
    */
-  void addTotalInNum(@Param("scId") String scId, @Param("productId") String productId,
+  void addTotalInNum(@Param("scId") String scId, @Param("skuId") String skuId,
       @Param("num") BigDecimal num);
 
   /**
    * 增加出项数量
    *
    * @param scId
-   * @param productId
+   * @param skuId
    * @param num
    */
-  void addTotalOutNum(@Param("scId") String scId, @Param("productId") String productId,
+  void addTotalOutNum(@Param("scId") String scId, @Param("skuId") String skuId,
       @Param("num") BigDecimal num);
 
   /**

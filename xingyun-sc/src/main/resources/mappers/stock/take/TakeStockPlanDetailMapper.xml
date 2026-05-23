@@ -5,12 +5,14 @@
     <resultMap id="GetTakeStockPlanDetailProductDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto">
         <id column="id" property="id"/>
         <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
         <result column="stock_num" property="stockNum"/>
     </resultMap>
 
     <resultMap id="TakeStockPlanDetail" type="com.lframework.xingyun.sc.entity.TakeStockPlanDetail">
         <id column="id" property="id"/>
         <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
         <result column="stock_num" property="stockNum"/>
         <result column="take_num" property="takeNum"/>
         <result column="total_out_num" property="totalOutNum"/>
@@ -23,6 +25,7 @@
         SELECT
             tb.id,
             tb.product_id,
+            tb.sku_id,
             tb.stock_num
         FROM tbl_take_stock_plan_detail AS tb
     </sql>
@@ -31,6 +34,7 @@
         SELECT
             tb.id,
             tb.product_id,
+            tb.sku_id,
             tb.stock_num,
             tb.take_num,
             tb.total_out_num,
@@ -41,15 +45,15 @@
     </sql>
     <insert id="addTotalInNum">
         UPDATE tbl_take_stock_plan_detail SET total_in_num = total_in_num + #{num}
-        WHERE plan_id IN (SELECT id from tbl_take_stock_plan WHERE sc_id = #{scId} AND take_status = 0) AND product_id = #{productId}
+        WHERE plan_id IN (SELECT id from tbl_take_stock_plan WHERE sc_id = #{scId} AND take_status = 0) AND sku_id = #{skuId}
     </insert>
     <insert id="addTotalOutNum">
         UPDATE tbl_take_stock_plan_detail SET total_out_num = total_out_num + #{num}
-        WHERE plan_id IN (SELECT id from tbl_take_stock_plan WHERE sc_id = #{scId} AND take_status = 0) AND product_id = #{productId}
+        WHERE plan_id IN (SELECT id from tbl_take_stock_plan WHERE sc_id = #{scId} AND take_status = 0) AND sku_id = #{skuId}
     </insert>
     <update id="updateOriTakeNum">
         UPDATE tbl_take_stock_plan_detail set ori_take_num = IFNULL(ori_take_num, 0) + #{num}
-        WHERE plan_id = #{planId} AND product_id = #{productId}
+        WHERE plan_id = #{planId} AND sku_id = #{skuId}
     </update>
     <update id="adjustStockNum">
         UPDATE tbl_take_stock_plan_detail
@@ -59,7 +63,7 @@
     <select id="getByPlanIdAndProductId" resultMap="GetTakeStockPlanDetailProductDto">
         <include refid="GetTakeStockPlanDetailProductDto_sql"/>
         WHERE tb.plan_id = #{planId}
-        AND tb.product_id = #{productId}
+        AND tb.sku_id = #{skuId}
     </select>
     <select id="getDetailsByPlanId" resultMap="TakeStockPlanDetail">
         <include refid="TakeStockPlanDetailDto_sql"/>

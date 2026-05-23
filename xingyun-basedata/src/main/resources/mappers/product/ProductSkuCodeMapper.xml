@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.ProductSkuCodeMapper">
+
+    <select id="checkCodes" resultType="java.lang.String">
+        SELECT DISTINCT t.code
+        FROM (
+            SELECT pc.code
+            FROM base_data_product_sku_code pc
+            JOIN base_data_product_sku s ON s.id = pc.sku_id AND s.available = TRUE
+            JOIN base_data_product p ON p.id = s.product_id AND p.available = TRUE
+            WHERE pc.code IN
+            <foreach item="item" index="index" collection="codes" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            <if test="productId != null and productId != ''">
+                AND s.product_id != #{productId}
+            </if>
+            <if test="skuId != null and skuId != ''">
+                AND pc.sku_id != #{skuId}
+            </if>
+            UNION ALL
+            SELECT p.code
+            FROM base_data_product p
+            WHERE p.available = TRUE
+              AND p.code IN
+            <foreach item="item" index="index" collection="codes" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            <if test="productId != null and productId != ''">
+                AND p.id != #{productId}
+            </if>
+        ) t
+    </select>
+</mapper>

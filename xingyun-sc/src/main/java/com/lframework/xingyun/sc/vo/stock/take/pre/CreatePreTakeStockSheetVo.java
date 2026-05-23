@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.vo.stock.take.pre;
 
 import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.validation.IsEnum;
 import com.lframework.starter.web.core.components.validation.TypeMismatch;
 import com.lframework.starter.web.core.utils.EnumUtil;
@@ -60,11 +61,13 @@ public class CreatePreTakeStockSheetVo implements BaseVo, Serializable {
         this.getTakeStatus());
     for (int i = 0; i < this.getProducts().size(); i++) {
       PreTakeStockProductVo product = this.getProducts().get(i);
-      if (checkSet.contains(product.getProductId())) {
+      String skuId = StringUtil.isBlank(product.getSkuId()) ? product.getProductId()
+          : product.getSkuId();
+      if (checkSet.contains(skuId)) {
         throw new InputErrorException("第" + (i + 1) + "行商品已存在列表中，请勿重复添加！");
       }
 
-      checkSet.add(product.getProductId());
+      checkSet.add(skuId);
 
       if (takeStatus == PreTakeStockSheetStatus.FIRST_TAKE) {
         if (product.getFirstNum() == null) {

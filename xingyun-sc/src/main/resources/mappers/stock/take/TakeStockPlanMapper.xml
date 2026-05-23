@@ -18,6 +18,7 @@
 
     <resultMap id="QueryTakeStockPlanProductDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto">
         <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
         <result column="stock_num" property="stockNum"/>
         <result column="total_out_num" property="totalOutNum"/>
         <result column="total_in_num" property="totalInNum"/>
@@ -40,6 +41,7 @@
     <resultMap id="TakeStockPlanFullDetailDto" type="com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto$DetailDto">
         <id column="id" property="id"/>
         <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
         <result column="stock_num" property="stockNum"/>
         <result column="ori_take_num" property="oriTakeNum"/>
         <result column="take_num" property="takeNum"/>
@@ -57,6 +59,7 @@
     <sql id="QueryTakeStockPlanProductDto_sql">
         SELECT
             tb.product_id,
+            tb.sku_id,
             tb.stock_num,
             tb.total_out_num,
             tb.total_in_num
@@ -82,6 +85,7 @@
         SELECT
             tb.id,
             tb.product_id,
+            tb.sku_id,
             tb.ori_take_num,
             tb.take_num,
             tb.stock_num,

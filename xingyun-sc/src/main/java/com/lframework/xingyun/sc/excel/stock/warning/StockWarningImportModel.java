@@ -30,11 +30,17 @@ public class StockWarningImportModel implements ExcelModel {
   private String productId;
 
   /**
-   * 商品编号
+   * SKU ID
+   */
+  @ExcelIgnore
+  private String skuId;
+
+  /**
+   * SKU编号
    */
   @ExcelRequired
-  @ExcelProperty("商品编号")
-  private String productCode;
+  @ExcelProperty("SKU编号")
+  private String skuCode;
 
   /**
    * 预警上限

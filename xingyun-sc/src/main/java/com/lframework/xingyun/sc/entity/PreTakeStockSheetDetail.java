@@ -35,6 +35,11 @@ public class PreTakeStockSheetDetail extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 初盘数量
    */
   private BigDecimal firstNum;

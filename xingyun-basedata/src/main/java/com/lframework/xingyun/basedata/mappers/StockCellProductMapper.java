@@ -30,6 +30,7 @@ public interface StockCellProductMapper extends BaseMapper<StockCellProduct> {
       @Sort(value = "scName", alias = "sc.name"),
       @Sort(value = "stockCellCode", alias = "c.code"),
       @Sort(value = "stockCellName", alias = "c.name"),
+      @Sort(value = "skuCode", alias = "s.code"),
       @Sort(value = "productCode", alias = "p.code"),
       @Sort(value = "productName", alias = "p.name"),
   })

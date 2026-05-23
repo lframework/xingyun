@@ -36,6 +36,11 @@ public class ScTransferOrderDetail extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 调拨数量
    */
   private BigDecimal transferNum;

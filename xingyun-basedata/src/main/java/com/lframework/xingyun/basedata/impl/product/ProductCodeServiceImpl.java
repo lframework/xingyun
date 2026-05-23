@@ -24,7 +24,8 @@ public class ProductCodeServiceImpl extends
   @Override
   public List<ProductCode> findByProductId(String productId) {
     Wrapper<ProductCode> queryWrapper = Wrappers.lambdaQuery(ProductCode.class)
-        .eq(ProductCode::getProductId, productId);
+        .inSql(ProductCode::getProductId,
+            "SELECT id FROM base_data_product_sku WHERE product_id = '" + productId + "'");
     return getBaseMapper().selectList(queryWrapper);
   }
 

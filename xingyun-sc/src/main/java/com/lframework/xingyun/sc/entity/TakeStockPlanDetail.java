@@ -35,6 +35,11 @@ public class TakeStockPlanDetail extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 初始库存数量
    */
   private BigDecimal stockNum;

@@ -28,6 +28,7 @@ import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.ManageType;
@@ -35,6 +36,7 @@ import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
@@ -102,6 +104,9 @@ public class ReceiveSheetServiceImpl extends
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Autowired
   private PurchaseOrderService purchaseOrderService;
@@ -384,6 +389,7 @@ public class ReceiveSheetServiceImpl extends
           newDetail.setId(IdUtil.getId());
           newDetail.setSheetId(sheet.getId());
           newDetail.setProductId(receiveSheetDetailBundle.getProductId());
+          newDetail.setSkuId(receiveSheetDetailBundle.getSkuId());
           newDetail.setOrderNum(receiveSheetDetailBundle.getProductOrderNum());
           newDetail.setTaxPrice(receiveSheetDetailBundle.getProductTaxPrice());
           newDetail.setIsGift(detail.getIsGift());
@@ -417,6 +423,7 @@ public class ReceiveSheetServiceImpl extends
     for (ReceiveSheetDetail detail : details) {
       AddProductStockVo addProductStockVo = new AddProductStockVo();
       addProductStockVo.setProductId(detail.getProductId());
+      addProductStockVo.setSkuId(detail.getSkuId());
       addProductStockVo.setScId(sheet.getScId());
       addProductStockVo.setStockNum(detail.getOrderNum());
       addProductStockVo.setTaxAmount(detail.getTaxAmount());
@@ -655,6 +662,7 @@ public class ReceiveSheetServiceImpl extends
           PurchaseOrderDetail orderDetail = purchaseOrderDetailService.getById(
               productVo.getPurchaseOrderDetailId());
           productVo.setPurchasePrice(orderDetail.getTaxPrice());
+          productVo.setSkuId(orderDetail.getSkuId());
         } else {
           productVo.setPurchasePrice(BigDecimal.ZERO);
         }
@@ -684,7 +692,8 @@ public class ReceiveSheetServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setSheetId(sheet.getId());
 
-      Product product = productService.findById(productVo.getProductId());
+      ProductSku sku = this.getSheetSku(productVo.getSkuId(), productVo.getProductId(), orderNo);
+      Product product = productService.findById(sku.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
@@ -697,7 +706,8 @@ public class ReceiveSheetServiceImpl extends
         throw new InputErrorException("第" + orderNo + "行商品收货数量最多允许8位小数！");
       }
 
-      detail.setProductId(productVo.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setOrderNum(productVo.getReceiveNum());
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setTaxAmount(taxAmount);
@@ -720,7 +730,7 @@ public class ReceiveSheetServiceImpl extends
           throw new InputErrorException("第" + orderNo + "行商品收货数量必须是整数！");
         }
         List<ProductBundle> productBundles = productBundleService.getByMainProductId(
-            product.getId());
+            sku.getId());
         // 构建指标项
         Map<Object, Number> bundleWeight = new HashMap<>(productBundles.size());
         for (ProductBundle productBundle : productBundles) {
@@ -731,14 +741,17 @@ public class ReceiveSheetServiceImpl extends
             bundleWeight, 2);
         List<ReceiveSheetDetailBundle> receiveSheetDetailBundles = productBundles.stream()
             .map(productBundle -> {
-              Product bundle = productService.findById(productBundle.getProductId());
+              ProductSku bundleSku = productSkuService.findById(productBundle.getProductId());
+              Product bundle = productService.findById(bundleSku.getProductId());
               ReceiveSheetDetailBundle receiveSheetDetailBundle = new ReceiveSheetDetailBundle();
               receiveSheetDetailBundle.setId(IdUtil.getId());
               receiveSheetDetailBundle.setSheetId(sheet.getId());
               receiveSheetDetailBundle.setDetailId(detail.getId());
               receiveSheetDetailBundle.setMainProductId(product.getId());
+              receiveSheetDetailBundle.setMainSkuId(sku.getId());
               receiveSheetDetailBundle.setOrderNum(detail.getOrderNum());
-              receiveSheetDetailBundle.setProductId(productBundle.getProductId());
+              receiveSheetDetailBundle.setProductId(bundleSku.getProductId());
+              receiveSheetDetailBundle.setSkuId(bundleSku.getId());
               receiveSheetDetailBundle.setProductOrderNum(
                   NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()));
               receiveSheetDetailBundle.setProductOriPrice(productBundle.getPurchasePrice());
@@ -778,5 +791,16 @@ public class ReceiveSheetServiceImpl extends
     } else {
       return SettleStatus.UN_REQUIRE;
     }
+  }
+
+  private ProductSku getSheetSku(String skuId, String fallbackSkuId, int orderNo) {
+
+    String id = StringUtil.isBlank(skuId) ? fallbackSkuId : skuId;
+    ProductSku sku = productSkuService.findById(id);
+    if (sku == null) {
+      throw new InputErrorException("第" + orderNo + "行SKU不存在！");
+    }
+
+    return sku;
   }
 }

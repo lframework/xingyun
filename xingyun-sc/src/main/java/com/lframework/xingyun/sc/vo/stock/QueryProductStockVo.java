@@ -20,6 +20,12 @@ public class QueryProductStockVo extends SortPageVo {
   private String productCode;
 
   /**
+   * SKU编号
+   */
+  @Schema(description = "SKU编号")
+  private String skuCode;
+
+  /**
    * 商品名称
    */
   @Schema(description = "商品名称")

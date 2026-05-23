@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.ProductSkuMapper">
+
+    <select id="getAvailableByProductId" resultType="com.lframework.xingyun.basedata.entity.ProductSku">
+        SELECT *
+        FROM base_data_product_sku
+        WHERE product_id = #{productId}
+          AND available = TRUE
+        ORDER BY code
+    </select>
+
+    <sql id="ProductSkuSelectorDto_sql">
+        SELECT
+            s.id AS id,
+            s.id AS sku_id,
+            s.code AS sku_code,
+            s.code AS code,
+            p.id AS product_id,
+            p.code AS product_code,
+            p.name AS name,
+            p.name AS product_name,
+            s.sale_property_text AS sale_property_text,
+            p.category_id AS category_id,
+            c.name AS category_name,
+            p.brand_id AS brand_id,
+            b.name AS brand_name,
+            p.spec AS spec,
+            p.unit AS unit,
+            p.product_type AS product_type,
+            s.available AS available
+        FROM base_data_product_sku AS s
+        INNER JOIN base_data_product AS p ON p.id = s.product_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN recursion_mapping AS rm ON rm.node_id = p.category_id and rm.node_type = 2
+    </sql>
+
+    <select id="selector" resultType="com.lframework.xingyun.basedata.dto.product.ProductSkuSelectorDto">
+        <include refid="ProductSkuSelectorDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND s.id IN (
+                        SELECT sc.sku_id
+                        FROM base_data_product_sku_code sc
+                        WHERE sc.code = #{vo.code}
+                    )
+                </if>
+                <if test="vo.brandId != null and vo.brandId != ''">
+                    AND p.brand_id = #{vo.brandId}
+                </if>
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    AND (p.category_id = #{vo.categoryId} OR FIND_IN_SET(#{vo.categoryId}, rm.path))
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND p.name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.shortName != null and vo.shortName != ''">
+                    AND p.short_name LIKE CONCAT('%', #{vo.shortName}, '%')
+                </if>
+                <if test="vo.productType != null">
+                    AND p.product_type = #{vo.productType}
+                </if>
+                <if test="vo.startTime != null">
+                    AND p.create_time >= #{vo.startTime}
+                </if>
+                <if test="vo.endTime != null">
+                    <![CDATA[
+                    AND p.create_time <= #{vo.endTime}
+                    ]]>
+                </if>
+            </if>
+            AND p.available = TRUE
+            AND s.available = TRUE
+        </where>
+        ORDER BY p.code, s.code
+    </select>
+
+    <select id="loadSelector" resultType="com.lframework.xingyun.basedata.dto.product.ProductSkuSelectorDto">
+        <include refid="ProductSkuSelectorDto_sql"/>
+        WHERE s.id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="item">#{item}</foreach>
+        ORDER BY p.code, s.code
+    </select>
+
+    <select id="findAvailableByCode" resultType="com.lframework.xingyun.basedata.entity.ProductSku">
+        SELECT s.*
+        FROM base_data_product_sku_code sc
+        INNER JOIN base_data_product_sku s ON s.id = sc.sku_id AND s.available = TRUE
+        INNER JOIN base_data_product p ON p.id = s.product_id AND p.available = TRUE
+        WHERE sc.code = #{code}
+        ORDER BY sc.is_main DESC, s.code
+        LIMIT 1
+    </select>
+
+    <select id="getAvailableByCode" resultType="com.lframework.xingyun.basedata.entity.ProductSku">
+        SELECT s.*
+        FROM base_data_product_sku_code sc
+        INNER JOIN base_data_product_sku s ON s.id = sc.sku_id AND s.available = TRUE
+        INNER JOIN base_data_product p ON p.id = s.product_id AND p.available = TRUE
+        WHERE sc.code = #{code}
+        ORDER BY sc.is_main DESC, s.code
+    </select>
+
+    <update id="refreshSalePropertyTextByPropertyId">
+        UPDATE base_data_product_sku s
+        INNER JOIN (
+            SELECT
+                r.sku_id,
+                GROUP_CONCAT(CONCAT(p.name, '：', i.name) ORDER BY p.code SEPARATOR ' / ') AS sale_property_text
+            FROM base_data_product_sku_sale_property_relation r
+            INNER JOIN base_data_product_sale_property_definition p ON p.id = r.property_id
+            INNER JOIN base_data_product_sale_property_item i ON i.id = r.property_item_id
+            WHERE r.sku_id IN (
+                SELECT sku_id
+                FROM base_data_product_sku_sale_property_relation
+                WHERE property_id = #{propertyId}
+            )
+            GROUP BY r.sku_id
+        ) t ON t.sku_id = s.id
+        SET s.sale_property_text = IFNULL(t.sale_property_text, '')
+        WHERE s.id IN (
+            SELECT sku_id
+            FROM base_data_product_sku_sale_property_relation
+            WHERE property_id = #{propertyId}
+        )
+    </update>
+</mapper>

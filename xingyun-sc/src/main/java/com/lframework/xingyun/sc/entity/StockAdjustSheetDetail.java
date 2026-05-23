@@ -36,6 +36,11 @@ public class StockAdjustSheetDetail extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 调整库存数量
    */
   private BigDecimal stockNum;

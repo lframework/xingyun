@@ -17,11 +17,11 @@ public interface ScTransferOrderDetailMapper extends BaseMapper<ScTransferOrderD
   /**
    * 收货
    *
-   * @param productId
+   * @param skuId
    * @param receiveNum
    * @return
    */
-  int receive(@Param("orderId") String orderId, @Param("productId") String productId,
+  int receive(@Param("orderId") String orderId, @Param("skuId") String skuId,
       @Param("receiveNum") BigDecimal receiveNum, @Param("receiveAmount") BigDecimal receiveAmount);
 
   /**

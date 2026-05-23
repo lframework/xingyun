@@ -26,9 +26,15 @@ public class CreateProductStockWarningVo implements BaseVo, Serializable {
   /**
    * 商品ID
    */
-  @Schema(description = "商品ID", requiredMode = Schema.RequiredMode.REQUIRED)
-  @NotBlank(message = "商品ID不能为空！")
+  @Schema(description = "商品ID")
   private String productId;
+
+  /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotBlank(message = "SKU ID不能为空！")
+  private String skuId;
 
   /**
    * 预警下限

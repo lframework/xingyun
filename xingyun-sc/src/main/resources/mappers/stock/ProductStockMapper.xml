@@ -4,6 +4,7 @@
     <resultMap id="ProductStock" type="com.lframework.xingyun.sc.entity.ProductStock">
         <id column="id" property="id"/>
         <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
         <result column="sc_id" property="scId"/>
         <result column="stock_num" property="stockNum"/>
         <result column="tax_price" property="taxPrice"/>
@@ -14,6 +15,7 @@
         SELECT
             gs.id,
             gs.product_id,
+            gs.sku_id,
             gs.sc_id,
             gs.stock_num,
             gs.tax_price,
@@ -29,6 +31,7 @@
         SET stock_num = stock_num + #{stockNum}, tax_amount = tax_amount + #{taxAmount}
         <if test="reCalcCostPrice">,tax_price = CASE WHEN stock_num = 0 THEN 0 ELSE tax_amount / stock_num END</if>
         WHERE product_id = #{productId}
+        AND sku_id = #{skuId}
         AND sc_id = #{scId}
         AND stock_num = #{oriStockNum}
         AND tax_amount = #{oriTaxAmount}
@@ -38,6 +41,7 @@
         SET stock_num = stock_num - #{stockNum}, tax_amount = tax_amount - #{taxAmount}
         <if test="reCalcCostPrice">,tax_price = CASE WHEN stock_num = 0 THEN tax_price ELSE tax_amount / stock_num END</if>
         WHERE product_id = #{productId}
+        AND sku_id = #{skuId}
         AND sc_id = #{scId}
         AND stock_num = #{oriStockNum}
         AND tax_amount = #{oriTaxAmount}
@@ -46,6 +50,11 @@
     <select id="getByProductIdAndScId" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
         WHERE gs.product_id = #{productId}
+        AND gs.sc_id = #{scId}
+    </select>
+    <select id="getBySkuIdAndScId" resultMap="ProductStock">
+        <include refid="ProductStockDto_sql"/>
+        WHERE gs.sku_id = #{skuId}
         AND gs.sc_id = #{scId}
     </select>
     <select id="query" resultMap="ProductStock">
@@ -58,7 +67,10 @@
                     AND gs.sc_id = #{vo.scId}
                 </if>
                 <if test="vo.productCode != null and vo.productCode != ''">
-                    AND g.id IN (SELECT product_id FROM base_data_product_code WHERE code = #{vo.productCode})
+                    AND g.code = #{vo.productCode}
+                </if>
+                <if test="vo.skuCode != null and vo.skuCode != ''">
+                    AND gs.sku_id IN (SELECT s.id FROM base_data_product_sku s WHERE s.code = #{vo.skuCode})
                 </if>
                 <if test="vo.productName != null and vo.productName != ''">
                     AND g.name LIKE CONCAT('%', #{vo.productName}, '%')
@@ -76,6 +88,14 @@
     <select id="getByProductIdsAndScId" resultMap="ProductStock">
         <include refid="ProductStockDto_sql"/>
         WHERE gs.product_id IN <foreach collection="productIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        <if test="productType != null">
+            AND g.product_type = #{productType}
+        </if>
+        AND gs.sc_id = #{scId}
+    </select>
+    <select id="getBySkuIdsAndScId" resultMap="ProductStock">
+        <include refid="ProductStockDto_sql"/>
+        WHERE gs.sku_id IN <foreach collection="skuIds" open="(" separator="," close=")" item="item">#{item}</foreach>
         <if test="productType != null">
             AND g.product_type = #{productType}
         </if>

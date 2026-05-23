@@ -16,9 +16,29 @@ public class PurchaseProductDto implements BaseDto, Serializable {
   private String id;
 
   /**
-   * 编号
+   * SKU ID
    */
-  private String code;
+  private String skuId;
+
+  /**
+   * 商品ID
+   */
+  private String productId;
+
+  /**
+   * 商品编号
+   */
+  private String productCode;
+
+  /**
+   * SKU编号
+   */
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  private String salePropertyText;
 
   /**
    * 名称

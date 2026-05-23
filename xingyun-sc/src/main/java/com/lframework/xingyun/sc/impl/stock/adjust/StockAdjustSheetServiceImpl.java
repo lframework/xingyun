@@ -25,9 +25,11 @@ import com.lframework.starter.web.inner.components.timeline.CreateOrderTimeLineB
 import com.lframework.starter.web.inner.components.timeline.UpdateOrderTimeLineBizType;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductPurchase;
-import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
+import com.lframework.xingyun.basedata.entity.ProductSku;
+import com.lframework.xingyun.basedata.entity.ProductSkuPurchase;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuPurchaseService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
@@ -73,10 +75,13 @@ public class StockAdjustSheetServiceImpl extends
   private ProductStockService productStockService;
 
   @Autowired
-  private ProductPurchaseService productPurchaseService;
+  private ProductSkuPurchaseService productSkuPurchaseService;
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Override
   public PageResult<StockAdjustSheet> query(Integer pageIndex, Integer pageSize,
@@ -246,11 +251,12 @@ public class StockAdjustSheetServiceImpl extends
 
     for (StockAdjustSheetDetail detail : details) {
       Product product = productService.findById(detail.getProductId());
-      ProductPurchase productPurchase = productPurchaseService.getById(product.getId());
+      ProductSkuPurchase productPurchase = productSkuPurchaseService.getById(detail.getSkuId());
       if (data.getBizType() == StockAdjustSheetBizType.IN) {
         // 入库
         AddProductStockVo addProductStockVo = new AddProductStockVo();
         addProductStockVo.setProductId(product.getId());
+        addProductStockVo.setSkuId(detail.getSkuId());
         addProductStockVo.setScId(data.getScId());
         addProductStockVo.setStockNum(detail.getStockNum());
         addProductStockVo.setDefaultTaxAmount(
@@ -266,6 +272,7 @@ public class StockAdjustSheetServiceImpl extends
       } else {
         SubProductStockVo subProductStockVo = new SubProductStockVo();
         subProductStockVo.setProductId(product.getId());
+        subProductStockVo.setSkuId(detail.getSkuId());
         subProductStockVo.setScId(data.getScId());
         subProductStockVo.setStockNum(detail.getStockNum());
         subProductStockVo.setCreateTime(now);
@@ -383,10 +390,16 @@ public class StockAdjustSheetServiceImpl extends
 
     int orderNo = 1;
     for (StockAdjustProductVo product : vo.getProducts()) {
+      ProductSku sku = productSkuService.findById(
+          StringUtil.isBlank(product.getSkuId()) ? product.getProductId() : product.getSkuId());
+      if (sku == null) {
+        throw new DefaultClientException("第" + orderNo + "行商品不存在！");
+      }
       StockAdjustSheetDetail detail = new StockAdjustSheetDetail();
       detail.setId(IdUtil.getId());
       detail.setSheetId(data.getId());
-      detail.setProductId(product.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setStockNum(product.getStockNum());
       detail.setDescription(
           StringUtil.isBlank(product.getDescription()) ? StringPool.EMPTY_STR

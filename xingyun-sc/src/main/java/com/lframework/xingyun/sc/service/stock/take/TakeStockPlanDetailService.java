@@ -9,21 +9,21 @@ import java.util.List;
 public interface TakeStockPlanDetailService extends BaseMpService<TakeStockPlanDetail> {
 
   /**
-   * 根据盘点任务ID、商品ID查询
+   * 根据盘点任务ID、SKU ID查询
    *
    * @param planId
-   * @param productId
+   * @param skuId
    * @return
    */
-  GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(String planId, String productId);
+  GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(String planId, String skuId);
 
   /**
    * 单品盘点-保存盘点任务明细
    *
    * @param planId
-   * @param productIds
+   * @param skuIds
    */
-  void savePlanDetailBySimple(String planId, List<String> productIds);
+  void savePlanDetailBySimple(String planId, List<String> skuIds);
 
   /**
    * 根据盘点任务ID查询
@@ -37,10 +37,10 @@ public interface TakeStockPlanDetailService extends BaseMpService<TakeStockPlanD
    * 更新盘点数量
    *
    * @param planId
-   * @param productId
+   * @param skuId
    * @param num
    */
-  void updateOriTakeNum(String planId, String productId, BigDecimal num);
+  void updateOriTakeNum(String planId, String skuId, BigDecimal num);
 
   /**
    * 根据盘点任务ID调整库存数量

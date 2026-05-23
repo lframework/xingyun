@@ -3,6 +3,8 @@ package com.lframework.xingyun.sc.impl.stock.take;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.constants.StringPool;
+import com.lframework.xingyun.basedata.entity.ProductSku;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
@@ -30,15 +32,18 @@ public class TakeStockPlanDetailServiceImpl extends
   @Autowired
   private TakeStockPlanService takeStockPlanService;
 
-  @Override
-  public GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(String planId, String productId) {
+  @Autowired
+  private ProductSkuService productSkuService;
 
-    return getBaseMapper().getByPlanIdAndProductId(planId, productId);
+  @Override
+  public GetTakeStockPlanDetailProductDto getByPlanIdAndProductId(String planId, String skuId) {
+
+    return getBaseMapper().getByPlanIdAndProductId(planId, skuId);
   }
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void savePlanDetailBySimple(String planId, List<String> productIds) {
+  public void savePlanDetailBySimple(String planId, List<String> skuIds) {
 
     TakeStockPlan takeStockPlan = takeStockPlanService.getById(planId);
     Wrapper<TakeStockPlanDetail> queryDetailWrapper = Wrappers.lambdaQuery(
@@ -48,17 +53,22 @@ public class TakeStockPlanDetailServiceImpl extends
     List<TakeStockPlanDetail> planDetails = getBaseMapper().selectList(queryDetailWrapper);
 
     int orderNo = planDetails.size() + 1;
-    for (String productId : productIds) {
-      if (planDetails.stream().anyMatch(t -> t.getProductId().equals(productId))) {
+    for (String skuId : skuIds) {
+      ProductSku sku = productSkuService.findById(skuId);
+      if (sku == null) {
+        continue;
+      }
+      if (planDetails.stream().anyMatch(t -> t.getSkuId().equals(sku.getId()))) {
         continue;
       }
 
       TakeStockPlanDetail detail = new TakeStockPlanDetail();
       detail.setId(IdUtil.getId());
       detail.setPlanId(planId);
-      detail.setProductId(productId);
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
 
-      ProductStock productStock = productStockService.getByProductIdAndScId(productId,
+      ProductStock productStock = productStockService.getBySkuIdAndScId(sku.getId(),
           takeStockPlan.getScId());
       detail.setStockNum(productStock == null ? BigDecimal.ZERO : productStock.getStockNum());
 
@@ -76,9 +86,9 @@ public class TakeStockPlanDetailServiceImpl extends
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void updateOriTakeNum(String planId, String productId, BigDecimal num) {
+  public void updateOriTakeNum(String planId, String skuId, BigDecimal num) {
 
-    getBaseMapper().updateOriTakeNum(planId, productId, num);
+    getBaseMapper().updateOriTakeNum(planId, skuId, num);
   }
 
   @Transactional(rollbackFor = Exception.class)

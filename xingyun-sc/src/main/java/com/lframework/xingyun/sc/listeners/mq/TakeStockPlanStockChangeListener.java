@@ -27,9 +27,9 @@ public class TakeStockPlanStockChangeListener {
   })
   public void addStock(Message<ProductStockChangeDto> message) {
     ProductStockChangeDto change = message.getPayload();
-    log.info("增加库存，统计进项数量 scId = {}, productId = {}, num = {}", change.getScId(),
-        change.getProductId(), change.getNum());
-    takeStockPlanDetailMapper.addTotalInNum(change.getScId(), change.getProductId(),
+    log.info("增加库存，统计进项数量 scId = {}, skuId = {}, num = {}", change.getScId(),
+        change.getSkuId(), change.getNum());
+    takeStockPlanDetailMapper.addTotalInNum(change.getScId(), change.getSkuId(),
         change.getNum());
   }
 
@@ -39,9 +39,9 @@ public class TakeStockPlanStockChangeListener {
   })
   public void subStock(Message<ProductStockChangeDto> message) {
     ProductStockChangeDto change = message.getPayload();
-    log.info("扣减库存，统计出项数量 scId = {}, productId = {}, num = {}", change.getScId(),
-        change.getProductId(), change.getNum());
-    takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getProductId(),
+    log.info("扣减库存，统计出项数量 scId = {}, skuId = {}, num = {}", change.getScId(),
+        change.getSkuId(), change.getNum());
+    takeStockPlanDetailMapper.addTotalOutNum(change.getScId(), change.getSkuId(),
         change.getNum());
   }
 }

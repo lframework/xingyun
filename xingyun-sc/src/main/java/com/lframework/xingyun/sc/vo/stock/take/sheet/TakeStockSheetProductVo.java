@@ -22,6 +22,12 @@ public class TakeStockSheetProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 盘点数量
    */
   @Schema(description = "盘点数量", requiredMode = Schema.RequiredMode.REQUIRED)

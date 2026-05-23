@@ -21,9 +21,9 @@ public class CreateStockCellProductVo implements BaseVo, Serializable {
   private String stockCellId;
 
   /**
-   * 商品ID
+   * SKU ID
    */
-  @Schema(description = "商品ID")
+  @Schema(description = "SKU ID")
   @NotEmpty(message = "请选择商品！")
-  private List<String> productIds;
+  private List<String> skuIds;
 }

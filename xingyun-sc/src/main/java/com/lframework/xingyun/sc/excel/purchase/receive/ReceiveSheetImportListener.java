@@ -3,18 +3,16 @@ package com.lframework.xingyun.sc.excel.purchase.receive;
 import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.DateUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.excel.ExcelImportListener;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductCode;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
-import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.starter.web.inner.entity.SysUser;
@@ -83,19 +81,16 @@ public class ReceiveSheetImportListener extends ExcelImportListener<ReceiveSheet
     }
     if (StringUtil.isBlank(data.getProductCode())) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“商品编号”不能为空");
+          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”不能为空");
     } else {
-      ProductService productService = ApplicationUtil.getBean(ProductService.class);
-      Wrapper<Product> queryWrapper = new MPJLambdaWrapper<Product>().selectAll(Product.class)
-          .leftJoin(ProductCode.class, ProductCode::getProductId, Product::getId)
-          .eq(ProductCode::getCode, data.getProductCode())
-          .eq(Product::getAvailable, true);
-      Product product = productService.getOne(queryWrapper);
-      if (product == null) {
+      ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+      ProductSku sku = productSkuService.findAvailableByCode(data.getProductCode());
+      if (sku == null) {
         throw new DefaultClientException(
-            "第" + context.readRowHolder().getRowIndex() + "行“商品编号”不存在");
+            "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”不存在");
       }
-      data.setProductId(product.getId());
+      data.setProductId(sku.getId());
+      data.setSkuId(sku.getId());
     }
 
     if (!"是".equals(data.getGift()) && !"否".equals(data.getGift())) {
@@ -165,6 +160,7 @@ public class ReceiveSheetImportListener extends ExcelImportListener<ReceiveSheet
       for (ReceiveSheetImportModel data : value) {
         ReceiveProductVo purchaseProductVo = new ReceiveProductVo();
         purchaseProductVo.setProductId(data.getProductId());
+        purchaseProductVo.setSkuId(data.getSkuId());
         purchaseProductVo.setPurchasePrice(data.getPurchasePrice());
         purchaseProductVo.setReceiveNum(data.getReceiveNum());
         purchaseProductVo.setDescription(data.getDetailDescription());

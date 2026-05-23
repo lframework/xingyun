@@ -15,7 +15,7 @@ import lombok.Data;
  * @since 2021-07-11
  */
 @Data
-@TableName("base_data_product_sale")
+@TableName("base_data_product_sku_sale")
 public class ProductSale extends BaseEntity implements BaseDto {
 
   private static final long serialVersionUID = 1L;

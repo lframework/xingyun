@@ -23,10 +23,12 @@ import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductPurchase;
+import com.lframework.xingyun.basedata.entity.ProductSku;
+import com.lframework.xingyun.basedata.entity.ProductSkuPurchase;
 import com.lframework.xingyun.basedata.enums.ProductType;
-import com.lframework.xingyun.basedata.service.product.ProductPurchaseService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuPurchaseService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
@@ -89,7 +91,10 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
   private TakeStockSheetService takeStockSheetService;
 
   @Autowired
-  private ProductPurchaseService productPurchaseService;
+  private ProductSkuPurchaseService productSkuPurchaseService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
 
   @Override
@@ -182,18 +187,23 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     if (products != null) {
       List<String> productIds = products.stream().map(Product::getId)
           .collect(Collectors.toList());
-      List<ProductStock> productStocks = productStockService.getByProductIdsAndScId(productIds,
+      List<ProductSku> skus = productIds.stream().flatMap(
+          productId -> productSkuService.getAvailableByProductId(productId).stream()).collect(
+          Collectors.toList());
+      List<String> skuIds = skus.stream().map(ProductSku::getId).collect(Collectors.toList());
+      List<ProductStock> productStocks = productStockService.getBySkuIdsAndScId(skuIds,
           vo.getScId(), ProductType.NORMAL.getCode());
       int orderNo = 1;
-      for (Product product : products) {
+      for (ProductSku sku : skus) {
         ProductStock productStock = productStocks.stream()
-            .filter(t -> t.getProductId().equals(product.getId()))
+            .filter(t -> t.getSkuId().equals(sku.getId()))
             .findFirst().orElse(null);
 
         TakeStockPlanDetail detail = new TakeStockPlanDetail();
         detail.setId(IdUtil.getId());
         detail.setPlanId(data.getId());
-        detail.setProductId(product.getId());
+        detail.setProductId(sku.getProductId());
+        detail.setSkuId(sku.getId());
 
         detail.setStockNum(productStock == null ? BigDecimal.ZERO : productStock.getStockNum());
         detail.setTotalOutNum(BigDecimal.ZERO);
@@ -323,7 +333,9 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
 
     for (TakeStockPlanDetail detail : details) {
       ProductVo productVo = vo.getProducts().stream()
-          .filter(t -> t.getProductId().equals(detail.getProductId())).findFirst().get();
+          .filter(t -> StringUtil.equals(
+              StringUtil.isBlank(t.getSkuId()) ? t.getProductId() : t.getSkuId(),
+              detail.getSkuId())).findFirst().get();
       if (config.getAllowChangeNum()) {
         // 如果允许修改盘点数量
         detail.setTakeNum(productVo.getTakeNum());
@@ -345,11 +357,11 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
     for (TakeStockPlanDetail detail : details) {
       if (!NumberUtil.equal(detail.getStockNum(), detail.getTakeNum())) {
         if (NumberUtil.lt(detail.getStockNum(), detail.getTakeNum())) {
-          Product product = productService.findById(detail.getProductId());
-          ProductPurchase purchase = productPurchaseService.getById(product.getId());
+          ProductSkuPurchase purchase = productSkuPurchaseService.getById(detail.getSkuId());
           // 如果库存数量小于盘点数量，则报溢
           AddProductStockVo addProductStockVo = new AddProductStockVo();
           addProductStockVo.setProductId(detail.getProductId());
+          addProductStockVo.setSkuId(detail.getSkuId());
           addProductStockVo.setScId(data.getScId());
           addProductStockVo.setStockNum(NumberUtil.sub(detail.getTakeNum(), detail.getStockNum()));
           addProductStockVo.setDefaultTaxAmount(NumberUtil.getNumber(
@@ -364,6 +376,7 @@ public class TakeStockPlanServiceImpl extends BaseMpServiceImpl<TakeStockPlanMap
           // 如果库存数量大于盘点数量，则报损
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(detail.getProductId());
+          subProductStockVo.setSkuId(detail.getSkuId());
           subProductStockVo.setScId(data.getScId());
           subProductStockVo.setStockNum(NumberUtil.sub(detail.getStockNum(), detail.getTakeNum()));
           subProductStockVo.setBizId(data.getId());

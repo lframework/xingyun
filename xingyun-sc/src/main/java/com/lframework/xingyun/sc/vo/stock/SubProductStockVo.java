@@ -25,6 +25,12 @@ public class SubProductStockVo implements BaseVo, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 仓库ID
    */
   @Schema(description = "仓库ID", requiredMode = Schema.RequiredMode.REQUIRED)

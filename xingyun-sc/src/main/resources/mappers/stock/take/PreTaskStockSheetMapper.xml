@@ -25,6 +25,15 @@
         <collection property="details" ofType="com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto$SheetDetailDto" javaType="java.util.ArrayList">
             <id column="detail_id" property="id"/>
             <result column="detail_product_id" property="productId"/>
+            <result column="detail_sku_id" property="skuId"/>
+            <result column="detail_product_code" property="productCode"/>
+            <result column="detail_sku_code" property="skuCode"/>
+            <result column="detail_product_name" property="productName"/>
+            <result column="detail_sale_property_text" property="salePropertyText"/>
+            <result column="detail_category_name" property="categoryName"/>
+            <result column="detail_brand_name" property="brandName"/>
+            <result column="detail_spec" property="spec"/>
+            <result column="detail_unit" property="unit"/>
             <result column="detail_first_num" property="firstNum"/>
             <result column="detail_second_num" property="secondNum"/>
             <result column="detail_rand_num" property="randNum"/>
@@ -33,6 +42,15 @@
 
     <resultMap id="QueryPreTakeStockSheetProductDto" type="com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto">
         <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="product_code" property="productCode"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="sale_property_text" property="salePropertyText"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
         <result column="first_num" property="firstNum"/>
         <result column="second_num" property="secondNum"/>
         <result column="rand_num" property="randNum"/>
@@ -41,7 +59,11 @@
 
     <resultMap id="PreTakeStockProductDto" type="com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto">
         <id column="id" property="id"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="product_id" property="productId"/>
         <result column="code" property="code"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="sale_property_text" property="salePropertyText"/>
         <result column="name" property="name"/>
         <result column="category_id" property="categoryId"/>
         <result column="category_name" property="categoryName"/>
@@ -68,11 +90,24 @@
             tb.update_time,
             d.id AS detail_id,
             d.product_id AS detail_product_id,
+            d.sku_id AS detail_sku_id,
+            p.code AS detail_product_code,
+            s.code AS detail_sku_code,
+            p.name AS detail_product_name,
+            s.sale_property_text AS detail_sale_property_text,
+            c.name AS detail_category_name,
+            b.name AS detail_brand_name,
+            p.spec AS detail_spec,
+            p.unit AS detail_unit,
             d.first_num AS detail_first_num,
             d.second_num AS detail_second_num,
             d.rand_num AS detail_rand_num
         FROM tbl_pre_take_stock_sheet AS tb
         LEFT JOIN tbl_pre_take_stock_sheet_detail AS d ON d.sheet_id = tb.id
+        LEFT JOIN base_data_product AS p ON p.id = d.product_id
+        LEFT JOIN base_data_product_sku AS s ON s.id = d.sku_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
     </sql>
 
     <sql id="PreTakeStockSheetSelectorDto_sql">
@@ -92,18 +127,35 @@
     <sql id="QueryPreTakeStockSheetProductDto_sql">
         SELECT
             tb.product_id,
+            tb.sku_id,
+            p.code AS product_code,
+            s.code AS sku_code,
+            p.name AS product_name,
+            s.sale_property_text AS sale_property_text,
+            c.name AS category_name,
+            b.name AS brand_name,
+            p.spec,
+            p.unit,
             tb.first_num,
             tb.second_num,
             tb.rand_num,
             sh.take_status
         FROM tbl_pre_take_stock_sheet_detail AS tb
         LEFT JOIN tbl_pre_take_stock_sheet AS sh ON sh.id = tb.sheet_id
+        LEFT JOIN base_data_product AS p ON p.id = tb.product_id
+        LEFT JOIN base_data_product_sku AS s ON s.id = tb.sku_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
     </sql>
 
     <sql id="PreTakeStockProductDto_sql">
         SELECT
-            g.id,
+            s.id,
+            s.id AS sku_id,
+            g.id AS product_id,
             g.code,
+            s.code AS sku_code,
+            s.sale_property_text AS sale_property_text,
             g.name,
             c.id AS category_id,
             c.name AS category_name,
@@ -112,6 +164,7 @@
             g.spec,
             g.unit
         FROM base_data_product AS g
+        INNER JOIN base_data_product_sku AS s ON s.product_id = g.id
         LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
         LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
         LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
@@ -176,7 +229,7 @@
         <include refid="QueryPreTakeStockSheetProductDto_sql"/>
         WHERE tb.sheet_id = #{id}
         <if test="planId != null and planId != ''">
-            AND tb.product_id IN (SELECT product_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{planId})
+            AND tb.sku_id IN (SELECT sku_id FROM tbl_take_stock_plan_detail WHERE plan_id = #{planId})
         </if>
         ORDER BY tb.order_no
     </select>
@@ -187,7 +240,8 @@
                 <if test="vo.condition != null and vo.condition != ''">
                     AND (
                     g.name LIKE CONCAT('%', #{vo.condition}, '%')
-                    OR g.id IN (SELECT product_id FROM base_data_product_code WHERE code LIKE CONCAT('%', #{vo.condition}, '%'))
+                    OR g.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR s.id IN (SELECT sc.sku_id FROM base_data_product_sku_code sc WHERE sc.code LIKE CONCAT('%', #{vo.condition}, '%'))
                     )
                 </if>
                 <if test="vo.brandId != null and vo.brandId != ''">
@@ -198,6 +252,8 @@
                 </if>
             </if>
             AND g.product_type = 1
+            AND g.available = TRUE
+            AND s.available = TRUE
         </where>
         ORDER BY g.code
     </select>
@@ -206,9 +262,12 @@
         <where>
             AND (
             g.name LIKE CONCAT('%', #{condition}, '%')
-            OR g.id IN (SELECT product_id FROM base_data_product_code WHERE code LIKE CONCAT('%', #{condition}, '%'))
+            OR g.code LIKE CONCAT('%', #{condition}, '%')
+            OR s.id IN (SELECT sc.sku_id FROM base_data_product_sku_code sc WHERE sc.code LIKE CONCAT('%', #{condition}, '%'))
             )
             AND g.product_type = 1
+            AND g.available = TRUE
+            AND s.available = TRUE
         </where>
         ORDER BY g.code
     </select>

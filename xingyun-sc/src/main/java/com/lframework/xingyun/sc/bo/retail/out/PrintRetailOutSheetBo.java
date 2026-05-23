@@ -170,6 +170,18 @@ public class PrintRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
     private String productCode;
 
     /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
+
+    /**
      * 商品名称
      */
     @Schema(description = "商品名称")
@@ -214,9 +226,11 @@ public class PrintRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
 
       RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
           RetailOutSheetService.class);
-      RetailProductDto product = retailOutSheetService.getRetailById(dto.getProductId());
+      RetailProductDto product = retailOutSheetService.getRetailById(dto.getSkuId());
 
       this.productCode = product.getCode();
+      this.skuCode = product.getSkuCode();
+      this.salePropertyText = product.getSalePropertyText();
       this.productName = product.getName();
     }
   }

@@ -71,12 +71,20 @@ public interface ProductMapper extends BaseMapper<Product> {
   Product findById(String id);
 
   /**
+   * 根据编号查询
+   *
+   * @param code
+   * @return
+   */
+  Product findByCode(@Param("code") String code);
+
+  /**
    * 查询没有属性的ID
    *
    * @param propertyId
    * @return
    */
-  List<String> getIdNotInProductProperty(String propertyId);
+  List<String> getIdNotInProductCategoryPropertyDefinition(String propertyId);
 
   /**
    * 根据分类ID查询

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lframework.starter.web.core.entity.BaseEntity;
 import com.lframework.starter.web.core.dto.BaseDto;
+import com.lframework.xingyun.basedata.enums.ProductSkuType;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,11 +38,6 @@ public class Product extends BaseEntity implements BaseDto {
   private String code;
 
   /**
-   * 是否一品多码
-   */
-  private Boolean multiCode;
-
-  /**
    * 名称
    */
   private String name;
@@ -67,6 +63,11 @@ public class Product extends BaseEntity implements BaseDto {
   private ProductType productType;
 
   /**
+   * SKU类型
+   */
+  private ProductSkuType skuType;
+
+  /**
    * 进项税率（%）
    */
   private BigDecimal taxRate;
@@ -75,6 +76,16 @@ public class Product extends BaseEntity implements BaseDto {
    * 销项税率（%）
    */
   private BigDecimal saleTaxRate;
+
+  /**
+   * 详情图片
+   */
+  private String detailImages;
+
+  /**
+   * 商品主图
+   */
+  private String mainImage;
 
   /**
    * 规格

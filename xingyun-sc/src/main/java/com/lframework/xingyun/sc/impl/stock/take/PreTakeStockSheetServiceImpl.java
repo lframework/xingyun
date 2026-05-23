@@ -19,6 +19,8 @@ import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
+import com.lframework.xingyun.basedata.entity.ProductSku;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.PreTakeStockSheetFullDto;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
@@ -36,8 +38,11 @@ import com.lframework.xingyun.sc.vo.stock.take.pre.PreTakeStockSheetSelectorVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockProductVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.QueryPreTakeStockSheetVo;
 import com.lframework.xingyun.sc.vo.stock.take.pre.UpdatePreTakeStockSheetVo;
+import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +60,9 @@ public class PreTakeStockSheetServiceImpl extends
 
   @Autowired
   private TakeStockSheetService takeStockSheetService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Override
   public PageResult<PreTakeStockSheet> query(Integer pageIndex, Integer pageSize,
@@ -120,12 +128,19 @@ public class PreTakeStockSheetServiceImpl extends
 
     getBaseMapper().insert(data);
 
+    List<ProductSku> skus = this.checkAndGetSkus(vo.getProducts());
     int orderNo = 1;
-    for (PreTakeStockProductVo product : vo.getProducts()) {
+    for (int i = 0; i < vo.getProducts().size(); i++) {
+      PreTakeStockProductVo product = vo.getProducts().get(i);
+      ProductSku sku = skus.get(i);
+      if (sku == null) {
+        throw new DefaultClientException("第" + orderNo + "行商品不存在！");
+      }
       PreTakeStockSheetDetail detail = new PreTakeStockSheetDetail();
       detail.setId(IdUtil.getId());
       detail.setSheetId(data.getId());
-      detail.setProductId(product.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setFirstNum(product.getFirstNum());
       detail.setSecondNum(product.getSecondNum());
       detail.setRandNum(product.getRandNum());
@@ -165,12 +180,19 @@ public class PreTakeStockSheetServiceImpl extends
         .eq(PreTakeStockSheetDetail::getSheetId, data.getId());
     preTakeStockSheetDetailService.remove(deleteDetailWrapper);
 
+    List<ProductSku> skus = this.checkAndGetSkus(vo.getProducts());
     int orderNo = 1;
-    for (PreTakeStockProductVo product : vo.getProducts()) {
+    for (int i = 0; i < vo.getProducts().size(); i++) {
+      PreTakeStockProductVo product = vo.getProducts().get(i);
+      ProductSku sku = skus.get(i);
+      if (sku == null) {
+        throw new DefaultClientException("第" + orderNo + "行商品不存在！");
+      }
       PreTakeStockSheetDetail detail = new PreTakeStockSheetDetail();
       detail.setId(IdUtil.getId());
       detail.setSheetId(data.getId());
-      detail.setProductId(product.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setFirstNum(product.getFirstNum());
       detail.setSecondNum(product.getSecondNum());
       detail.setRandNum(product.getRandNum());
@@ -181,6 +203,28 @@ public class PreTakeStockSheetServiceImpl extends
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setExtra(vo);
+  }
+
+  private List<ProductSku> checkAndGetSkus(List<PreTakeStockProductVo> products) {
+
+    Set<String> skuIds = new HashSet<>();
+    List<ProductSku> skus = new ArrayList<>();
+    for (int i = 0; i < products.size(); i++) {
+      PreTakeStockProductVo product = products.get(i);
+      ProductSku sku = productSkuService.findById(
+          StringUtil.isBlank(product.getSkuId()) ? product.getProductId() : product.getSkuId());
+      if (sku == null) {
+        throw new DefaultClientException("第" + (i + 1) + "行商品不存在！");
+      }
+
+      if (skuIds.contains(sku.getId())) {
+        throw new DefaultClientException("第" + (i + 1) + "行商品已存在列表中，请勿重复添加！");
+      }
+      skuIds.add(sku.getId());
+      skus.add(sku);
+    }
+
+    return skus;
   }
 
   @OpLog(type = TakeStockOpLogType.class, name = "删除预先盘点单，ID：{}", params = {"#id"})

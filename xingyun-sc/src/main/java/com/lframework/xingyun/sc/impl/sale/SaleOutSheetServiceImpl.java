@@ -29,12 +29,14 @@ import com.lframework.starter.web.inner.service.system.SysUserService;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.enums.SettleType;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -118,6 +120,9 @@ public class SaleOutSheetServiceImpl extends
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Autowired
   private ProductBundleService productBundleService;
@@ -395,6 +400,7 @@ public class SaleOutSheetServiceImpl extends
       if (product.getProductType() == ProductType.NORMAL) {
         SubProductStockVo subProductStockVo = new SubProductStockVo();
         subProductStockVo.setProductId(detail.getProductId());
+        subProductStockVo.setSkuId(detail.getSkuId());
         subProductStockVo.setScId(sheet.getScId());
         subProductStockVo.setStockNum(detail.getOrderNum());
         subProductStockVo.setBizId(sheet.getId());
@@ -432,6 +438,7 @@ public class SaleOutSheetServiceImpl extends
           newDetail.setId(IdUtil.getId());
           newDetail.setSheetId(sheet.getId());
           newDetail.setProductId(saleOutSheetDetailBundle.getProductId());
+          newDetail.setSkuId(saleOutSheetDetailBundle.getSkuId());
           newDetail.setOrderNum(saleOutSheetDetailBundle.getProductOrderNum());
           newDetail.setOriPrice(saleOutSheetDetailBundle.getProductOriPrice());
           newDetail.setTaxPrice(saleOutSheetDetailBundle.getProductTaxPrice());
@@ -447,6 +454,7 @@ public class SaleOutSheetServiceImpl extends
 
           SubProductStockVo subProductStockVo = new SubProductStockVo();
           subProductStockVo.setProductId(newDetail.getProductId());
+          subProductStockVo.setSkuId(newDetail.getSkuId());
           subProductStockVo.setScId(sheet.getScId());
           subProductStockVo.setStockNum(newDetail.getOrderNum());
           subProductStockVo.setBizId(sheet.getId());
@@ -726,6 +734,7 @@ public class SaleOutSheetServiceImpl extends
           productVo.setOriPrice(orderDetail.getOriPrice());
           productVo.setTaxPrice(orderDetail.getTaxPrice());
           productVo.setDiscountRate(orderDetail.getDiscountRate());
+          productVo.setSkuId(orderDetail.getSkuId());
         } else {
           productVo.setTaxPrice(BigDecimal.ZERO);
           productVo.setDiscountRate(BigDecimal.valueOf(100));
@@ -756,12 +765,14 @@ public class SaleOutSheetServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setSheetId(sheet.getId());
 
-      Product product = productService.findById(productVo.getProductId());
+      ProductSku sku = this.getSheetSku(productVo.getSkuId(), productVo.getProductId(), orderNo);
+      Product product = productService.findById(sku.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
 
-      detail.setProductId(productVo.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setOrderNum(productVo.getOrderNum());
       detail.setOriPrice(productVo.getOriPrice());
       detail.setTaxPrice(productVo.getTaxPrice());
@@ -787,7 +798,7 @@ public class SaleOutSheetServiceImpl extends
           throw new InputErrorException("第" + orderNo + "行商品出库数量必须是整数！");
         }
         List<ProductBundle> productBundles = productBundleService.getByMainProductId(
-            product.getId());
+            sku.getId());
         // 构建指标项
         Map<Object, Number> bundleWeight = new HashMap<>(productBundles.size());
         for (ProductBundle productBundle : productBundles) {
@@ -798,14 +809,17 @@ public class SaleOutSheetServiceImpl extends
             bundleWeight, 2);
         List<SaleOutSheetDetailBundle> saleOutSheetDetailBundles = productBundles.stream()
             .map(productBundle -> {
-              Product bundle = productService.findById(productBundle.getProductId());
+              ProductSku bundleSku = productSkuService.findById(productBundle.getProductId());
+              Product bundle = productService.findById(bundleSku.getProductId());
               SaleOutSheetDetailBundle saleOutSheetDetailBundle = new SaleOutSheetDetailBundle();
               saleOutSheetDetailBundle.setId(IdUtil.getId());
               saleOutSheetDetailBundle.setSheetId(sheet.getId());
               saleOutSheetDetailBundle.setDetailId(detail.getId());
               saleOutSheetDetailBundle.setMainProductId(product.getId());
+              saleOutSheetDetailBundle.setMainSkuId(sku.getId());
               saleOutSheetDetailBundle.setOrderNum(detail.getOrderNum());
-              saleOutSheetDetailBundle.setProductId(productBundle.getProductId());
+              saleOutSheetDetailBundle.setProductId(bundleSku.getProductId());
+              saleOutSheetDetailBundle.setSkuId(bundleSku.getId());
               saleOutSheetDetailBundle.setProductOrderNum(
                   NumberUtil.mul(detail.getOrderNum(), productBundle.getBundleNum()));
               saleOutSheetDetailBundle.setProductOriPrice(productBundle.getSalePrice());
@@ -868,5 +882,16 @@ public class SaleOutSheetServiceImpl extends
   private SettleStatus getInitSettleStatus(Customer customer) {
 
     return SettleStatus.UN_SETTLE;
+  }
+
+  private ProductSku getSheetSku(String skuId, String fallbackSkuId, int orderNo) {
+
+    String id = StringUtil.isBlank(skuId) ? fallbackSkuId : skuId;
+    ProductSku sku = productSkuService.findById(id);
+    if (sku == null) {
+      throw new InputErrorException("第" + orderNo + "行SKU不存在！");
+    }
+
+    return sku;
   }
 }

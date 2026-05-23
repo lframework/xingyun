@@ -19,8 +19,11 @@
                 <if test="vo.scId != null and vo.scId != ''">
                     AND tb.sc_id = #{vo.scId}
                 </if>
-                <if test="vo.productId != null and vo.productId != ''">
-                    AND tb.product_id = #{vo.productId}
+                <if test="vo.skuId != null and vo.skuId != ''">
+                    AND tb.sku_id = #{vo.skuId}
+                </if>
+                <if test="(vo.skuId == null or vo.skuId == '') and vo.productId != null and vo.productId != ''">
+                    AND tb.sku_id = #{vo.productId}
                 </if>
                 <if test="vo.updateTimeStart != null">
                     AND tb.update_time >= #{vo.updateTimeStart}

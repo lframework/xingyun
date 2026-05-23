@@ -15,10 +15,28 @@ public class PreTakeStockProductBo extends BaseBo<PreTakeStockProductDto> {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 编号
      */
     @Schema(description = "编号")
     private String productCode;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
 
     /**
      * 名称
@@ -62,8 +80,15 @@ public class PreTakeStockProductBo extends BaseBo<PreTakeStockProductDto> {
     @Override
     protected void afterInit(PreTakeStockProductDto dto) {
 
-        this.productId = dto.getId();
+        this.productId = dto.getProductId();
+        this.skuId = dto.getSkuId();
         this.productCode = dto.getCode();
+        this.skuCode = dto.getSkuCode();
+        this.salePropertyText = dto.getSalePropertyText();
         this.productName = dto.getName();
+        this.categoryName = dto.getCategoryName();
+        this.brandName = dto.getBrandName();
+        this.spec = dto.getSpec();
+        this.unit = dto.getUnit();
     }
 }

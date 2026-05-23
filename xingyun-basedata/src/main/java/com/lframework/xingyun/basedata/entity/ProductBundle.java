@@ -18,7 +18,7 @@ import lombok.Data;
  * @since 2023-05-25
  */
 @Data
-@TableName("base_data_product_bundle")
+@TableName("base_data_product_sku_bundle")
 public class ProductBundle extends BaseEntity implements BaseDto {
 
   public static final String CACHE_NAME = "ProductBundle";
@@ -31,13 +31,15 @@ public class ProductBundle extends BaseEntity implements BaseDto {
   private String id;
 
   /**
-   * 主商品ID
+   * 组合SKU ID
    */
+  @TableField("main_sku_id")
   private String mainProductId;
 
   /**
-   * 单品ID
+   * 单品SKU ID
    */
+  @TableField("sku_id")
   private String productId;
 
   /**

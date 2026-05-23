@@ -6,9 +6,11 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.QueryTakeStockPlanProductDto;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
@@ -24,6 +26,24 @@ public class QueryTakeStockPlanProductBo extends BaseBo<QueryTakeStockPlanProduc
    */
   @Schema(description = "商品ID")
   private String productId;
+
+  /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
+   * SKU编号
+   */
+  @Schema(description = "SKU编号")
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  @Schema(description = "销售属性")
+  private String salePropertyText;
 
   /**
    * 商品编号
@@ -77,6 +97,9 @@ public class QueryTakeStockPlanProductBo extends BaseBo<QueryTakeStockPlanProduc
 
     ProductService productService = ApplicationUtil.getBean(ProductService.class);
     Product product = productService.findById(dto.getProductId());
+    this.skuId = dto.getSkuId();
+    ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+    ProductSku sku = productSkuService.findById(dto.getSkuId());
 
     ProductCategoryService productCategoryService = ApplicationUtil.getBean(
         ProductCategoryService.class);
@@ -89,6 +112,8 @@ public class QueryTakeStockPlanProductBo extends BaseBo<QueryTakeStockPlanProduc
     }
 
     this.productCode = product.getCode();
+    this.skuCode = sku == null ? null : sku.getCode();
+    this.salePropertyText = sku == null ? null : sku.getSalePropertyText();
     this.productName = product.getName();
     this.categoryName = productCategory.getName();
     this.spec = product.getSpec();

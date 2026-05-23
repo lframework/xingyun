@@ -15,8 +15,8 @@ public class ScTransferOrderDetailServiceImpl
 
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public int receive(String orderId, String productId, BigDecimal receiveNum, BigDecimal receiveAmount) {
-    return getBaseMapper().receive(orderId, productId, receiveNum, receiveAmount);
+  public int receive(String orderId, String skuId, BigDecimal receiveNum, BigDecimal receiveAmount) {
+    return getBaseMapper().receive(orderId, skuId, receiveNum, receiveAmount);
   }
 
   @Override

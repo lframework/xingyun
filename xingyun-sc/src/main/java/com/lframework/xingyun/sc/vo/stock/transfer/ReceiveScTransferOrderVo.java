@@ -45,6 +45,12 @@ public class ReceiveScTransferOrderVo implements BaseVo, Serializable {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 收货数量
      */
     @Schema(description = "收货数量", requiredMode = Schema.RequiredMode.REQUIRED)

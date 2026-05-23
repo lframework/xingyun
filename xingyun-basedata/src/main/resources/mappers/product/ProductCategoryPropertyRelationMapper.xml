@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.ProductCategoryPropertyRelationMapper">
+
+    <resultMap id="ProductCategoryPropertyRelationDto" type="com.lframework.xingyun.basedata.entity.ProductCategoryPropertyRelation">
+        <id column="id" property="id"/>
+        <result column="property_id" property="propertyId"/>
+        <result column="category_id" property="categoryId"/>
+    </resultMap>
+
+    <resultMap id="ProductCategory" type="com.lframework.xingyun.basedata.entity.ProductCategory">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+    </resultMap>
+
+    <resultMap id="PropertyCategoryCountDto" type="com.lframework.xingyun.basedata.dto.product.category.PropertyCategoryCountDto">
+        <id column="property_id" property="propertyId"/>
+        <result column="category_count" property="categoryCount"/>
+    </resultMap>
+
+    <resultMap id="QueryProductCategoryPropertyRelationDto" type="com.lframework.xingyun.basedata.dto.product.category.property.ProductCategoryPropertyRelationDto">
+        <id column="id" property="id"/>
+        <result column="property_id" property="propertyId"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="is_required" property="isRequired"/>
+        <result column="column_type" property="columnType"/>
+        <result column="column_data_type" property="columnDataType"/>
+        <result column="property_type" property="propertyType"/>
+        <result column="description" property="description"/>
+    </resultMap>
+
+    <sql id="ProductCategoryPropertyRelationDto_sql">
+        SELECT
+            cp.id,
+            cp.property_id,
+            cp.category_id
+        FROM base_data_product_category_property_relation AS cp
+        LEFT JOIN base_data_product_category_property_definition AS p ON p.id = cp.property_id
+        LEFT JOIN base_data_product_category AS c ON c.id = cp.category_id
+    </sql>
+
+    <select id="getByPropertyId" resultMap="ProductCategoryPropertyRelationDto">
+        <include refid="ProductCategoryPropertyRelationDto_sql"/>
+        WHERE cp.property_id = #{propertyId}
+        ORDER BY c.code
+    </select>
+
+    <select id="getCategoriesByPropertyId" resultMap="ProductCategory">
+        SELECT
+            c.id,
+            c.code,
+            c.name,
+            c.description
+        FROM base_data_product_category_property_relation AS cp
+        INNER JOIN base_data_product_category AS c ON c.id = cp.category_id AND c.available = TRUE
+        WHERE cp.property_id = #{propertyId}
+        ORDER BY c.code
+    </select>
+
+    <select id="countCategoriesByPropertyIds" resultMap="PropertyCategoryCountDto">
+        SELECT
+            cp.property_id,
+            COUNT(1) AS category_count
+        FROM base_data_product_category_property_relation AS cp
+        INNER JOIN base_data_product_category AS c ON c.id = cp.category_id AND c.available = TRUE
+        WHERE cp.property_id IN
+        <foreach collection="propertyIds" item="propertyId" open="(" close=")" separator=",">
+            #{propertyId}
+        </foreach>
+        GROUP BY cp.property_id
+    </select>
+
+    <select id="getByCategoryId" resultMap="QueryProductCategoryPropertyRelationDto">
+        SELECT
+            cp.id,
+            cp.property_id,
+            cp.category_id,
+            p.code,
+            p.name,
+            p.is_required,
+            p.column_type,
+            p.column_data_type,
+            p.property_type,
+            p.description
+        FROM base_data_product_category_property_relation AS cp
+        INNER JOIN base_data_product_category_property_definition AS p ON p.id = cp.property_id AND p.available = TRUE
+        WHERE cp.category_id = #{categoryId}
+        ORDER BY p.code
+    </select>
+
+</mapper>

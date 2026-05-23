@@ -16,6 +16,11 @@ public class QueryTakeStockPlanProductDto implements BaseDto, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 初始库存
    */
   private BigDecimal stockNum;

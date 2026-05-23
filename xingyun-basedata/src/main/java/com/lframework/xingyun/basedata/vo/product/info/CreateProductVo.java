@@ -25,14 +25,7 @@ public class CreateProductVo implements BaseVo, Serializable {
    */
   @Schema(description = "编号", requiredMode = Schema.RequiredMode.REQUIRED)
   @IsCode
-  @NotBlank(message = "请输入编号！")
   private String code;
-
-  /**
-   * 扩展编号
-   */
-  @Schema(description = "扩展编号")
-  private List<String> multiCodes;
 
   /**
    * 名称
@@ -95,6 +88,25 @@ public class CreateProductVo implements BaseVo, Serializable {
   private Integer productType;
 
   /**
+   * 详情图片
+   */
+  @Schema(description = "详情图片")
+  private List<String> detailImages;
+
+  /**
+   * 商品主图
+   */
+  @Schema(description = "商品主图")
+  private List<String> mainImage;
+
+  /**
+   * SKU列表
+   */
+  @Schema(description = "SKU列表")
+  @Valid
+  private List<ProductSkuVo> skus;
+
+  /**
    * 重量（kg）
    */
   @Schema(description = "重量（kg）")
@@ -120,25 +132,6 @@ public class CreateProductVo implements BaseVo, Serializable {
    */
   @Schema(description = "分类属性")
   @Valid
-  private List<ProductPropertyRelationVo> properties;
-
-  /**
-   * 采购价
-   */
-  @Schema(description = "采购价")
-  private BigDecimal purchasePrice;
-
-  /**
-   * 销售价
-   */
-  @Schema(description = "销售价")
-  private BigDecimal salePrice;
-
-  /**
-   * 零售价
-   */
-  @Schema(description = "零售价")
-  private BigDecimal retailPrice;
-
+  private List<ProductCategoryPropertyValueRelationVo> properties;
 
 }

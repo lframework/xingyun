@@ -66,6 +66,12 @@ public class HandleTakeStockPlanVo implements BaseVo, Serializable {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 修改后盘点数量
      */
     @Schema(description = "修改后盘点数量")

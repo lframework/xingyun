@@ -10,17 +10,20 @@ import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.event.DataChangeEventBuilder;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
-import com.lframework.xingyun.basedata.entity.ProductSaleProperty;
+import com.lframework.xingyun.basedata.entity.ProductSalePropertyDefinition;
 import com.lframework.xingyun.basedata.entity.ProductSalePropertyItem;
 import com.lframework.xingyun.basedata.enums.BaseDataOpLogType;
+import com.lframework.xingyun.basedata.events.DeleteProductSalePropertyItemEvent;
 import com.lframework.xingyun.basedata.mappers.ProductSalePropertyItemMapper;
 import com.lframework.xingyun.basedata.service.product.ProductSalePropertyItemService;
-import com.lframework.xingyun.basedata.service.product.ProductSalePropertyService;
+import com.lframework.xingyun.basedata.service.product.ProductSalePropertyDefinitionService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.vo.product.saleproperty.item.CreateProductSalePropertyItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleproperty.item.QueryProductSalePropertyItemVo;
 import com.lframework.xingyun.basedata.vo.product.saleproperty.item.UpdateProductSalePropertyItemVo;
@@ -38,7 +41,10 @@ public class ProductSalePropertyItemServiceImpl extends
     implements ProductSalePropertyItemService {
 
   @Autowired
-  private ProductSalePropertyService productSalePropertyService;
+  private ProductSalePropertyDefinitionService ProductSalePropertyDefinitionService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Override
   public PageResult<ProductSalePropertyItem> query(Integer pageIndex, Integer pageSize,
@@ -78,7 +84,7 @@ public class ProductSalePropertyItemServiceImpl extends
   @Override
   public String create(CreateProductSalePropertyItemVo vo) {
 
-    ProductSaleProperty property = productSalePropertyService.findById(vo.getPropertyId());
+    ProductSalePropertyDefinition property = ProductSalePropertyDefinitionService.findById(vo.getPropertyId());
     if (ObjectUtil.isNull(property)) {
       throw new DefaultClientException("商品销售属性不存在！");
     }
@@ -158,6 +164,7 @@ public class ProductSalePropertyItemServiceImpl extends
         .set(ProductSalePropertyItem::getDescription,
             StringUtil.isBlank(vo.getDescription()) ? StringPool.EMPTY_STR : vo.getDescription());
     getBaseMapper().update(updateWrapper);
+    productSkuService.refreshSalePropertyTextByPropertyId(data.getPropertyId());
 
     OpLogUtil.setVariable("id", data.getId());
     OpLogUtil.setVariable("code", vo.getCode());
@@ -174,6 +181,10 @@ public class ProductSalePropertyItemServiceImpl extends
         .eq(ProductSalePropertyItem::getId, id)
         .set(ProductSalePropertyItem::getAvailable, Boolean.FALSE);
     this.update(deleteWrapper);
+
+    ProductSalePropertyItem item = this.findById(id);
+    DataChangeEventBuilder.publishLogicDelete(this, DeleteProductSalePropertyItemEvent.class,
+        item);
   }
 
   @CacheEvict(value = ProductSalePropertyItem.CACHE_NAME, key = "@cacheVariables.tenantId() + #key")

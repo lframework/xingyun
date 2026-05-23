@@ -250,10 +250,28 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 商品编号
      */
     @Schema(description = "商品编号")
     private String productCode;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
 
     /**
      * 商品名称
@@ -375,9 +393,13 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
 
       RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
           RetailOutSheetService.class);
-      RetailProductDto product = retailOutSheetService.getRetailById(dto.getProductId());
+      RetailProductDto product = retailOutSheetService.getRetailById(dto.getSkuId());
 
+      this.productId = product.getProductId();
+      this.skuId = product.getSkuId();
       this.productCode = product.getCode();
+      this.skuCode = product.getSkuCode();
+      this.salePropertyText = product.getSalePropertyText();
       this.productName = product.getName();
       this.unit = product.getUnit();
       this.spec = product.getSpec();

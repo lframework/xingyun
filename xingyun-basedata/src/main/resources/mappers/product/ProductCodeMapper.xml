@@ -3,14 +3,15 @@
 <mapper namespace="com.lframework.xingyun.basedata.mappers.ProductCodeMapper">
     <select id="checkMultiCodes" resultType="java.lang.String">
         SELECT pc.code
-        FROM base_data_product_code pc
-        JOIN base_data_product p ON pc.product_id = p.id AND p.available = TRUE
+        FROM base_data_product_sku_code pc
+        JOIN base_data_product_sku s ON pc.sku_id = s.id AND s.available = TRUE
+        JOIN base_data_product p ON s.product_id = p.id AND p.available = TRUE
         WHERE pc.code IN
         <foreach item="item" index="index" collection="codes" open="(" separator="," close=")">
             #{item}
         </foreach>
         <if test="productId != null and productId != ''">
-            AND pc.product_id != #{productId}
+            AND s.product_id != #{productId}
         </if>
     </select>
 </mapper>

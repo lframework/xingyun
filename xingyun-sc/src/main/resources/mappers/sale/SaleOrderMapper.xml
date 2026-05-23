@@ -44,6 +44,7 @@
             <id column="detail_id" property="id"/>
             <result column="detail_main_product_id" property="mainProductId"/>
             <result column="detail_product_id" property="productId"/>
+            <result column="detail_sku_id" property="skuId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
             <result column="detail_tax_price" property="taxPrice"/>
@@ -65,6 +66,7 @@
             <id column="detail_id" property="id"/>
             <result column="detail_main_product_id" property="mainProductId"/>
             <result column="detail_product_id" property="productId"/>
+            <result column="detail_sku_id" property="skuId"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
             <result column="detail_tax_price" property="taxPrice"/>
@@ -79,7 +81,11 @@
 
     <resultMap id="SaleProductDto" type="com.lframework.xingyun.sc.dto.sale.SaleProductDto">
         <id column="id" property="id"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="product_id" property="productId"/>
         <result column="code" property="code"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="sale_property_text" property="salePropertyText"/>
         <result column="name" property="name"/>
         <result column="category_id" property="categoryId"/>
         <result column="category_name" property="categoryName"/>
@@ -136,6 +142,7 @@
             d.id AS detail_id,
             b.main_product_id AS detail_main_product_id,
             d.product_id AS detail_product_id,
+            d.sku_id AS detail_sku_id,
             d.order_num AS detail_order_num,
             d.ori_price AS detail_ori_price,
             d.tax_price AS detail_tax_price,
@@ -152,8 +159,12 @@
 
     <sql id="SaleProductDto_sql">
         SELECT
-            g.id,
-            g.code,
+            s.id AS id,
+            s.id AS sku_id,
+            g.id AS product_id,
+            g.code AS code,
+            s.code AS sku_code,
+            s.sale_property_text,
             g.name,
             c.id AS category_id,
             c.name AS category_name,
@@ -165,7 +176,8 @@
             g.sale_tax_rate,
             g.available
         FROM base_data_product AS g
-        INNER JOIN base_data_product_sale AS sale ON sale.id = g.id
+        INNER JOIN base_data_product_sku AS s ON s.product_id = g.id
+        INNER JOIN base_data_product_sku_sale AS sale ON sale.id = s.id
         LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
         LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
         LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
@@ -254,7 +266,7 @@
     </select>
     <select id="getWithOut" resultMap="SaleOrderWithOutDto">
         SELECT
-        o.id, o.sc_id, o.customer_id, o.saler_id, d.id AS detail_id, b.main_product_id AS detail_main_product_id, d.product_id AS detail_product_id,
+        o.id, o.sc_id, o.customer_id, o.saler_id, d.id AS detail_id, b.main_product_id AS detail_main_product_id, d.product_id AS detail_product_id, d.sku_id AS detail_sku_id,
         d.order_num AS detail_order_num, d.ori_price AS detail_ori_price, d.tax_price AS detail_tax_price,
         d.discount_rate AS detail_discount_rate,
         d.is_gift AS detail_is_gift, d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS
@@ -304,12 +316,14 @@
         <where>
             AND (
             g.name LIKE CONCAT('%', #{condition}, '%')
-            OR g.id IN (SELECT product_id FROM base_data_product_code WHERE code LIKE CONCAT('%', #{condition}, '%'))
+            OR g.code LIKE CONCAT('%', #{condition}, '%')
+            OR s.id IN (SELECT sc.sku_id FROM base_data_product_sku_code sc WHERE sc.code LIKE CONCAT('%', #{condition}, '%'))
             )
             <if test="isReturn != null and isReturn">
                 AND g.product_type = 1
             </if>
             AND g.available = TRUE
+            AND s.available = TRUE
         </where>
         ORDER BY g.code
     </select>
@@ -320,7 +334,8 @@
                 <if test="vo.condition != null and vo.condition != ''">
                     AND (
                     g.name LIKE CONCAT('%', #{vo.condition}, '%')
-                    OR g.id IN (SELECT product_id FROM base_data_product_code WHERE code LIKE CONCAT('%', #{vo.condition}, '%'))
+                    OR g.code LIKE CONCAT('%', #{vo.condition}, '%')
+                    OR s.id IN (SELECT sc.sku_id FROM base_data_product_sku_code sc WHERE sc.code LIKE CONCAT('%', #{vo.condition}, '%'))
                     )
                 </if>
                 <if test="vo.brandId != null and vo.brandId != ''">
@@ -334,11 +349,12 @@
                 </if>
             </if>
             AND g.available = TRUE
+            AND s.available = TRUE
         </where>
         ORDER BY g.code
     </select>
     <select id="getSaleById" resultMap="SaleProductDto">
         <include refid="SaleProductDto_sql"/>
-        WHERE g.id = #{id}
+        WHERE s.id = #{id}
     </select>
 </mapper>

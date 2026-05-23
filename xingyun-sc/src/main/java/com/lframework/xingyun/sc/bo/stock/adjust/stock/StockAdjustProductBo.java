@@ -20,6 +20,24 @@ public class StockAdjustProductBo extends BaseBo<StockAdjustProductDto> {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
+   * SKU编号
+   */
+  @Schema(description = "SKU编号")
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  @Schema(description = "销售属性")
+  private String salePropertyText;
+
+  /**
    * 编号
    */
   @Schema(description = "编号")
@@ -81,13 +99,16 @@ public class StockAdjustProductBo extends BaseBo<StockAdjustProductDto> {
   @Override
   protected void afterInit(StockAdjustProductDto dto) {
 
-    this.productId = dto.getId();
+    this.productId = dto.getProductId();
+    this.skuId = dto.getSkuId();
+    this.skuCode = dto.getSkuCode();
+    this.salePropertyText = dto.getSalePropertyText();
     this.productCode = dto.getCode();
     this.productName = dto.getName();
 
     ProductStockService productStockService = ApplicationUtil.getBean(
         ProductStockService.class);
-    ProductStock productStock = productStockService.getByProductIdAndScId(dto.getId(),
+    ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
         this.scId);
     this.curStockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
   }

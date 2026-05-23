@@ -15,9 +15,29 @@ public class ScTransferProductDto implements BaseDto, Serializable {
   private String id;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
+   * 商品ID
+   */
+  private String productId;
+
+  /**
    * 编号
    */
   private String code;
+
+  /**
+   * SKU编号
+   */
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  private String salePropertyText;
 
   /**
    * 名称

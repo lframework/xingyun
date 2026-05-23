@@ -102,6 +102,21 @@ public class StockAdjustSheetFullDto implements BaseDto, Serializable {
     private String productId;
 
     /**
+     * SKU ID
+     */
+    private String skuId;
+
+    /**
+     * SKU编号
+     */
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    private String salePropertyText;
+
+    /**
      * 调整库存数量
      */
     private BigDecimal stockNum;

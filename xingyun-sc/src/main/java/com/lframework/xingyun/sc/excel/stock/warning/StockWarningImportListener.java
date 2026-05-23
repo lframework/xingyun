@@ -3,16 +3,14 @@ package com.lframework.xingyun.sc.excel.stock.warning;
 import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.NumberUtil;
+import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.excel.ExcelImportListener;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.starter.web.core.utils.IdUtil;
-import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductCode;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.ProductStockWarning;
 import com.lframework.xingyun.sc.service.stock.warning.ProductStockWarningService;
@@ -35,17 +33,14 @@ public class StockWarningImportListener extends ExcelImportListener<StockWarning
     }
 
     data.setScId(sc.getId());
-    ProductService productService = ApplicationUtil.getBean(ProductService.class);
-    Wrapper<Product> queryProductWrapper = new MPJLambdaWrapper<Product>().selectAll(Product.class)
-        .leftJoin(ProductCode.class, ProductCode::getProductId, Product::getId)
-        .eq(ProductCode::getCode, data.getProductCode())
-        .eq(Product::getAvailable, true);
-    Product product = productService.getOne(queryProductWrapper);
-    if (product == null) {
+    ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+    ProductSku sku = productSkuService.findAvailableByCode(data.getSkuCode());
+    if (sku == null) {
       throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“商品编号”不存在");
+          "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”不存在");
     }
-    data.setProductId(product.getId());
+    data.setProductId(sku.getProductId());
+    data.setSkuId(sku.getId());
 
     if (NumberUtil.le(data.getMinLimit(), 0)) {
       throw new DefaultClientException(
@@ -83,12 +78,13 @@ public class StockWarningImportListener extends ExcelImportListener<StockWarning
     for (StockWarningImportModel data : this.getDatas()) {
       Wrapper<ProductStockWarning> checkWrapper = Wrappers.lambdaQuery(ProductStockWarning.class)
           .eq(ProductStockWarning::getScId, data.getScId())
-          .eq(ProductStockWarning::getProductId, data.getProductId());
+          .eq(ProductStockWarning::getSkuId, data.getSkuId());
       ProductStockWarning record = productStockWarningService.getOne(checkWrapper);
       if (record == null) {
         CreateProductStockWarningVo vo = new CreateProductStockWarningVo();
         vo.setScId(data.getScId());
         vo.setProductId(data.getProductId());
+        vo.setSkuId(data.getSkuId());
         vo.setMinLimit(data.getMinLimit());
         vo.setMaxLimit(data.getMaxLimit());
 
@@ -99,6 +95,7 @@ public class StockWarningImportListener extends ExcelImportListener<StockWarning
         vo.setAvailable(record.getAvailable());
         vo.setScId(data.getScId());
         vo.setProductId(data.getProductId());
+        vo.setSkuId(data.getSkuId());
         vo.setMinLimit(data.getMinLimit());
         vo.setMaxLimit(data.getMaxLimit());
 

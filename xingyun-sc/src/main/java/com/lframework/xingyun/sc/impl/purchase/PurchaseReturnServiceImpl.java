@@ -29,10 +29,13 @@ import com.lframework.starter.web.inner.service.GenerateCodeService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import com.lframework.starter.web.core.utils.OpLogUtil;
 import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.enums.ManageType;
+import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -92,6 +95,9 @@ public class PurchaseReturnServiceImpl extends
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Autowired
   private ReceiveSheetService receiveSheetService;
@@ -282,6 +288,7 @@ public class PurchaseReturnServiceImpl extends
       SubProductStockVo subproductStockVo = new SubProductStockVo();
 
       subproductStockVo.setProductId(detail.getProductId());
+      subproductStockVo.setSkuId(detail.getSkuId());
       subproductStockVo.setScId(purchaseReturn.getScId());
       subproductStockVo.setStockNum(detail.getReturnNum());
       subproductStockVo.setTaxAmount(NumberUtil.getNumber(NumberUtil.mul(detail.getTaxPrice(), detail.getReturnNum()), 2));
@@ -522,6 +529,7 @@ public class PurchaseReturnServiceImpl extends
           ReceiveSheetDetail detail = receiveSheetDetailService.getById(
               productVo.getReceiveSheetDetailId());
           productVo.setPurchasePrice(detail.getTaxPrice());
+          productVo.setSkuId(detail.getSkuId());
         } else {
           productVo.setPurchasePrice(BigDecimal.ZERO);
         }
@@ -550,9 +558,13 @@ public class PurchaseReturnServiceImpl extends
       detail.setId(IdUtil.getId());
       detail.setReturnId(purchaseReturn.getId());
 
-      Product product = productService.findById(productVo.getProductId());
+      ProductSku sku = this.getReturnSku(productVo.getSkuId(), productVo.getProductId(), orderNo);
+      Product product = productService.findById(sku.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
+      }
+      if (product.getProductType() != ProductType.NORMAL) {
+        throw new InputErrorException("第" + orderNo + "行商品不允许录入组合商品！");
       }
 
       if (!NumberUtil.isNumberPrecision(productVo.getPurchasePrice(), 6)) {
@@ -563,7 +575,8 @@ public class PurchaseReturnServiceImpl extends
         throw new InputErrorException("第" + orderNo + "行商品退货数量最多允许8位小数！");
       }
 
-      detail.setProductId(productVo.getProductId());
+      detail.setProductId(sku.getProductId());
+      detail.setSkuId(sku.getId());
       detail.setReturnNum(productVo.getReturnNum());
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setIsGift(isGift);
@@ -615,5 +628,16 @@ public class PurchaseReturnServiceImpl extends
     ApprovePassPurchaseReturnEvent event = new ApprovePassPurchaseReturnEvent(this, dto);
 
     ApplicationUtil.publishEvent(event);
+  }
+
+  private ProductSku getReturnSku(String skuId, String fallbackSkuId, int orderNo) {
+
+    String id = StringUtil.isBlank(skuId) ? fallbackSkuId : skuId;
+    ProductSku sku = productSkuService.findById(id);
+    if (sku == null) {
+      throw new InputErrorException("第" + orderNo + "行SKU不存在！");
+    }
+
+    return sku;
   }
 }

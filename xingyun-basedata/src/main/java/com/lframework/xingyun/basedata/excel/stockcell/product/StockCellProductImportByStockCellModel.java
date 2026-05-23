@@ -10,15 +10,15 @@ import lombok.Data;
 public class StockCellProductImportByStockCellModel implements ExcelModel {
 
   /**
-   * 商品ID
+   * SKU ID
    */
   @ExcelIgnore
-  private String productId;
+  private String skuId;
 
   /**
-   * 商品编号
+   * SKU编号
    */
   @ExcelRequired
-  @ExcelProperty("商品编号")
-  private String productCode;
+  @ExcelProperty("SKU编号")
+  private String skuCode;
 }

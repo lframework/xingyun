@@ -36,6 +36,11 @@ public class SaleOrderDetail extends BaseEntity implements BaseDto {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 销售数量
    */
   private BigDecimal orderNum;

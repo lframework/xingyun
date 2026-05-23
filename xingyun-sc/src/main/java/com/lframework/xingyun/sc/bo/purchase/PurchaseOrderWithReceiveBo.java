@@ -132,10 +132,28 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
     private String productId;
 
     /**
+     * SKU ID
+     */
+    @Schema(description = "SKU ID")
+    private String skuId;
+
+    /**
      * 商品编号
      */
     @Schema(description = "商品编号")
     private String productCode;
+
+    /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
 
     /**
      * 商品名称
@@ -252,11 +270,14 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
 
       PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
           PurchaseOrderService.class);
-      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getProductId());
+      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getSkuId());
 
       this.id = dto.getId();
       this.productId = product.getId();
-      this.productCode = product.getCode();
+      this.skuId = product.getSkuId();
+      this.productCode = product.getProductCode();
+      this.skuCode = product.getSkuCode();
+      this.salePropertyText = product.getSalePropertyText();
       this.productName = product.getName();
       this.unit = product.getUnit();
       this.spec = product.getSpec();
@@ -272,8 +293,8 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
 
       ProductStockService productStockService = ApplicationUtil.getBean(
           ProductStockService.class);
-      ProductStock productStock = productStockService.getByProductIdAndScId(
-          this.getProductId(), this.getScId());
+      ProductStock productStock = productStockService.getBySkuIdAndScId(
+          this.getSkuId(), this.getScId());
       this.taxCostPrice =
           productStock == null ? BigDecimal.ZERO
               : NumberUtil.getNumber(productStock.getTaxPrice(), 2);

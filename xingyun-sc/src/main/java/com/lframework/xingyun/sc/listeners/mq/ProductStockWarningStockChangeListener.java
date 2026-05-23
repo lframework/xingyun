@@ -66,7 +66,7 @@ public class ProductStockWarningStockChangeListener {
   private void handleStockChange(Message<ProductStockChangeDto> message, boolean isAdd) {
     ProductStockChangeDto dto = message.getPayload();
     ProductStockWarning productStockWarning = getProductStockWarning(dto.getScId(),
-        dto.getProductId());
+        dto.getSkuId());
     if (productStockWarning == null) {
       return;
     }
@@ -74,8 +74,8 @@ public class ProductStockWarningStockChangeListener {
     BigDecimal currentStock = dto.getCurStockNum();
     if ((isAdd && NumberUtil.le(productStockWarning.getMaxLimit(), currentStock)) || (!isAdd
         && NumberUtil.ge(productStockWarning.getMinLimit(), currentStock))) {
-      log.info("scId = {}, productId = {}, 预警{}限 = {}, 当前库存 = {}, 开始预警",
-          dto.getScId(), dto.getProductId(), isAdd ? "上" : "下",
+      log.info("scId = {}, skuId = {}, 预警{}限 = {}, 当前库存 = {}, 开始预警",
+          dto.getScId(), dto.getSkuId(), isAdd ? "上" : "下",
           isAdd ? productStockWarning.getMaxLimit() : productStockWarning.getMinLimit(),
           currentStock);
 
@@ -93,7 +93,7 @@ public class ProductStockWarningStockChangeListener {
         }
 
         Locker locker = lockBuilder.buildLocker(
-            "product_stock_warning_" + dto.getScId() + "_" + dto.getProductId(),
+            "product_stock_warning_" + dto.getScId() + "_" + dto.getSkuId(),
             60000L,
             5000L);
         if (locker.lock()) {
@@ -146,10 +146,10 @@ public class ProductStockWarningStockChangeListener {
     }
   }
 
-  private ProductStockWarning getProductStockWarning(String scId, String productId) {
+  private ProductStockWarning getProductStockWarning(String scId, String skuId) {
     return productStockWarningService.getOne(
         Wrappers.lambdaQuery(ProductStockWarning.class).eq(ProductStockWarning::getScId, scId)
-            .eq(ProductStockWarning::getProductId, productId)
+            .eq(ProductStockWarning::getSkuId, skuId)
             .eq(ProductStockWarning::getAvailable, Boolean.TRUE));
   }
 }

@@ -193,6 +193,18 @@ public class PrintReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
     private String productCode;
 
     /**
+     * SKU编号
+     */
+    @Schema(description = "SKU编号")
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    @Schema(description = "销售属性")
+    private String salePropertyText;
+
+    /**
      * 商品名称
      */
     @Schema(description = "商品名称")
@@ -237,9 +249,11 @@ public class PrintReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
 
       PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
           PurchaseOrderService.class);
-      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getProductId());
+      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getSkuId());
 
-      this.productCode = product.getCode();
+      this.productCode = product.getProductCode();
+      this.skuCode = product.getSkuCode();
+      this.salePropertyText = product.getSalePropertyText();
       this.productName = product.getName();
     }
   }

@@ -22,6 +22,11 @@ public class ProductStockChangeDto implements BaseDto, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
    * 变动数量
    */
   private BigDecimal num;

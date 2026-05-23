@@ -31,7 +31,7 @@
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
         <spring-boot-maven-plugin.version>3.5.0</spring-boot-maven-plugin.version>
         <xingyun.version>1.0.0-SNAPSHOT</xingyun.version>
-        <jugg.version>5.0.0</jugg.version>
+        <jugg.version>5.0.1</jugg.version>
     </properties>
 
     <dependencyManagement>

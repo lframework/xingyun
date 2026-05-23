@@ -32,11 +32,13 @@ import com.lframework.starter.web.inner.service.system.SysUserService;
 import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBundle;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.enums.ProductType;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.product.ProductBundleService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.core.utils.SplitNumberUtil;
 import com.lframework.xingyun.sc.components.code.GenerateCodeTypePool;
@@ -104,6 +106,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductSkuService productSkuService;
 
   @Autowired
   private SaleConfigService saleConfigService;
@@ -332,6 +337,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
           newDetail.setId(IdUtil.getId());
           newDetail.setOrderId(order.getId());
           newDetail.setProductId(saleOrderDetailBundle.getProductId());
+          newDetail.setSkuId(saleOrderDetailBundle.getSkuId());
           newDetail.setOrderNum(saleOrderDetailBundle.getProductOrderNum());
           newDetail.setOriPrice(saleOrderDetailBundle.getProductOriPrice());
           newDetail.setTaxPrice(saleOrderDetailBundle.getProductTaxPrice());
@@ -556,12 +562,14 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
       orderDetail.setId(IdUtil.getId());
       orderDetail.setOrderId(order.getId());
 
-      Product product = productService.findById(productVo.getProductId());
+      ProductSku sku = this.getOrderSku(productVo.getSkuId(), productVo.getProductId(), orderNo);
+      Product product = productService.findById(sku.getProductId());
       if (product == null) {
         throw new InputErrorException("第" + orderNo + "行商品不存在！");
       }
 
-      orderDetail.setProductId(productVo.getProductId());
+      orderDetail.setProductId(sku.getProductId());
+      orderDetail.setSkuId(sku.getId());
       orderDetail.setOrderNum(productVo.getOrderNum());
       orderDetail.setOriPrice(productVo.getOriPrice());
       orderDetail.setDiscountRate(productVo.getDiscountRate());
@@ -584,7 +592,7 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
           throw new InputErrorException("第" + orderNo + "行商品销售数量必须是整数！");
         }
         List<ProductBundle> productBundles = productBundleService.getByMainProductId(
-            product.getId());
+            sku.getId());
         // 构建指标项
         Map<Object, Number> bundleWeight = new HashMap<>(productBundles.size());
         for (ProductBundle productBundle : productBundles) {
@@ -595,14 +603,17 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
             bundleWeight, 2);
         List<SaleOrderDetailBundle> saleOrderDetailBundles = productBundles.stream()
             .map(productBundle -> {
-              Product bundle = productService.findById(productBundle.getProductId());
+              ProductSku bundleSku = productSkuService.findById(productBundle.getProductId());
+              Product bundle = productService.findById(bundleSku.getProductId());
               SaleOrderDetailBundle saleOrderDetailBundle = new SaleOrderDetailBundle();
               saleOrderDetailBundle.setId(IdUtil.getId());
               saleOrderDetailBundle.setOrderId(order.getId());
               saleOrderDetailBundle.setDetailId(orderDetail.getId());
               saleOrderDetailBundle.setMainProductId(product.getId());
+              saleOrderDetailBundle.setMainSkuId(sku.getId());
               saleOrderDetailBundle.setOrderNum(orderDetail.getOrderNum());
-              saleOrderDetailBundle.setProductId(productBundle.getProductId());
+              saleOrderDetailBundle.setProductId(bundleSku.getProductId());
+              saleOrderDetailBundle.setSkuId(bundleSku.getId());
               saleOrderDetailBundle.setProductOrderNum(
                   NumberUtil.mul(orderDetail.getOrderNum(), productBundle.getBundleNum()));
               saleOrderDetailBundle.setProductOriPrice(productBundle.getSalePrice());
@@ -640,5 +651,16 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
     ApprovePassSaleOrderEvent event = new ApprovePassSaleOrderEvent(this, dto);
 
     ApplicationUtil.publishEvent(event);
+  }
+
+  private ProductSku getOrderSku(String skuId, String fallbackSkuId, int orderNo) {
+
+    String id = StringUtil.isBlank(skuId) ? fallbackSkuId : skuId;
+    ProductSku sku = productSkuService.findById(id);
+    if (sku == null) {
+      throw new InputErrorException("第" + orderNo + "行SKU不存在！");
+    }
+
+    return sku;
   }
 }

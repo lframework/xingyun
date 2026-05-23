@@ -20,6 +20,12 @@ public class PreTakeStockProductVo implements BaseVo, Serializable {
   private String productId;
 
   /**
+   * SKU ID
+   */
+  @Schema(description = "SKU ID")
+  private String skuId;
+
+  /**
    * 初盘数量
    */
   @Schema(description = "初盘数量")

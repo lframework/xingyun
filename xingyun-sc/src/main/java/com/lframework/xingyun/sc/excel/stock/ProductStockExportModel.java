@@ -9,10 +9,12 @@ import com.lframework.starter.web.core.components.excel.ExcelModel;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
 import com.lframework.xingyun.basedata.service.product.ProductService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.entity.ProductStock;
 import java.math.BigDecimal;
@@ -38,6 +40,18 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
    */
   @ExcelProperty("商品编号")
   private String productCode;
+
+  /**
+   * SKU编号
+   */
+  @ExcelProperty("SKU编号")
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  @ExcelProperty("销售属性")
+  private String salePropertyText;
 
   /**
    * 商品名称
@@ -102,6 +116,9 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
     ProductService productService = ApplicationUtil.getBean(ProductService.class);
     Product product = productService.findById(dto.getProductId());
 
+    ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+    ProductSku sku = productSkuService.findById(dto.getSkuId());
+
     ProductCategoryService productCategoryService = ApplicationUtil.getBean(
         ProductCategoryService.class);
     ProductCategory productCategory = productCategoryService.findById(product.getCategoryId());
@@ -113,6 +130,8 @@ public class ProductStockExportModel extends BaseBo<ProductStock> implements Exc
     }
 
     this.productCode = product.getCode();
+    this.skuCode = sku == null ? null : sku.getCode();
+    this.salePropertyText = sku == null ? null : sku.getSalePropertyText();
     this.productName = product.getName();
     this.categoryName = productCategory.getName();
   }

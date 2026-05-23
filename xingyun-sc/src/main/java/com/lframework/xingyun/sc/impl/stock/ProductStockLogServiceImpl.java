@@ -55,6 +55,7 @@ public class ProductStockLogServiceImpl extends
     record.setId(IdUtil.getId());
     record.setScId(vo.getScId());
     record.setProductId(vo.getProductId());
+    record.setSkuId(vo.getSkuId());
     record.setOriStockNum(vo.getOriStockNum());
     record.setCurStockNum(vo.getCurStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());
@@ -91,6 +92,7 @@ public class ProductStockLogServiceImpl extends
     record.setId(IdUtil.getId());
     record.setScId(vo.getScId());
     record.setProductId(vo.getProductId());
+    record.setSkuId(vo.getSkuId());
     record.setOriStockNum(vo.getOriStockNum());
     record.setCurStockNum(vo.getCurStockNum());
     record.setOriTaxPrice(vo.getOriTaxPrice());

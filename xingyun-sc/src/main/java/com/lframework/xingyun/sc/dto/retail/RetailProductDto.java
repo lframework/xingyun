@@ -16,9 +16,29 @@ public class RetailProductDto implements BaseDto, Serializable {
   private String id;
 
   /**
-   * 编号
+   * SKU ID
+   */
+  private String skuId;
+
+  /**
+   * 商品ID
+   */
+  private String productId;
+
+  /**
+   * 商品编号
    */
   private String code;
+
+  /**
+   * SKU编号
+   */
+  private String skuCode;
+
+  /**
+   * 销售属性
+   */
+  private String salePropertyText;
 
   /**
    * 名称

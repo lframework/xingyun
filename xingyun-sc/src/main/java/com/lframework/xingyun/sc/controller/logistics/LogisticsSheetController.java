@@ -301,7 +301,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   @HasPermission({"logistics:sheet:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("物流单导入模板", LogisticsSheetImportModel.class);
+    ExcelUtil.exportXlsx("物流单导入模板", LogisticsSheetImportModel.class);
   }
 
   @Operation(summary = "导入")
@@ -321,7 +321,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   @HasPermission({"logistics:sheet:delivery"})
   @GetMapping("/import/template/delivery")
   public void downloadDeliveryImportTemplate() {
-    ExcelUtil.exportXls("物流单批量发货模板", LogisticsSheetDeliveryImportModel.class);
+    ExcelUtil.exportXlsx("物流单批量发货模板", LogisticsSheetDeliveryImportModel.class);
   }
 
   @Operation(summary = "批量发货")

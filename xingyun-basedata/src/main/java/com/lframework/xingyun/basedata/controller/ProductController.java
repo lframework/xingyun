@@ -183,7 +183,7 @@ public class ProductController extends DefaultBaseController {
   @HasPermission({"base-data:product:info:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("商品导入模板", ProductImportModel.class);
+    ExcelUtil.exportXlsx("商品导入模板", ProductImportModel.class);
   }
 
   @Operation(summary = "导入")

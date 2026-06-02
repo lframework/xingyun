@@ -72,7 +72,7 @@ public class LogisticsSheetDeliveryImportListener extends
             "第" + (i + 1) + "行发货失败，失败原因：" + e.getMessage());
       }
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

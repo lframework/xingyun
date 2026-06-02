@@ -205,7 +205,7 @@ public class ProductStockWarningController extends DefaultBaseController {
   @HasPermission({"stock:warning:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("库存预警导入模板", StockWarningImportModel.class);
+    ExcelUtil.exportXlsx("库存预警导入模板", StockWarningImportModel.class);
   }
 
   @Operation(summary = "导入")

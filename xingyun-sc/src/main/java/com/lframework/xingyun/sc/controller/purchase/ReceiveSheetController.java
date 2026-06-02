@@ -302,14 +302,14 @@ public class ReceiveSheetController extends DefaultBaseController {
   @HasPermission({"purchase:receive:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("采购收货单导入模板", ReceiveSheetImportModel.class);
+    ExcelUtil.exportXlsx("采购收货单导入模板", ReceiveSheetImportModel.class);
   }
 
   @Operation(summary = "下载导入支付方式模板")
   @HasPermission({"purchase:receive:import"})
   @GetMapping("/import/template/paytype")
   public void downloadImportPayTypeTemplate() {
-    ExcelUtil.exportXls("采购收货单导入支付方式模板", ReceiveSheetPayTypeImportModel.class);
+    ExcelUtil.exportXlsx("采购收货单导入支付方式模板", ReceiveSheetPayTypeImportModel.class);
   }
 
   @Operation(summary = "导入")

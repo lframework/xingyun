@@ -202,7 +202,7 @@ public class ProductCategoryPropertyDefinitionController extends DefaultBaseCont
   @HasPermission({"base-data:product:property:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("商品分类属性导入模板", ProductCategoryPropertyImportModel.class);
+    ExcelUtil.exportXlsx("商品分类属性导入模板", ProductCategoryPropertyImportModel.class);
   }
 
   @Operation(summary = "导入")

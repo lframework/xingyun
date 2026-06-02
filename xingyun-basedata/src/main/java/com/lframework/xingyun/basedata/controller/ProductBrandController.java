@@ -144,7 +144,7 @@ public class ProductBrandController extends DefaultBaseController {
   @HasPermission({"base-data:product:brand:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("品牌导入模板", ProductBrandImportModel.class);
+    ExcelUtil.exportXlsx("品牌导入模板", ProductBrandImportModel.class);
   }
 
   @Operation(summary = "导入")

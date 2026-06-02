@@ -181,7 +181,7 @@ public class ProductSalePropertyDefinitionController extends DefaultBaseControll
   @HasPermission({"base-data:product:sale-property:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("商品销售属性导入模板", ProductSalePropertyImportModel.class);
+    ExcelUtil.exportXlsx("商品销售属性导入模板", ProductSalePropertyImportModel.class);
   }
 
   @Operation(summary = "导入")

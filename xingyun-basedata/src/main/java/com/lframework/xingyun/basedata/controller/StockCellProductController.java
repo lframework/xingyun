@@ -107,7 +107,7 @@ public class StockCellProductController extends DefaultBaseController {
   @HasPermission({"base-data:stock-cell-product:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("仓位商品导入模板", StockCellProductImportModel.class);
+    ExcelUtil.exportXlsx("仓位商品导入模板", StockCellProductImportModel.class);
   }
 
   /**
@@ -138,7 +138,7 @@ public class StockCellProductController extends DefaultBaseController {
   @HasPermission({"base-data:stock-cell-product:import"})
   @GetMapping("/import/by-cell/template")
   public void downloadImportByCellTemplate() {
-    ExcelUtil.exportXls("指定仓位导入仓位商品模板", StockCellProductImportByStockCellModel.class);
+    ExcelUtil.exportXlsx("指定仓位导入仓位商品模板", StockCellProductImportByStockCellModel.class);
   }
 
   /**

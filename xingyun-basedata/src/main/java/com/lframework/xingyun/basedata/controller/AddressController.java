@@ -137,7 +137,7 @@ public class AddressController extends DefaultBaseController {
   @HasPermission({"base-data:address:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("地址导入模板", AddressImportModel.class);
+    ExcelUtil.exportXlsx("地址导入模板", AddressImportModel.class);
   }
 
   @Operation(summary = "导入")

@@ -266,7 +266,7 @@ public class ProductImportListener extends ExcelImportListener<ProductImportMode
       }
       data.setId(productService.create(toCreateVo(data)));
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

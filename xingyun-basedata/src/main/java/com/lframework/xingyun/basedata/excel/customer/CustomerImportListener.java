@@ -151,7 +151,7 @@ public class CustomerImportListener extends ExcelImportListener<CustomerImportMo
       customerService.save(record);
       data.setId(record.getId());
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

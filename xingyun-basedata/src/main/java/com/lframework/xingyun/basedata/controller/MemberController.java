@@ -139,7 +139,7 @@ public class MemberController extends DefaultBaseController {
   @HasPermission({"base-data:member:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("会员导入模板", MemberImportModel.class);
+    ExcelUtil.exportXlsx("会员导入模板", MemberImportModel.class);
   }
 
   @Operation(summary = "导入")

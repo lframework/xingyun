@@ -147,7 +147,7 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
 
       memberService.save(record);
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

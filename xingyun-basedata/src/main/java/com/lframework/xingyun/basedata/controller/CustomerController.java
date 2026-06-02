@@ -141,7 +141,7 @@ public class CustomerController extends DefaultBaseController {
   @HasPermission({"base-data:customer:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("客户导入模板", CustomerImportModel.class);
+    ExcelUtil.exportXlsx("客户导入模板", CustomerImportModel.class);
   }
 
   @Operation(summary = "导入")

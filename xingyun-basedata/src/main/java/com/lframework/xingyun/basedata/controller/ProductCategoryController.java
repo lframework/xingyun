@@ -174,7 +174,7 @@ public class ProductCategoryController extends DefaultBaseController {
   @HasPermission({"base-data:product:category:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("分类导入模板", ProductCategoryImportModel.class);
+    ExcelUtil.exportXlsx("分类导入模板", ProductCategoryImportModel.class);
   }
 
   @Operation(summary = "导入")

@@ -144,7 +144,7 @@ public class StockCellController extends DefaultBaseController {
   @HasPermission({"base-data:stock-cell:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("仓位导入模板", StockCellImportModel.class);
+    ExcelUtil.exportXlsx("仓位导入模板", StockCellImportModel.class);
   }
 
   @Operation(summary = "导入")

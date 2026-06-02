@@ -133,7 +133,7 @@ public class ProductCategoryImportListener extends ExcelImportListener<ProductCa
       productCategoryService.saveRecursion(true, record.getId(), record.getParentId());
       data.setId(record.getId());
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

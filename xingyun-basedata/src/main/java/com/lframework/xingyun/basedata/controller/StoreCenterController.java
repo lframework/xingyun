@@ -137,7 +137,7 @@ public class StoreCenterController extends DefaultBaseController {
   @HasPermission({"base-data:store-center:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("仓库导入模板", StoreCenterImportModel.class);
+    ExcelUtil.exportXlsx("仓库导入模板", StoreCenterImportModel.class);
   }
 
   @Operation(summary = "导入")

@@ -138,7 +138,7 @@ public class ShopController extends DefaultBaseController {
   @HasPermission({"base-data:shop:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("门店导入模板", ShopImportModel.class);
+    ExcelUtil.exportXlsx("门店导入模板", ShopImportModel.class);
   }
 
   @Operation(summary = "导入")

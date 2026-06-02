@@ -142,7 +142,7 @@ public class SupplierController extends DefaultBaseController {
   @HasPermission({"base-data:supplier:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("供应商导入模板", SupplierImportModel.class);
+    ExcelUtil.exportXlsx("供应商导入模板", SupplierImportModel.class);
   }
 
   @Operation(summary = "导入")

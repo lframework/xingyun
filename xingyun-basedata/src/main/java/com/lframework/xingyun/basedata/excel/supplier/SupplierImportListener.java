@@ -175,7 +175,7 @@ public class SupplierImportListener extends ExcelImportListener<SupplierImportMo
       supplierService.save(record);
       data.setId(record.getId());
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

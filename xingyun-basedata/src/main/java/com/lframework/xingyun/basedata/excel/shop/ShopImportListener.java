@@ -87,7 +87,7 @@ public class ShopImportListener extends ExcelImportListener<ShopImportModel> {
 
       data.setId(record.getId());
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

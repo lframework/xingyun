@@ -86,7 +86,7 @@ public class ProductBrandImportListener extends ExcelImportListener<ProductBrand
       productBrandService.save(record);
       data.setId(record.getId());
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

@@ -307,14 +307,14 @@ public class PurchaseOrderController extends DefaultBaseController {
   @HasPermission({"purchase:order:import"})
   @GetMapping("/import/template")
   public void downloadImportTemplate() {
-    ExcelUtil.exportXls("采购订单导入模板", PurchaseOrderImportModel.class);
+    ExcelUtil.exportXlsx("采购订单导入模板", PurchaseOrderImportModel.class);
   }
 
   @Operation(summary = "下载导入约定支付模板")
   @HasPermission({"purchase:order:import"})
   @GetMapping("/import/template/paytype")
   public void downloadImportPayTypeTemplate() {
-    ExcelUtil.exportXls("采购订单导入约定支付模板", PurchaseOrderPayTypeImportModel.class);
+    ExcelUtil.exportXlsx("采购订单导入约定支付模板", PurchaseOrderPayTypeImportModel.class);
   }
 
   @Operation(summary = "导入")

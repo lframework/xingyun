@@ -325,7 +325,7 @@ public class LogisticsSheetImportListener extends ExcelImportListener<LogisticsS
             "第" + (i + 1) + "行新增失败，失败原因：" + e.getMessage());
       }
 
-      this.setSuccessProcess(i);
+      this.setSuccessProcessByIndex(i);
     }
   }
 

@@ -116,15 +116,20 @@ public class StockCellProductController extends DefaultBaseController {
   @Operation(summary = "导入")
   @Parameters({
       @Parameter(name = "id", description = "ID", in = ParameterIn.QUERY, required = true),
+      @Parameter(name = "autoCreateStockCell", description = "是否自动创建仓位", in = ParameterIn.QUERY),
+      @Parameter(name = "stockCellType", description = "仓位类别", in = ParameterIn.QUERY),
       @Parameter(name = "file", description = "文件", in = ParameterIn.QUERY, required = true)
   })
   @HasPermission({"base-data:stock-cell-product:import"})
   @PostMapping("/import")
   public InvokeResult<Void> importExcel(
       @NotBlank(message = "ID不能为空") String id,
+      Boolean autoCreateStockCell,
+      Integer stockCellType,
       @NotNull(message = "请上传文件") MultipartFile file) {
 
-    StockCellProductImportListener listener = new StockCellProductImportListener();
+    StockCellProductImportListener listener = new StockCellProductImportListener(
+        autoCreateStockCell, stockCellType);
     listener.setTaskId(id);
     ExcelUtil.read(file, StockCellProductImportModel.class, listener).sheet().doRead();
 

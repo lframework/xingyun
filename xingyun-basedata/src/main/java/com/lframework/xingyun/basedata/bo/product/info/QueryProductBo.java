@@ -9,10 +9,14 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
+import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
+import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
@@ -29,6 +33,12 @@ public class QueryProductBo extends BaseBo<Product> {
    */
   @Schema(description = "编号")
   private String code;
+
+  /**
+   * SKU编号
+   */
+  @Schema(description = "SKU编号")
+  private String skuCodes;
 
   /**
    * 名称
@@ -96,5 +106,18 @@ public class QueryProductBo extends BaseBo<Product> {
       ProductBrand brand = productBrandService.findById(dto.getBrandId());
       this.brandName = brand.getName();
     }
+
+    ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
+    this.skuCodes = buildSkuCodes(productSkuService.getAvailableByProductId(dto.getId()));
+  }
+
+  static String buildSkuCodes(List<ProductSku> skus) {
+
+    if (skus == null || skus.isEmpty()) {
+      return StringPool.EMPTY_STR;
+    }
+
+    return skus.stream().map(ProductSku::getCode).filter(StringUtil::isNotBlank)
+        .collect(Collectors.joining(StringPool.STR_SPLIT_CN));
   }
 }

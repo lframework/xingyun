@@ -3,19 +3,24 @@ package com.lframework.xingyun.basedata.excel.stockcell.product;
 import com.alibaba.excel.context.AnalysisContext;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.lframework.starter.common.constants.PatternPool;
 import com.lframework.starter.common.exceptions.ClientException;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
+import com.lframework.starter.common.utils.RegUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.components.excel.ExcelImportListener;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
+import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StockCell;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
+import com.lframework.xingyun.basedata.enums.StockCellType;
 import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.stockcell.StockCellProductService;
 import com.lframework.xingyun.basedata.service.stockcell.StockCellService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
+import com.lframework.xingyun.basedata.vo.stockcell.CreateStockCellVo;
 import com.lframework.xingyun.basedata.vo.stockcell.product.CreateStockCellProductVo;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +28,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StockCellProductImportListener extends
     ExcelImportListener<StockCellProductImportModel> {
+
+  private final Boolean autoCreateStockCell;
+
+  private final Integer stockCellType;
+
+  public StockCellProductImportListener() {
+    this(false, null);
+  }
+
+  public StockCellProductImportListener(Boolean autoCreateStockCell, Integer stockCellType) {
+    this.autoCreateStockCell = autoCreateStockCell;
+    this.stockCellType = stockCellType;
+  }
 
   @Override
   protected void doInvoke(StockCellProductImportModel data, AnalysisContext context) {
@@ -52,12 +70,7 @@ public class StockCellProductImportListener extends
         .eq(StockCell::getScId, data.getScId())
         .eq(StockCell::getAvailable, true);
     StockCell stockCell = stockCellService.getOne(cellWrapper);
-    if (stockCell == null) {
-      throw new DefaultClientException(
-          "第" + context.readRowHolder().getRowIndex() + "行“仓位编号”不存在");
-    }
-    data.setStockCellId(stockCell.getId());
-    data.setCellType(stockCell.getCellType().getCode());
+    this.resolveStockCell(data, stockCellService, stockCell, context.readRowHolder().getRowIndex());
 
     if (StringUtil.isBlank(data.getProductCode())) {
       throw new DefaultClientException(
@@ -71,6 +84,42 @@ public class StockCellProductImportListener extends
           "第" + context.readRowHolder().getRowIndex() + "行“SKU编号”不存在");
     }
     data.setSkuId(sku.getId());
+  }
+
+  private void resolveStockCell(StockCellProductImportModel data, StockCellService stockCellService,
+      StockCell stockCell, int rowIndex) {
+
+    if (stockCell != null) {
+      data.setStockCellId(stockCell.getId());
+      data.setCellType(stockCell.getCellType().getCode());
+      return;
+    }
+
+    if (!Boolean.TRUE.equals(this.autoCreateStockCell)) {
+      throw new DefaultClientException("第" + rowIndex + "行“仓位编号”不存在");
+    }
+
+    if (this.stockCellType == null) {
+      throw new DefaultClientException("第" + rowIndex + "行“仓位类别”不能为空");
+    }
+
+    if (!RegUtil.isMatch(PatternPool.PATTERN_CODE, data.getStockCellCode())) {
+      throw new DefaultClientException(
+          "第" + rowIndex + "行“仓位编号”必须由字母、数字、“-_.”组成，长度不能超过20位");
+    }
+
+    if (EnumUtil.getByCode(StockCellType.class, this.stockCellType) == null) {
+      throw new DefaultClientException("第" + rowIndex + "行“仓位类别”格式不正确");
+    }
+
+    CreateStockCellVo vo = new CreateStockCellVo();
+    vo.setScId(data.getScId());
+    vo.setCode(data.getStockCellCode());
+    vo.setName(data.getStockCellCode());
+    vo.setCellType(this.stockCellType);
+
+    data.setStockCellId(stockCellService.create(vo));
+    data.setCellType(this.stockCellType);
   }
 
   @Override

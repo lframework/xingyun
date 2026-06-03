@@ -530,3 +530,5 @@ DROP INDEX `name`,
 ALTER TABLE `base_data_product_sale_property_item`
 DROP INDEX `property_id_code`,
   ADD INDEX `property_id_code` (`property_id`, `code`) USING BTREE;
+INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `icon`, `component_type`, `component`, `request_param`, `parent_id`, `sys_module_id`, `path`, `no_cache`, `display`, `hidden`, `permission`, `is_special`, `available`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES ('3000005003006', '3000005003006', '', '导入库存调整单', NULL, 0, '', NULL, '3000005003', '10', '', 0, 2, 0, 'stock:adjust:import', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW());
+

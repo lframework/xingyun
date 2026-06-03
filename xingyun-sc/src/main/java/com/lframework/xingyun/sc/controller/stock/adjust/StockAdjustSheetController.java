@@ -8,6 +8,7 @@ import com.lframework.starter.web.core.controller.DefaultBaseController;
 import com.lframework.starter.web.core.components.resp.InvokeResult;
 import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
 import com.lframework.starter.web.core.components.resp.PageResult;
+import com.lframework.starter.web.core.utils.ExcelUtil;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.mq.core.utils.ExportTaskUtil;
 import com.lframework.xingyun.sc.bo.stock.adjust.stock.QueryStockAdjustSheetBo;
@@ -17,6 +18,8 @@ import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
 import com.lframework.xingyun.sc.entity.StockAdjustSheet;
 import com.lframework.xingyun.sc.excel.stock.adjust.StockAdjustSheetExportTaskWorker;
+import com.lframework.xingyun.sc.excel.stock.adjust.StockAdjustSheetImportListener;
+import com.lframework.xingyun.sc.excel.stock.adjust.StockAdjustSheetImportModel;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustSheetService;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApprovePassStockAdjustSheetVo;
 import com.lframework.xingyun.sc.vo.stock.adjust.stock.ApproveRefuseStockAdjustSheetVo;
@@ -33,6 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +47,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 库存调整单 Controller
@@ -110,6 +115,33 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<Void> export(@Valid QueryStockAdjustSheetVo vo) {
 
     ExportTaskUtil.exportTask("库存调整单信息", StockAdjustSheetExportTaskWorker.class, vo);
+
+    return InvokeResultBuilder.success();
+  }
+
+  /**
+   * 下载导入模板
+   */
+  @Operation(summary = "下载导入模板")
+  @HasPermission({"stock:adjust:import"})
+  @GetMapping("/import/template")
+  public void downloadImportTemplate() {
+
+    ExcelUtil.exportXlsx("库存调整单导入模板", StockAdjustSheetImportModel.class);
+  }
+
+  /**
+   * 导入
+   */
+  @Operation(summary = "导入")
+  @HasPermission({"stock:adjust:import"})
+  @PostMapping("/import")
+  public InvokeResult<Void> importExcel(@NotBlank(message = "ID不能为空") String id,
+      @NotNull(message = "请上传文件") MultipartFile file) {
+
+    StockAdjustSheetImportListener listener = new StockAdjustSheetImportListener();
+    listener.setTaskId(id);
+    ExcelUtil.read(file, StockAdjustSheetImportModel.class, listener).sheet().doRead();
 
     return InvokeResultBuilder.success();
   }

@@ -13,7 +13,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.utils.PageHelperUtil;
@@ -249,7 +248,7 @@ public class TakeStockSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approvePass(ApprovePassTakeStockSheetVo vo) {
+  public void approvePass(ApprovePassTakeStockSheetVo vo, String userId) {
 
     TakeStockSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
@@ -266,7 +265,7 @@ public class TakeStockSheetServiceImpl extends
     }
 
     Wrapper<TakeStockSheet> updateWrapper = Wrappers.lambdaUpdate(TakeStockSheet.class)
-        .set(TakeStockSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(TakeStockSheet::getApproveBy, userId)
         .set(TakeStockSheet::getApproveTime, LocalDateTime.now())
         .set(TakeStockSheet::getStatus, TakeStockSheetStatus.APPROVE_PASS)
         .eq(TakeStockSheet::getId, data.getId())
@@ -293,7 +292,7 @@ public class TakeStockSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public String directApprovePass(CreateTakeStockSheetVo vo) {
+  public String directApprovePass(CreateTakeStockSheetVo vo, String userId) {
 
     TakeStockSheetService thisService = getThis(this.getClass());
 
@@ -302,7 +301,7 @@ public class TakeStockSheetServiceImpl extends
     ApprovePassTakeStockSheetVo approveVo = new ApprovePassTakeStockSheetVo();
     approveVo.setId(id);
 
-    thisService.approvePass(approveVo);
+    thisService.approvePass(approveVo, userId);
 
     return id;
   }
@@ -311,7 +310,7 @@ public class TakeStockSheetServiceImpl extends
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approveRefuse(ApproveRefuseTakeStockSheetVo vo) {
+  public void approveRefuse(ApproveRefuseTakeStockSheetVo vo, String userId) {
 
     TakeStockSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
@@ -328,7 +327,7 @@ public class TakeStockSheetServiceImpl extends
     }
 
     Wrapper<TakeStockSheet> updateWrapper = Wrappers.lambdaUpdate(TakeStockSheet.class)
-        .set(TakeStockSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(TakeStockSheet::getApproveBy, userId)
         .set(TakeStockSheet::getApproveTime, LocalDateTime.now())
         .set(TakeStockSheet::getRefuseReason,
             StringUtil.isBlank(vo.getRefuseReason()) ? StringPool.EMPTY_STR : vo.getRefuseReason())

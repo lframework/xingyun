@@ -13,7 +13,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.utils.OpLogUtil;
@@ -325,7 +324,7 @@ public class SaleOutSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approvePass(ApprovePassSaleOutSheetVo vo) {
+  public void approvePass(ApprovePassSaleOutSheetVo vo, String userId) {
 
     SaleOutSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -371,7 +370,7 @@ public class SaleOutSheetServiceImpl extends
     statusList.add(SaleOutSheetStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<SaleOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(SaleOutSheet.class)
-        .set(SaleOutSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(SaleOutSheet::getApproveBy, userId)
         .set(SaleOutSheet::getApproveTime, LocalDateTime.now())
         .eq(SaleOutSheet::getId, sheet.getId()).in(SaleOutSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
@@ -503,7 +502,7 @@ public class SaleOutSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public String directApprovePass(CreateSaleOutSheetVo vo) {
+  public String directApprovePass(CreateSaleOutSheetVo vo, String userId) {
 
     SaleOutSheetService thisService = getThis(this.getClass());
 
@@ -513,7 +512,7 @@ public class SaleOutSheetServiceImpl extends
     approvePassVo.setId(sheetId);
     approvePassVo.setDescription(vo.getDescription());
 
-    thisService.approvePass(approvePassVo);
+    thisService.approvePass(approvePassVo, userId);
 
     return sheetId;
   }
@@ -522,7 +521,7 @@ public class SaleOutSheetServiceImpl extends
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approveRefuse(ApproveRefuseSaleOutSheetVo vo) {
+  public void approveRefuse(ApproveRefuseSaleOutSheetVo vo, String userId) {
 
     SaleOutSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -545,7 +544,7 @@ public class SaleOutSheetServiceImpl extends
     sheet.setStatus(SaleOutSheetStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<SaleOutSheet> updateOrderWrapper = Wrappers.lambdaUpdate(SaleOutSheet.class)
-        .set(SaleOutSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(SaleOutSheet::getApproveBy, userId)
         .set(SaleOutSheet::getApproveTime, LocalDateTime.now())
         .set(SaleOutSheet::getRefuseReason, vo.getRefuseReason())
         .eq(SaleOutSheet::getId, sheet.getId())

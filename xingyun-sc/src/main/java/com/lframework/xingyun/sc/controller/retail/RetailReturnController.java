@@ -161,7 +161,7 @@ public class RetailReturnController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassRetailReturnVo vo) {
 
-    retailReturnService.approvePass(vo);
+    retailReturnService.approvePass(vo, getCurrentUser().getId());
 
     RetailReturn r = retailReturnService.getById(vo.getId());
 
@@ -178,7 +178,7 @@ public class RetailReturnController extends DefaultBaseController {
 
     vo.validate();
 
-    retailReturnService.directApprovePass(vo);
+    retailReturnService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -191,7 +191,7 @@ public class RetailReturnController extends DefaultBaseController {
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseRetailReturnVo vo) {
 
-    retailReturnService.approveRefuse(vo);
+    retailReturnService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

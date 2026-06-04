@@ -251,7 +251,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassReceiveSheetVo vo) {
 
-    receiveSheetService.approvePass(vo);
+    receiveSheetService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -266,7 +266,7 @@ public class ReceiveSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    receiveSheetService.directApprovePass(vo);
+    receiveSheetService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -279,7 +279,7 @@ public class ReceiveSheetController extends DefaultBaseController {
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseReceiveSheetVo vo) {
 
-    receiveSheetService.approveRefuse(vo);
+    receiveSheetService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

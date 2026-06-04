@@ -102,21 +102,21 @@ public interface RetailOutSheetService extends BaseMpService<RetailOutSheet> {
    *
    * @param vo
    */
-  void approvePass(ApprovePassRetailOutSheetVo vo);
+  void approvePass(ApprovePassRetailOutSheetVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreateRetailOutSheetVo vo);
+  String directApprovePass(CreateRetailOutSheetVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefuseRetailOutSheetVo vo);
+  void approveRefuse(ApproveRefuseRetailOutSheetVo vo, String userId);
 
   /**
    * 根据ID删除

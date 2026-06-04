@@ -8,7 +8,6 @@ import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.utils.IdUtil;
@@ -44,21 +43,22 @@ public class OnlineExcelServiceImpl extends
   private SysUserService userService;
 
   @Override
-  public PageResult<OnlineExcel> query(Integer pageIndex, Integer pageSize, QueryOnlineExcelVo vo) {
+  public PageResult<OnlineExcel> query(Integer pageIndex, Integer pageSize, QueryOnlineExcelVo vo,
+      String userId) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<OnlineExcel> datas = this.query(vo);
+    List<OnlineExcel> datas = this.query(vo, userId);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<OnlineExcel> query(QueryOnlineExcelVo vo) {
+  public List<OnlineExcel> query(QueryOnlineExcelVo vo, String userId) {
 
-    return getBaseMapper().query(vo, SecurityUtil.getCurrentUser().getId());
+    return getBaseMapper().query(vo, userId);
   }
 
   @Override
@@ -136,7 +136,7 @@ public class OnlineExcelServiceImpl extends
       "#receiver"})
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void send(SendOnlineExcelVo vo) {
+  public void send(SendOnlineExcelVo vo, String userId) {
 
     OnlineExcel record = this.getById(vo.getId());
     if (record == null) {
@@ -161,7 +161,7 @@ public class OnlineExcelServiceImpl extends
       this.updateById(record);
     }
 
-    OpLogUtil.setVariable("sender", SecurityUtil.getCurrentUser().getId());
+    OpLogUtil.setVariable("sender", userId);
     OpLogUtil.setVariable("receiver", vo.getUserId());
     OpLogUtil.setExtra(vo);
   }
@@ -170,7 +170,7 @@ public class OnlineExcelServiceImpl extends
       "#receiver"})
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void batchSend(BatchSendOnlineExcelVo vo) {
+  public void batchSend(BatchSendOnlineExcelVo vo, String userId) {
 
     SysUser receiver = userService.findById(vo.getUserId());
     if (receiver == null) {
@@ -197,7 +197,7 @@ public class OnlineExcelServiceImpl extends
       }
     }
 
-    OpLogUtil.setVariable("sender", SecurityUtil.getCurrentUser().getId());
+    OpLogUtil.setVariable("sender", userId);
     OpLogUtil.setVariable("receiver", vo.getUserId());
     OpLogUtil.setExtra(vo);
   }

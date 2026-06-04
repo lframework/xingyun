@@ -13,7 +13,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.utils.OpLogUtil;
@@ -308,7 +307,7 @@ public class ReceiveSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approvePass(ApprovePassReceiveSheetVo vo) {
+  public void approvePass(ApprovePassReceiveSheetVo vo, String userId) {
 
     ReceiveSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -345,7 +344,7 @@ public class ReceiveSheetServiceImpl extends
     statusList.add(ReceiveSheetStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<ReceiveSheet> updateOrderWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
-        .set(ReceiveSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(ReceiveSheet::getApproveBy, userId)
         .set(ReceiveSheet::getApproveTime, LocalDateTime.now())
         .eq(ReceiveSheet::getId, sheet.getId()).in(ReceiveSheet::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
@@ -442,7 +441,7 @@ public class ReceiveSheetServiceImpl extends
   @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Override
-  public String directApprovePass(CreateReceiveSheetVo vo) {
+  public String directApprovePass(CreateReceiveSheetVo vo, String userId) {
 
     ReceiveSheetService thisService = getThis(this.getClass());
 
@@ -452,7 +451,7 @@ public class ReceiveSheetServiceImpl extends
     approvePassVo.setId(sheetId);
     approvePassVo.setDescription(vo.getDescription());
 
-    thisService.approvePass(approvePassVo);
+    thisService.approvePass(approvePassVo, userId);
 
     return sheetId;
   }
@@ -461,7 +460,7 @@ public class ReceiveSheetServiceImpl extends
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approveRefuse(ApproveRefuseReceiveSheetVo vo) {
+  public void approveRefuse(ApproveRefuseReceiveSheetVo vo, String userId) {
 
     ReceiveSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -484,7 +483,7 @@ public class ReceiveSheetServiceImpl extends
     sheet.setStatus(ReceiveSheetStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<ReceiveSheet> updateOrderWrapper = Wrappers.lambdaUpdate(ReceiveSheet.class)
-        .set(ReceiveSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(ReceiveSheet::getApproveBy, userId)
         .set(ReceiveSheet::getApproveTime, LocalDateTime.now())
         .set(ReceiveSheet::getRefuseReason, vo.getRefuseReason())
         .eq(ReceiveSheet::getId, sheet.getId())

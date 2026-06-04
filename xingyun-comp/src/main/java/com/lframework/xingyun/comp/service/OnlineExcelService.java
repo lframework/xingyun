@@ -21,7 +21,8 @@ public interface OnlineExcelService extends BaseMpService<OnlineExcel> {
    *
    * @return
    */
-  PageResult<OnlineExcel> query(Integer pageIndex, Integer pageSize, QueryOnlineExcelVo vo);
+  PageResult<OnlineExcel> query(Integer pageIndex, Integer pageSize, QueryOnlineExcelVo vo,
+      String userId);
 
   /**
    * 查询列表
@@ -29,7 +30,7 @@ public interface OnlineExcelService extends BaseMpService<OnlineExcel> {
    * @param vo
    * @return
    */
-  List<OnlineExcel> query(QueryOnlineExcelVo vo);
+  List<OnlineExcel> query(QueryOnlineExcelVo vo, String userId);
 
   /**
    * 根据ID查询
@@ -66,13 +67,13 @@ public interface OnlineExcelService extends BaseMpService<OnlineExcel> {
    *
    * @param vo
    */
-  void send(SendOnlineExcelVo vo);
+  void send(SendOnlineExcelVo vo, String userId);
 
   /**
    * 批量发送
    *
    * @param vo
    */
-  void batchSend(BatchSendOnlineExcelVo vo);
+  void batchSend(BatchSendOnlineExcelVo vo, String userId);
 
 }

@@ -228,7 +228,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassScTransferOrderVo vo) {
 
-    scTransferOrderService.approvePass(vo);
+    scTransferOrderService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -243,7 +243,7 @@ public class ScTransferOrderController extends DefaultBaseController {
 
     vo.validate();
 
-    scTransferOrderService.directApprovePass(vo);
+    scTransferOrderService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -257,7 +257,7 @@ public class ScTransferOrderController extends DefaultBaseController {
   public InvokeResult<Void> approveRefuse(
       @RequestBody @Valid ApproveRefuseScTransferOrderVo vo) {
 
-    scTransferOrderService.approveRefuse(vo);
+    scTransferOrderService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

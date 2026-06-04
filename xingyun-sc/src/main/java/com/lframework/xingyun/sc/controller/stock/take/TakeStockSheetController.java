@@ -222,7 +222,7 @@ public class TakeStockSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    takeStockSheetService.directApprovePass(vo);
+    takeStockSheetService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -235,7 +235,7 @@ public class TakeStockSheetController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@Valid ApprovePassTakeStockSheetVo vo) {
 
-    takeStockSheetService.approvePass(vo);
+    takeStockSheetService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -248,7 +248,7 @@ public class TakeStockSheetController extends DefaultBaseController {
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@Valid ApproveRefuseTakeStockSheetVo vo) {
 
-    takeStockSheetService.approveRefuse(vo);
+    takeStockSheetService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

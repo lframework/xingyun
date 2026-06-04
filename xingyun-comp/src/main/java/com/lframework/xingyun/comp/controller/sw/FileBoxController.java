@@ -49,7 +49,7 @@ public class FileBoxController extends DefaultBaseController {
   @PostMapping("/dir")
   public InvokeResult<Void> createDir(@Valid CreateFileBoxDirVo vo) {
 
-    fileBoxService.createDir(vo);
+    fileBoxService.createDir(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -61,7 +61,7 @@ public class FileBoxController extends DefaultBaseController {
   @PostMapping("/upload")
   public InvokeResult<Void> upload(@Valid UploadFileBoxVo vo) {
 
-    fileBoxService.upload(vo);
+    fileBoxService.upload(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -74,7 +74,7 @@ public class FileBoxController extends DefaultBaseController {
   public InvokeResult<PageResult<QueryFileBoxBo>> query(@Valid QueryFileBoxVo vo) {
 
     PageResult<FileBox> pageResult = fileBoxService.query(getPageIndex(vo), getPageSize(vo),
-        vo);
+        vo, getCurrentUser().getId());
 
     List<FileBox> datas = pageResult.getDatas();
     List<QueryFileBoxBo> results = null;
@@ -119,7 +119,7 @@ public class FileBoxController extends DefaultBaseController {
   @Operation(summary = "删除")
   @DeleteMapping
   public InvokeResult<Void> deleteById(@NotEmpty(message = "ID不能为空！") String id) {
-    fileBoxService.deleteById(id);
+    fileBoxService.deleteById(id, getCurrentUser().getId());
     return InvokeResultBuilder.success();
   }
 }

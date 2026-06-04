@@ -9,8 +9,6 @@ import com.lframework.starter.common.exceptions.impl.InputErrorException;
 import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.core.components.security.AbstractUserDetails;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.inner.service.GenerateCodeService;
@@ -165,7 +163,7 @@ public class CustomerSettlePreSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approvePass(ApprovePassCustomerSettlePreSheetVo vo) {
+  public void approvePass(ApprovePassCustomerSettlePreSheetVo vo, String userId) {
 
     CustomerSettlePreSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -181,7 +179,7 @@ public class CustomerSettlePreSheetServiceImpl extends
     }
 
     sheet.setStatus(CustomerSettlePreSheetStatus.APPROVE_PASS);
-    sheet.setApproveBy(SecurityUtil.getCurrentUser().getId());
+    sheet.setApproveBy(userId);
     sheet.setApproveTime(LocalDateTime.now());
     if (!StringUtil.isBlank(vo.getDescription())) {
       sheet.setDescription(vo.getDescription());
@@ -206,7 +204,7 @@ public class CustomerSettlePreSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public String directApprovePass(CreateCustomerSettlePreSheetVo vo) {
+  public String directApprovePass(CreateCustomerSettlePreSheetVo vo, String userId) {
 
     CustomerSettlePreSheetService thisService = getThis(this.getClass());
 
@@ -215,7 +213,7 @@ public class CustomerSettlePreSheetServiceImpl extends
     ApprovePassCustomerSettlePreSheetVo approveVo = new ApprovePassCustomerSettlePreSheetVo();
     approveVo.setId(id);
 
-    thisService.approvePass(approveVo);
+    thisService.approvePass(approveVo, userId);
 
     return id;
   }
@@ -224,7 +222,7 @@ public class CustomerSettlePreSheetServiceImpl extends
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approveRefuse(ApproveRefuseCustomerSettlePreSheetVo vo) {
+  public void approveRefuse(ApproveRefuseCustomerSettlePreSheetVo vo, String userId) {
 
     CustomerSettlePreSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -242,7 +240,7 @@ public class CustomerSettlePreSheetServiceImpl extends
     }
 
     sheet.setStatus(CustomerSettlePreSheetStatus.APPROVE_REFUSE);
-    sheet.setApproveBy(SecurityUtil.getCurrentUser().getId());
+    sheet.setApproveBy(userId);
     sheet.setApproveTime(LocalDateTime.now());
     sheet.setRefuseReason(vo.getRefuseReason());
 
@@ -371,8 +369,6 @@ public class CustomerSettlePreSheetServiceImpl extends
 
       orderNo++;
     }
-
-    AbstractUserDetails currentUser = SecurityUtil.getCurrentUser();
 
     sheet.setCustomerId(vo.getCustomerId());
     sheet.setTotalAmount(totalAmount);

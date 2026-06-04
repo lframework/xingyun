@@ -20,7 +20,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
@@ -343,7 +342,7 @@ public class PurchaseOrderServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approvePass(ApprovePassPurchaseOrderVo vo) {
+  public void approvePass(ApprovePassPurchaseOrderVo vo, String userId) {
 
     PurchaseOrder order = getBaseMapper().selectById(vo.getId());
     if (order == null) {
@@ -367,7 +366,7 @@ public class PurchaseOrderServiceImpl extends
     statusList.add(PurchaseOrderStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
-            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
+            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, userId)
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
         .eq(PurchaseOrder::getId, order.getId()).in(PurchaseOrder::getStatus, statusList);
 
@@ -456,7 +455,7 @@ public class PurchaseOrderServiceImpl extends
   @Transactional(rollbackFor = Exception.class)
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Override
-  public String directApprovePass(CreatePurchaseOrderVo vo) {
+  public String directApprovePass(CreatePurchaseOrderVo vo, String userId) {
 
     PurchaseOrderService thisService = getThis(this.getClass());
 
@@ -465,7 +464,7 @@ public class PurchaseOrderServiceImpl extends
     ApprovePassPurchaseOrderVo approvePassPurchaseOrderVo = new ApprovePassPurchaseOrderVo();
     approvePassPurchaseOrderVo.setId(orderId);
 
-    thisService.approvePass(approvePassPurchaseOrderVo);
+    thisService.approvePass(approvePassPurchaseOrderVo, userId);
 
     return orderId;
   }
@@ -474,7 +473,7 @@ public class PurchaseOrderServiceImpl extends
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approveRefuse(ApproveRefusePurchaseOrderVo vo) {
+  public void approveRefuse(ApproveRefusePurchaseOrderVo vo, String userId) {
 
     PurchaseOrder order = getBaseMapper().selectById(vo.getId());
     if (order == null) {
@@ -497,7 +496,7 @@ public class PurchaseOrderServiceImpl extends
     order.setStatus(PurchaseOrderStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<PurchaseOrder> updateOrderWrapper = Wrappers.lambdaUpdate(
-            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, SecurityUtil.getCurrentUser().getId())
+            PurchaseOrder.class).set(PurchaseOrder::getApproveBy, userId)
         .set(PurchaseOrder::getApproveTime, LocalDateTime.now())
         .set(PurchaseOrder::getRefuseReason, vo.getRefuseReason())
         .eq(PurchaseOrder::getId, order.getId())
@@ -868,7 +867,7 @@ public class PurchaseOrderServiceImpl extends
       ApprovePassPurchaseOrderVo approveVo = new ApprovePassPurchaseOrderVo();
       approveVo.setId(order.getId());
 
-      purchaseOrderService.approvePass(approveVo);
+      purchaseOrderService.approvePass(approveVo, startById);
     }
   }
 

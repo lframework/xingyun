@@ -72,21 +72,21 @@ public interface StockAdjustSheetService extends BaseMpService<StockAdjustSheet>
    *
    * @param vo
    */
-  void approvePass(ApprovePassStockAdjustSheetVo vo);
+  void approvePass(ApprovePassStockAdjustSheetVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreateStockAdjustSheetVo vo);
+  String directApprovePass(CreateStockAdjustSheetVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefuseStockAdjustSheetVo vo);
+  void approveRefuse(ApproveRefuseStockAdjustSheetVo vo, String userId);
 
   /**
    * 根据关键字查询库存调整单商品信息

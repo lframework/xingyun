@@ -242,7 +242,7 @@ public class PurchaseOrderController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassPurchaseOrderVo vo) {
 
-    purchaseOrderService.approvePass(vo);
+    purchaseOrderService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -257,7 +257,7 @@ public class PurchaseOrderController extends DefaultBaseController {
 
     vo.validate();
 
-    purchaseOrderService.directApprovePass(vo);
+    purchaseOrderService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -270,7 +270,7 @@ public class PurchaseOrderController extends DefaultBaseController {
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefusePurchaseOrderVo vo) {
 
-    purchaseOrderService.approveRefuse(vo);
+    purchaseOrderService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

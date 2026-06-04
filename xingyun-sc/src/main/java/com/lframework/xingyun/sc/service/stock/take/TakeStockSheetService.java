@@ -63,21 +63,21 @@ public interface TakeStockSheetService extends BaseMpService<TakeStockSheet> {
    *
    * @param vo
    */
-  void approvePass(ApprovePassTakeStockSheetVo vo);
+  void approvePass(ApprovePassTakeStockSheetVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreateTakeStockSheetVo vo);
+  String directApprovePass(CreateTakeStockSheetVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefuseTakeStockSheetVo vo);
+  void approveRefuse(ApproveRefuseTakeStockSheetVo vo, String userId);
 
   /**
    * 取消审核

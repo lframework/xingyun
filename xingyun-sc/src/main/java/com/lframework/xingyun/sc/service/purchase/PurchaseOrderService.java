@@ -94,21 +94,21 @@ public interface PurchaseOrderService extends BaseMpService<PurchaseOrder> {
    *
    * @param vo
    */
-  void approvePass(ApprovePassPurchaseOrderVo vo);
+  void approvePass(ApprovePassPurchaseOrderVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreatePurchaseOrderVo vo);
+  String directApprovePass(CreatePurchaseOrderVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefusePurchaseOrderVo vo);
+  void approveRefuse(ApproveRefusePurchaseOrderVo vo, String userId);
 
   /**
    * 根据ID删除

@@ -68,21 +68,21 @@ public interface ScTransferOrderService extends BaseMpService<ScTransferOrder> {
    *
    * @param vo
    */
-  void approvePass(ApprovePassScTransferOrderVo vo);
+  void approvePass(ApprovePassScTransferOrderVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreateScTransferOrderVo vo);
+  String directApprovePass(CreateScTransferOrderVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefuseScTransferOrderVo vo);
+  void approveRefuse(ApproveRefuseScTransferOrderVo vo, String userId);
 
   /**
    * 收货

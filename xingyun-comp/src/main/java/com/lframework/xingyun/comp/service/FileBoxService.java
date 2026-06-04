@@ -19,7 +19,7 @@ public interface FileBoxService extends BaseMpService<FileBox> {
    *
    * @return
    */
-  PageResult<FileBox> query(Integer pageIndex, Integer pageSize, QueryFileBoxVo vo);
+  PageResult<FileBox> query(Integer pageIndex, Integer pageSize, QueryFileBoxVo vo, String userId);
 
   /**
    * 查询列表
@@ -27,7 +27,7 @@ public interface FileBoxService extends BaseMpService<FileBox> {
    * @param vo
    * @return
    */
-  List<FileBox> query(QueryFileBoxVo vo);
+  List<FileBox> query(QueryFileBoxVo vo, String userId);
 
   /**
    * 根据ID查询
@@ -49,18 +49,18 @@ public interface FileBoxService extends BaseMpService<FileBox> {
    * 根据ID删除
    * @param id
    */
-  void deleteById(String id);
+  void deleteById(String id, String userId);
 
   /**
    * 创建文件夹
    * @param vo
    */
-  void createDir(CreateFileBoxDirVo vo);
+  void createDir(CreateFileBoxDirVo vo, String userId);
 
   /**
    * 上传文件
    * @param vo
    */
-  void upload(UploadFileBoxVo vo);
+  void upload(UploadFileBoxVo vo, String userId);
 
 }

@@ -227,7 +227,7 @@ public class SaleOrderController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleOrderVo vo) {
 
-    saleOrderService.approvePass(vo);
+    saleOrderService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -242,7 +242,7 @@ public class SaleOrderController extends DefaultBaseController {
 
     vo.validate();
 
-    saleOrderService.directApprovePass(vo);
+    saleOrderService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -255,7 +255,7 @@ public class SaleOrderController extends DefaultBaseController {
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleOrderVo vo) {
 
-    saleOrderService.approveRefuse(vo);
+    saleOrderService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

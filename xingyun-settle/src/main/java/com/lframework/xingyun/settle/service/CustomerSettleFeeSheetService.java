@@ -62,21 +62,21 @@ public interface CustomerSettleFeeSheetService extends BaseMpService<CustomerSet
      *
      * @param vo
      */
-    void approvePass(ApprovePassCustomerSettleFeeSheetVo vo);
+    void approvePass(ApprovePassCustomerSettleFeeSheetVo vo, String userId);
 
     /**
      * 直接审核通过
      *
      * @param vo
      */
-    String directApprovePass(CreateCustomerSettleFeeSheetVo vo);
+    String directApprovePass(CreateCustomerSettleFeeSheetVo vo, String userId);
 
     /**
      * 审核拒绝
      *
      * @param vo
      */
-    void approveRefuse(ApproveRefuseCustomerSettleFeeSheetVo vo);
+    void approveRefuse(ApproveRefuseCustomerSettleFeeSheetVo vo, String userId);
 
     /**
      * 根据ID删除

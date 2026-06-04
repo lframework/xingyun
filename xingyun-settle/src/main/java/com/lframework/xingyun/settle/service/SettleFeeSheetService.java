@@ -58,21 +58,21 @@ public interface SettleFeeSheetService extends BaseMpService<SettleFeeSheet> {
      *
      * @param vo
      */
-    void approvePass(ApprovePassSettleFeeSheetVo vo);
+    void approvePass(ApprovePassSettleFeeSheetVo vo, String userId);
 
     /**
      * 直接审核通过
      *
      * @param vo
      */
-    String directApprovePass(CreateSettleFeeSheetVo vo);
+    String directApprovePass(CreateSettleFeeSheetVo vo, String userId);
 
     /**
      * 审核拒绝
      *
      * @param vo
      */
-    void approveRefuse(ApproveRefuseSettleFeeSheetVo vo);
+    void approveRefuse(ApproveRefuseSettleFeeSheetVo vo, String userId);
 
     /**
      * 根据ID删除

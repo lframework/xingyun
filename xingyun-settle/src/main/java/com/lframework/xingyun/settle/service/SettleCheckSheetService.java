@@ -60,21 +60,21 @@ public interface SettleCheckSheetService extends BaseMpService<SettleCheckSheet>
      *
      * @param vo
      */
-    void approvePass(ApprovePassSettleCheckSheetVo vo);
+    void approvePass(ApprovePassSettleCheckSheetVo vo, String userId);
 
     /**
      * 直接审核通过
      *
      * @param vo
      */
-    String directApprovePass(CreateSettleCheckSheetVo vo);
+    String directApprovePass(CreateSettleCheckSheetVo vo, String userId);
 
     /**
      * 审核拒绝
      *
      * @param vo
      */
-    void approveRefuse(ApproveRefuseSettleCheckSheetVo vo);
+    void approveRefuse(ApproveRefuseSettleCheckSheetVo vo, String userId);
 
     /**
      * 根据ID删除

@@ -13,7 +13,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
@@ -165,7 +164,7 @@ public class LogisticsSheetServiceImpl extends
   @OpLog(type = LogisticsOpLogType.class, name = "物流单发货，单号：{}", params = "#code")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void delivery(DeliveryLogisticsSheetVo vo) {
+  public void delivery(DeliveryLogisticsSheetVo vo, String userId) {
 
     LogisticsSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -180,7 +179,7 @@ public class LogisticsSheetServiceImpl extends
     statusList.add(LogisticsSheetStatus.CREATED);
 
     Wrapper<LogisticsSheet> updateOrderWrapper = Wrappers.lambdaUpdate(LogisticsSheet.class)
-        .set(LogisticsSheet::getDeliveryBy, SecurityUtil.getCurrentUser().getId())
+        .set(LogisticsSheet::getDeliveryBy, userId)
         .set(LogisticsSheet::getDeliveryTime, LocalDateTime.now())
         .set(StringUtil.isNotBlank(vo.getLogisticsNo()), LogisticsSheet::getLogisticsNo,
             vo.getLogisticsNo())

@@ -243,7 +243,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSaleOutSheetVo vo) {
 
-    saleOutSheetService.approvePass(vo);
+    saleOutSheetService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -258,7 +258,7 @@ public class SaleOutSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    saleOutSheetService.directApprovePass(vo);
+    saleOutSheetService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -271,7 +271,7 @@ public class SaleOutSheetController extends DefaultBaseController {
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSaleOutSheetVo vo) {
 
-    saleOutSheetService.approveRefuse(vo);
+    saleOutSheetService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

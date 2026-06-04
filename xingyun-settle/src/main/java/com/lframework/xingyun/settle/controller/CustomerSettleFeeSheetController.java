@@ -143,7 +143,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   public InvokeResult<Void> approvePass(
       @RequestBody @Valid ApprovePassCustomerSettleFeeSheetVo vo) {
 
-    customerSettleFeeSheetService.approvePass(vo);
+    customerSettleFeeSheetService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -159,7 +159,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    customerSettleFeeSheetService.directApprovePass(vo);
+    customerSettleFeeSheetService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -173,7 +173,7 @@ public class CustomerSettleFeeSheetController extends DefaultBaseController {
   public InvokeResult<Void> approveRefuse(
       @RequestBody @Valid ApproveRefuseCustomerSettleFeeSheetVo vo) {
 
-    customerSettleFeeSheetService.approveRefuse(vo);
+    customerSettleFeeSheetService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

@@ -58,21 +58,21 @@ public interface SettlePreSheetService extends BaseMpService<SettlePreSheet> {
      *
      * @param vo
      */
-    void approvePass(ApprovePassSettlePreSheetVo vo);
+    void approvePass(ApprovePassSettlePreSheetVo vo, String userId);
 
     /**
      * 直接审核通过
      *
      * @param vo
      */
-    String directApprovePass(CreateSettlePreSheetVo vo);
+    String directApprovePass(CreateSettlePreSheetVo vo, String userId);
 
     /**
      * 审核拒绝
      *
      * @param vo
      */
-    void approveRefuse(ApproveRefuseSettlePreSheetVo vo);
+    void approveRefuse(ApproveRefuseSettlePreSheetVo vo, String userId);
 
     /**
      * 根据ID删除

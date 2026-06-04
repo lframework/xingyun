@@ -83,7 +83,7 @@ public interface LogisticsSheetService extends BaseMpService<LogisticsSheet> {
    *
    * @param vo
    */
-  void delivery(DeliveryLogisticsSheetVo vo);
+  void delivery(DeliveryLogisticsSheetVo vo, String userId);
 
   /**
    * 根据ID删除

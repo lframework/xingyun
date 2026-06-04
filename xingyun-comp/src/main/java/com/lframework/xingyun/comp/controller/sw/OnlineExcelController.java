@@ -7,7 +7,6 @@ import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.starter.web.core.controller.DefaultBaseController;
 import com.lframework.starter.web.core.components.resp.InvokeResult;
 import com.lframework.starter.web.core.components.resp.InvokeResultBuilder;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.xingyun.comp.bo.sw.excel.GetOnlineExcelBo;
 import com.lframework.xingyun.comp.bo.sw.excel.QueryOnlineExcelBo;
 import com.lframework.xingyun.comp.entity.OnlineExcel;
@@ -55,7 +54,7 @@ public class OnlineExcelController extends DefaultBaseController {
   public InvokeResult<PageResult<QueryOnlineExcelBo>> query(@Valid QueryOnlineExcelVo vo) {
 
     PageResult<OnlineExcel> pageResult = onlineExcelService.query(getPageIndex(vo), getPageSize(vo),
-        vo);
+        vo, getCurrentUser().getId());
 
     List<OnlineExcel> datas = pageResult.getDatas();
     List<QueryOnlineExcelBo> results = null;
@@ -135,11 +134,11 @@ public class OnlineExcelController extends DefaultBaseController {
   @PostMapping("/send")
   public InvokeResult<Void> send(@Valid SendOnlineExcelVo vo) {
 
-    if (vo.getUserId().equals(SecurityUtil.getCurrentUser().getId())) {
+    if (vo.getUserId().equals(getCurrentUser().getId())) {
       throw new DefaultClientException("文件不能发送给自己！");
     }
 
-    onlineExcelService.send(vo);
+    onlineExcelService.send(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -148,11 +147,11 @@ public class OnlineExcelController extends DefaultBaseController {
   @PostMapping("/send/batch")
   public InvokeResult<Void> batchSend(@Valid @RequestBody BatchSendOnlineExcelVo vo) {
 
-    if (vo.getUserId().equals(SecurityUtil.getCurrentUser().getId())) {
+    if (vo.getUserId().equals(getCurrentUser().getId())) {
       throw new DefaultClientException("文件不能发送给自己！");
     }
 
-    onlineExcelService.batchSend(vo);
+    onlineExcelService.batchSend(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

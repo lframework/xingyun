@@ -141,7 +141,7 @@ public class SettleFeeSheetController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassSettleFeeSheetVo vo) {
 
-    settleFeeSheetService.approvePass(vo);
+    settleFeeSheetService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -156,7 +156,7 @@ public class SettleFeeSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    settleFeeSheetService.directApprovePass(vo);
+    settleFeeSheetService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -169,7 +169,7 @@ public class SettleFeeSheetController extends DefaultBaseController {
   @PatchMapping("/approve/refuse")
   public InvokeResult<Void> approveRefuse(@RequestBody @Valid ApproveRefuseSettleFeeSheetVo vo) {
 
-    settleFeeSheetService.approveRefuse(vo);
+    settleFeeSheetService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

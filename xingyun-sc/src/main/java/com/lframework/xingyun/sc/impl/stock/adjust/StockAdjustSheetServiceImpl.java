@@ -12,7 +12,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.EnumUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
@@ -211,7 +210,7 @@ public class StockAdjustSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approvePass(ApprovePassStockAdjustSheetVo vo) {
+  public void approvePass(ApprovePassStockAdjustSheetVo vo, String userId) {
 
     StockAdjustSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
@@ -233,7 +232,7 @@ public class StockAdjustSheetServiceImpl extends
         .eq(StockAdjustSheet::getId, data.getId())
         .in(StockAdjustSheet::getStatus, StockAdjustSheetStatus.CREATED,
             StockAdjustSheetStatus.APPROVE_REFUSE)
-        .set(StockAdjustSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(StockAdjustSheet::getApproveBy, userId)
         .set(StockAdjustSheet::getApproveTime, now)
         .set(StockAdjustSheet::getStatus, StockAdjustSheetStatus.APPROVE_PASS)
         .set(StockAdjustSheet::getDescription,
@@ -289,7 +288,7 @@ public class StockAdjustSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public String directApprovePass(CreateStockAdjustSheetVo vo) {
+  public String directApprovePass(CreateStockAdjustSheetVo vo, String userId) {
 
     StockAdjustSheetService thisService = getThis(this.getClass());
 
@@ -299,7 +298,7 @@ public class StockAdjustSheetServiceImpl extends
     approvePassVo.setId(id);
     approvePassVo.setDescription(vo.getDescription());
 
-    thisService.approvePass(approvePassVo);
+    thisService.approvePass(approvePassVo, userId);
 
     return id;
   }
@@ -308,7 +307,7 @@ public class StockAdjustSheetServiceImpl extends
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approveRefuse(ApproveRefuseStockAdjustSheetVo vo) {
+  public void approveRefuse(ApproveRefuseStockAdjustSheetVo vo, String userId) {
 
     StockAdjustSheet data = getBaseMapper().selectById(vo.getId());
     if (ObjectUtil.isNull(data)) {
@@ -329,7 +328,7 @@ public class StockAdjustSheetServiceImpl extends
         .eq(StockAdjustSheet::getId, data.getId())
         .in(StockAdjustSheet::getStatus, StockAdjustSheetStatus.CREATED,
             StockAdjustSheetStatus.APPROVE_REFUSE)
-        .set(StockAdjustSheet::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(StockAdjustSheet::getApproveBy, userId)
         .set(StockAdjustSheet::getApproveTime, LocalDateTime.now())
         .set(StockAdjustSheet::getRefuseReason, vo.getRefuseReason())
         .set(StockAdjustSheet::getStatus, StockAdjustSheetStatus.APPROVE_REFUSE);

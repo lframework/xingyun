@@ -13,7 +13,6 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.annotations.timeline.OrderTimeLineLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.starter.web.core.utils.IdUtil;
@@ -233,7 +232,7 @@ public class SaleReturnServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approvePass(ApprovePassSaleReturnVo vo) {
+  public void approvePass(ApprovePassSaleReturnVo vo, String userId) {
 
     SaleReturn saleReturn = getBaseMapper().selectById(vo.getId());
     if (saleReturn == null) {
@@ -270,7 +269,7 @@ public class SaleReturnServiceImpl extends
     statusList.add(SaleReturnStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<SaleReturn> updateOrderWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
-        .set(SaleReturn::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(SaleReturn::getApproveBy, userId)
         .set(SaleReturn::getApproveTime, LocalDateTime.now())
         .eq(SaleReturn::getId, saleReturn.getId()).in(SaleReturn::getStatus, statusList);
     if (!StringUtil.isBlank(vo.getDescription())) {
@@ -311,7 +310,7 @@ public class SaleReturnServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public String directApprovePass(CreateSaleReturnVo vo) {
+  public String directApprovePass(CreateSaleReturnVo vo, String userId) {
 
     SaleReturnService thisService = getThis(this.getClass());
 
@@ -321,7 +320,7 @@ public class SaleReturnServiceImpl extends
     approvePassVo.setId(returnId);
     approvePassVo.setDescription(vo.getDescription());
 
-    thisService.approvePass(approvePassVo);
+    thisService.approvePass(approvePassVo, userId);
 
     return returnId;
   }
@@ -330,7 +329,7 @@ public class SaleReturnServiceImpl extends
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approveRefuse(ApproveRefuseSaleReturnVo vo) {
+  public void approveRefuse(ApproveRefuseSaleReturnVo vo, String userId) {
 
     SaleReturn saleReturn = getBaseMapper().selectById(vo.getId());
     if (saleReturn == null) {
@@ -353,7 +352,7 @@ public class SaleReturnServiceImpl extends
     saleReturn.setStatus(SaleReturnStatus.APPROVE_REFUSE);
 
     LambdaUpdateWrapper<SaleReturn> updateOrderWrapper = Wrappers.lambdaUpdate(SaleReturn.class)
-        .set(SaleReturn::getApproveBy, SecurityUtil.getCurrentUser().getId())
+        .set(SaleReturn::getApproveBy, userId)
         .set(SaleReturn::getApproveTime, LocalDateTime.now())
         .set(SaleReturn::getRefuseReason, vo.getRefuseReason())
         .eq(SaleReturn::getId, saleReturn.getId())

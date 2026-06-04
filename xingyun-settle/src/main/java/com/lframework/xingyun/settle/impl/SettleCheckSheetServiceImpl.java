@@ -11,8 +11,6 @@ import com.lframework.starter.common.utils.Assert;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
-import com.lframework.starter.web.core.components.security.AbstractUserDetails;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.utils.EnumUtil;
@@ -197,7 +195,7 @@ public class SettleCheckSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approvePass(ApprovePassSettleCheckSheetVo vo) {
+  public void approvePass(ApprovePassSettleCheckSheetVo vo, String userId) {
 
     SettleCheckSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -213,7 +211,7 @@ public class SettleCheckSheetServiceImpl extends
     }
 
     sheet.setStatus(SettleCheckSheetStatus.APPROVE_PASS);
-    sheet.setApproveBy(SecurityUtil.getCurrentUser().getId());
+    sheet.setApproveBy(userId);
     sheet.setApproveTime(LocalDateTime.now());
     if (!StringUtil.isBlank(vo.getDescription())) {
       sheet.setDescription(vo.getDescription());
@@ -236,7 +234,7 @@ public class SettleCheckSheetServiceImpl extends
   @OrderTimeLineLog(type = ApprovePassOrderTimeLineBizType.class, orderId = "#_result", name = "直接审核通过")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public String directApprovePass(CreateSettleCheckSheetVo vo) {
+  public String directApprovePass(CreateSettleCheckSheetVo vo, String userId) {
 
     SettleCheckSheetService thisService = getThis(this.getClass());
 
@@ -245,7 +243,7 @@ public class SettleCheckSheetServiceImpl extends
     ApprovePassSettleCheckSheetVo approveVo = new ApprovePassSettleCheckSheetVo();
     approveVo.setId(id);
 
-    thisService.approvePass(approveVo);
+    thisService.approvePass(approveVo, userId);
 
     return id;
   }
@@ -254,7 +252,7 @@ public class SettleCheckSheetServiceImpl extends
   @OrderTimeLineLog(type = ApproveReturnOrderTimeLineBizType.class, orderId = "#vo.id", name = "审核拒绝，拒绝理由：{}", params = "#vo.refuseReason")
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void approveRefuse(ApproveRefuseSettleCheckSheetVo vo) {
+  public void approveRefuse(ApproveRefuseSettleCheckSheetVo vo, String userId) {
 
     SettleCheckSheet sheet = getBaseMapper().selectById(vo.getId());
     if (sheet == null) {
@@ -272,7 +270,7 @@ public class SettleCheckSheetServiceImpl extends
     }
 
     sheet.setStatus(SettleCheckSheetStatus.APPROVE_REFUSE);
-    sheet.setApproveBy(SecurityUtil.getCurrentUser().getId());
+    sheet.setApproveBy(userId);
     sheet.setApproveTime(LocalDateTime.now());
     sheet.setRefuseReason(vo.getRefuseReason());
 
@@ -765,8 +763,6 @@ public class SettleCheckSheetServiceImpl extends
       //将所有的单据的结算状态更新
       this.setBizItemPartSettle(detail.getBizId(), detail.getBizType());
     }
-
-    AbstractUserDetails currentUser = SecurityUtil.getCurrentUser();
 
     sheet.setSupplierId(vo.getSupplierId());
     sheet.setTotalAmount(totalAmount);

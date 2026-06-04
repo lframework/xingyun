@@ -61,21 +61,21 @@ public interface PurchaseReturnService extends BaseMpService<PurchaseReturn> {
    *
    * @param vo
    */
-  void approvePass(ApprovePassPurchaseReturnVo vo);
+  void approvePass(ApprovePassPurchaseReturnVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreatePurchaseReturnVo vo);
+  String directApprovePass(CreatePurchaseReturnVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefusePurchaseReturnVo vo);
+  void approveRefuse(ApproveRefusePurchaseReturnVo vo, String userId);
 
   /**
    * 根据ID删除

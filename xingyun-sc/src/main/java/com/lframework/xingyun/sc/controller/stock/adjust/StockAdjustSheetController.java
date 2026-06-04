@@ -249,7 +249,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassStockAdjustSheetVo vo) {
 
-    stockAdjustSheetService.approvePass(vo);
+    stockAdjustSheetService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -264,7 +264,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    stockAdjustSheetService.directApprovePass(vo);
+    stockAdjustSheetService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -278,7 +278,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
   public InvokeResult<Void> approveRefuse(
       @RequestBody @Valid ApproveRefuseStockAdjustSheetVo vo) {
 
-    stockAdjustSheetService.approveRefuse(vo);
+    stockAdjustSheetService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

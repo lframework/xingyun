@@ -19,6 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 public class LogisticsSheetDeliveryImportListener extends
     ExcelImportListener<LogisticsSheetDeliveryImportModel> {
 
+  private final String userId;
+
+  public LogisticsSheetDeliveryImportListener(String userId) {
+    this.userId = userId;
+  }
+
   @Override
   protected void doInvoke(LogisticsSheetDeliveryImportModel data, AnalysisContext context) {
 
@@ -66,7 +72,7 @@ public class LogisticsSheetDeliveryImportListener extends
       deliveryLogisticsSheetVo.setTotalAmount(data.getTotalAmount());
 
       try {
-        logisticsSheetService.delivery(deliveryLogisticsSheetVo);
+        logisticsSheetService.delivery(deliveryLogisticsSheetVo, userId);
       } catch (Exception e) {
         throw new DefaultClientException(
             "第" + (i + 1) + "行发货失败，失败原因：" + e.getMessage());

@@ -145,7 +145,7 @@ public class CustomerSettleSheetController extends DefaultBaseController {
   @PatchMapping("/approve/pass")
   public InvokeResult<Void> approvePass(@RequestBody @Valid ApprovePassCustomerSettleSheetVo vo) {
 
-    customerSettleSheetService.approvePass(vo);
+    customerSettleSheetService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -160,7 +160,7 @@ public class CustomerSettleSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    customerSettleSheetService.directApprovePass(vo);
+    customerSettleSheetService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -174,7 +174,7 @@ public class CustomerSettleSheetController extends DefaultBaseController {
   public InvokeResult<Void> approveRefuse(
       @RequestBody @Valid ApproveRefuseCustomerSettleSheetVo vo) {
 
-    customerSettleSheetService.approveRefuse(vo);
+    customerSettleSheetService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

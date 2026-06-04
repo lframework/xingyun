@@ -279,7 +279,7 @@ public class LogisticsSheetController extends DefaultBaseController {
   @PutMapping("/delivery")
   public InvokeResult<Void> delivery(@Valid DeliveryLogisticsSheetVo vo) {
 
-    logisticsSheetService.delivery(vo);
+    logisticsSheetService.delivery(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -330,7 +330,8 @@ public class LogisticsSheetController extends DefaultBaseController {
   public InvokeResult<Void> deliveryImportExcel(@NotBlank(message = "ID不能为空") String id,
       @NotNull(message = "请上传文件") MultipartFile file) {
 
-    LogisticsSheetDeliveryImportListener listener = new LogisticsSheetDeliveryImportListener();
+    LogisticsSheetDeliveryImportListener listener = new LogisticsSheetDeliveryImportListener(
+        getCurrentUser().getId());
     listener.setTaskId(id);
     ExcelUtil.read(file, LogisticsSheetDeliveryImportModel.class, listener).sheet().doRead();
 

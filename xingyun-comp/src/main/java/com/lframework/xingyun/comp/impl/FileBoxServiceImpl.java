@@ -13,7 +13,6 @@ import com.lframework.starter.common.utils.ObjectUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
-import com.lframework.starter.web.core.components.security.SecurityUtil;
 import com.lframework.starter.web.core.components.upload.client.dto.UploadDto;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.starter.web.core.utils.IdUtil;
@@ -48,21 +47,22 @@ public class FileBoxServiceImpl extends
   private RecursionMappingService recursionMappingService;
 
   @Override
-  public PageResult<FileBox> query(Integer pageIndex, Integer pageSize, QueryFileBoxVo vo) {
+  public PageResult<FileBox> query(Integer pageIndex, Integer pageSize, QueryFileBoxVo vo,
+      String userId) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<FileBox> datas = this.query(vo);
+    List<FileBox> datas = this.query(vo, userId);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
 
   @Override
-  public List<FileBox> query(QueryFileBoxVo vo) {
+  public List<FileBox> query(QueryFileBoxVo vo, String userId) {
 
-    return getBaseMapper().query(vo, SecurityUtil.getCurrentUser().getId());
+    return getBaseMapper().query(vo, userId);
   }
 
   @Override
@@ -97,7 +97,7 @@ public class FileBoxServiceImpl extends
   @OpLog(type = SwOpLogType.class, name = "删除文件，ID：{}", params = {"#id"})
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void deleteById(String id) {
+  public void deleteById(String id, String userId) {
 
     List<String> delIds = new ArrayList<>();
     delIds.add(id);
@@ -111,7 +111,7 @@ public class FileBoxServiceImpl extends
 
     Wrapper<FileBox> deleteWrapper = Wrappers.lambdaQuery(FileBox.class)
         .in(FileBox::getId, delIds)
-        .eq(FileBox::getCreateById, SecurityUtil.getCurrentUser().getId());
+        .eq(FileBox::getCreateById, userId);
     this.remove(deleteWrapper);
   }
 
@@ -119,11 +119,11 @@ public class FileBoxServiceImpl extends
       "#vo.parentPath", "#vo.name"})
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void createDir(CreateFileBoxDirVo vo) {
+  public void createDir(CreateFileBoxDirVo vo, String userId) {
 
     Wrapper<FileBox> checkWrapper = Wrappers.lambdaQuery(FileBox.class)
         .eq(FileBox::getName, vo.getName()).eq(FileBox::getFilePath, vo.getParentPath())
-        .eq(FileBox::getCreateById, SecurityUtil.getCurrentUser().getId());
+        .eq(FileBox::getCreateById, userId);
     if (this.count(checkWrapper) > 0) {
       throw new DefaultClientException("文件夹名称重复，请重新输入！");
     }
@@ -146,7 +146,7 @@ public class FileBoxServiceImpl extends
 
       Wrapper<FileBox> queryWrapper = Wrappers.lambdaQuery(FileBox.class)
           .eq(FileBox::getName, name).eq(FileBox::getFilePath, path)
-          .eq(FileBox::getCreateById, SecurityUtil.getCurrentUser().getId());
+          .eq(FileBox::getCreateById, userId);
       FileBox fileBox = this.getOne(queryWrapper);
       if (fileBox == null) {
         throw new DefaultClientException("父级目录不存在！");
@@ -165,10 +165,10 @@ public class FileBoxServiceImpl extends
       "#vo.path", "#vo.name"})
   @Transactional(rollbackFor = Exception.class)
   @Override
-  public void upload(UploadFileBoxVo vo) {
+  public void upload(UploadFileBoxVo vo, String userId) {
     MultipartFile file = vo.getFile();
     UploadDto uploadDto = UploadUtil.upload(file,
-        CollectionUtil.toList("filebox", SecurityUtil.getCurrentUser().getId()), true);
+        CollectionUtil.toList("filebox", userId), true);
 
     String recordId = uploadDto.getSecurityUploadRecordId();
 
@@ -195,7 +195,7 @@ public class FileBoxServiceImpl extends
 
       Wrapper<FileBox> queryWrapper = Wrappers.lambdaQuery(FileBox.class)
           .eq(FileBox::getName, name).eq(FileBox::getFilePath, path)
-          .eq(FileBox::getCreateById, SecurityUtil.getCurrentUser().getId());
+          .eq(FileBox::getCreateById, userId);
       FileBox fileBox = this.getOne(queryWrapper);
       if (fileBox == null) {
         throw new DefaultClientException("父级目录不存在！");

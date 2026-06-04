@@ -143,7 +143,7 @@ public class CustomerSettlePreSheetController extends DefaultBaseController {
   public InvokeResult<Void> approvePass(
       @RequestBody @Valid ApprovePassCustomerSettlePreSheetVo vo) {
 
-    settlePreSheetService.approvePass(vo);
+    settlePreSheetService.approvePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -159,7 +159,7 @@ public class CustomerSettlePreSheetController extends DefaultBaseController {
 
     vo.validate();
 
-    settlePreSheetService.directApprovePass(vo);
+    settlePreSheetService.directApprovePass(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }
@@ -173,7 +173,7 @@ public class CustomerSettlePreSheetController extends DefaultBaseController {
   public InvokeResult<Void> approveRefuse(
       @RequestBody @Valid ApproveRefuseCustomerSettlePreSheetVo vo) {
 
-    settlePreSheetService.approveRefuse(vo);
+    settlePreSheetService.approveRefuse(vo, getCurrentUser().getId());
 
     return InvokeResultBuilder.success();
   }

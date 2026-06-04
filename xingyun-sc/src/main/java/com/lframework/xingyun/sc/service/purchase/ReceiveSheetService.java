@@ -101,21 +101,21 @@ public interface ReceiveSheetService extends BaseMpService<ReceiveSheet> {
    *
    * @param vo
    */
-  void approvePass(ApprovePassReceiveSheetVo vo);
+  void approvePass(ApprovePassReceiveSheetVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreateReceiveSheetVo vo);
+  String directApprovePass(CreateReceiveSheetVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefuseReceiveSheetVo vo);
+  void approveRefuse(ApproveRefuseReceiveSheetVo vo, String userId);
 
   /**
    * 根据ID删除

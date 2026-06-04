@@ -93,21 +93,21 @@ public interface SaleOrderService extends BaseMpService<SaleOrder> {
    *
    * @param vo
    */
-  void approvePass(ApprovePassSaleOrderVo vo);
+  void approvePass(ApprovePassSaleOrderVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreateSaleOrderVo vo);
+  String directApprovePass(CreateSaleOrderVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefuseSaleOrderVo vo);
+  void approveRefuse(ApproveRefuseSaleOrderVo vo, String userId);
 
   /**
    * 根据ID删除

@@ -61,21 +61,21 @@ public interface SaleReturnService extends BaseMpService<SaleReturn> {
    *
    * @param vo
    */
-  void approvePass(ApprovePassSaleReturnVo vo);
+  void approvePass(ApprovePassSaleReturnVo vo, String userId);
 
   /**
    * 直接审核通过
    *
    * @param vo
    */
-  String directApprovePass(CreateSaleReturnVo vo);
+  String directApprovePass(CreateSaleReturnVo vo, String userId);
 
   /**
    * 审核拒绝
    *
    * @param vo
    */
-  void approveRefuse(ApproveRefuseSaleReturnVo vo);
+  void approveRefuse(ApproveRefuseSaleReturnVo vo, String userId);
 
   /**
    * 根据ID删除

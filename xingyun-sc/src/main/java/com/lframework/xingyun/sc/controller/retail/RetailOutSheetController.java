@@ -319,11 +319,11 @@ public class RetailOutSheetController extends DefaultBaseController {
 
     PageResult<RetailProductDto> pageResult = retailOutSheetService.queryRetailByCondition(
         getPageIndex(),
-        getPageSize(), condition, isReturn);
+        getPageSize(), scId, condition, isReturn);
     List<RetailProductBo> results = CollectionUtil.emptyList();
     List<RetailProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new RetailProductBo(scId, t)).collect(Collectors.toList());
+      results = datas.stream().map(RetailProductBo::new).collect(Collectors.toList());
     }
 
     return InvokeResultBuilder.success(results);
@@ -345,7 +345,7 @@ public class RetailOutSheetController extends DefaultBaseController {
     List<RetailProductBo> results = null;
     List<RetailProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new RetailProductBo(vo.getScId(), t))
+      results = datas.stream().map(RetailProductBo::new)
           .collect(Collectors.toList());
     }
 

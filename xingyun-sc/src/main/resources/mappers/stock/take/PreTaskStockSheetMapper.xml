@@ -51,6 +51,7 @@
         <result column="brand_name" property="brandName"/>
         <result column="spec" property="spec"/>
         <result column="unit" property="unit"/>
+        <result column="stock_num" property="stockNum"/>
         <result column="first_num" property="firstNum"/>
         <result column="second_num" property="secondNum"/>
         <result column="rand_num" property="randNum"/>
@@ -136,6 +137,7 @@
             b.name AS brand_name,
             p.spec,
             p.unit,
+            ps.stock_num AS stock_num,
             tb.first_num,
             tb.second_num,
             tb.rand_num,
@@ -146,6 +148,7 @@
         LEFT JOIN base_data_product_sku AS s ON s.id = tb.sku_id
         LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
         LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN tbl_product_stock AS ps ON ps.sku_id = tb.sku_id AND ps.sc_id = sh.sc_id
     </sql>
 
     <sql id="PreTakeStockProductDto_sql">

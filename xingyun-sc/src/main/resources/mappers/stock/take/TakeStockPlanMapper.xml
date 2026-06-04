@@ -42,6 +42,14 @@
         <id column="id" property="id"/>
         <result column="product_id" property="productId"/>
         <result column="sku_id" property="skuId"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="sale_property_text" property="salePropertyText"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
         <result column="stock_num" property="stockNum"/>
         <result column="ori_take_num" property="oriTakeNum"/>
         <result column="take_num" property="takeNum"/>
@@ -86,6 +94,14 @@
             tb.id,
             tb.product_id,
             tb.sku_id,
+            s.code AS sku_code,
+            s.sale_property_text,
+            p.code AS product_code,
+            p.name AS product_name,
+            c.name AS category_name,
+            b.name AS brand_name,
+            p.spec,
+            p.unit,
             tb.ori_take_num,
             tb.take_num,
             tb.stock_num,
@@ -93,6 +109,10 @@
             tb.total_out_num,
             tb.description
         FROM tbl_take_stock_plan_detail AS tb
+        LEFT JOIN base_data_product AS p ON p.id = tb.product_id
+        LEFT JOIN base_data_product_sku AS s ON s.id = tb.sku_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
         WHERE tb.plan_id = #{id}
     </sql>
 

@@ -11,7 +11,6 @@ import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.enums.RetailReturnStatus;
@@ -234,15 +233,6 @@ public class PrintRetailReturnBo extends BaseBo<RetailReturnFullDto> {
       this.returnNum = dto.getReturnNum();
       this.taxPrice = dto.getTaxPrice();
       this.returnAmount = dto.getTaxAmount();
-
-      RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
-          RetailOutSheetService.class);
-      RetailProductDto product = retailOutSheetService.getRetailById(dto.getSkuId());
-
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
     }
   }
 }

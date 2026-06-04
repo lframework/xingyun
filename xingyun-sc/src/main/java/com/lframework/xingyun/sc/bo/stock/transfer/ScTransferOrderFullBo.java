@@ -6,21 +6,10 @@ import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.starter.web.core.utils.EnumUtil;
-import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductBrand;
-import com.lframework.xingyun.basedata.entity.ProductCategory;
-import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.product.ProductBrandService;
-import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductSkuService;
-import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.transfer.ScTransferOrderFullDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.enums.ScTransferOrderStatus;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -165,7 +154,7 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
       this.approveBy = userService.findById(dto.getApproveBy()).getName();
     }
 
-    this.details = dto.getDetails().stream().map(t -> new DetailBo(t, this.sourceScId, this.status))
+    this.details = dto.getDetails().stream().map(t -> new DetailBo(t, this.status))
         .collect(Collectors.toList());
   }
 
@@ -263,22 +252,14 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
     private String description;
 
     /**
-     * 仓库ID
-     */
-    @JsonIgnore
-    @Schema(hidden = true)
-    private String scId;
-
-    /**
      * 状态
      */
     @JsonIgnore
     @Schema(hidden = true)
     private Integer status;
 
-    public DetailBo(ScTransferOrderFullDto.DetailDto dto, String scId, Integer status) {
+    public DetailBo(ScTransferOrderFullDto.DetailDto dto, Integer status) {
 
-      this.scId = scId;
       this.status = status;
 
       this.init(dto);
@@ -294,37 +275,10 @@ public class ScTransferOrderFullBo extends BaseBo<ScTransferOrderFullDto> {
     @Override
     protected void afterInit(ScTransferOrderFullDto.DetailDto dto) {
 
-      ProductService productService = ApplicationUtil.getBean(ProductService.class);
-
-      Product product = productService.findById(dto.getProductId());
-      ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
-      ProductSku sku = productSkuService.findById(dto.getSkuId());
-
-      ProductCategoryService productCategoryService = ApplicationUtil.getBean(
-          ProductCategoryService.class);
-      ProductCategory productCategory = productCategoryService.findById(product.getCategoryId());
-
-      if(StringUtil.isNotBlank(product.getBrandId())) {
-        ProductBrandService productBrandService = ApplicationUtil.getBean(ProductBrandService.class);
-        ProductBrand productBrand = productBrandService.findById(product.getBrandId());
-        this.brandName = productBrand.getName();
-      }
-
-      this.productCode = product.getCode();
-      this.skuCode = sku == null ? null : sku.getCode();
-      this.salePropertyText = sku == null ? null : sku.getSalePropertyText();
-      this.productName = product.getName();
-      this.categoryName = productCategory.getName();
-      this.spec = product.getSpec();
-      this.unit = product.getUnit();
-
-      if (EnumUtil.getByCode(ScTransferOrderStatus.class, this.status)
-          != ScTransferOrderStatus.APPROVE_PASS) {
-        ProductStockService productStockService = ApplicationUtil.getBean(
-            ProductStockService.class);
-        ProductStock productStock = productStockService.getBySkuIdAndScId(dto.getSkuId(),
-            this.scId);
-        this.curStockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+      if (!ScTransferOrderStatus.APPROVE_PASS.getCode().equals(this.status)) {
+        this.curStockNum = dto.getCurStockNum() == null ? BigDecimal.ZERO : dto.getCurStockNum();
+      } else {
+        this.curStockNum = null;
       }
     }
   }

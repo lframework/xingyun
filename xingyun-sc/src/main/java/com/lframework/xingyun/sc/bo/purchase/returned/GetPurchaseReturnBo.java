@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.bo.purchase.returned;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -11,17 +10,11 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.dto.purchase.returned.PurchaseReturnFullDto;
 import com.lframework.xingyun.sc.entity.OrderPayType;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.ReceiveSheet;
-import com.lframework.xingyun.sc.entity.ReceiveSheetDetail;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
-import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
-import com.lframework.xingyun.sc.service.purchase.ReceiveSheetDetailService;
 import com.lframework.xingyun.sc.service.purchase.ReceiveSheetService;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -225,7 +218,7 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
     this.totalAmount = dto.getTotalAmount();
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new ReturnDetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(ReturnDetailBo::new)
           .collect(Collectors.toList());
     }
 
@@ -363,17 +356,9 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
     @Schema(description = "采购收货单明细ID")
     private String receiveSheetDetailId;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
+    public ReturnDetailBo(PurchaseReturnFullDto.ReturnDetailDto dto) {
 
-    public ReturnDetailBo(String scId, PurchaseReturnFullDto.ReturnDetailDto dto) {
-
-      this.scId = scId;
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -389,38 +374,19 @@ public class GetPurchaseReturnBo extends BaseBo<PurchaseReturnFullDto> {
       this.returnNum = dto.getReturnNum();
       this.purchasePrice = dto.getTaxPrice();
 
-      PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
-          PurchaseOrderService.class);
-      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getSkuId());
-
-      this.productId = product.getId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getProductCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
-
       if (!StringUtil.isBlank(dto.getReceiveSheetDetailId())) {
-        ReceiveSheetDetailService receiveSheetDetailService = ApplicationUtil.getBean(
-            ReceiveSheetDetailService.class);
-        ReceiveSheetDetail receiveSheetDetailDto = receiveSheetDetailService.getById(
-            dto.getReceiveSheetDetailId());
-        this.receiveNum = receiveSheetDetailDto.getOrderNum();
-        this.remainNum = NumberUtil.sub(receiveSheetDetailDto.getOrderNum(),
-            receiveSheetDetailDto.getReturnNum());
+        BigDecimal sourceReceiveNum =
+            dto.getSourceReceiveNum() == null ? BigDecimal.ZERO : dto.getSourceReceiveNum();
+        BigDecimal sourceReturnNum =
+            dto.getSourceReturnNum() == null ? BigDecimal.ZERO : dto.getSourceReturnNum();
+        this.receiveNum = sourceReceiveNum;
+        this.remainNum = NumberUtil.sub(sourceReceiveNum, sourceReturnNum);
       }
 
-      ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
-      ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
-          this.getScId());
       this.taxCostPrice =
-          productStock == null ? BigDecimal.ZERO
-              : NumberUtil.getNumber(productStock.getTaxPrice(), 6);
-      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+          dto.getTaxCostPrice() == null ? BigDecimal.ZERO
+              : NumberUtil.getNumber(dto.getTaxCostPrice(), 6);
+      this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
     }
   }
 }

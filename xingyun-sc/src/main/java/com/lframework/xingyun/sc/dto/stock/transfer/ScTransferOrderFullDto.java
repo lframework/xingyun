@@ -111,6 +111,51 @@ public class ScTransferOrderFullDto implements BaseDto, Serializable {
     private String skuId;
 
     /**
+     * SKU编号
+     */
+    private String skuCode;
+
+    /**
+     * 销售属性
+     */
+    private String salePropertyText;
+
+    /**
+     * 商品编号
+     */
+    private String productCode;
+
+    /**
+     * 商品名称
+     */
+    private String productName;
+
+    /**
+     * 分类名称
+     */
+    private String categoryName;
+
+    /**
+     * 品牌名称
+     */
+    private String brandName;
+
+    /**
+     * 规格
+     */
+    private String spec;
+
+    /**
+     * 单位
+     */
+    private String unit;
+
+    /**
+     * 当前库存数量
+     */
+    private BigDecimal curStockNum;
+
+    /**
      * 调拨数量
      */
     private BigDecimal transferNum;

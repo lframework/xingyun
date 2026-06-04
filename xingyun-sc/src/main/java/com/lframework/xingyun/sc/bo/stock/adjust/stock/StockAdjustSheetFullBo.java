@@ -7,20 +7,11 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.annotations.convert.EnumConvert;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.starter.web.core.utils.EnumUtil;
-import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductBrand;
-import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.product.ProductBrandService;
-import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustSheetFullDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.StockAdjustReason;
 import com.lframework.xingyun.sc.enums.StockAdjustSheetStatus;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.adjust.StockAdjustReasonService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -162,7 +153,7 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
     StockAdjustReason reason = stockAdjustReasonService.findById(dto.getReasonId());
     this.reasonName = reason.getName();
 
-    this.details = dto.getDetails().stream().map(t -> new DetailBo(t, this.scId, this.status))
+    this.details = dto.getDetails().stream().map(t -> new DetailBo(t, this.status))
         .collect(Collectors.toList());
   }
 
@@ -254,22 +245,14 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
     private String description;
 
     /**
-     * 仓库ID
-     */
-    @JsonIgnore
-    @Schema(hidden = true)
-    private String scId;
-
-    /**
      * 状态
      */
     @JsonIgnore
     @Schema(hidden = true)
     private Integer status;
 
-    public DetailBo(StockAdjustSheetFullDto.DetailDto dto, String scId, Integer status) {
+    public DetailBo(StockAdjustSheetFullDto.DetailDto dto, Integer status) {
 
-      this.scId = scId;
       this.status = status;
 
       this.init(dto);
@@ -284,37 +267,10 @@ public class StockAdjustSheetFullBo extends BaseBo<StockAdjustSheetFullDto> {
 
     @Override
     protected void afterInit(StockAdjustSheetFullDto.DetailDto dto) {
-
-      ProductService productService = ApplicationUtil.getBean(ProductService.class);
-
-      Product product = productService.findById(dto.getProductId());
-      this.skuId = dto.getSkuId();
-      this.skuCode = dto.getSkuCode();
-      this.salePropertyText = dto.getSalePropertyText();
-
-      ProductCategoryService productCategoryService = ApplicationUtil.getBean(
-          ProductCategoryService.class);
-      ProductCategory productCategory = productCategoryService.findById(product.getCategoryId());
-
-      if(StringUtil.isNotBlank(product.getBrandId())) {
-        ProductBrandService productBrandService = ApplicationUtil.getBean(ProductBrandService.class);
-        ProductBrand productBrand = productBrandService.findById(product.getBrandId());
-        this.brandName = productBrand.getName();
-      }
-
-      this.productCode = product.getCode();
-      this.productName = product.getName();
-      this.categoryName = productCategory.getName();
-      this.spec = product.getSpec();
-      this.unit = product.getUnit();
-
-      if (EnumUtil.getByCode(StockAdjustSheetStatus.class, this.status)
-          != StockAdjustSheetStatus.APPROVE_PASS) {
-        ProductStockService productStockService = ApplicationUtil.getBean(
-            ProductStockService.class);
-        ProductStock productStock = productStockService.getBySkuIdAndScId(dto.getSkuId(),
-            this.scId);
-        this.curStockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+      if (!StockAdjustSheetStatus.APPROVE_PASS.getCode().equals(this.status)) {
+        this.curStockNum = dto.getCurStockNum() == null ? BigDecimal.ZERO : dto.getCurStockNum();
+      } else {
+        this.curStockNum = null;
       }
     }
   }

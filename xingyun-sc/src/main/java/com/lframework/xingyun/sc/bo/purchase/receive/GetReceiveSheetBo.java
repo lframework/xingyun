@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.bo.purchase.receive;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -11,16 +10,11 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetFullDto;
 import com.lframework.xingyun.sc.entity.OrderPayType;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.PurchaseOrder;
-import com.lframework.xingyun.sc.entity.PurchaseOrderDetail;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
-import com.lframework.xingyun.sc.service.purchase.PurchaseOrderDetailService;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -235,7 +229,7 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
     this.totalAmount = dto.getTotalAmount();
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new OrderDetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(OrderDetailBo::new)
           .collect(Collectors.toList());
     }
 
@@ -379,17 +373,9 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
     @Schema(description = "采购订单明细ID")
     private String purchaseOrderDetailId;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
+    public OrderDetailBo(ReceiveSheetFullDto.OrderDetailDto dto) {
 
-    public OrderDetailBo(String scId, ReceiveSheetFullDto.OrderDetailDto dto) {
-
-      this.scId = scId;
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -405,38 +391,19 @@ public class GetReceiveSheetBo extends BaseBo<ReceiveSheetFullDto> {
       this.receiveNum = dto.getOrderNum();
       this.purchasePrice = dto.getTaxPrice();
 
-      PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
-          PurchaseOrderService.class);
-      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getSkuId());
-
-      this.productId = product.getId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getProductCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
-
       if (!StringUtil.isBlank(dto.getPurchaseOrderDetailId())) {
-        PurchaseOrderDetailService purchaseOrderDetailService = ApplicationUtil.getBean(
-            PurchaseOrderDetailService.class);
-        PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailService.getById(
-            dto.getPurchaseOrderDetailId());
-        this.orderNum = purchaseOrderDetail.getOrderNum();
-        this.remainNum = NumberUtil.sub(purchaseOrderDetail.getOrderNum(),
-                purchaseOrderDetail.getReceiveNum());
+        BigDecimal sourceOrderNum =
+            dto.getSourceOrderNum() == null ? BigDecimal.ZERO : dto.getSourceOrderNum();
+        BigDecimal sourceReceiveNum =
+            dto.getSourceReceiveNum() == null ? BigDecimal.ZERO : dto.getSourceReceiveNum();
+        this.orderNum = sourceOrderNum;
+        this.remainNum = NumberUtil.sub(sourceOrderNum, sourceReceiveNum);
       }
 
-      ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
-      ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
-          this.getScId());
       this.taxCostPrice =
-          productStock == null ? BigDecimal.ZERO
-              : NumberUtil.getNumber(productStock.getTaxPrice(), 6);
-      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+          dto.getTaxCostPrice() == null ? BigDecimal.ZERO
+              : NumberUtil.getNumber(dto.getTaxCostPrice(), 6);
+      this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
     }
   }
 }

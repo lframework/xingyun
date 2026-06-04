@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.bo.retail.returned;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -11,13 +10,10 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
-import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
-import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.dto.retail.returned.RetailReturnFullDto;
 import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.RetailOutSheet;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
-import com.lframework.xingyun.sc.service.retail.RetailOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -225,7 +221,7 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
     this.totalAmount = dto.getTotalAmount();
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new ReturnDetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(ReturnDetailBo::new)
           .collect(Collectors.toList());
     }
 
@@ -363,17 +359,9 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
     @Schema(description = "销售出库单明细ID")
     private String outSheetDetailId;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
+    public ReturnDetailBo(RetailReturnFullDto.ReturnDetailDto dto) {
 
-    public ReturnDetailBo(String scId, RetailReturnFullDto.ReturnDetailDto dto) {
-
-      this.scId = scId;
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -386,34 +374,15 @@ public class GetRetailReturnBo extends BaseBo<RetailReturnFullDto> {
     @Override
     protected void afterInit(RetailReturnFullDto.ReturnDetailDto dto) {
 
-      this.returnNum = dto.getReturnNum();
       this.retailPrice = dto.getTaxPrice();
-      this.taxPrice = dto.getTaxPrice();
-      this.discountRate = dto.getDiscountRate();
-
-      RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
-          RetailOutSheetService.class);
-      RetailProductDto product = retailOutSheetService.getRetailById(dto.getSkuId());
-
-      this.productId = product.getProductId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
 
       if (!StringUtil.isBlank(dto.getOutSheetDetailId())) {
-        RetailOutSheetDetailLotService receiveSheetDetailService = ApplicationUtil.getBean(
-            RetailOutSheetDetailLotService.class);
-        RetailOutSheetDetailLotDto outSheetDetail = receiveSheetDetailService.findById(
-            dto.getOutSheetDetailId());
-        this.outNum = outSheetDetail.getOrderNum();
-        this.remainNum = NumberUtil.sub(outSheetDetail.getOrderNum(),
-            outSheetDetail.getReturnNum());
+        BigDecimal sourceOutNum =
+            dto.getSourceOutNum() == null ? BigDecimal.ZERO : dto.getSourceOutNum();
+        BigDecimal sourceReturnNum =
+            dto.getSourceReturnNum() == null ? BigDecimal.ZERO : dto.getSourceReturnNum();
+        this.outNum = sourceOutNum;
+        this.remainNum = NumberUtil.sub(sourceOutNum, sourceReturnNum);
       }
     }
   }

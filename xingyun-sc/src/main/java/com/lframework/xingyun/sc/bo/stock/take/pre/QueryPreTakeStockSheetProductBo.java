@@ -1,13 +1,10 @@
 package com.lframework.xingyun.sc.bo.stock.take.pre;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.dto.stock.take.pre.QueryPreTakeStockSheetProductDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
 import com.lframework.xingyun.sc.enums.PreTakeStockSheetStatus;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -15,13 +12,6 @@ import lombok.Data;
 
 @Data
 public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockSheetProductDto> {
-
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
 
     /**
      * 商品ID
@@ -95,26 +85,13 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
     @Schema(description = "盘点数量")
     private BigDecimal takeNum;
 
-    public QueryPreTakeStockSheetProductBo(QueryPreTakeStockSheetProductDto dto, String scId) {
+    public QueryPreTakeStockSheetProductBo(QueryPreTakeStockSheetProductDto dto) {
 
-        this.scId = scId;
-
-        this.init(dto);
+        super(dto);
     }
 
     @Override
     protected void afterInit(QueryPreTakeStockSheetProductDto dto) {
-
-        this.productId = dto.getProductId();
-        this.skuId = dto.getSkuId();
-        this.productCode = dto.getProductCode();
-        this.skuCode = dto.getSkuCode();
-        this.productName = dto.getProductName();
-        this.salePropertyText = dto.getSalePropertyText();
-        this.categoryName = dto.getCategoryName();
-        this.brandName = dto.getBrandName();
-        this.spec = dto.getSpec();
-        this.unit = dto.getUnit();
 
         if (dto.getTakeStatus() == PreTakeStockSheetStatus.FIRST_TAKE) {
             this.takeNum = dto.getFirstNum();
@@ -128,9 +105,9 @@ public class QueryPreTakeStockSheetProductBo extends BaseBo<QueryPreTakeStockShe
             TakeStockConfigService.class);
         TakeStockConfig config = takeStockConfigService.get();
         if (config.getShowStock()) {
-            ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
-            ProductStock productStock = productStockService.getBySkuIdAndScId(this.skuId, this.scId);
-            this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+            this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
+        } else {
+            this.stockNum = null;
         }
     }
 }

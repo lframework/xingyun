@@ -11,10 +11,8 @@ import com.lframework.xingyun.basedata.entity.Member;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.member.MemberService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.enums.RetailOutSheetStatus;
-import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -223,15 +221,6 @@ public class PrintRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
       this.outNum = dto.getOrderNum();
       this.taxPrice = dto.getTaxPrice();
       this.outAmount = dto.getTaxAmount();
-
-      RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
-          RetailOutSheetService.class);
-      RetailProductDto product = retailOutSheetService.getRetailById(dto.getSkuId());
-
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
     }
   }
 }

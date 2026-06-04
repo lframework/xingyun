@@ -295,11 +295,11 @@ public class SaleOrderController extends DefaultBaseController {
     }
 
     PageResult<SaleProductDto> pageResult = saleOrderService.querySaleByCondition(getPageIndex(),
-        getPageSize(), condition, isReturn);
+        getPageSize(), scId, condition, isReturn);
     List<SaleProductBo> results = CollectionUtil.emptyList();
     List<SaleProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new SaleProductBo(scId, t)).collect(Collectors.toList());
+      results = datas.stream().map(SaleProductBo::new).collect(Collectors.toList());
     }
 
     return InvokeResultBuilder.success(results);
@@ -320,7 +320,7 @@ public class SaleOrderController extends DefaultBaseController {
     List<SaleProductBo> results = null;
     List<SaleProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new SaleProductBo(vo.getScId(), t))
+      results = datas.stream().map(SaleProductBo::new)
           .collect(Collectors.toList());
     }
 

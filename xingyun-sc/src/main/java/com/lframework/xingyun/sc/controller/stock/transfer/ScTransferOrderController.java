@@ -146,7 +146,7 @@ public class ScTransferOrderController extends DefaultBaseController {
     List<ScTransferProductBo> results = CollectionUtil.emptyList();
     List<ScTransferProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new ScTransferProductBo(scId, t))
+      results = datas.stream().map(ScTransferProductBo::new)
           .collect(Collectors.toList());
     }
 
@@ -169,7 +169,7 @@ public class ScTransferOrderController extends DefaultBaseController {
     List<ScTransferProductDto> datas = pageResult.getDatas();
 
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new ScTransferProductBo(vo.getScId(), t))
+      results = datas.stream().map(ScTransferProductBo::new)
           .collect(Collectors.toList());
     }
 

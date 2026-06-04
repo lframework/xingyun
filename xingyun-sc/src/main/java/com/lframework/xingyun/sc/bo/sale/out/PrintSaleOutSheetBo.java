@@ -11,7 +11,6 @@ import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetFullDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.enums.SaleOutSheetStatus;
@@ -235,14 +234,6 @@ public class PrintSaleOutSheetBo extends BaseBo<SaleOutSheetFullDto> {
       this.outNum = dto.getOrderNum();
       this.taxPrice = dto.getTaxPrice();
       this.outAmount = dto.getTaxAmount();
-
-      SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
-      SaleProductDto product = saleOrderService.getSaleById(dto.getSkuId());
-
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
     }
   }
 }

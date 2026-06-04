@@ -1,6 +1,5 @@
 package com.lframework.xingyun.sc.bo.sale.out;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.functions.SFunction;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -12,11 +11,7 @@ import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.starter.web.inner.entity.SysUser;
-import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetWithReturnDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
-import com.lframework.xingyun.sc.service.sale.SaleOrderService;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -111,7 +106,7 @@ public class SaleOutSheetWithReturnBo extends BaseBo<SaleOutSheetWithReturnDto> 
     }
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new DetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(DetailBo::new)
           .collect(Collectors.toList());
     }
   }
@@ -239,18 +234,9 @@ public class SaleOutSheetWithReturnBo extends BaseBo<SaleOutSheetWithReturnDto> 
     @Schema(description = "备注")
     private String description;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
+    public DetailBo(SaleOutSheetWithReturnDto.SheetDetailDto dto) {
 
-    public DetailBo(String scId, SaleOutSheetWithReturnDto.SheetDetailDto dto) {
-
-      this.scId = scId;
-
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -270,34 +256,11 @@ public class SaleOutSheetWithReturnBo extends BaseBo<SaleOutSheetWithReturnDto> 
     @Override
     protected void afterInit(SaleOutSheetWithReturnDto.SheetDetailDto dto) {
 
-      SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
-      SaleProductDto product = saleOrderService.getSaleById(dto.getSkuId());
-
-      this.id = dto.getId();
-      this.productId = product.getId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
-
       this.outNum = dto.getOrderNum();
       this.salePrice = dto.getOriPrice();
-      this.taxPrice = dto.getTaxPrice();
-      this.discountRate = dto.getDiscountRate();
-      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReturnNum());
-      this.isGift = dto.getIsGift();
-      this.taxRate = dto.getTaxRate();
-      this.description = dto.getDescription();
-
-      ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
-      ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
-          this.getScId());
-      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+      BigDecimal returnNum = dto.getReturnNum() == null ? BigDecimal.ZERO : dto.getReturnNum();
+      this.remainNum = NumberUtil.sub(dto.getOrderNum(), returnNum);
+      this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
     }
   }
 }

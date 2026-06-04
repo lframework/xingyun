@@ -480,14 +480,14 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
 
   @Override
   public PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize,
-      String condition, Boolean isReturn) {
+      String scId, String condition, Boolean isReturn) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(condition, isReturn);
+    List<SaleProductDto> datas = getBaseMapper().querySaleByCondition(scId, condition, isReturn);
     PageResult<SaleProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -509,9 +509,9 @@ public class SaleOrderServiceImpl extends BaseMpServiceImpl<SaleOrderMapper, Sal
   }
 
   @Override
-  public SaleProductDto getSaleById(String id) {
+  public SaleProductDto getSaleById(String scId, String id) {
 
-    SaleProductDto data = getBaseMapper().getSaleById(id);
+    SaleProductDto data = getBaseMapper().getSaleById(scId, id);
 
     return data;
   }

@@ -47,6 +47,16 @@
             <id column="detail_id" property="id"/>
             <result column="detail_product_id" property="productId"/>
             <result column="detail_sku_id" property="skuId"/>
+            <result column="detail_sku_code" property="skuCode"/>
+            <result column="detail_sale_property_text" property="salePropertyText"/>
+            <result column="detail_product_code" property="productCode"/>
+            <result column="detail_product_name" property="productName"/>
+            <result column="detail_category_name" property="categoryName"/>
+            <result column="detail_brand_name" property="brandName"/>
+            <result column="detail_spec" property="spec"/>
+            <result column="detail_unit" property="unit"/>
+            <result column="detail_stock_num" property="stockNum"/>
+            <result column="detail_tax_cost_price" property="taxCostPrice"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_tax_price" property="taxPrice"/>
             <result column="detail_is_gift" property="isGift"/>
@@ -66,6 +76,16 @@
             <id column="detail_id" property="id"/>
             <result column="detail_product_id" property="productId"/>
             <result column="detail_sku_id" property="skuId"/>
+            <result column="detail_sku_code" property="skuCode"/>
+            <result column="detail_sale_property_text" property="salePropertyText"/>
+            <result column="detail_product_code" property="productCode"/>
+            <result column="detail_product_name" property="productName"/>
+            <result column="detail_category_name" property="categoryName"/>
+            <result column="detail_brand_name" property="brandName"/>
+            <result column="detail_spec" property="spec"/>
+            <result column="detail_unit" property="unit"/>
+            <result column="detail_stock_num" property="stockNum"/>
+            <result column="detail_tax_cost_price" property="taxCostPrice"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_tax_price" property="taxPrice"/>
             <result column="detail_is_gift" property="isGift"/>
@@ -91,6 +111,8 @@
         <result column="spec" property="spec"/>
         <result column="unit" property="unit"/>
         <result column="purchase_price" property="purchasePrice"/>
+        <result column="tax_cost_price" property="taxCostPrice"/>
+        <result column="stock_num" property="stockNum"/>
         <result column="tax_rate" property="taxRate"/>
         <result column="available" property="available"/>
     </resultMap>
@@ -143,6 +165,16 @@
             d.id AS detail_id,
             d.product_id AS detail_product_id,
             d.sku_id AS detail_sku_id,
+            sku.code AS detail_sku_code,
+            sku.sale_property_text AS detail_sale_property_text,
+            product.code AS detail_product_code,
+            product.name AS detail_product_name,
+            category.name AS detail_category_name,
+            brand.name AS detail_brand_name,
+            product.spec AS detail_spec,
+            product.unit AS detail_unit,
+            stock.stock_num AS detail_stock_num,
+            stock.tax_price AS detail_tax_cost_price,
             d.order_num AS detail_order_num,
             d.tax_price AS detail_tax_price,
             d.is_gift AS detail_is_gift,
@@ -152,6 +184,11 @@
             d.tax_amount AS detail_tax_amount
         FROM tbl_purchase_order${isForm ? "_form" : ""} AS o
         LEFT JOIN tbl_purchase_order_detail${isForm ? "_form" : ""} AS d ON d.order_id = o.id
+        LEFT JOIN base_data_product AS product ON product.id = d.product_id
+        LEFT JOIN base_data_product_sku AS sku ON sku.id = d.sku_id
+        LEFT JOIN base_data_product_category AS category ON category.id = product.category_id
+        LEFT JOIN base_data_product_brand AS brand ON brand.id = product.brand_id
+        LEFT JOIN tbl_product_stock AS stock ON stock.sku_id = d.sku_id AND stock.sc_id = o.sc_id
     </sql>
 
     <sql id="PurchaseProductDto_sql">
@@ -170,6 +207,8 @@
             g.spec,
             g.unit,
             purchase.price AS purchase_price,
+            ps.tax_price AS tax_cost_price,
+            ps.stock_num AS stock_num,
             g.tax_rate,
             g.available
         FROM base_data_product AS g
@@ -177,6 +216,7 @@
         INNER JOIN base_data_product_sku_purchase AS purchase ON purchase.id = s.id
         LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
         LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
+        LEFT JOIN tbl_product_stock AS ps ON ps.sku_id = s.id AND ps.sc_id = #{scId}
         LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
     </sql>
 
@@ -265,12 +305,22 @@
     <select id="getWithReceive" resultMap="PurchaseOrderWithReceiveDto">
         SELECT
         o.id, o.sc_id, o.supplier_id, o.purchaser_id, d.id AS detail_id, d.product_id AS detail_product_id, d.sku_id AS detail_sku_id,
+        sku.code AS detail_sku_code, sku.sale_property_text AS detail_sale_property_text,
+        product.code AS detail_product_code, product.name AS detail_product_name,
+        category.name AS detail_category_name, brand.name AS detail_brand_name,
+        product.spec AS detail_spec, product.unit AS detail_unit,
+        stock.stock_num AS detail_stock_num, stock.tax_price AS detail_tax_cost_price,
         d.order_num AS detail_order_num, d.tax_price AS detail_tax_price, d.is_gift AS detail_is_gift,
         d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
         d.receive_num AS detail_receive_num
         FROM tbl_purchase_order AS o
         LEFT JOIN tbl_purchase_order_detail AS d ON d.order_id = o.id
         <if test="requirePurchase">AND d.order_num > d.receive_num</if>
+        LEFT JOIN base_data_product AS product ON product.id = d.product_id
+        LEFT JOIN base_data_product_sku AS sku ON sku.id = d.sku_id
+        LEFT JOIN base_data_product_category AS category ON category.id = product.category_id
+        LEFT JOIN base_data_product_brand AS brand ON brand.id = product.brand_id
+        LEFT JOIN tbl_product_stock AS stock ON stock.sku_id = d.sku_id AND stock.sc_id = o.sc_id
         WHERE o.id = #{id}
     </select>
     <select id="queryWithReceive" resultMap="PurchaseOrder">
@@ -322,6 +372,7 @@
         ORDER BY g.code
     </select>
     <select id="queryPurchaseList" resultMap="PurchaseProductDto">
+        <bind name="scId" value="vo.scId"/>
         <include refid="PurchaseProductDto_sql"/>
         <where>
             <if test="vo != null">

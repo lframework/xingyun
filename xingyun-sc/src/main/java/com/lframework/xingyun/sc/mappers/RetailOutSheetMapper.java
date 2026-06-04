@@ -96,7 +96,8 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
       @DataPermission(template = "category", alias = "c")
   })
   List<RetailProductDto> queryRetailByCondition(
-      @Param("condition") String condition, @Param("isReturn") Boolean isReturn);
+      @Param("scId") String scId, @Param("condition") String condition,
+      @Param("isReturn") Boolean isReturn);
 
   /**
    * 查询可零售商品信息
@@ -117,5 +118,5 @@ public interface RetailOutSheetMapper extends BaseMapper<RetailOutSheet> {
    * @param id
    * @return
    */
-  RetailProductDto getRetailById(String id);
+  RetailProductDto getRetailById(@Param("scId") String scId, @Param("id") String id);
 }

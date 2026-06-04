@@ -1,6 +1,5 @@
 package com.lframework.xingyun.sc.bo.purchase.receive;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.functions.SFunction;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -12,11 +11,7 @@ import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.starter.web.inner.entity.SysUser;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.dto.purchase.receive.ReceiveSheetWithReturnDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
-import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -111,7 +106,7 @@ public class ReceiveSheetWithReturnBo extends BaseBo<ReceiveSheetWithReturnDto> 
     }
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new DetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(DetailBo::new)
           .collect(Collectors.toList());
     }
   }
@@ -239,18 +234,9 @@ public class ReceiveSheetWithReturnBo extends BaseBo<ReceiveSheetWithReturnDto> 
     @Schema(description = "备注")
     private String description;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
+    public DetailBo(ReceiveSheetWithReturnDto.DetailDto dto) {
 
-    public DetailBo(String scId, ReceiveSheetWithReturnDto.DetailDto dto) {
-
-      this.scId = scId;
-
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -271,37 +257,15 @@ public class ReceiveSheetWithReturnBo extends BaseBo<ReceiveSheetWithReturnDto> 
     @Override
     protected void afterInit(ReceiveSheetWithReturnDto.DetailDto dto) {
 
-      PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
-          PurchaseOrderService.class);
-      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getSkuId());
-
-      this.id = dto.getId();
-      this.productId = product.getId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getProductCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
-
       this.receiveNum = dto.getOrderNum();
       this.purchasePrice = dto.getTaxPrice();
-      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReturnNum());
-      this.isGift = dto.getIsGift();
-      this.taxRate = dto.getTaxRate();
-      this.description = dto.getDescription();
+      BigDecimal returnNum = dto.getReturnNum() == null ? BigDecimal.ZERO : dto.getReturnNum();
+      this.remainNum = NumberUtil.sub(dto.getOrderNum(), returnNum);
 
-      ProductStockService productStockService = ApplicationUtil.getBean(
-          ProductStockService.class);
-      ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
-          this.getScId());
       this.taxCostPrice =
-          productStock == null ? BigDecimal.ZERO
-              : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
-      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+          dto.getTaxCostPrice() == null ? BigDecimal.ZERO
+              : NumberUtil.getNumber(dto.getTaxCostPrice(), 2);
+      this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
     }
   }
 }

@@ -81,6 +81,16 @@ public class PurchaseProductDto implements BaseDto, Serializable {
   private BigDecimal purchasePrice;
 
   /**
+   * 含税成本价
+   */
+  private BigDecimal taxCostPrice;
+
+  /**
+   * 库存数量
+   */
+  private BigDecimal stockNum;
+
+  /**
    * 税率（%）
    */
   private BigDecimal taxRate;

@@ -11,11 +11,9 @@ import com.lframework.xingyun.basedata.entity.Customer;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.enums.SaleReturnStatus;
-import com.lframework.xingyun.sc.service.sale.SaleOrderService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -233,14 +231,6 @@ public class PrintSaleReturnBo extends BaseBo<SaleReturnFullDto> {
       this.returnNum = dto.getReturnNum();
       this.taxPrice = dto.getTaxPrice();
       this.returnAmount = dto.getTaxAmount();
-
-      SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
-      SaleProductDto product = saleOrderService.getSaleById(dto.getSkuId());
-
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
     }
   }
 }

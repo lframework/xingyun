@@ -1,19 +1,17 @@
 package com.lframework.xingyun.sc.bo.stock.take.sheet;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.ProductBrand;
 import com.lframework.xingyun.basedata.entity.ProductCategory;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.product.ProductBrandService;
 import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
-import com.lframework.xingyun.sc.dto.stock.take.plan.GetTakeStockPlanDetailProductDto;
 import com.lframework.xingyun.sc.dto.stock.take.sheet.TakeStockSheetFullDto;
 import com.lframework.xingyun.sc.entity.PreTakeStockSheet;
 import com.lframework.xingyun.sc.entity.TakeStockConfig;
@@ -21,7 +19,6 @@ import com.lframework.xingyun.sc.entity.TakeStockPlan;
 import com.lframework.xingyun.sc.enums.TakeStockPlanType;
 import com.lframework.xingyun.sc.service.stock.take.PreTakeStockSheetService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockConfigService;
-import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanDetailService;
 import com.lframework.xingyun.sc.service.stock.take.TakeStockPlanService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -221,7 +218,10 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
       this.approveBy = userService.findById(this.approveBy).getName();
     }
 
-    this.details = dto.getDetails().stream().map(t -> new SheetDetailBo(t, this.planId))
+    TakeStockConfigService takeStockConfigService = ApplicationUtil.getBean(
+        TakeStockConfigService.class);
+    TakeStockConfig config = takeStockConfigService.get();
+    this.details = dto.getDetails().stream().map(t -> new SheetDetailBo(t, config.getShowStock()))
         .collect(Collectors.toList());
   }
 
@@ -307,14 +307,15 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
     private String description;
 
     /**
-     * 盘点任务ID
+     * 是否显示库存
      */
-    @Schema(description = "盘点任务ID")
-    private String planId;
+    @JsonIgnore
+    @Schema(hidden = true)
+    private Boolean showStock;
 
-    public SheetDetailBo(TakeStockSheetFullDto.SheetDetailDto dto, String planId) {
+    public SheetDetailBo(TakeStockSheetFullDto.SheetDetailDto dto, Boolean showStock) {
 
-      this.planId = planId;
+      this.showStock = showStock;
 
       this.init(dto);
     }
@@ -322,39 +323,10 @@ public class TakeStockSheetFullBo extends BaseBo<TakeStockSheetFullDto> {
     @Override
     protected void afterInit(TakeStockSheetFullDto.SheetDetailDto dto) {
 
-      ProductService productService = ApplicationUtil.getBean(ProductService.class);
-      Product product = productService.findById(dto.getProductId());
-      this.skuId = dto.getSkuId();
-      this.skuCode = dto.getSkuCode();
-      this.salePropertyText = dto.getSalePropertyText();
-
-      ProductCategoryService productCategoryService = ApplicationUtil.getBean(
-          ProductCategoryService.class);
-      ProductCategory productCategory = productCategoryService.findById(product.getCategoryId());
-
-      if(StringUtil.isNotBlank(product.getBrandId())) {
-        ProductBrandService productBrandService = ApplicationUtil.getBean(ProductBrandService.class);
-        ProductBrand productBrand = productBrandService.findById(product.getBrandId());
-        this.brandName = productBrand.getName();
-      }
-
-      this.productId = product.getId();
-      this.productCode = product.getCode();
-      this.productName = product.getName();
-      this.categoryName = productCategory.getName();
-
-      this.spec = product.getSpec();
-      this.unit = product.getUnit();
-
-      TakeStockConfigService takeStockConfigService = ApplicationUtil.getBean(
-          TakeStockConfigService.class);
-      TakeStockConfig config = takeStockConfigService.get();
-      if (config.getShowStock()) {
-        TakeStockPlanDetailService takeStockPlanDetailService = ApplicationUtil.getBean(
-            TakeStockPlanDetailService.class);
-        GetTakeStockPlanDetailProductDto planDetail = takeStockPlanDetailService.getByPlanIdAndProductId(
-            this.planId, this.skuId);
-        this.stockNum = planDetail.getStockNum();
+      if (this.showStock) {
+        this.stockNum = dto.getStockNum();
+      } else {
+        this.stockNum = null;
       }
     }
   }

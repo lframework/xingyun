@@ -140,13 +140,13 @@ public class TakeStockSheetController extends DefaultBaseController {
     }
     PageResult<TakeStockSheetProductDto> pageResult = takeStockSheetService.queryTakeStockByCondition(
         getPageIndex(),
-        getPageSize(), planId, condition);
+        getPageSize(), planId, takeStockPlan.getScId(), condition);
     List<TakeStockSheetProductBo> results = CollectionUtil.emptyList();
     List<TakeStockSheetProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
       String finalPlanId = planId;
       results = datas.stream()
-          .map(t -> new TakeStockSheetProductBo(t, finalPlanId, takeStockPlan.getScId()))
+          .map(t -> new TakeStockSheetProductBo(t, finalPlanId))
           .collect(Collectors.toList());
     }
 
@@ -169,13 +169,13 @@ public class TakeStockSheetController extends DefaultBaseController {
 
     PageResult<TakeStockSheetProductDto> pageResult = takeStockSheetService.queryTakeStockList(
         getPageIndex(vo),
-        getPageSize(vo), vo);
+        getPageSize(vo), takeStockPlan.getScId(), vo);
     List<TakeStockSheetProductBo> results = null;
     List<TakeStockSheetProductDto> datas = pageResult.getDatas();
 
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream()
-          .map(t -> new TakeStockSheetProductBo(t, vo.getPlanId(), takeStockPlan.getScId()))
+          .map(t -> new TakeStockSheetProductBo(t, vo.getPlanId()))
           .collect(Collectors.toList());
     }
 

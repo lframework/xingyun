@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.bo.purchase;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -12,12 +11,8 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderFullDto;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
 import com.lframework.xingyun.sc.entity.OrderPayType;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
-import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -205,7 +200,7 @@ public class GetPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
     this.totalAmount = dto.getTotalAmount();
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new OrderDetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(OrderDetailBo::new)
           .collect(Collectors.toList());
     }
 
@@ -325,17 +320,9 @@ public class GetPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
     @Schema(description = "备注")
     private String description;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
+    public OrderDetailBo(PurchaseOrderFullDto.OrderDetailDto dto) {
 
-    public OrderDetailBo(String scId, PurchaseOrderFullDto.OrderDetailDto dto) {
-
-      this.scId = scId;
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -351,29 +338,10 @@ public class GetPurchaseOrderBo extends BaseBo<PurchaseOrderFullDto> {
       this.purchaseNum = dto.getOrderNum();
       this.purchasePrice = dto.getTaxPrice();
 
-      PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
-          PurchaseOrderService.class);
-      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getSkuId());
-
-      this.productId = product.getId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getProductCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
-
-      ProductStockService productStockService = ApplicationUtil.getBean(
-          ProductStockService.class);
-      ProductStock productStock = productStockService.getBySkuIdAndScId(
-          this.getSkuId(), this.getScId());
       this.taxCostPrice =
-          productStock == null ? BigDecimal.ZERO
-              : NumberUtil.getNumber(productStock.getTaxPrice(), 6);
-      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+          dto.getTaxCostPrice() == null ? BigDecimal.ZERO
+              : NumberUtil.getNumber(dto.getTaxCostPrice(), 6);
+      this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
     }
   }
 }

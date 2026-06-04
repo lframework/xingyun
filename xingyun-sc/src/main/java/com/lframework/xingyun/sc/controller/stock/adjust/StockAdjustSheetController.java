@@ -167,7 +167,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
     List<StockAdjustProductBo> results = CollectionUtil.emptyList();
     List<StockAdjustProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new StockAdjustProductBo(scId, t))
+      results = datas.stream().map(StockAdjustProductBo::new)
           .collect(Collectors.toList());
     }
 
@@ -190,7 +190,7 @@ public class StockAdjustSheetController extends DefaultBaseController {
     List<StockAdjustProductDto> datas = pageResult.getDatas();
 
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new StockAdjustProductBo(vo.getScId(), t))
+      results = datas.stream().map(StockAdjustProductBo::new)
           .collect(Collectors.toList());
     }
 

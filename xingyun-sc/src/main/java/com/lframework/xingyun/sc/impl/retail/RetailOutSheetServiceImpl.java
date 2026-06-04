@@ -583,14 +583,15 @@ public class RetailOutSheetServiceImpl extends
 
   @Override
   public PageResult<RetailProductDto> queryRetailByCondition(Integer pageIndex, Integer pageSize,
-      String condition, Boolean isReturn) {
+      String scId, String condition, Boolean isReturn) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(condition, isReturn);
+    List<RetailProductDto> datas = getBaseMapper().queryRetailByCondition(scId, condition,
+        isReturn);
     PageResult<RetailProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -612,9 +613,9 @@ public class RetailOutSheetServiceImpl extends
   }
 
   @Override
-  public RetailProductDto getRetailById(String id) {
+  public RetailProductDto getRetailById(String scId, String id) {
 
-    RetailProductDto data = getBaseMapper().getRetailById(id);
+    RetailProductDto data = getBaseMapper().getRetailById(scId, id);
     return data;
   }
 

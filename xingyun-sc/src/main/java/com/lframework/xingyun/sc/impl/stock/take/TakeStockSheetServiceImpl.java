@@ -426,14 +426,14 @@ public class TakeStockSheetServiceImpl extends
 
   @Override
   public PageResult<TakeStockSheetProductDto> queryTakeStockByCondition(Integer pageIndex,
-      Integer pageSize, String planId, String condition) {
+      Integer pageSize, String planId, String scId, String condition) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockByCondition(planId,
+    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockByCondition(planId, scId,
         condition);
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
@@ -442,14 +442,14 @@ public class TakeStockSheetServiceImpl extends
 
   @Override
   public PageResult<TakeStockSheetProductDto> queryTakeStockList(Integer pageIndex,
-      Integer pageSize, QueryTakeStockSheetProductVo vo) {
+      Integer pageSize, String scId, QueryTakeStockSheetProductVo vo) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockList(vo);
+    List<TakeStockSheetProductDto> datas = getBaseMapper().queryTakeStockList(scId, vo);
     PageResult<TakeStockSheetProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;

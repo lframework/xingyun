@@ -76,7 +76,7 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
       @DataPermission(template = "category", alias = "c")
   })
   List<TakeStockSheetProductDto> queryTakeStockByCondition(@Param("planId") String planId,
-      @Param("condition") String condition);
+      @Param("scId") String scId, @Param("condition") String condition);
 
   /**
    * 查询盘点单商品信息
@@ -89,5 +89,6 @@ public interface TakeStockSheetMapper extends BaseMapper<TakeStockSheet> {
       @DataPermission(template = "brand", alias = "b"),
       @DataPermission(template = "category", alias = "c")
   })
-  List<TakeStockSheetProductDto> queryTakeStockList(@Param("vo") QueryTakeStockSheetProductVo vo);
+  List<TakeStockSheetProductDto> queryTakeStockList(@Param("scId") String scId,
+      @Param("vo") QueryTakeStockSheetProductVo vo);
 }

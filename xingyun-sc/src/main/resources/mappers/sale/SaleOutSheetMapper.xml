@@ -48,6 +48,18 @@
             <result column="detail_main_product_id" property="mainProductId"/>
             <result column="detail_product_id" property="productId"/>
             <result column="detail_sku_id" property="skuId"/>
+            <result column="detail_sku_code" property="skuCode"/>
+            <result column="detail_sale_property_text" property="salePropertyText"/>
+            <result column="detail_product_code" property="productCode"/>
+            <result column="detail_product_name" property="productName"/>
+            <result column="detail_category_name" property="categoryName"/>
+            <result column="detail_brand_name" property="brandName"/>
+            <result column="detail_spec" property="spec"/>
+            <result column="detail_unit" property="unit"/>
+            <result column="detail_stock_num" property="stockNum"/>
+            <result column="detail_main_product_name" property="mainProductName"/>
+            <result column="detail_source_order_num" property="sourceOrderNum"/>
+            <result column="detail_source_out_num" property="sourceOutNum"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
             <result column="detail_tax_price" property="taxPrice"/>
@@ -71,6 +83,15 @@
             <id column="detail_id" property="id"/>
             <result column="detail_product_id" property="productId"/>
             <result column="detail_sku_id" property="skuId"/>
+            <result column="detail_sku_code" property="skuCode"/>
+            <result column="detail_sale_property_text" property="salePropertyText"/>
+            <result column="detail_product_code" property="productCode"/>
+            <result column="detail_product_name" property="productName"/>
+            <result column="detail_category_name" property="categoryName"/>
+            <result column="detail_brand_name" property="brandName"/>
+            <result column="detail_spec" property="spec"/>
+            <result column="detail_unit" property="unit"/>
+            <result column="detail_stock_num" property="stockNum"/>
             <result column="detail_order_num" property="orderNum"/>
             <result column="detail_ori_price" property="oriPrice"/>
             <result column="detail_tax_price" property="taxPrice"/>
@@ -129,9 +150,21 @@
             s.refuse_reason,
             s.settle_status,
             d.id AS detail_id,
-            b.main_product_id AS detail_main_product_id,
+            bundle.main_product_id AS detail_main_product_id,
             d.product_id AS detail_product_id,
             d.sku_id AS detail_sku_id,
+            sku.code AS detail_sku_code,
+            sku.sale_property_text AS detail_sale_property_text,
+            p.code AS detail_product_code,
+            p.name AS detail_product_name,
+            c.name AS detail_category_name,
+            brand.name AS detail_brand_name,
+            p.spec AS detail_spec,
+            p.unit AS detail_unit,
+            ps.stock_num AS detail_stock_num,
+            main_product.name AS detail_main_product_name,
+            sale_order_detail.order_num AS detail_source_order_num,
+            sale_order_detail.out_num AS detail_source_out_num,
             d.order_num AS detail_order_num,
             d.ori_price AS detail_ori_price,
             d.tax_price AS detail_tax_price,
@@ -145,7 +178,14 @@
             d.tax_amount AS detail_tax_amount
         FROM tbl_sale_out_sheet AS s
         LEFT JOIN tbl_sale_out_sheet_detail AS d ON d.sheet_id = s.id
-        LEFT JOIN tbl_sale_out_sheet_detail_bundle AS b ON b.sheet_id = s.id AND b.product_detail_id = d.id
+        LEFT JOIN tbl_sale_out_sheet_detail_bundle AS bundle ON bundle.sheet_id = s.id AND bundle.product_detail_id = d.id
+        LEFT JOIN base_data_product AS p ON p.id = d.product_id
+        LEFT JOIN base_data_product_sku AS sku ON sku.id = d.sku_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS brand ON brand.id = p.brand_id
+        LEFT JOIN tbl_product_stock AS ps ON ps.sku_id = d.sku_id AND ps.sc_id = s.sc_id
+        LEFT JOIN base_data_product AS main_product ON main_product.id = bundle.main_product_id
+        LEFT JOIN tbl_sale_order_detail AS sale_order_detail ON sale_order_detail.id = d.sale_order_detail_id
     </sql>
 
     <select id="query" resultMap="SaleOutSheet">
@@ -237,7 +277,13 @@
     <select id="getWithReturn" resultMap="SaleOutSheetWithReturnDto">
         SELECT
         s.id, s.code, s.sc_id, s.customer_id, s.saler_id, d.id AS detail_id, d.sheet_id AS detail_sheet_id,
-        d.product_id AS detail_product_id, d.sku_id AS detail_sku_id, d.order_num AS detail_order_num, d.ori_price AS detail_ori_price,
+        d.product_id AS detail_product_id, d.sku_id AS detail_sku_id,
+        sku.code AS detail_sku_code, sku.sale_property_text AS detail_sale_property_text,
+        p.code AS detail_product_code, p.name AS detail_product_name,
+        c.name AS detail_category_name, brand.name AS detail_brand_name,
+        p.spec AS detail_spec, p.unit AS detail_unit,
+        ps.stock_num AS detail_stock_num,
+        d.order_num AS detail_order_num, d.ori_price AS detail_ori_price,
         d.tax_price AS detail_tax_price, d.discount_rate AS detail_discount_rate, d.is_gift AS detail_is_gift,
         d.tax_rate AS detail_tax_rate, d.description AS detail_description, d.order_no AS detail_order_no,
         d.return_num AS detail_return_num
@@ -251,6 +297,11 @@
         <if test="requireOut">AND l.order_num > l.return_num</if>
         WHERE d.sheet_id = #{id}
         ) AS d ON d.sheet_id = s.id
+        LEFT JOIN base_data_product AS p ON p.id = d.product_id
+        LEFT JOIN base_data_product_sku AS sku ON sku.id = d.sku_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS brand ON brand.id = p.brand_id
+        LEFT JOIN tbl_product_stock AS ps ON ps.sku_id = d.sku_id AND ps.sc_id = s.sc_id
         WHERE s.id = #{id}
         AND s.status = 3
         order by d.order_no, d.lot_order_no

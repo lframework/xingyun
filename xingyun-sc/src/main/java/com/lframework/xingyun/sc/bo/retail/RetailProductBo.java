@@ -1,11 +1,7 @@
 package com.lframework.xingyun.sc.bo.retail;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.web.core.bo.BaseBo;
-import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -97,33 +93,16 @@ public class RetailProductBo extends BaseBo<RetailProductDto> {
   @Schema(description = "税率（%）")
   private BigDecimal taxRate;
 
-  /**
-   * 仓库ID
-   */
-  @Schema(description = "仓库ID", hidden = true)
-  @JsonIgnore
-  private String scId;
+  public RetailProductBo(RetailProductDto dto) {
 
-  public RetailProductBo(String scId, RetailProductDto dto) {
-
-    this.scId = scId;
-
-    this.init(dto);
+    super(dto);
   }
 
   @Override
   protected void afterInit(RetailProductDto dto) {
 
-    this.productId = dto.getProductId();
-    this.skuId = dto.getSkuId();
     this.productCode = dto.getCode();
-    this.skuCode = dto.getSkuCode();
-    this.salePropertyText = dto.getSalePropertyText();
     this.productName = dto.getName();
-
-    ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
-    ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
-        this.getScId());
-    this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+    this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
   }
 }

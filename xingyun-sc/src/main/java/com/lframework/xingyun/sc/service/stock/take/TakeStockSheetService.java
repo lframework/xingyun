@@ -117,8 +117,8 @@ public interface TakeStockSheetService extends BaseMpService<TakeStockSheet> {
    * @param condition
    * @return
    */
-  PageResult<TakeStockSheetProductDto> queryTakeStockByCondition(Integer pageIndex, Integer pageSize, String planId,
-      String condition);
+  PageResult<TakeStockSheetProductDto> queryTakeStockByCondition(Integer pageIndex,
+      Integer pageSize, String planId, String scId, String condition);
 
   /**
    * 查询盘点单商品信息
@@ -129,5 +129,5 @@ public interface TakeStockSheetService extends BaseMpService<TakeStockSheet> {
    * @return
    */
   PageResult<TakeStockSheetProductDto> queryTakeStockList(Integer pageIndex, Integer pageSize,
-      QueryTakeStockSheetProductVo vo);
+      String scId, QueryTakeStockSheetProductVo vo);
 }

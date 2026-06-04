@@ -141,7 +141,7 @@ public class PreTakeStockSheetController extends DefaultBaseController {
     List<QueryPreTakeStockSheetProductBo> results = CollectionUtil.emptyList();
     if (!CollectionUtil.isEmpty(datas)) {
       results = datas.stream()
-          .map(t -> new QueryPreTakeStockSheetProductBo(t, takeStockPlan.getScId()))
+          .map(QueryPreTakeStockSheetProductBo::new)
           .collect(Collectors.toList());
     }
 

@@ -81,6 +81,11 @@ public class SaleProductDto implements BaseDto, Serializable {
   private BigDecimal salePrice;
 
   /**
+   * 库存数量
+   */
+  private BigDecimal stockNum;
+
+  /**
    * 税率（%）
    */
   private BigDecimal taxRate;

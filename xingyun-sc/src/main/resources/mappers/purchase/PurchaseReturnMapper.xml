@@ -48,6 +48,18 @@
             <id column="detail_id" property="id"/>
             <result column="detail_product_id" property="productId"/>
             <result column="detail_sku_id" property="skuId"/>
+            <result column="detail_sku_code" property="skuCode"/>
+            <result column="detail_sale_property_text" property="salePropertyText"/>
+            <result column="detail_product_code" property="productCode"/>
+            <result column="detail_product_name" property="productName"/>
+            <result column="detail_category_name" property="categoryName"/>
+            <result column="detail_brand_name" property="brandName"/>
+            <result column="detail_spec" property="spec"/>
+            <result column="detail_unit" property="unit"/>
+            <result column="detail_stock_num" property="stockNum"/>
+            <result column="detail_tax_cost_price" property="taxCostPrice"/>
+            <result column="detail_source_receive_num" property="sourceReceiveNum"/>
+            <result column="detail_source_return_num" property="sourceReturnNum"/>
             <result column="detail_return_num" property="returnNum"/>
             <result column="detail_tax_price" property="taxPrice"/>
             <result column="detail_is_gift" property="isGift"/>
@@ -107,6 +119,18 @@
             d.id AS detail_id,
             d.product_id AS detail_product_id,
             d.sku_id AS detail_sku_id,
+            sku.code AS detail_sku_code,
+            sku.sale_property_text AS detail_sale_property_text,
+            product.code AS detail_product_code,
+            product.name AS detail_product_name,
+            category.name AS detail_category_name,
+            brand.name AS detail_brand_name,
+            product.spec AS detail_spec,
+            product.unit AS detail_unit,
+            stock.stock_num AS detail_stock_num,
+            stock.tax_price AS detail_tax_cost_price,
+            receive_detail.order_num AS detail_source_receive_num,
+            receive_detail.return_num AS detail_source_return_num,
             d.return_num AS detail_return_num,
             d.tax_price AS detail_tax_price,
             d.is_gift AS detail_is_gift,
@@ -117,6 +141,12 @@
             d.receive_sheet_detail_id AS detail_receive_sheet_detail_id
         FROM tbl_purchase_return AS r
         LEFT JOIN tbl_purchase_return_detail AS d ON d.return_id = r.id
+        LEFT JOIN base_data_product AS product ON product.id = d.product_id
+        LEFT JOIN base_data_product_sku AS sku ON sku.id = d.sku_id
+        LEFT JOIN base_data_product_category AS category ON category.id = product.category_id
+        LEFT JOIN base_data_product_brand AS brand ON brand.id = product.brand_id
+        LEFT JOIN tbl_product_stock AS stock ON stock.sku_id = d.sku_id AND stock.sc_id = r.sc_id
+        LEFT JOIN tbl_receive_sheet_detail AS receive_detail ON receive_detail.id = d.receive_sheet_detail_id
     </sql>
 
     <select id="query" resultMap="PurchaseReturn">

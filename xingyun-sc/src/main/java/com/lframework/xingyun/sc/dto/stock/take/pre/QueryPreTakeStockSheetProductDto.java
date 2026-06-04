@@ -62,6 +62,11 @@ public class QueryPreTakeStockSheetProductDto implements BaseDto, Serializable {
   private String unit;
 
   /**
+   * 库存数量
+   */
+  private BigDecimal stockNum;
+
+  /**
    * 初盘数量
    */
   private BigDecimal firstNum;

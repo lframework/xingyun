@@ -124,7 +124,8 @@ public interface SaleOrderService extends BaseMpService<SaleOrder> {
    * @param condition
    * @return
    */
-  PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize, String condition, Boolean isReturn);
+  PageResult<SaleProductDto> querySaleByCondition(Integer pageIndex, Integer pageSize, String scId,
+      String condition, Boolean isReturn);
 
   /**
    * 查询可销售商品信息
@@ -139,8 +140,9 @@ public interface SaleOrderService extends BaseMpService<SaleOrder> {
   /**
    * 根据ID查询
    *
+   * @param scId
    * @param id
    * @return
    */
-  SaleProductDto getSaleById(String id);
+  SaleProductDto getSaleById(String scId, String id);
 }

@@ -365,11 +365,11 @@ public class PurchaseOrderController extends DefaultBaseController {
     }
 
     PageResult<PurchaseProductDto> pageResult = purchaseOrderService.queryPurchaseByCondition(
-        getPageIndex(), getPageSize(), condition, isReturn);
+        getPageIndex(), getPageSize(), scId, condition, isReturn);
     List<PurchaseProductBo> results = CollectionUtil.emptyList();
     List<PurchaseProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new PurchaseProductBo(scId, t))
+      results = datas.stream().map(PurchaseProductBo::new)
           .collect(Collectors.toList());
     }
 
@@ -393,7 +393,7 @@ public class PurchaseOrderController extends DefaultBaseController {
     List<PurchaseProductDto> datas = pageResult.getDatas();
 
     if (!CollectionUtil.isEmpty(datas)) {
-      results = datas.stream().map(t -> new PurchaseProductBo(vo.getScId(), t))
+      results = datas.stream().map(PurchaseProductBo::new)
           .collect(Collectors.toList());
     }
 

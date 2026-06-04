@@ -722,14 +722,15 @@ public class PurchaseOrderServiceImpl extends
 
   @Override
   public PageResult<PurchaseProductDto> queryPurchaseByCondition(Integer pageIndex,
-      Integer pageSize, String condition, Boolean isReturn) {
+      Integer pageSize, String scId, String condition, Boolean isReturn) {
 
     Assert.greaterThanZero(pageIndex);
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
 
-    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(condition, isReturn);
+    List<PurchaseProductDto> datas = getBaseMapper().queryPurchaseByCondition(scId, condition,
+        isReturn);
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
@@ -751,9 +752,9 @@ public class PurchaseOrderServiceImpl extends
   }
 
   @Override
-  public PurchaseProductDto getPurchaseById(String id) {
+  public PurchaseProductDto getPurchaseById(String scId, String id) {
 
-    PurchaseProductDto data = getBaseMapper().getPurchaseById(id);
+    PurchaseProductDto data = getBaseMapper().getPurchaseById(scId, id);
 
     return data;
   }

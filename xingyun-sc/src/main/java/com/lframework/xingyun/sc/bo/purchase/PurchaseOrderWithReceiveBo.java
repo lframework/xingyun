@@ -1,6 +1,5 @@
 package com.lframework.xingyun.sc.bo.purchase;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.functions.SFunction;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -13,10 +12,6 @@ import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierService;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.xingyun.sc.dto.purchase.PurchaseOrderWithReceiveDto;
-import com.lframework.xingyun.sc.dto.purchase.PurchaseProductDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
-import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -111,7 +106,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
     }
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new DetailBo(this.scId, t))
+      this.details = dto.getDetails().stream().map(DetailBo::new)
           .collect(Collectors.toList());
     }
   }
@@ -233,21 +228,13 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
     @Schema(description = "备注")
     private String description;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
-
     public DetailBo() {
 
     }
 
-    public DetailBo(String scId, PurchaseOrderWithReceiveDto.DetailDto dto) {
+    public DetailBo(PurchaseOrderWithReceiveDto.DetailDto dto) {
 
-      this.scId = scId;
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -268,37 +255,14 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
     @Override
     protected void afterInit(PurchaseOrderWithReceiveDto.DetailDto dto) {
 
-      PurchaseOrderService purchaseOrderService = ApplicationUtil.getBean(
-          PurchaseOrderService.class);
-      PurchaseProductDto product = purchaseOrderService.getPurchaseById(dto.getSkuId());
-
-      this.id = dto.getId();
-      this.productId = product.getId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getProductCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
-
-      this.orderNum = dto.getOrderNum();
       this.purchasePrice = dto.getTaxPrice();
-      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getReceiveNum());
-      this.isGift = dto.getIsGift();
-      this.taxRate = dto.getTaxRate();
-      this.description = dto.getDescription();
+      BigDecimal receiveNum = dto.getReceiveNum() == null ? BigDecimal.ZERO : dto.getReceiveNum();
+      this.remainNum = NumberUtil.sub(dto.getOrderNum(), receiveNum);
 
-      ProductStockService productStockService = ApplicationUtil.getBean(
-          ProductStockService.class);
-      ProductStock productStock = productStockService.getBySkuIdAndScId(
-          this.getSkuId(), this.getScId());
       this.taxCostPrice =
-          productStock == null ? BigDecimal.ZERO
-              : NumberUtil.getNumber(productStock.getTaxPrice(), 2);
-      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+          dto.getTaxCostPrice() == null ? BigDecimal.ZERO
+              : NumberUtil.getNumber(dto.getTaxCostPrice(), 2);
+      this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
     }
   }
 }

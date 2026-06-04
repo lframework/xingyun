@@ -1,7 +1,6 @@
 package com.lframework.xingyun.sc.bo.sale.returned;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -11,14 +10,10 @@ import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
-import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
-import com.lframework.xingyun.sc.dto.sale.out.SaleOutSheetDetailLotDto;
 import com.lframework.xingyun.sc.dto.sale.returned.SaleReturnFullDto;
 import com.lframework.xingyun.sc.entity.OrderPayType;
 import com.lframework.xingyun.sc.entity.SaleOutSheet;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
-import com.lframework.xingyun.sc.service.sale.SaleOrderService;
-import com.lframework.xingyun.sc.service.sale.SaleOutSheetDetailLotService;
 import com.lframework.xingyun.sc.service.sale.SaleOutSheetService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -223,7 +218,7 @@ public class GetSaleReturnBo extends BaseBo<SaleReturnFullDto> {
     this.totalAmount = dto.getTotalAmount();
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new ReturnDetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(ReturnDetailBo::new)
           .collect(Collectors.toList());
     }
 
@@ -361,17 +356,9 @@ public class GetSaleReturnBo extends BaseBo<SaleReturnFullDto> {
     @Schema(description = "销售出库单明细ID")
     private String outSheetDetailId;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
+    public ReturnDetailBo(SaleReturnFullDto.ReturnDetailDto dto) {
 
-    public ReturnDetailBo(String scId, SaleReturnFullDto.ReturnDetailDto dto) {
-
-      this.scId = scId;
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -384,33 +371,15 @@ public class GetSaleReturnBo extends BaseBo<SaleReturnFullDto> {
     @Override
     protected void afterInit(SaleReturnFullDto.ReturnDetailDto dto) {
 
-      this.returnNum = dto.getReturnNum();
       this.salePrice = dto.getOriPrice();
-      this.taxPrice = dto.getTaxPrice();
-      this.discountRate = dto.getDiscountRate();
-
-      SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
-      SaleProductDto product = saleOrderService.getSaleById(dto.getSkuId());
-
-      this.productId = product.getId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
 
       if (!StringUtil.isBlank(dto.getOutSheetDetailId())) {
-        SaleOutSheetDetailLotService receiveSheetDetailService = ApplicationUtil.getBean(
-            SaleOutSheetDetailLotService.class);
-        SaleOutSheetDetailLotDto outSheetDetail = receiveSheetDetailService.findById(
-            dto.getOutSheetDetailId());
-        this.outNum = outSheetDetail.getOrderNum();
-        this.remainNum = NumberUtil.sub(outSheetDetail.getOrderNum(),
-            outSheetDetail.getReturnNum());
+        BigDecimal sourceOutNum =
+            dto.getSourceOutNum() == null ? BigDecimal.ZERO : dto.getSourceOutNum();
+        BigDecimal sourceReturnNum =
+            dto.getSourceReturnNum() == null ? BigDecimal.ZERO : dto.getSourceReturnNum();
+        this.outNum = sourceOutNum;
+        this.remainNum = NumberUtil.sub(sourceOutNum, sourceReturnNum);
       }
     }
   }

@@ -39,6 +39,13 @@
             <result column="detail_sku_id" property="skuId"/>
             <result column="detail_sku_code" property="skuCode"/>
             <result column="detail_sale_property_text" property="salePropertyText"/>
+            <result column="detail_product_code" property="productCode"/>
+            <result column="detail_product_name" property="productName"/>
+            <result column="detail_category_name" property="categoryName"/>
+            <result column="detail_brand_name" property="brandName"/>
+            <result column="detail_spec" property="spec"/>
+            <result column="detail_unit" property="unit"/>
+            <result column="detail_stock_num" property="stockNum"/>
             <result column="detail_take_num" property="takeNum"/>
             <result column="detail_description" property="description"/>
         </collection>
@@ -58,6 +65,7 @@
         <result column="brand_name" property="brandName"/>
         <result column="spec" property="spec"/>
         <result column="unit" property="unit"/>
+        <result column="stock_num" property="stockNum"/>
     </resultMap>
 
     <sql id="TakeStockSheetDto_sql">
@@ -100,11 +108,22 @@
             d.sku_id AS detail_sku_id,
             s.code AS detail_sku_code,
             s.sale_property_text AS detail_sale_property_text,
+            p.code AS detail_product_code,
+            p.name AS detail_product_name,
+            c.name AS detail_category_name,
+            b.name AS detail_brand_name,
+            p.spec AS detail_spec,
+            p.unit AS detail_unit,
+            pd.stock_num AS detail_stock_num,
             d.take_num AS detail_take_num,
             d.description AS detail_description
         FROM tbl_take_stock_sheet AS tb
         LEFT JOIN tbl_take_stock_sheet_detail AS d ON d.sheet_id = tb.id
+        LEFT JOIN base_data_product AS p ON p.id = d.product_id
         LEFT JOIN base_data_product_sku AS s ON s.id = d.sku_id
+        LEFT JOIN base_data_product_category AS c ON c.id = p.category_id
+        LEFT JOIN base_data_product_brand AS b ON b.id = p.brand_id
+        LEFT JOIN tbl_take_stock_plan_detail AS pd ON pd.plan_id = tb.plan_id AND pd.sku_id = d.sku_id
     </sql>
 
     <sql id="TakeStockSheetProductDto_sql">
@@ -121,11 +140,14 @@
             b.id AS brand_id,
             b.name AS brand_name,
             g.spec,
-            g.unit
+            g.unit,
+            COALESCE(pd.stock_num, ps.stock_num) AS stock_num
         FROM base_data_product AS g
         INNER JOIN base_data_product_sku AS s ON s.product_id = g.id
         LEFT JOIN base_data_product_category AS c ON c.id = g.category_id
         LEFT JOIN base_data_product_brand AS b ON b.id = g.brand_id
+        LEFT JOIN tbl_take_stock_plan_detail AS pd ON pd.plan_id = #{planId} AND pd.sku_id = s.id
+        LEFT JOIN tbl_product_stock AS ps ON ps.sku_id = s.id AND ps.sc_id = #{scId}
         LEFT JOIN recursion_mapping AS rm ON rm.node_id = c.id and rm.node_type = 2
     </sql>
 
@@ -212,6 +234,7 @@
         ORDER BY g.code
     </select>
     <select id="queryTakeStockList" resultMap="TakeStockSheetProductDto">
+        <bind name="planId" value="vo.planId"/>
         <include refid="TakeStockSheetProductDto_sql"/>
         <where>
             <if test="vo != null">

@@ -8,15 +8,7 @@ import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.entity.Product;
-import com.lframework.xingyun.basedata.entity.ProductBrand;
-import com.lframework.xingyun.basedata.entity.ProductCategory;
-import com.lframework.xingyun.basedata.entity.ProductSku;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
-import com.lframework.xingyun.basedata.service.product.ProductBrandService;
-import com.lframework.xingyun.basedata.service.product.ProductCategoryService;
-import com.lframework.xingyun.basedata.service.product.ProductService;
-import com.lframework.xingyun.basedata.service.product.ProductSkuService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.stock.take.plan.TakeStockPlanFullDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -257,30 +249,6 @@ public class TakeStockPlanFullBo extends BaseBo<TakeStockPlanFullDto> {
 
     @Override
     protected void afterInit(TakeStockPlanFullDto.DetailDto dto) {
-
-      ProductService productService = ApplicationUtil.getBean(ProductService.class);
-      Product product = productService.findById(dto.getProductId());
-      this.skuId = dto.getSkuId();
-      ProductSkuService productSkuService = ApplicationUtil.getBean(ProductSkuService.class);
-      ProductSku sku = productSkuService.findById(dto.getSkuId());
-
-      ProductCategoryService productCategoryService = ApplicationUtil.getBean(
-          ProductCategoryService.class);
-      ProductCategory productCategory = productCategoryService.findById(product.getCategoryId());
-
-      if(StringUtil.isNotBlank(product.getBrandId())) {
-        ProductBrandService productBrandService = ApplicationUtil.getBean(ProductBrandService.class);
-        ProductBrand productBrand = productBrandService.findById(product.getBrandId());
-        this.brandName = productBrand.getName();
-      }
-
-      this.productCode = product.getCode();
-      this.skuCode = sku == null ? null : sku.getCode();
-      this.salePropertyText = sku == null ? null : sku.getSalePropertyText();
-      this.productName = product.getName();
-      this.categoryName = productCategory.getName();
-      this.spec = product.getSpec();
-      this.unit = product.getUnit();
 
       if (this.oriTakeNum != null || this.takeNum != null) {
 

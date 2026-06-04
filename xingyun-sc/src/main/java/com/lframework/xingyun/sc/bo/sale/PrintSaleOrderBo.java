@@ -12,9 +12,7 @@ import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderFullDto;
-import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.enums.SaleOrderStatus;
-import com.lframework.xingyun.sc.service.sale.SaleOrderService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -209,14 +207,6 @@ public class PrintSaleOrderBo extends BaseBo<SaleOrderFullDto> {
       this.orderNum = dto.getOrderNum();
       this.taxPrice = dto.getTaxPrice();
       this.orderAmount = dto.getTaxAmount();
-
-      SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
-      SaleProductDto product = saleOrderService.getSaleById(dto.getSkuId());
-
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
     }
   }
 }

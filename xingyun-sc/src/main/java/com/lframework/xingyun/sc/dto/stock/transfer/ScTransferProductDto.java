@@ -2,6 +2,7 @@ package com.lframework.xingyun.sc.dto.stock.transfer;
 
 import com.lframework.starter.web.core.dto.BaseDto;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
@@ -77,5 +78,5 @@ public class ScTransferProductDto implements BaseDto, Serializable {
   /**
    * 当前库存数量
    */
-  private Integer curStockNum;
+  private BigDecimal curStockNum;
 }

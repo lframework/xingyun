@@ -1,11 +1,7 @@
 package com.lframework.xingyun.sc.bo.stock.adjust.stock;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.web.core.bo.BaseBo;
-import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.sc.dto.stock.adjust.stock.StockAdjustProductDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -79,37 +75,20 @@ public class StockAdjustProductBo extends BaseBo<StockAdjustProductDto> {
   @Schema(description = "当前库存数量")
   private BigDecimal curStockNum;
 
-  /**
-   * 仓库ID
-   */
-  @JsonIgnore
-  @Schema(hidden = true)
-  private String scId;
-
   public StockAdjustProductBo() {
 
   }
 
-  public StockAdjustProductBo(String scId, StockAdjustProductDto dto) {
-    this.scId = scId;
-
-    this.init(dto);
+  public StockAdjustProductBo(StockAdjustProductDto dto) {
+    super(dto);
   }
 
   @Override
   protected void afterInit(StockAdjustProductDto dto) {
 
-    this.productId = dto.getProductId();
-    this.skuId = dto.getSkuId();
-    this.skuCode = dto.getSkuCode();
-    this.salePropertyText = dto.getSalePropertyText();
     this.productCode = dto.getCode();
     this.productName = dto.getName();
 
-    ProductStockService productStockService = ApplicationUtil.getBean(
-        ProductStockService.class);
-    ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
-        this.scId);
-    this.curStockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
+    this.curStockNum = dto.getCurStockNum() == null ? BigDecimal.ZERO : dto.getCurStockNum();
   }
 }

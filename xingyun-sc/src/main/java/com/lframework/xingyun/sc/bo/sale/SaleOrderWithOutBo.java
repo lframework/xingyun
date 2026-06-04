@@ -1,6 +1,5 @@
 package com.lframework.xingyun.sc.bo.sale;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.functions.SFunction;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
@@ -8,17 +7,11 @@ import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
 import com.lframework.xingyun.basedata.entity.Customer;
-import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.entity.StoreCenter;
 import com.lframework.xingyun.basedata.service.customer.CustomerService;
-import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.starter.web.inner.entity.SysUser;
 import com.lframework.xingyun.sc.dto.sale.SaleOrderWithOutDto;
-import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
-import com.lframework.xingyun.sc.entity.ProductStock;
-import com.lframework.xingyun.sc.service.sale.SaleOrderService;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -112,7 +105,7 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
     }
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new DetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(DetailBo::new)
           .collect(Collectors.toList());
     }
   }
@@ -252,21 +245,13 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
     @Schema(description = "备注")
     private String description;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
-
     public DetailBo() {
 
     }
 
-    public DetailBo(String scId, SaleOrderWithOutDto.DetailDto dto) {
+    public DetailBo(SaleOrderWithOutDto.DetailDto dto) {
 
-      this.scId = scId;
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -285,41 +270,10 @@ public class SaleOrderWithOutBo extends BaseBo<SaleOrderWithOutDto> {
     @Override
     protected void afterInit(SaleOrderWithOutDto.DetailDto dto) {
 
-      SaleOrderService saleOrderService = ApplicationUtil.getBean(SaleOrderService.class);
-      SaleProductDto product = saleOrderService.getSaleById(dto.getSkuId());
-
-      this.id = dto.getId();
-      this.productId = product.getProductId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
-
-      this.orderNum = dto.getOrderNum();
       this.salePrice = dto.getOriPrice();
-      this.taxPrice = dto.getTaxPrice();
-      this.discountRate = dto.getDiscountRate();
-      this.remainNum = NumberUtil.sub(dto.getOrderNum(), dto.getOutNum());
-      this.isGift = dto.getIsGift();
-      this.taxRate = dto.getTaxRate();
-      this.description = dto.getDescription();
-
-      ProductStockService productStockService = ApplicationUtil.getBean(ProductStockService.class);
-      ProductStock productStock = productStockService.getBySkuIdAndScId(this.getSkuId(),
-          this.getScId());
-      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
-
-      if (StringUtil.isNotBlank(dto.getMainProductId())) {
-        ProductService productService = ApplicationUtil.getBean(ProductService.class);
-        Product mainProduct = productService.findById(dto.getMainProductId());
-        this.mainProductId = dto.getMainProductId();
-        this.mainProductName = mainProduct.getName();
-      }
+      BigDecimal outNum = dto.getOutNum() == null ? BigDecimal.ZERO : dto.getOutNum();
+      this.remainNum = NumberUtil.sub(dto.getOrderNum(), outNum);
+      this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
     }
   }
 }

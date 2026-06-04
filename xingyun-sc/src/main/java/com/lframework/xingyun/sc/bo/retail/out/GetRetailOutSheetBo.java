@@ -1,24 +1,17 @@
 package com.lframework.xingyun.sc.bo.retail.out;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lframework.starter.common.constants.StringPool;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.StringUtil;
 import com.lframework.starter.web.core.bo.BaseBo;
 import com.lframework.starter.web.core.utils.ApplicationUtil;
-import com.lframework.xingyun.basedata.entity.Product;
 import com.lframework.xingyun.basedata.service.member.MemberService;
-import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.storecenter.StoreCenterService;
 import com.lframework.xingyun.sc.bo.paytype.OrderPayTypeBo;
-import com.lframework.xingyun.sc.dto.retail.RetailProductDto;
 import com.lframework.xingyun.sc.dto.retail.out.RetailOutSheetFullDto;
 import com.lframework.xingyun.sc.entity.OrderPayType;
-import com.lframework.xingyun.sc.entity.ProductStock;
 import com.lframework.xingyun.sc.service.paytype.OrderPayTypeService;
-import com.lframework.xingyun.sc.service.retail.RetailOutSheetService;
-import com.lframework.xingyun.sc.service.stock.ProductStockService;
 import com.lframework.starter.web.inner.service.system.SysUserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -210,7 +203,7 @@ public class GetRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
     this.totalAmount = dto.getTotalAmount();
 
     if (!CollectionUtil.isEmpty(dto.getDetails())) {
-      this.details = dto.getDetails().stream().map(t -> new OrderDetailBo(this.getScId(), t))
+      this.details = dto.getDetails().stream().map(OrderDetailBo::new)
           .collect(Collectors.toList());
     }
 
@@ -360,17 +353,9 @@ public class GetRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
     @Schema(description = "备注")
     private String description;
 
-    /**
-     * 仓库ID
-     */
-    @Schema(description = "仓库ID", hidden = true)
-    @JsonIgnore
-    private String scId;
+    public OrderDetailBo(RetailOutSheetFullDto.SheetDetailDto dto) {
 
-    public OrderDetailBo(String scId, RetailOutSheetFullDto.SheetDetailDto dto) {
-
-      this.scId = scId;
-      this.init(dto);
+      super(dto);
     }
 
     @Override
@@ -386,34 +371,7 @@ public class GetRetailOutSheetBo extends BaseBo<RetailOutSheetFullDto> {
       this.outNum = dto.getOrderNum();
       this.taxPrice = dto.getTaxPrice();
       this.retailPrice = dto.getOriPrice();
-
-      RetailOutSheetService retailOutSheetService = ApplicationUtil.getBean(
-          RetailOutSheetService.class);
-      RetailProductDto product = retailOutSheetService.getRetailById(dto.getSkuId());
-
-      this.productId = product.getProductId();
-      this.skuId = product.getSkuId();
-      this.productCode = product.getCode();
-      this.skuCode = product.getSkuCode();
-      this.salePropertyText = product.getSalePropertyText();
-      this.productName = product.getName();
-      this.unit = product.getUnit();
-      this.spec = product.getSpec();
-      this.categoryName = product.getCategoryName();
-      this.brandName = product.getBrandName();
-
-      ProductStockService productStockService = ApplicationUtil.getBean(
-          ProductStockService.class);
-      ProductStock productStock = productStockService.getBySkuIdAndScId(
-          this.getSkuId(), this.getScId());
-      this.stockNum = productStock == null ? BigDecimal.ZERO : productStock.getStockNum();
-
-      if (StringUtil.isNotBlank(dto.getMainProductId())) {
-        ProductService productService = ApplicationUtil.getBean(ProductService.class);
-        Product mainProduct = productService.findById(dto.getMainProductId());
-        this.mainProductId = dto.getMainProductId();
-        this.mainProductName = mainProduct.getName();
-      }
+      this.stockNum = dto.getStockNum() == null ? BigDecimal.ZERO : dto.getStockNum();
     }
   }
 }

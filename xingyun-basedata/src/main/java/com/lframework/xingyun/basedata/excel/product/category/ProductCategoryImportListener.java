@@ -93,6 +93,7 @@ public class ProductCategoryImportListener extends ExcelImportListener<ProductCa
       ProductCategoryImportModel data = datas.get(i);
       Wrapper<ProductCategory> checkNameWrapper = Wrappers.lambdaQuery(ProductCategory.class)
           .eq(ProductCategory::getName, data.getName())
+          .eq(ProductCategory::getAvailable, Boolean.TRUE)
           .ne(ProductCategory::getCode, data.getCode());
       if (productCategoryService.count(checkNameWrapper) > 0) {
         throw new DefaultClientException(

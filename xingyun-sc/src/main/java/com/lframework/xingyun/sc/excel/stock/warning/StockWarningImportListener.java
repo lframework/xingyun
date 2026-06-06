@@ -25,7 +25,8 @@ public class StockWarningImportListener extends ExcelImportListener<StockWarning
   protected void doInvoke(StockWarningImportModel data, AnalysisContext context) {
     StoreCenterService storeCenterService = ApplicationUtil.getBean(StoreCenterService.class);
     Wrapper<StoreCenter> queryScWrapper = Wrappers.lambdaQuery(StoreCenter.class)
-        .eq(StoreCenter::getCode, data.getScCode());
+        .eq(StoreCenter::getCode, data.getScCode())
+        .eq(StoreCenter::getAvailable, Boolean.TRUE);
     StoreCenter sc = storeCenterService.getOne(queryScWrapper);
     if (sc == null) {
       throw new DefaultClientException(

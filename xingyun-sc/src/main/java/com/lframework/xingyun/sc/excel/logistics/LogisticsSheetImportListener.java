@@ -92,7 +92,8 @@ public class LogisticsSheetImportListener extends ExcelImportListener<LogisticsS
     LogisticsCompanyService logisticsCompanyService = ApplicationUtil.getBean(
         LogisticsCompanyService.class);
     Wrapper<LogisticsCompany> queryLogisticsCompanyWrapper = Wrappers.lambdaQuery(
-        LogisticsCompany.class).eq(LogisticsCompany::getCode, data.getLogisticsCompanyCode());
+        LogisticsCompany.class).eq(LogisticsCompany::getCode, data.getLogisticsCompanyCode())
+        .eq(LogisticsCompany::getAvailable, Boolean.TRUE);
     LogisticsCompany logisticsCompany = logisticsCompanyService.getOne(
         queryLogisticsCompanyWrapper);
     if (logisticsCompany == null) {

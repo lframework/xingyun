@@ -38,7 +38,8 @@ public class ReceiveSheetImportListener extends ExcelImportListener<ReceiveSheet
     } else {
       StoreCenterService storeCenterService = ApplicationUtil.getBean(StoreCenterService.class);
       Wrapper<StoreCenter> queryWrapper = Wrappers.lambdaQuery(StoreCenter.class)
-          .eq(StoreCenter::getCode, data.getScCode());
+          .eq(StoreCenter::getCode, data.getScCode())
+          .eq(StoreCenter::getAvailable, Boolean.TRUE);
       StoreCenter sc = storeCenterService.getOne(queryWrapper);
       if (sc == null) {
         throw new DefaultClientException(
@@ -53,7 +54,8 @@ public class ReceiveSheetImportListener extends ExcelImportListener<ReceiveSheet
     } else {
       SupplierService supplierService = ApplicationUtil.getBean(SupplierService.class);
       Wrapper<Supplier> queryWrapper = Wrappers.lambdaQuery(Supplier.class)
-          .eq(Supplier::getCode, data.getSupplierCode());
+          .eq(Supplier::getCode, data.getSupplierCode())
+          .eq(Supplier::getAvailable, Boolean.TRUE);
       Supplier supplier = supplierService.getOne(queryWrapper);
       if (supplier == null) {
         throw new DefaultClientException(

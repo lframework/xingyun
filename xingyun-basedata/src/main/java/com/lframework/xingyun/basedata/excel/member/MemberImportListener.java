@@ -83,7 +83,7 @@ public class MemberImportListener extends ExcelImportListener<MemberImportModel>
     if (!StringUtil.isEmpty(data.getShopCode())) {
       ShopService shopService = ApplicationUtil.getBean(ShopService.class);
       Wrapper<Shop> queryWrapper = Wrappers.lambdaQuery(Shop.class)
-          .eq(Shop::getCode, data.getShopCode());
+          .eq(Shop::getCode, data.getShopCode()).eq(Shop::getAvailable, Boolean.TRUE);
       Shop shop = shopService.getOne(queryWrapper);
       if (shop == null) {
         throw new DefaultClientException(

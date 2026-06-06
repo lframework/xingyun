@@ -54,7 +54,8 @@ public class ReceiveSheetPayTypeImportListener extends
 
     PayTypeService payTypeService = ApplicationUtil.getBean(PayTypeService.class);
     Wrapper<PayType> queryPayTypeWrapper = Wrappers.lambdaQuery(PayType.class)
-        .eq(PayType::getCode, data.getPayTypeCode());
+        .eq(PayType::getCode, data.getPayTypeCode())
+        .eq(PayType::getAvailable, Boolean.TRUE);
     PayType payType = payTypeService.getOne(queryPayTypeWrapper);
     if (payType == null) {
       throw new DefaultClientException(

@@ -23,5 +23,10 @@
             <groupId>com.lframework</groupId>
             <artifactId>xingyun-basedata</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.lframework</groupId>
+            <artifactId>xingyun-sc</artifactId>
+        </dependency>
     </dependencies>
 </project>

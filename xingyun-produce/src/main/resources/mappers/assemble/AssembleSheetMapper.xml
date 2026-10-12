@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.produce.mappers.AssembleSheetMapper">
+
+    <resultMap id="AssembleSheet" type="com.lframework.xingyun.produce.entity.AssembleSheet">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="sc_id" property="scId"/>
+        <result column="bom_id" property="bomId"/>
+        <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="refuse_reason" property="refuseReason"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="AssembleSheetDto_sql">
+        SELECT
+            a.id,
+            a.code,
+            a.sc_id,
+            a.bom_id,
+            a.product_id,
+            a.sku_id,
+            a.total_num,
+            a.status,
+            a.description,
+            a.approve_by,
+            a.approve_time,
+            a.refuse_reason,
+            a.create_by,
+            a.create_time,
+            a.update_by,
+            a.update_time
+        FROM tbl_assemble_sheet a
+    </sql>
+
+    <select id="query" resultMap="AssembleSheet">
+        <include refid="AssembleSheetDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND a.code = #{vo.code}
+                </if>
+                <if test="vo.scId != null and vo.scId != ''">
+                    AND a.sc_id = #{vo.scId}
+                </if>
+                <if test="vo.status != null">
+                    AND a.status = #{vo.status}
+                </if>
+                <if test="vo.product != null and vo.product != ''">
+                    AND (
+                        a.sku_id IN (
+                            SELECT s.id FROM base_data_product_sku s
+                            INNER JOIN base_data_product p ON p.id = s.product_id
+                            WHERE s.code LIKE CONCAT('%', #{vo.product}, '%')
+                            OR p.code LIKE CONCAT('%', #{vo.product}, '%')
+                            OR p.name LIKE CONCAT('%', #{vo.product}, '%')
+                        )
+                    )
+                </if>
+                <if test="vo.createTimeStart != null and vo.createTimeStart != ''">
+                    AND a.create_time &gt;= #{vo.createTimeStart}
+                </if>
+                <if test="vo.createTimeEnd != null and vo.createTimeEnd != ''">
+                    AND a.create_time &lt;= #{vo.createTimeEnd}
+                </if>
+            </if>
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+</mapper>

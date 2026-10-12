@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.produce.mappers.BomDetailMapper">
+
+    <resultMap id="BomDetail" type="com.lframework.xingyun.produce.entity.BomDetail">
+        <id column="id" property="id"/>
+        <result column="bom_id" property="bomId"/>
+        <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="unit_num" property="unitNum"/>
+        <result column="scrap_rate" property="scrapRate"/>
+        <result column="is_key_material" property="isKeyMaterial"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="BomDetailDto" type="com.lframework.xingyun.produce.dto.bom.BomDetailDto">
+        <id column="id" property="id"/>
+        <result column="bom_id" property="bomId"/>
+        <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="unit_num" property="unitNum"/>
+        <result column="scrap_rate" property="scrapRate"/>
+        <result column="is_key_material" property="isKeyMaterial"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="description" property="description"/>
+        <result column="sku_code" property="skuCode"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_spec" property="productSpec"/>
+        <result column="product_unit" property="productUnit"/>
+    </resultMap>
+
+    <select id="listByBomId" resultMap="BomDetailDto">
+        SELECT
+            d.id,
+            d.bom_id,
+            d.product_id,
+            d.sku_id,
+            d.unit_num,
+            d.scrap_rate,
+            d.is_key_material,
+            d.sort_order,
+            d.description,
+            s.code AS sku_code,
+            p.code AS product_code,
+            p.name AS product_name,
+            p.spec AS product_spec,
+            p.unit AS product_unit
+        FROM bom_bom_detail d
+        INNER JOIN base_data_product_sku s ON s.id = d.sku_id
+        INNER JOIN base_data_product p ON p.id = d.product_id
+        WHERE d.bom_id = #{bomId}
+        ORDER BY d.sort_order, d.create_time
+    </select>
+</mapper>

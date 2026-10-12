@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.produce.mappers.BomMapper">
+
+    <resultMap id="Bom" type="com.lframework.xingyun.produce.entity.Bom">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="main_product_id" property="mainProductId"/>
+        <result column="main_sku_id" property="mainSkuId"/>
+        <result column="output_num" property="outputNum"/>
+        <result column="scrap_rate" property="scrapRate"/>
+        <result column="status" property="status"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="version" property="version"/>
+        <result column="description" property="description"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="BomDto_sql">
+        SELECT
+            b.id,
+            b.code,
+            b.name,
+            b.main_product_id,
+            b.main_sku_id,
+            b.output_num,
+            b.scrap_rate,
+            b.status,
+            b.is_default,
+            b.version,
+            b.description,
+            b.approve_by,
+            b.approve_time,
+            b.create_by,
+            b.create_time,
+            b.update_by,
+            b.update_time
+        FROM bom_bom b
+    </sql>
+
+    <select id="query" resultMap="Bom">
+        <include refid="BomDto_sql"/>
+        <where>
+            <if test="vo != null">
+                <if test="vo.code != null and vo.code != ''">
+                    AND b.code = #{vo.code}
+                </if>
+                <if test="vo.name != null and vo.name != ''">
+                    AND b.name LIKE CONCAT('%', #{vo.name}, '%')
+                </if>
+                <if test="vo.status != null">
+                    AND b.status = #{vo.status}
+                </if>
+                <if test="vo.mainProduct != null and vo.mainProduct != ''">
+                    AND (
+                        b.main_sku_id IN (
+                            SELECT s.id FROM base_data_product_sku s
+                            INNER JOIN base_data_product p ON p.id = s.product_id
+                            WHERE s.code LIKE CONCAT('%', #{vo.mainProduct}, '%')
+                            OR p.code LIKE CONCAT('%', #{vo.mainProduct}, '%')
+                            OR p.name LIKE CONCAT('%', #{vo.mainProduct}, '%')
+                        )
+                    )
+                </if>
+            </if>
+        </where>
+        ORDER BY b.code
+    </select>
+</mapper>

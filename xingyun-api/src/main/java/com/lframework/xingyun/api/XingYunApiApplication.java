@@ -34,6 +34,7 @@ public class XingYunApiApplication {
               "com.lframework.xingyun.basedata",
               "com.lframework.xingyun.chart",
               "com.lframework.xingyun.comp",
+              "com.lframework.xingyun.produce",
               "com.lframework.xingyun.sc",
               "com.lframework.xingyun.settle")
           .build();

@@ -15,6 +15,7 @@
         <module>xingyun-api</module>
         <module>xingyun-basedata</module>
         <module>xingyun-sc</module>
+        <module>xingyun-produce</module>
         <module>xingyun-chart</module>
         <module>xingyun-settle</module>
         <module>cloud/xingyun-cloud-api</module>
@@ -64,6 +65,12 @@
             <dependency>
                 <groupId>com.lframework</groupId>
                 <artifactId>xingyun-sc</artifactId>
+                <version>${xingyun.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.lframework</groupId>
+                <artifactId>xingyun-produce</artifactId>
                 <version>${xingyun.version}</version>
             </dependency>
 

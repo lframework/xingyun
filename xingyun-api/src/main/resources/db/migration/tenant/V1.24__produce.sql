@@ -59,7 +59,7 @@ CREATE TABLE `bom_bom_detail` (
 -- 菜单
 -- ----------------------------
 INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `icon`, `component_type`, `component`, `request_param`, `parent_id`, `sys_module_id`, `path`, `no_cache`, `display`, `hidden`, `permission`, `is_special`, `available`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES
-('6000', '6000', 'Produce', '生产管理', 'a-menu', NULL, '', NULL, NULL, '17', '/produce', 0, 0, 0, '', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('6000', '6000', 'Produce', '生产管理', 'ant-design:tool-outlined', NULL, '', NULL, NULL, '17', '/produce', 0, 0, 0, '', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
 ('6000001', '6000001', 'BomManage', 'BOM管理', NULL, 0, '/produce/bom/index', NULL, '6000', '17', '/bom', 0, 1, 0, 'produce:bom:query', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
 ('6000001001', '6000001001', '', '新增BOM', NULL, 0, '', NULL, '6000001', '17', '', 0, 2, 0, 'produce:bom:add', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
 ('6000001002', '6000001002', '', '修改BOM', NULL, 0, '', NULL, '6000001', '17', '', 0, 2, 0, 'produce:bom:modify', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),

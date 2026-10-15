@@ -51,11 +51,11 @@ CREATE TABLE `tbl_production_order_detail` (
 
 -- 菜单：生产工单（追加到 produce 模块菜单下，parent 8000 = 生产管理目录，根据实际 sys_menu id 调整）
 INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `icon`, `component_type`, `component`, `request_param`, `parent_id`, `sys_module_id`, `path`, `no_cache`, `display`, `hidden`, `permission`, `is_special`, `available`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES
-('8000001', '8000001', 'ProduceOrder', '生产工单', NULL, 0, '/produce/order/index', NULL, '0', '4', '/produce/order', 0, 1, 0, 'produce:order:query', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('8000001001', '8000001001', '', '新增工单', NULL, 0, '', NULL, '8000001', '4', '', 0, 2, 0, 'produce:order:add', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('8000001002', '8000001002', '', '修改工单', NULL, 0, '', NULL, '8000001', '4', '', 0, 2, 0, 'produce:order:modify', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('8000001003', '8000001003', '', '删除工单', NULL, 0, '', NULL, '8000001', '4', '', 0, 2, 0, 'produce:order:delete', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('8000001004', '8000001004', '', '完工确认', NULL, 0, '', NULL, '8000001', '4', '', 0, 2, 0, 'produce:order:complete', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW());
+('8000001', '8000001', 'ProduceOrder', '生产工单', NULL, 0, '/produce/order/index', NULL, '0', '17', '/produce/order', 0, 1, 0, 'produce:order:query', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('8000001001', '8000001001', '', '新增工单', NULL, 0, '', NULL, '8000001', '17', '', 0, 2, 0, 'produce:order:add', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('8000001002', '8000001002', '', '修改工单', NULL, 0, '', NULL, '8000001', '17', '', 0, 2, 0, 'produce:order:modify', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('8000001003', '8000001003', '', '删除工单', NULL, 0, '', NULL, '8000001', '17', '', 0, 2, 0, 'produce:order:delete', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('8000001004', '8000001004', '', '完工确认', NULL, 0, '', NULL, '8000001', '17', '', 0, 2, 0, 'produce:order:complete', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW());
 
 -- 工单编号规则
 INSERT INTO `sys_generate_code` (`id`, `name`, `config_str`) VALUES

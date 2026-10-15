@@ -40,10 +40,10 @@ CREATE TABLE `tbl_purchase_requisition_detail` (
 
 -- 菜单：采购建议单（追加到采购模块菜单下，sys_module_id 取采购模块对应值，parent 参照实际）
 INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `icon`, `component_type`, `component`, `request_param`, `parent_id`, `sys_module_id`, `path`, `no_cache`, `display`, `hidden`, `permission`, `is_special`, `available`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES
-('9000001', '9000001', 'PurchaseRequisition', '采购建议单', NULL, 0, '/purchase/requisition/index', NULL, '0', '2', '/purchase/requisition', 0, 1, 0, 'purchase:requisition:query', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('9000001001', '9000001001', '', '生成建议单', NULL, 0, '', NULL, '9000001', '2', '', 0, 2, 0, 'purchase:requisition:add', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('9000001002', '9000001002', '', '修改/调整', NULL, 0, '', NULL, '9000001', '2', '', 0, 2, 0, 'purchase:requisition:modify', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('9000001003', '9000001003', '', '转采购订单', NULL, 0, '', NULL, '9000001', '2', '', 0, 2, 0, 'purchase:requisition:convert', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW());
+('9000001', '9000001', 'PurchaseRequisition', '采购建议单', NULL, 0, '/purchase/requisition/index', NULL, '0', '5', '/purchase/requisition', 0, 1, 0, 'purchase:requisition:query', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('9000001001', '9000001001', '', '生成建议单', NULL, 0, '', NULL, '9000001', '5', '', 0, 2, 0, 'purchase:requisition:add', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('9000001002', '9000001002', '', '修改/调整', NULL, 0, '', NULL, '9000001', '5', '', 0, 2, 0, 'purchase:requisition:modify', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('9000001003', '9000001003', '', '转采购订单', NULL, 0, '', NULL, '9000001', '5', '', 0, 2, 0, 'purchase:requisition:convert', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW());
 
 -- 采购建议单编号规则
 INSERT INTO `sys_generate_code` (`id`, `name`, `config_str`) VALUES

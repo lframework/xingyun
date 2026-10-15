@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.PurchaseRequisitionDetailMapper">
+
+    <resultMap id="PurchaseRequisitionDetail" type="com.lframework.xingyun.sc.entity.PurchaseRequisitionDetail">
+        <id column="id" property="id"/>
+        <result column="requisition_id" property="requisitionId"/>
+        <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="require_num" property="requireNum"/>
+        <result column="suggest_num" property="suggestNum"/>
+        <result column="order_no" property="orderNo"/>
+    </resultMap>
+
+    <select id="listByRequisitionId" resultMap="PurchaseRequisitionDetail">
+        SELECT d.*
+        FROM tbl_purchase_requisition_detail d
+        WHERE d.requisition_id = #{requisitionId}
+        ORDER BY d.order_no ASC
+    </select>
+
+</mapper>

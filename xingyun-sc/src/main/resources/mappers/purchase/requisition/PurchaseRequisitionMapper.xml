@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.PurchaseRequisitionMapper">
+
+    <resultMap id="PurchaseRequisition" type="com.lframework.xingyun.sc.entity.PurchaseRequisition">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="production_order_id" property="productionOrderId"/>
+        <result column="sc_id" property="scId"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_by_id" property="createById"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_by_id" property="updateById"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="query" resultMap="PurchaseRequisition">
+        SELECT r.*
+        FROM tbl_purchase_requisition r
+        <where>
+            <if test="vo.keyword != null and vo.keyword != ''">
+                AND r.code LIKE CONCAT('%', #{vo.keyword}, '%')
+            </if>
+            <if test="vo.status != null">
+                AND r.status = #{vo.status}
+            </if>
+            <if test="vo.productionOrderId != null and vo.productionOrderId != ''">
+                AND r.production_order_id = #{vo.productionOrderId}
+            </if>
+            <if test="vo.createDateStart != null and vo.createDateStart != ''">
+                AND DATE(r.create_time) &gt;= #{vo.createDateStart}
+            </if>
+            <if test="vo.createDateEnd != null and vo.createDateEnd != ''">
+                AND DATE(r.create_time) &lt;= #{vo.createDateEnd}
+            </if>
+        </where>
+        ORDER BY r.create_time DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.crm.mappers.OpportunityMapper">
+
+    <resultMap id="Opportunity" type="com.lframework.xingyun.crm.entity.Opportunity">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="clue_id" property="clueId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="owner_id" property="ownerId"/>
+        <result column="estimated_amount" property="estimatedAmount"/>
+        <result column="expected_close_date" property="expectedCloseDate"/>
+        <result column="stage" property="stage"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_by_id" property="createById"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_by_id" property="updateById"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="query" resultMap="Opportunity">
+        SELECT o.*
+        FROM crm_opportunity o
+        <where>
+            <if test="vo.keyword != null and vo.keyword != ''">
+                AND (o.name LIKE CONCAT('%', #{vo.keyword}, '%'))
+            </if>
+            <if test="vo.status != null">
+                AND o.status = #{vo.status}
+            </if>
+            <if test="vo.stage != null">
+                AND o.stage = #{vo.stage}
+            </if>
+            <if test="vo.ownerId != null and vo.ownerId != ''">
+                AND o.owner_id = #{vo.ownerId}
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.produce.mappers.ProductionOrderDetailMapper">
+
+    <resultMap id="ProductionOrderDetail" type="com.lframework.xingyun.produce.entity.ProductionOrderDetail">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="bom_num" property="bomNum"/>
+        <result column="require_num" property="requireNum"/>
+        <result column="order_no" property="orderNo"/>
+    </resultMap>
+
+    <select id="listByOrderId" resultMap="ProductionOrderDetail">
+        SELECT d.*
+        FROM tbl_production_order_detail d
+        WHERE d.order_id = #{orderId}
+        ORDER BY d.order_no ASC
+    </select>
+
+</mapper>

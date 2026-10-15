@@ -16,4 +16,9 @@ public interface GenerateCodeTypePool {
    * 组装单号
    */
   Integer ASSEMBLE_SHEET = 215;
+
+  /**
+   * 生产工单号
+   */
+  Integer PRODUCTION_ORDER = 216;
 }

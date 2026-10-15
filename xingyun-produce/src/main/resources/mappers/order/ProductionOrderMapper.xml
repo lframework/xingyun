@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.produce.mappers.ProductionOrderMapper">
+
+    <resultMap id="ProductionOrder" type="com.lframework.xingyun.produce.entity.ProductionOrder">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="bom_id" property="bomId"/>
+        <result column="product_id" property="productId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="sc_id" property="scId"/>
+        <result column="plan_num" property="planNum"/>
+        <result column="actual_num" property="actualNum"/>
+        <result column="plan_start_date" property="planStartDate"/>
+        <result column="plan_end_date" property="planEndDate"/>
+        <result column="actual_end_date" property="actualEndDate"/>
+        <result column="sale_order_id" property="saleOrderId"/>
+        <result column="owner_id" property="ownerId"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_by_id" property="createById"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_by_id" property="updateById"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="query" resultMap="ProductionOrder">
+        SELECT o.*
+        FROM tbl_production_order o
+        <where>
+            <if test="vo.keyword != null and vo.keyword != ''">
+                AND o.code LIKE CONCAT('%', #{vo.keyword}, '%')
+            </if>
+            <if test="vo.status != null">
+                AND o.status = #{vo.status}
+            </if>
+            <if test="vo.planStartDateStart != null and vo.planStartDateStart != ''">
+                AND o.plan_start_date &gt;= #{vo.planStartDateStart}
+            </if>
+            <if test="vo.planStartDateEnd != null and vo.planStartDateEnd != ''">
+                AND o.plan_start_date &lt;= #{vo.planStartDateEnd}
+            </if>
+            <if test="vo.ownerId != null and vo.ownerId != ''">
+                AND o.owner_id = #{vo.ownerId}
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+
+</mapper>

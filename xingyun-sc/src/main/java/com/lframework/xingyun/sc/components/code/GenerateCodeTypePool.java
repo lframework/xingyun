@@ -71,4 +71,9 @@ public interface GenerateCodeTypePool {
    * 物流单
    */
   Integer LOGISTICS_SHEET = 214;
+
+  /**
+   * 采购建议单
+   */
+  Integer PURCHASE_REQUISITION = 217;
 }

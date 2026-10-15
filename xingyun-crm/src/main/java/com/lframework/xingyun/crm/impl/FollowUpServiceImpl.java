@@ -1,7 +1,7 @@
 package com.lframework.xingyun.crm.impl;
 
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
-import com.lframework.starter.common.utils.IdUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;
 import com.lframework.xingyun.crm.entity.FollowUp;

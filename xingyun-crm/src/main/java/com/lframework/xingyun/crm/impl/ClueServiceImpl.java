@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageInfo;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
-import com.lframework.starter.common.utils.IdUtil;
+import com.lframework.starter.web.core.utils.IdUtil;
 import com.lframework.starter.web.core.annotations.oplog.OpLog;
 import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.impl.BaseMpServiceImpl;

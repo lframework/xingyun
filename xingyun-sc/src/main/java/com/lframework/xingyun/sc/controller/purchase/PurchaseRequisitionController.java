@@ -66,7 +66,7 @@ public class PurchaseRequisitionController extends DefaultBaseController {
       @NotBlank(message = "建议单ID不能为空！") String id) {
     PurchaseRequisition req = purchaseRequisitionService.getById(id);
     if (req == null) {
-      return InvokeResultBuilder.fail("采购建议单不存在！");
+      throw new com.lframework.starter.common.exceptions.impl.DefaultClientException("采购建议单不存在！");
     }
     return InvokeResultBuilder.success(new GetPurchaseRequisitionBo(req));
   }

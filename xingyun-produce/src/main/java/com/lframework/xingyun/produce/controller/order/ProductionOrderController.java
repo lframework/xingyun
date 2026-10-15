@@ -68,7 +68,7 @@ public class ProductionOrderController extends DefaultBaseController {
       @NotBlank(message = "工单ID不能为空！") String id) {
     ProductionOrder order = productionOrderService.getById(id);
     if (order == null) {
-      return InvokeResultBuilder.fail("工单不存在！");
+      throw new com.lframework.starter.common.exceptions.impl.DefaultClientException("工单不存在！");
     }
     return InvokeResultBuilder.success(new GetProductionOrderBo(order));
   }

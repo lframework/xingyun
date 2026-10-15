@@ -111,9 +111,9 @@ public class ProductCategoryServiceImpl extends
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    //查询Name是否重复
-    Wrapper<ProductCategory> checkNameWrapper = Wrappers.lambdaQuery(ProductCategory.class)
-        .eq(ProductCategory::getName, vo.getName()).eq(ProductCategory::getAvailable, Boolean.TRUE);
+    //查询Name是否重复（同一父级下名称唯一；不同父级下允许重名）
+    Wrapper<ProductCategory> checkNameWrapper = this.buildCheckNameWrapper(vo.getName(),
+        vo.getParentId(), null);
     if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }
@@ -144,6 +144,34 @@ public class ProductCategoryServiceImpl extends
     return data.getId();
   }
 
+  /**
+   * 构建名称查重条件：同一父级下名称唯一（一级分类之间名称唯一，parentId为空；
+   * 二级及以下分类仅与相同父级下的分类比较）
+   *
+   * @param name     分类名称
+   * @param parentId 父级ID（可为空）
+   * @param excludeId 需要排除的分类ID（修改时传入，新增传null）
+   */
+  private Wrapper<ProductCategory> buildCheckNameWrapper(String name, String parentId,
+      String excludeId) {
+
+    if (StringUtil.isBlank(parentId)) {
+      // 一级分类：仅与其他一级分类比较
+      return Wrappers.lambdaQuery(ProductCategory.class)
+          .eq(ProductCategory::getName, name)
+          .eq(ProductCategory::getAvailable, Boolean.TRUE)
+          .and(w -> w.isNull(ProductCategory::getParentId)
+              .or().eq(ProductCategory::getParentId, StringPool.EMPTY_STR))
+          .ne(!StringUtil.isBlank(excludeId), ProductCategory::getId, excludeId);
+    }
+    // 二级及以下分类：仅与相同父级下的分类比较
+    return Wrappers.lambdaQuery(ProductCategory.class)
+        .eq(ProductCategory::getName, name)
+        .eq(ProductCategory::getAvailable, Boolean.TRUE)
+        .eq(ProductCategory::getParentId, parentId)
+        .ne(!StringUtil.isBlank(excludeId), ProductCategory::getId, excludeId);
+  }
+
   @OpLog(type = BaseDataOpLogType.class, name = "修改商品分类，ID：{}, 编号：{}", params = {"#id",
       "#code"})
   @Transactional(rollbackFor = Exception.class)
@@ -163,10 +191,9 @@ public class ProductCategoryServiceImpl extends
       throw new DefaultClientException("编号重复，请重新输入！");
     }
 
-    //查询Name是否重复
-    Wrapper<ProductCategory> checkNameWrapper = Wrappers.lambdaQuery(ProductCategory.class)
-        .eq(ProductCategory::getName, vo.getName()).eq(ProductCategory::getAvailable, Boolean.TRUE)
-        .ne(ProductCategory::getId, data.getId());
+    //查询Name是否重复（同一父级下名称唯一；不同父级下允许重名）
+    Wrapper<ProductCategory> checkNameWrapper = this.buildCheckNameWrapper(vo.getName(),
+        data.getParentId(), data.getId());
     if (getBaseMapper().selectCount(checkNameWrapper) > 0) {
       throw new DefaultClientException("名称重复，请重新输入！");
     }

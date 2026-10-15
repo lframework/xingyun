@@ -12,6 +12,7 @@ import com.lframework.xingyun.sc.bo.purchase.requisition.QueryPurchaseRequisitio
 import com.lframework.xingyun.sc.entity.PurchaseRequisition;
 import com.lframework.xingyun.sc.service.purchase.PurchaseRequisitionService;
 import com.lframework.xingyun.sc.vo.purchase.requisition.AdjustRequisitionDetailVo;
+import com.lframework.xingyun.sc.vo.purchase.requisition.GenerateRequisitionVo;
 import com.lframework.xingyun.sc.vo.purchase.requisition.QueryPurchaseRequisitionVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -70,13 +71,11 @@ public class PurchaseRequisitionController extends DefaultBaseController {
     return InvokeResultBuilder.success(new GetPurchaseRequisitionBo(req));
   }
 
-  @Operation(summary = "从生产工单生成采购建议单")
-  @Parameter(name = "productionOrderId", description = "生产工单ID", in = ParameterIn.QUERY, required = true)
+  @Operation(summary = "生成采购建议单（由 facade 传入已展开的明细数据）")
   @HasPermission({"purchase:requisition:add"})
   @PostMapping("/generate")
-  public InvokeResult<String> generate(
-      @NotBlank(message = "生产工单ID不能为空！") String productionOrderId) {
-    String id = purchaseRequisitionService.generateFromProductionOrder(productionOrderId);
+  public InvokeResult<String> generate(@RequestBody @Valid GenerateRequisitionVo vo) {
+    String id = purchaseRequisitionService.generate(vo);
     return InvokeResultBuilder.success(id);
   }
 

@@ -68,7 +68,7 @@ public class ProductionOrderServiceImpl
     if (bom == null) {
       throw new DefaultClientException("BOM不存在！");
     }
-    if (bom.getStatus() != BomStatus.APPROVE_PASS) {
+    if (bom.getStatus() != BomStatus.ENABLED) {
       throw new DefaultClientException("BOM未审核通过，不能创建工单！");
     }
 

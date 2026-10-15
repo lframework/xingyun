@@ -11,7 +11,7 @@ spring:
   servlet:
     multipart:
       #临时文件路径
-      location: D:\tmp\tmp-datas
+      location: /tmp/xingyun/tmp-datas
   datasource:
     dynamic:
       # 设置默认数据源
@@ -105,7 +105,7 @@ jugg:
     #下载时的域名
     domain: http://localhost:8080
     #上传文件的路径
-    location: D:\upload\upload-data
+    location: /tmp/xingyun/upload-data
   # 安全上传
   security-upload:
     #下载时的域名，一般情况下和公开上传的域名一致

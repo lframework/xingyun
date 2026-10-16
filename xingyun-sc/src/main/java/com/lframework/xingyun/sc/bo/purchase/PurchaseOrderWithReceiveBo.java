@@ -241,7 +241,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
     public BaseBo<PurchaseOrderWithReceiveDto.DetailDto> convert(
         PurchaseOrderWithReceiveDto.DetailDto dto) {
 
-      return this;
+      return super.convert(dto);
     }
 
     @Override

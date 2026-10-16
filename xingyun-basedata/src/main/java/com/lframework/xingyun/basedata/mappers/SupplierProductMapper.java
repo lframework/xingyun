@@ -14,5 +14,5 @@ public interface SupplierProductMapper extends BaseMapper<SupplierProduct> {
   /**
    * 查询列表
    */
-  List<SupplierProduct> query(@Param("vo") QuerySupplierProductVo vo, @Param("supplierId") String supplierId);
+  List<SupplierProduct> query(@Param("vo") QuerySupplierProductVo vo);
 }

@@ -1,13 +1,13 @@
 package com.lframework.xingyun.basedata.vo.supplier.product;
 
 import com.lframework.starter.web.core.vo.BaseVo;
-import com.lframework.starter.web.core.vo.PageVo;
+import com.lframework.starter.web.core.vo.SortPageVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class QuerySupplierProductVo implements PageVo, BaseVo, Serializable {
+public class QuerySupplierProductVo extends SortPageVo implements BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 

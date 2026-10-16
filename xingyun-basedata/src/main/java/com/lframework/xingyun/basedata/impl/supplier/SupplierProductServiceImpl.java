@@ -38,7 +38,7 @@ public class SupplierProductServiceImpl
     Assert.greaterThanZero(pageSize);
 
     PageHelperUtil.startPage(pageIndex, pageSize);
-    List<SupplierProduct> datas = getBaseMapper().query(vo, null);
+    List<SupplierProduct> datas = getBaseMapper().query(vo);
 
     return PageResultUtil.convert(new PageInfo<>(datas));
   }
@@ -49,7 +49,7 @@ public class SupplierProductServiceImpl
     QuerySupplierProductVo vo = new QuerySupplierProductVo();
     vo.setSupplierId(supplierId);
     vo.setAvailable(true);
-    return getBaseMapper().query(vo, null);
+    return getBaseMapper().query(vo);
   }
 
   @Override
@@ -58,7 +58,7 @@ public class SupplierProductServiceImpl
     QuerySupplierProductVo vo = new QuerySupplierProductVo();
     vo.setProductId(productId);
     vo.setAvailable(true);
-    return getBaseMapper().query(vo, null);
+    return getBaseMapper().query(vo);
   }
 
   @Override

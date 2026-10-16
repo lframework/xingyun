@@ -249,7 +249,7 @@ public class PurchaseOrderWithReceiveBo extends BaseBo<PurchaseOrderWithReceiveD
         PurchaseOrderWithReceiveDto.DetailDto dto,
         SFunction<A, ?>... columns) {
 
-      return this;
+      return super.convert(dto, columns);
     }
 
     @Override

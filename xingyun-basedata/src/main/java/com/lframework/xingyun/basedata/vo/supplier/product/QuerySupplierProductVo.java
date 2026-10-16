@@ -11,12 +11,12 @@ public class QuerySupplierProductVo implements PageVo, BaseVo, Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  @Schema(description = \"供应商ID\")
+  @Schema(description = "供应商ID")
   private String supplierId;
 
-  @Schema(description = \"商品ID\")
+  @Schema(description = "商品ID")
   private String productId;
 
-  @Schema(description = \"状态\")
+  @Schema(description = "状态")
   private Boolean available;
 }

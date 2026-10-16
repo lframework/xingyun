@@ -1,29 +1,29 @@
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;
-&lt;mapper namespace="com.lframework.xingyun.basedata.mappers.SupplierProductMapper"&gt;
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.basedata.mappers.SupplierProductMapper">
 
-  &lt;resultMap id="SupplierProduct" type="com.lframework.xingyun.basedata.entity.SupplierProduct"&gt;
-    &lt;id column="id" property="id"/&gt;
-    &lt;result column="supplier_id" property="supplierId"/&gt;
-    &lt;result column="product_id" property="productId"/&gt;
-    &lt;result column="sku_id" property="skuId"/&gt;
-    &lt;result column="supplier_product_code" property="supplierProductCode"/&gt;
-    &lt;result column="supplier_product_name" property="supplierProductName"/&gt;
-    &lt;result column="default_purchase_price" property="defaultPurchasePrice"/&gt;
-    &lt;result column="min_order_qty" property="minOrderQty"/&gt;
-    &lt;result column="lead_time_days" property="leadTimeDays"/&gt;
-    &lt;result column="is_default" property="isDefault"/&gt;
-    &lt;result column="available" property="available"/&gt;
-    &lt;result column="description" property="description"/&gt;
-    &lt;result column="create_by" property="createBy"/&gt;
-    &lt;result column="create_by_id" property="createById"/&gt;
-    &lt;result column="create_time" property="createTime"/&gt;
-    &lt;result column="update_by" property="updateBy"/&gt;
-    &lt;result column="update_by_id" property="updateById"/&gt;
-    &lt;result column="update_time" property="updateTime"/&gt;
-  &lt;/resultMap&gt;
+  <resultMap id="SupplierProduct" type="com.lframework.xingyun.basedata.entity.SupplierProduct">
+    <id column="id" property="id"/>
+    <result column="supplier_id" property="supplierId"/>
+    <result column="product_id" property="productId"/>
+    <result column="sku_id" property="skuId"/>
+    <result column="supplier_product_code" property="supplierProductCode"/>
+    <result column="supplier_product_name" property="supplierProductName"/>
+    <result column="default_purchase_price" property="defaultPurchasePrice"/>
+    <result column="min_order_qty" property="minOrderQty"/>
+    <result column="lead_time_days" property="leadTimeDays"/>
+    <result column="is_default" property="isDefault"/>
+    <result column="available" property="available"/>
+    <result column="description" property="description"/>
+    <result column="create_by" property="createBy"/>
+    <result column="create_by_id" property="createById"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_by" property="updateBy"/>
+    <result column="update_by_id" property="updateById"/>
+    <result column="update_time" property="updateTime"/>
+  </resultMap>
 
-  &lt;sql id="SupplierProduct_sql"&gt;
+  <sql id="SupplierProduct_sql">
     SELECT sp.id,
            sp.supplier_id,
            sp.product_id,
@@ -43,22 +43,22 @@
            sp.update_by_id,
            sp.update_time
     FROM base_data_supplier_product AS sp
-  &lt;/sql&gt;
+  </sql>
 
-  &lt;select id="query" resultMap="SupplierProduct"&gt;
-    &lt;include refid="SupplierProduct_sql"/&gt;
-    &lt;where&gt;
-      &lt;if test="vo.supplierId != null and vo.supplierId != ''"&gt;
+  <select id="query" resultMap="SupplierProduct">
+    <include refid="SupplierProduct_sql"/>
+    <where>
+      <if test="vo.supplierId != null and vo.supplierId != ''">
         AND sp.supplier_id = #{vo.supplierId}
-      &lt;/if&gt;
-      &lt;if test="vo.productId != null and vo.productId != ''"&gt;
+      </if>
+      <if test="vo.productId != null and vo.productId != ''">
         AND sp.product_id = #{vo.productId}
-      &lt;/if&gt;
-      &lt;if test="vo.available != null"&gt;
+      </if>
+      <if test="vo.available != null">
         AND sp.available = #{vo.available}
-      &lt;/if&gt;
-    &lt;/where&gt;
+      </if>
+    </where>
     ORDER BY sp.is_default DESC, sp.create_time DESC
-  &lt;/select&gt;
+  </select>
 
-&lt;/mapper&gt;
+</mapper>

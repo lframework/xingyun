@@ -43,7 +43,7 @@ public class SupplierProductController extends DefaultBaseController {
   private SupplierProductService supplierProductService;
 
   @Operation(summary = "供应商商品关联列表")
-  @HasPermission({"base:supplier:product:query", "base:supplier:product:add", "base:supplier:product:modify"})
+  @HasPermission({"base-data:supplier:product:query", "base-data:supplier:product:add", "base-data:supplier:product:modify"})
   @GetMapping("/query")
   public InvokeResult<PageResult<QuerySupplierProductBo>> query(@Valid QuerySupplierProductVo vo) {
 
@@ -101,7 +101,7 @@ public class SupplierProductController extends DefaultBaseController {
   }
 
   @Operation(summary = "新增供应商商品关联")
-  @HasPermission({"base:supplier:product:add"})
+  @HasPermission({"base-data:supplier:product:add"})
   @PostMapping
   public InvokeResult<String> create(@Valid CreateSupplierProductVo vo) {
 
@@ -110,7 +110,7 @@ public class SupplierProductController extends DefaultBaseController {
   }
 
   @Operation(summary = "修改供应商商品关联")
-  @HasPermission({"base:supplier:product:modify"})
+  @HasPermission({"base-data:supplier:product:modify"})
   @PutMapping
   public InvokeResult<Void> update(@Valid UpdateSupplierProductVo vo) {
 
@@ -119,7 +119,7 @@ public class SupplierProductController extends DefaultBaseController {
   }
 
   @Operation(summary = "删除供应商商品关联")
-  @HasPermission({"base:supplier:product:delete"})
+  @HasPermission({"base-data:supplier:product:delete"})
   @DeleteMapping
   public InvokeResult<Void> delete(@NotBlank(message = "ID不能为空！") String id) {
 

@@ -35,10 +35,10 @@ CREATE TABLE `base_data_supplier_product` (
 -- ----------------------------
 -- 供应商商品关联管理菜单（归入基础数据模块）
 INSERT INTO `sys_menu` (`id`, `code`, `name`, `title`, `icon`, `component_type`, `component`, `request_param`, `parent_id`, `sys_module_id`, `path`, `no_cache`, `display`, `hidden`, `permission`, `is_special`, `available`, `description`, `create_by`, `create_by_id`, `create_time`, `update_by`, `update_by_id`, `update_time`) VALUES
-('2000009', '2000009', 'SupplierProductManage', '供应商商品关联', NULL, 0, '', NULL, '2000', '3', '/supplier/product', 0, 2, 0, 'base:supplier:product:query', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('2000009001', '2000009001', '', '新增供应商商品', NULL, 0, '', NULL, '2000009', '3', '', 0, 2, 0, 'base:supplier:product:add', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('2000009002', '2000009002', '', '修改供应商商品', NULL, 0, '', NULL, '2000009', '3', '', 0, 2, 0, 'base:supplier:product:modify', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
-('2000009003', '2000009003', '', '删除供应商商品', NULL, 0, '', NULL, '2000009', '3', '', 0, 2, 0, 'base:supplier:product:delete', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW());
+('2000005005', '2000005005', '', '供应商商品关联列表', NULL, 0, '', NULL, '2000005', '3', '', 0, 2, 0, 'base-data:supplier:product:query', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('2000005006', '2000005006', '', '新增供应商商品', NULL, 0, '', NULL, '2000005', '3', '', 0, 2, 0, 'base-data:supplier:product:add', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('2000005007', '2000005007', '', '修改供应商商品', NULL, 0, '', NULL, '2000005', '3', '', 0, 2, 0, 'base-data:supplier:product:modify', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW()),
+('2000005008', '2000005008', '', '删除供应商商品', NULL, 0, '', NULL, '2000005', '3', '', 0, 2, 0, 'base-data:supplier:product:delete', 1, 1, '', '系统管理员', '1', NOW(), '系统管理员', '1', NOW());
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS = 1;

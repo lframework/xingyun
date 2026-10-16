@@ -402,4 +402,10 @@
         <include refid="PurchaseProductDto_sql"/>
         WHERE s.id = #{id}
     </select>
+
+    <select id="hasPurchaserRole" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM sys_user_role ur
+        INNER JOIN sys_role r ON ur.role_id = r.id
+        WHERE ur.user_id = #{userId} AND r.name = '采购员'
+    </select>
 </mapper>

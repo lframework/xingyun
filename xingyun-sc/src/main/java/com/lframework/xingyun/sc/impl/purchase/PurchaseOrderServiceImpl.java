@@ -608,6 +608,10 @@ public class PurchaseOrderServiceImpl extends
         throw new InputErrorException("采购员不存在！");
       }
 
+      if (getBaseMapper().hasPurchaserRole(vo.getPurchaserId()) == 0) {
+        throw new InputErrorException("所选用户不具备采购员角色！");
+      }
+
       order.setPurchaserId(vo.getPurchaserId());
     }
 
@@ -748,6 +752,11 @@ public class PurchaseOrderServiceImpl extends
     PageResult<PurchaseProductDto> pageResult = PageResultUtil.convert(new PageInfo<>(datas));
 
     return pageResult;
+  }
+
+  @Override
+  public boolean hasPurchaserRole(String userId) {
+    return getBaseMapper().hasPurchaserRole(userId) > 0;
   }
 
   @Override

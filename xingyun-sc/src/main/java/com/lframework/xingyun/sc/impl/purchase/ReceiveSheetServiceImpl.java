@@ -617,6 +617,10 @@ public class ReceiveSheetServiceImpl extends
         throw new InputErrorException("采购员不存在！");
       }
 
+      if (!purchaseOrderService.hasPurchaserRole(vo.getPurchaserId())) {
+        throw new InputErrorException("所选用户不具备采购员角色！");
+      }
+
       sheet.setPurchaserId(vo.getPurchaserId());
     }
 

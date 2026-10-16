@@ -154,4 +154,12 @@ public interface PurchaseOrderService extends BaseMpService<PurchaseOrder> {
    * @return
    */
   PurchaseProductDto getPurchaseById(String scId, String id);
+
+  /**
+   * 校验用户是否拥有采购员角色
+   *
+   * @param userId
+   * @return true=是采购员
+   */
+  boolean hasPurchaserRole(String userId);
 }

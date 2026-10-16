@@ -113,6 +113,14 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
   List<PurchaseProductDto> queryPurchaseList(@Param("vo") QueryPurchaseProductVo vo);
 
   /**
+   * 校验用户是否拥有采购员角色
+   *
+   * @param userId
+   * @return 拥有采购员角色的用户数量（0=非采购员）
+   */
+  int hasPurchaserRole(@Param("userId") String userId);
+
+  /**
    * 根据ID查询
    *
    * @param id

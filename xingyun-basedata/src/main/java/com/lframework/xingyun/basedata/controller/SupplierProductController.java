@@ -1,5 +1,6 @@
 package com.lframework.xingyun.basedata.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.lframework.starter.common.exceptions.impl.DefaultClientException;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.web.core.annotations.security.HasPermission;
@@ -9,9 +10,15 @@ import com.lframework.starter.web.core.components.resp.PageResult;
 import com.lframework.starter.web.core.controller.DefaultBaseController;
 import com.lframework.starter.web.core.utils.PageResultUtil;
 import com.lframework.xingyun.basedata.bo.supplier.product.GetSupplierProductBo;
+import com.lframework.xingyun.basedata.bo.supplier.product.ProductSupplierBo;
 import com.lframework.xingyun.basedata.bo.supplier.product.QuerySupplierProductBo;
+import com.lframework.xingyun.basedata.entity.Product;
+import com.lframework.xingyun.basedata.entity.Supplier;
 import com.lframework.xingyun.basedata.entity.SupplierProduct;
+import com.lframework.xingyun.basedata.service.product.ProductService;
 import com.lframework.xingyun.basedata.service.supplier.SupplierProductService;
+import com.lframework.xingyun.basedata.service.supplier.SupplierService;
+import com.lframework.xingyun.basedata.vo.product.info.QueryProductVo;
 import com.lframework.xingyun.basedata.vo.supplier.product.CreateSupplierProductVo;
 import com.lframework.xingyun.basedata.vo.supplier.product.QuerySupplierProductVo;
 import com.lframework.xingyun.basedata.vo.supplier.product.UpdateSupplierProductVo;
@@ -19,7 +26,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -41,6 +51,48 @@ public class SupplierProductController extends DefaultBaseController {
 
   @Autowired
   private SupplierProductService supplierProductService;
+
+  @Autowired
+  private ProductService productService;
+
+  @Autowired
+  private SupplierService supplierService;
+
+  @Operation(summary = "按商品分页展示关联供应商，保留未关联商品")
+  @HasPermission({"base-data:supplier:product:query"})
+  @GetMapping("/products")
+  public InvokeResult<PageResult<ProductSupplierBo>> queryProducts(@Valid QueryProductVo vo) {
+
+    PageResult<Product> pageResult = productService.query(getPageIndex(vo), getPageSize(vo), vo);
+    List<ProductSupplierBo> results = new ArrayList<>();
+    if (!CollectionUtil.isEmpty(pageResult.getDatas())) {
+      List<String> productIds = pageResult.getDatas().stream().map(Product::getId)
+          .collect(Collectors.toList());
+      List<SupplierProduct> relations = supplierProductService.list(
+          Wrappers.lambdaQuery(SupplierProduct.class)
+              .in(SupplierProduct::getProductId, productIds)
+              .eq(SupplierProduct::getAvailable, true)
+              .orderByDesc(SupplierProduct::getIsDefault)
+              .orderByAsc(SupplierProduct::getSupplierId));
+      List<String> supplierIds = relations.stream().map(SupplierProduct::getSupplierId)
+          .distinct().collect(Collectors.toList());
+      Map<String, Supplier> suppliers = supplierIds.isEmpty() ? Collections.emptyMap()
+          : supplierService.list(Wrappers.lambdaQuery(Supplier.class)
+              .in(Supplier::getId, supplierIds)).stream()
+              .collect(Collectors.toMap(Supplier::getId, supplier -> supplier));
+      Map<String, List<SupplierProduct>> byProduct = relations.stream()
+          .collect(Collectors.groupingBy(SupplierProduct::getProductId));
+      for (Product product : pageResult.getDatas()) {
+        ProductSupplierBo row = new ProductSupplierBo(product);
+        row.setSuppliers(byProduct.getOrDefault(product.getId(), Collections.emptyList()).stream()
+            .map(SupplierProduct::getSupplierId).distinct().filter(suppliers::containsKey)
+            .map(id -> new ProductSupplierBo.SupplierBo(suppliers.get(id)))
+            .collect(Collectors.toList()));
+        results.add(row);
+      }
+    }
+    return InvokeResultBuilder.success(PageResultUtil.rebuild(pageResult, results));
+  }
 
   @Operation(summary = "供应商商品关联列表")
   @HasPermission({"base-data:supplier:product:query", "base-data:supplier:product:add", "base-data:supplier:product:modify"})

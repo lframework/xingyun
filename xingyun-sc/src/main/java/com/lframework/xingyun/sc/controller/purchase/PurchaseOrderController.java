@@ -72,6 +72,19 @@ public class PurchaseOrderController extends DefaultBaseController {
   private PurchaseOrderService purchaseOrderService;
 
   /**
+   * 新建订单的默认采购员，仅返回具有采购员角色的当前用户
+   */
+  @Operation(summary = "查询默认采购员")
+  @HasPermission({"purchase:order:add"})
+  @GetMapping("/default-purchaser")
+  public InvokeResult<String> getDefaultPurchaser() {
+
+    String userId = getCurrentUserId();
+    return InvokeResultBuilder.success(
+        purchaseOrderService.hasPurchaserRole(userId) ? userId : "");
+  }
+
+  /**
    * 打印
    */
   @Operation(summary = "打印")
@@ -354,7 +367,8 @@ public class PurchaseOrderController extends DefaultBaseController {
       "purchase:receive:modify", "purchase:return:add", "purchase:return:modify"})
   @GetMapping("/product/search")
   public InvokeResult<List<PurchaseProductBo>> searchPurchaseProducts(
-      @NotBlank(message = "仓库ID不能为空！") String scId, String condition, Boolean isReturn) {
+      @NotBlank(message = "仓库ID不能为空！") String scId, String condition, Boolean isReturn,
+      String supplierId) {
 
     if (isReturn == null) {
       isReturn = false;
@@ -365,7 +379,7 @@ public class PurchaseOrderController extends DefaultBaseController {
     }
 
     PageResult<PurchaseProductDto> pageResult = purchaseOrderService.queryPurchaseByCondition(
-        getPageIndex(), getPageSize(), scId, condition, isReturn);
+        getPageIndex(), getPageSize(), scId, condition, isReturn, supplierId);
     List<PurchaseProductBo> results = CollectionUtil.emptyList();
     List<PurchaseProductDto> datas = pageResult.getDatas();
     if (!CollectionUtil.isEmpty(datas)) {

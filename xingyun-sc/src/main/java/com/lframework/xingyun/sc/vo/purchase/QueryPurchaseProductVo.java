@@ -18,6 +18,12 @@ public class QueryPurchaseProductVo extends PageVo {
   private String scId;
 
   /**
+   * 供应商ID（传入时仅查询已关联商品）
+   */
+  @Schema(description = "供应商ID")
+  private String supplierId;
+
+  /**
    * 检索关键字
    */
   @Schema(description = "检索关键字")

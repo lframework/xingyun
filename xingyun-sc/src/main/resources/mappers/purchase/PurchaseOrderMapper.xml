@@ -355,9 +355,25 @@
         <if test="!multipleRelate">GROUP BY o.id</if>
         ORDER BY o.create_time DESC
     </select>
+    <sql id="SupplierProductFilter_sql">
+        <if test="supplierId != null and supplierId != ''">
+            AND (NOT EXISTS (
+                SELECT 1 FROM base_data_supplier_product sp
+                WHERE sp.supplier_id = #{supplierId}
+                  AND sp.available = TRUE
+            ) OR EXISTS (
+                SELECT 1 FROM base_data_supplier_product sp
+                WHERE sp.supplier_id = #{supplierId}
+                  AND sp.product_id = g.id
+                  AND (sp.sku_id IS NULL OR sp.sku_id = s.id)
+                  AND sp.available = TRUE
+            ))
+        </if>
+    </sql>
     <select id="queryPurchaseByCondition" resultMap="PurchaseProductDto">
         <include refid="PurchaseProductDto_sql"/>
         <where>
+            <include refid="SupplierProductFilter_sql"/>
             AND (
             g.name LIKE CONCAT('%', #{condition}, '%')
             OR g.code LIKE CONCAT('%', #{condition}, '%')
@@ -373,8 +389,10 @@
     </select>
     <select id="queryPurchaseList" resultMap="PurchaseProductDto">
         <bind name="scId" value="vo.scId"/>
+        <bind name="supplierId" value="vo.supplierId"/>
         <include refid="PurchaseProductDto_sql"/>
         <where>
+            <include refid="SupplierProductFilter_sql"/>
             <if test="vo != null">
                 <if test="vo.condition != null and vo.condition != ''">
                     AND (

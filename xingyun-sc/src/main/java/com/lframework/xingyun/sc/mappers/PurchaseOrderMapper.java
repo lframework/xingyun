@@ -97,7 +97,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
   })
   List<PurchaseProductDto> queryPurchaseByCondition(
       @Param("scId") String scId, @Param("condition") String condition,
-      @Param("isReturn") Boolean isReturn);
+      @Param("isReturn") Boolean isReturn, @Param("supplierId") String supplierId);
 
   /**
    * 查询可采购商品信息

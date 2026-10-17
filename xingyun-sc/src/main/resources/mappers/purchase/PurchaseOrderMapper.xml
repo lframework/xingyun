@@ -223,6 +223,9 @@
     <select id="query" resultMap="PurchaseOrder">
         <include refid="PurchaseOrderDto_sql"/>
         <where>
+            <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
+                <property name="ownerColumn" value="o.purchaser_id"/>
+            </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
                     AND o.code = #{vo.code}
@@ -273,6 +276,9 @@
     <select id="selector" resultMap="PurchaseOrder">
         <include refid="PurchaseOrderDto_sql"/>
         <where>
+            <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
+                <property name="ownerColumn" value="o.purchaser_id"/>
+            </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
                     AND o.code = #{vo.code}
@@ -327,6 +333,9 @@
         <include refid="PurchaseOrderDto_sql"/>
         <if test="!multipleRelate">LEFT JOIN tbl_receive_sheet AS s ON s.purchase_order_id = o.id</if>
         <where>
+            <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
+                <property name="ownerColumn" value="o.purchaser_id"/>
+            </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
                     AND o.code = #{vo.code}

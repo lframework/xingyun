@@ -225,6 +225,9 @@
     <select id="query" resultMap="SaleOrder">
         <include refid="SaleOrderDto_sql"/>
         <where>
+            <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
+                <property name="ownerColumn" value="o.saler_id"/>
+            </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
                     AND o.code = #{vo.code}
@@ -275,6 +278,9 @@
     <select id="selector" resultMap="SaleOrder">
         <include refid="SaleOrderDto_sql"/>
         <where>
+            <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
+                <property name="ownerColumn" value="o.saler_id"/>
+            </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
                     AND o.code = #{vo.code}
@@ -332,6 +338,9 @@
         <include refid="SaleOrderDto_sql"/>
         <if test="!multipleRelate">LEFT JOIN tbl_sale_out_sheet AS s ON s.sale_order_id = o.id</if>
         <where>
+            <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
+                <property name="ownerColumn" value="o.saler_id"/>
+            </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
                     AND o.code = #{vo.code}

@@ -22,6 +22,7 @@ import com.lframework.xingyun.sc.dto.sale.SaleProductDto;
 import com.lframework.xingyun.sc.entity.SaleOrder;
 import com.lframework.xingyun.sc.excel.sale.SaleOrderExportTaskWorker;
 import com.lframework.xingyun.sc.service.sale.SaleOrderService;
+import com.lframework.xingyun.sc.service.permission.OrderViewScopeService;
 import com.lframework.xingyun.sc.vo.sale.ApprovePassSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.ApproveRefuseSaleOrderVo;
 import com.lframework.xingyun.sc.vo.sale.CreateSaleOrderVo;
@@ -63,6 +64,9 @@ public class SaleOrderController extends DefaultBaseController {
   @Autowired
   private SaleOrderService saleOrderService;
 
+  @Autowired
+  private OrderViewScopeService orderViewScopeService;
+
   /**
    * 打印
    */
@@ -73,6 +77,7 @@ public class SaleOrderController extends DefaultBaseController {
   public InvokeResult<PrintSaleOrderBo> print(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
+    orderViewScopeService.checkSale(id);
     SaleOrderFullDto data = saleOrderService.getDetail(id);
     if (data == null) {
       throw new DefaultClientException("订单不存在！");
@@ -126,6 +131,7 @@ public class SaleOrderController extends DefaultBaseController {
   @GetMapping
   public InvokeResult<GetSaleOrderBo> findById(@NotBlank(message = "订单ID不能为空！") String id) {
 
+    orderViewScopeService.checkSale(id);
     SaleOrderFullDto data = saleOrderService.getDetail(id);
 
     GetSaleOrderBo result = new GetSaleOrderBo(data);
@@ -143,6 +149,7 @@ public class SaleOrderController extends DefaultBaseController {
   public InvokeResult<SaleOrderWithOutBo> getWithOut(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
+    orderViewScopeService.checkSale(id);
     SaleOrderWithOutDto data = saleOrderService.getWithOut(id);
     SaleOrderWithOutBo result = new SaleOrderWithOutBo(data);
 
@@ -183,6 +190,7 @@ public class SaleOrderController extends DefaultBaseController {
     List<SaleOrder> datas = saleOrderService.listByIds(ids);
 
     List<QuerySaleOrderWithOutBo> results = datas.stream()
+        .filter(data -> orderViewScopeService.canReadSale(data.getId()))
         .map(QuerySaleOrderWithOutBo::new)
         .collect(Collectors.toList());
 

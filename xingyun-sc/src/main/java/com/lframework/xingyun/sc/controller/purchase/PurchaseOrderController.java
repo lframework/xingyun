@@ -27,6 +27,7 @@ import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderImportModel;
 import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderPayTypeImportListener;
 import com.lframework.xingyun.sc.excel.purchase.PurchaseOrderPayTypeImportModel;
 import com.lframework.xingyun.sc.service.purchase.PurchaseOrderService;
+import com.lframework.xingyun.sc.service.permission.OrderViewScopeService;
 import com.lframework.xingyun.sc.vo.purchase.ApprovePassPurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.ApproveRefusePurchaseOrderVo;
 import com.lframework.xingyun.sc.vo.purchase.CreatePurchaseOrderVo;
@@ -71,6 +72,9 @@ public class PurchaseOrderController extends DefaultBaseController {
   @Autowired
   private PurchaseOrderService purchaseOrderService;
 
+  @Autowired
+  private OrderViewScopeService orderViewScopeService;
+
   /**
    * 新建订单的默认采购员，仅返回具有采购员角色的当前用户
    */
@@ -94,6 +98,7 @@ public class PurchaseOrderController extends DefaultBaseController {
   public InvokeResult<PrintPurchaseOrderBo> print(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
+    orderViewScopeService.checkPurchase(id, false);
     PurchaseOrderFullDto data = purchaseOrderService.getDetail(id, false);
     if (data == null) {
       throw new DefaultClientException("订单不存在！");
@@ -152,6 +157,7 @@ public class PurchaseOrderController extends DefaultBaseController {
   public InvokeResult<GetPurchaseOrderBo> findById(
       @NotBlank(message = "订单ID不能为空！") String id, Boolean isForm) {
 
+    orderViewScopeService.checkPurchase(id, isForm);
     PurchaseOrderFullDto data = purchaseOrderService.getDetail(id, isForm);
 
     GetPurchaseOrderBo result = new GetPurchaseOrderBo(data);
@@ -169,6 +175,7 @@ public class PurchaseOrderController extends DefaultBaseController {
   public InvokeResult<PurchaseOrderWithReceiveBo> getWithReceive(
       @NotBlank(message = "订单ID不能为空！") String id) {
 
+    orderViewScopeService.checkPurchase(id, false);
     PurchaseOrderWithReceiveDto data = purchaseOrderService.getWithReceive(id);
     PurchaseOrderWithReceiveBo result = new PurchaseOrderWithReceiveBo(data);
 
@@ -211,6 +218,7 @@ public class PurchaseOrderController extends DefaultBaseController {
     List<PurchaseOrder> datas = purchaseOrderService.listByIds(ids);
 
     List<QueryPurchaseOrderWithReceiveBo> results = datas.stream()
+        .filter(data -> orderViewScopeService.canReadPurchase(data.getId()))
         .map(QueryPurchaseOrderWithReceiveBo::new)
         .collect(Collectors.toList());
 

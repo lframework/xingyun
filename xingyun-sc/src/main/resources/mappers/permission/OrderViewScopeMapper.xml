@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper">
+
+    <select id="getRoleScopes" resultType="java.lang.String">
+        SELECT p.permission
+        FROM sys_user_role ur
+        INNER JOIN sys_role r ON r.id = ur.role_id AND r.available = 1
+        INNER JOIN sys_data_permission_data p
+            ON p.biz_id = ur.role_id AND p.biz_type = 0 AND p.permission_type = 100
+        WHERE ur.user_id = #{userId}
+    </select>
+
+    <!-- ownerColumn仅由Mapper内固定include属性提供，不接受请求中的列名。 -->
+    <sql id="filter">
+        <bind name="orderView" value="@com.lframework.xingyun.sc.service.permission.OrderViewScopeService@current()"/>
+        <choose>
+            <when test="orderView.scope == -1">AND 1 = 0</when>
+            <when test="orderView.scope == 1">
+                AND ${ownerColumn} = #{orderView.userId}
+            </when>
+            <when test="orderView.scope == 2">
+                AND EXISTS (
+                    SELECT 1 FROM sys_user_dept owner_dept
+                    INNER JOIN sys_user_dept viewer_dept ON viewer_dept.dept_id = owner_dept.dept_id
+                    WHERE owner_dept.user_id = ${ownerColumn}
+                        AND viewer_dept.user_id = #{orderView.userId}
+                )
+            </when>
+        </choose>
+    </sql>
+
+    <select id="countReadablePurchase" resultType="int">
+        SELECT COUNT(*) FROM tbl_purchase_order${isForm ? "_form" : ""} o
+        WHERE o.id = #{id}
+        <include refid="filter"><property name="ownerColumn" value="o.purchaser_id"/></include>
+    </select>
+
+    <select id="countReadableSale" resultType="int">
+        SELECT COUNT(*) FROM tbl_sale_order o
+        WHERE o.id = #{id}
+        <include refid="filter"><property name="ownerColumn" value="o.saler_id"/></include>
+    </select>
+</mapper>

@@ -1,6 +1,5 @@
 package com.lframework.xingyun.sc.bo.purchase.receive;
 
-import com.lframework.starter.common.functions.SFunction;
 import com.lframework.starter.common.utils.CollectionUtil;
 import com.lframework.starter.common.utils.NumberUtil;
 import com.lframework.starter.common.utils.StringUtil;
@@ -237,21 +236,6 @@ public class ReceiveSheetWithReturnBo extends BaseBo<ReceiveSheetWithReturnDto> 
     public DetailBo(ReceiveSheetWithReturnDto.DetailDto dto) {
 
       super(dto);
-    }
-
-    @Override
-    public BaseBo<ReceiveSheetWithReturnDto.DetailDto> convert(
-        ReceiveSheetWithReturnDto.DetailDto dto) {
-
-      return this;
-    }
-
-    @Override
-    public <A> BaseBo<ReceiveSheetWithReturnDto.DetailDto> convert(
-        ReceiveSheetWithReturnDto.DetailDto dto,
-        SFunction<A, ?>... columns) {
-
-      return this;
     }
 
     @Override

@@ -523,10 +523,15 @@ public class PurchaseReturnServiceImpl extends
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (ReturnProductVo productVo : vo.getProducts()) {
+      ReceiveSheetDetail sourceReceiveDetail = null;
       if (requireReceive) {
         if (!StringUtil.isBlank(productVo.getReceiveSheetDetailId())) {
           ReceiveSheetDetail detail = receiveSheetDetailService.getById(
               productVo.getReceiveSheetDetailId());
+          if (detail == null || !purchaseReturn.getReceiveSheetId().equals(detail.getSheetId())) {
+            throw new InputErrorException("第" + orderNo + "行原收货单明细不存在或不属于当前收货单！");
+          }
+          sourceReceiveDetail = detail;
           productVo.setPurchasePrice(detail.getTaxPrice());
           productVo.setSkuId(detail.getSkuId());
         } else {
@@ -579,7 +584,7 @@ public class PurchaseReturnServiceImpl extends
       detail.setReturnNum(productVo.getReturnNum());
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getTaxRate());
+      detail.setTaxRate(sourceReceiveDetail == null ? product.getTaxRate() : sourceReceiveDetail.getTaxRate());
       detail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());

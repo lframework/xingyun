@@ -24,6 +24,18 @@ public class PurchaseProductVo implements BaseVo, Serializable {
   private String skuId;
 
   /**
+   * 修改订单时的原明细ID；空字符串表示新增行，未传时兼容旧客户端。
+   */
+  @Schema(description = "原采购订单明细ID")
+  private String purchaseOrderDetailId;
+
+  /**
+   * 页面计算含税价所用税率，用于核对报价快照，不用于覆盖历史税率。
+   */
+  @Schema(description = "报价税率（%）")
+  private BigDecimal taxRate;
+
+  /**
    * 采购价
    */
   @Schema(description = "采购价")

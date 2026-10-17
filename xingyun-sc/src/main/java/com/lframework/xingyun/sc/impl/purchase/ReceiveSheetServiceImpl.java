@@ -660,10 +660,15 @@ public class ReceiveSheetServiceImpl extends
     BigDecimal totalAmount = BigDecimal.ZERO;
     int orderNo = 1;
     for (ReceiveProductVo productVo : vo.getProducts()) {
+      PurchaseOrderDetail sourceOrderDetail = null;
       if (receiveRequirePurchase) {
         if (!StringUtil.isBlank(productVo.getPurchaseOrderDetailId())) {
           PurchaseOrderDetail orderDetail = purchaseOrderDetailService.getById(
               productVo.getPurchaseOrderDetailId());
+          if (orderDetail == null || !sheet.getPurchaseOrderId().equals(orderDetail.getOrderId())) {
+            throw new InputErrorException("第" + orderNo + "行原采购订单明细不存在或不属于当前订单！");
+          }
+          sourceOrderDetail = orderDetail;
           productVo.setPurchasePrice(orderDetail.getTaxPrice());
           productVo.setSkuId(orderDetail.getSkuId());
         } else {
@@ -715,7 +720,7 @@ public class ReceiveSheetServiceImpl extends
       detail.setTaxPrice(productVo.getPurchasePrice());
       detail.setTaxAmount(taxAmount);
       detail.setIsGift(isGift);
-      detail.setTaxRate(product.getTaxRate());
+      detail.setTaxRate(sourceOrderDetail == null ? product.getTaxRate() : sourceOrderDetail.getTaxRate());
       detail.setDescription(StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
           : productVo.getDescription());
       detail.setOrderNo(orderNo);

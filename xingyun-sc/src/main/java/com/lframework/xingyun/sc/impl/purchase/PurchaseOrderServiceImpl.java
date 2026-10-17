@@ -280,6 +280,13 @@ public class PurchaseOrderServiceImpl extends
       throw new DefaultClientException("订单无法修改！");
     }
 
+    // 修改旧单保留原行税率，不随商品资料后续变化。审批表单使用自己的明细表。
+    List<? extends PurchaseOrderDetail> originalDetails = vo.getIsForm()
+        ? purchaseOrderDetailFormService.list(Wrappers.lambdaQuery(PurchaseOrderDetailForm.class)
+            .eq(PurchaseOrderDetailForm::getOrderId, order.getId()))
+        : purchaseOrderDetailService.list(Wrappers.lambdaQuery(PurchaseOrderDetail.class)
+            .eq(PurchaseOrderDetail::getOrderId, order.getId()));
+
     // 删除订单明细
     if (vo.getIsForm()) {
       Wrapper<PurchaseOrderDetailForm> deleteDetailWrapper = Wrappers.lambdaQuery(
@@ -291,7 +298,7 @@ public class PurchaseOrderServiceImpl extends
       purchaseOrderDetailService.remove(deleteDetailWrapper);
     }
 
-    this.create(order, vo, vo.getIsForm());
+    this.create(order, vo, vo.getIsForm(), originalDetails);
 
     order.setStatus(PurchaseOrderStatus.CREATED);
 
@@ -589,6 +596,12 @@ public class PurchaseOrderServiceImpl extends
 
   private void create(PurchaseOrder order, CreatePurchaseOrderVo vo, boolean isForm) {
 
+    this.create(order, vo, isForm, List.of());
+  }
+
+  private void create(PurchaseOrder order, CreatePurchaseOrderVo vo, boolean isForm,
+      List<? extends PurchaseOrderDetail> originalDetails) {
+
     StoreCenter sc = storeCenterService.findById(vo.getScId());
     if (sc == null) {
       throw new InputErrorException("仓库不存在！");
@@ -651,7 +664,13 @@ public class PurchaseOrderServiceImpl extends
       orderDetail.setOrderNum(productVo.getPurchaseNum());
       orderDetail.setTaxPrice(productVo.getPurchasePrice());
       orderDetail.setIsGift(isGift);
-      orderDetail.setTaxRate(product.getTaxRate());
+      PurchaseOrderDetail originalDetail = this.getOriginalDetail(productVo, sku, originalDetails);
+      BigDecimal taxRate = originalDetail == null ? product.getTaxRate() : originalDetail.getTaxRate();
+      if (productVo.getTaxRate() != null && !NumberUtil.equal(productVo.getTaxRate(),
+          taxRate == null ? BigDecimal.ZERO : taxRate)) {
+        throw new InputErrorException("第" + orderNo + "行商品税率已变化，请刷新商品后重新确认采购价！");
+      }
+      orderDetail.setTaxRate(taxRate);
       orderDetail.setDescription(
           StringUtil.isBlank(productVo.getDescription()) ? StringPool.EMPTY_STR
               : productVo.getDescription());
@@ -679,6 +698,15 @@ public class PurchaseOrderServiceImpl extends
         }
         Map<Object, Number> splitPriceMap = SplitNumberUtil.split(orderDetail.getTaxAmount(),
             bundleWeight, 2);
+        List<? extends PurchaseOrderDetailBundle> originalBundles = originalDetail == null
+            ? List.of()
+            : isForm
+                ? purchaseOrderDetailBundleFormService.list(
+                    Wrappers.lambdaQuery(PurchaseOrderDetailBundleForm.class)
+                        .eq(PurchaseOrderDetailBundleForm::getDetailId, originalDetail.getId()))
+                : purchaseOrderDetailBundleService.list(
+                    Wrappers.lambdaQuery(PurchaseOrderDetailBundle.class)
+                        .eq(PurchaseOrderDetailBundle::getDetailId, originalDetail.getId()));
         List<PurchaseOrderDetailBundle> purchaseOrderDetailBundles = productBundles.stream()
             .map(productBundle -> {
               ProductSku bundleSku = productSkuService.findById(productBundle.getProductId());
@@ -701,7 +729,10 @@ public class PurchaseOrderServiceImpl extends
               purchaseOrderDetailBundle.setProductTaxPrice(NumberUtil.getNumber(
                   NumberUtil.div(purchaseOrderDetailBundle.getProductTaxAmount(),
                       purchaseOrderDetailBundle.getProductOrderNum()), 6));
-              purchaseOrderDetailBundle.setProductTaxRate(bundle.getTaxRate());
+              PurchaseOrderDetailBundle originalBundle = originalBundles.stream()
+                  .filter(t -> bundleSku.getId().equals(t.getSkuId())).findFirst().orElse(null);
+              purchaseOrderDetailBundle.setProductTaxRate(originalBundle == null
+                  ? bundle.getTaxRate() : originalBundle.getProductTaxRate());
 
               return purchaseOrderDetailBundle;
             }).collect(Collectors.toList());
@@ -907,6 +938,34 @@ public class PurchaseOrderServiceImpl extends
     } else {
       return new PurchaseOrderDetailBundle();
     }
+  }
+
+  private PurchaseOrderDetail getOriginalDetail(PurchaseProductVo vo, ProductSku sku,
+      List<? extends PurchaseOrderDetail> originalDetails) {
+
+    if (StringUtil.isNotBlank(vo.getPurchaseOrderDetailId())) {
+      PurchaseOrderDetail detail = originalDetails.stream()
+          .filter(t -> vo.getPurchaseOrderDetailId().equals(t.getId())).findFirst().orElse(null);
+      if (detail == null || !sku.getId().equals(detail.getSkuId())) {
+        throw new InputErrorException("原采购订单明细已变化，请刷新订单后重试！");
+      }
+      return detail;
+    }
+    // 新客户端显式传空字符串区分新增行；旧客户端未传ID时按SKU兼容。
+    if (vo.getPurchaseOrderDetailId() == null) {
+      List<? extends PurchaseOrderDetail> matches = originalDetails.stream()
+          .filter(t -> sku.getId().equals(t.getSkuId())).collect(Collectors.toList());
+      if (!matches.isEmpty()) {
+        BigDecimal taxRate = matches.get(0).getTaxRate();
+        if (matches.stream().anyMatch(t -> !NumberUtil.equal(
+            taxRate == null ? BigDecimal.ZERO : taxRate,
+            t.getTaxRate() == null ? BigDecimal.ZERO : t.getTaxRate()))) {
+          throw new InputErrorException("同SKU存在不同历史税率，请刷新页面后重新修改订单！");
+        }
+        return matches.get(0);
+      }
+    }
+    return null;
   }
 
   private ProductSku getOrderSku(String skuId, String fallbackSkuId, int orderNo) {

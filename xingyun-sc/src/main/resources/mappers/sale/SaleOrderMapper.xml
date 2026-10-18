@@ -227,6 +227,7 @@
         <where>
             <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
                 <property name="ownerColumn" value="o.saler_id"/>
+                <property name="permissionType" value="102"/>
             </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
@@ -280,6 +281,7 @@
         <where>
             <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
                 <property name="ownerColumn" value="o.saler_id"/>
+                <property name="permissionType" value="102"/>
             </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">
@@ -340,6 +342,7 @@
         <where>
             <include refid="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper.filter">
                 <property name="ownerColumn" value="o.saler_id"/>
+                <property name="permissionType" value="102"/>
             </include>
             <if test="vo != null">
                 <if test="vo.code != null and vo.code != ''">

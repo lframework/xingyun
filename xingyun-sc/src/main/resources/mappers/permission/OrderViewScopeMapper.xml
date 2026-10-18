@@ -3,19 +3,37 @@
 <mapper namespace="com.lframework.xingyun.sc.mappers.OrderViewScopeMapper">
 
     <select id="getRoleScopes" resultType="java.lang.String">
-        SELECT p.permission
+        SELECT COALESCE(p.permission, legacy.permission)
         FROM sys_user_role ur
         INNER JOIN sys_role r ON r.id = ur.role_id AND r.available = 1
-        INNER JOIN sys_data_permission_data p
-            ON p.biz_id = ur.role_id AND p.biz_type = 0 AND p.permission_type = 100
+        LEFT JOIN sys_data_permission_data p
+            ON p.biz_id = ur.role_id AND p.biz_type = 0 AND p.permission_type = #{permissionType}
+        LEFT JOIN sys_data_permission_data legacy
+            ON legacy.biz_id = ur.role_id AND legacy.biz_type = 0 AND legacy.permission_type = 100
         WHERE ur.user_id = #{userId}
+            AND (p.id IS NOT NULL OR legacy.id IS NOT NULL)
     </select>
 
     <!-- ownerColumn仅由Mapper内固定include属性提供，不接受请求中的列名。 -->
     <sql id="filter">
-        <bind name="orderView" value="@com.lframework.xingyun.sc.service.permission.OrderViewScopeService@current()"/>
+        <bind name="orderView" value="@com.lframework.xingyun.sc.service.permission.OrderViewScopeService@current(${permissionType})"/>
         <choose>
             <when test="orderView.scope == -1">AND 1 = 0</when>
+            <when test="orderView.scope == 3">
+                AND (
+                    ${ownerColumn} = #{orderView.userId}
+                    OR EXISTS (
+                        SELECT 1 FROM sys_user_dept owner_dept
+                        INNER JOIN recursion_mapping owner_tree
+                            ON owner_tree.node_id = owner_dept.dept_id AND owner_tree.node_type = 1
+                        INNER JOIN sys_user_dept viewer_dept
+                            ON FIND_IN_SET(viewer_dept.dept_id, owner_tree.path) > 0
+                                AND viewer_dept.dept_id != owner_dept.dept_id
+                        WHERE owner_dept.user_id = ${ownerColumn}
+                            AND viewer_dept.user_id = #{orderView.userId}
+                    )
+                )
+            </when>
             <when test="orderView.scope == 1">
                 AND ${ownerColumn} = #{orderView.userId}
             </when>
@@ -33,12 +51,18 @@
     <select id="countReadablePurchase" resultType="int">
         SELECT COUNT(*) FROM tbl_purchase_order${isForm ? "_form" : ""} o
         WHERE o.id = #{id}
-        <include refid="filter"><property name="ownerColumn" value="o.purchaser_id"/></include>
+        <include refid="filter">
+            <property name="ownerColumn" value="o.purchaser_id"/>
+            <property name="permissionType" value="101"/>
+        </include>
     </select>
 
     <select id="countReadableSale" resultType="int">
         SELECT COUNT(*) FROM tbl_sale_order o
         WHERE o.id = #{id}
-        <include refid="filter"><property name="ownerColumn" value="o.saler_id"/></include>
+        <include refid="filter">
+            <property name="ownerColumn" value="o.saler_id"/>
+            <property name="permissionType" value="102"/>
+        </include>
     </select>
 </mapper>
